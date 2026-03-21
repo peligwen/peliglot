@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>English for Spanish Speakers — Peliglot</title>
+  <meta name="description" content="35 interactive guides to American English for Spanish speakers, with Chattanooga dialect notes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+    body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  </style>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+const { useState, useEffect, useRef } = React;
+
+
+// ═══════════════════════════════════════════════════════════════
+// METADATA
+// ═══════════════════════════════════════════════════════════════
+const guidesMeta = [
+  {id:1,title:"The Alphabet",subtitle:"El Alfabeto Inglés",cat:"Sounds",color:"#1565C0",icon:"🔤"},
+  {id:2,title:"Vowel Sounds",subtitle:"15 sonidos vs 5 en español",cat:"Sounds",color:"#C62828",icon:"🗣"},
+  {id:3,title:"Consonant Challenges",subtitle:"Sonidos difíciles para hispanohablantes",cat:"Sounds",color:"#2E7D32",icon:"👅"},
+  {id:4,title:"Spelling & Silent Letters",subtitle:"La ortografía caótica",cat:"Sounds",color:"#6A1B9A",icon:"✍"},
+  {id:5,title:"Stress & Intonation",subtitle:"El ritmo del inglés",cat:"Sounds",color:"#E65100",icon:"🎵"},
+  {id:6,title:"Simple Present & Progressive",subtitle:"I work vs I am working",cat:"Verbs",color:"#1565C0",icon:"▶"},
+  {id:7,title:"Simple Past & Progressive",subtitle:"Regulares, irregulares y -ed",cat:"Verbs",color:"#C62828",icon:"⏪"},
+  {id:8,title:"Future Expressions",subtitle:"Will vs going to vs fixin' to",cat:"Verbs",color:"#00695C",icon:"⏩"},
+  {id:9,title:"Present & Past Perfect",subtitle:"I have done vs I did",cat:"Verbs",color:"#6A1B9A",icon:"✓"},
+  {id:10,title:"Modal Verbs",subtitle:"Can, should, must, might could",cat:"Verbs",color:"#E65100",icon:"💪"},
+  {id:11,title:"Conditionals",subtitle:"If clauses & would",cat:"Verbs",color:"#880E4F",icon:"🔀"},
+  {id:12,title:"Passive Voice",subtitle:"Was built, is being done",cat:"Verbs",color:"#00838F",icon:"📝"},
+  {id:13,title:"Phrasal Verbs",subtitle:"Get up, get over, get by...",cat:"Verbs",color:"#4527A0",icon:"🧩"},
+  {id:14,title:"Articles",subtitle:"A/An vs The vs nada",cat:"Nouns",color:"#C62828",icon:"📎"},
+  {id:15,title:"Countable & Uncountable",subtitle:"Much vs many, some vs any",cat:"Nouns",color:"#1565C0",icon:"📊"},
+  {id:16,title:"Plurals",subtitle:"Regulares e irregulares",cat:"Nouns",color:"#2E7D32",icon:"➕"},
+  {id:17,title:"Possessives",subtitle:"'s, of, mine, whose",cat:"Nouns",color:"#E65100",icon:"🏠"},
+  {id:18,title:"Pronouns",subtitle:"Subject, object, reflexive",cat:"Pronouns",color:"#1565C0",icon:"👤"},
+  {id:19,title:"Y'all & You Guys",subtitle:"El plural de 'you'",cat:"Pronouns",color:"#C62828",icon:"👥"},
+  {id:20,title:"Demonstratives & Quantifiers",subtitle:"This, that, every, enough",cat:"Pronouns",color:"#6A1B9A",icon:"👉"},
+  {id:21,title:"Adjective Order",subtitle:"La regla secreta",cat:"Adjectives",color:"#2E7D32",icon:"📐"},
+  {id:22,title:"Comparatives & Superlatives",subtitle:"-er/-est, more/most, right good",cat:"Adjectives",color:"#E65100",icon:"⬆"},
+  {id:23,title:"Adverb Placement",subtitle:"Dónde van los adverbios",cat:"Adjectives",color:"#00695C",icon:"↔"},
+  {id:24,title:"Prepositions: Time & Place",subtitle:"In/on/at — sin lógica",cat:"Prepositions",color:"#C62828",icon:"📍"},
+  {id:25,title:"Verb + Preposition",subtitle:"Depend ON, interested IN",cat:"Prepositions",color:"#4527A0",icon:"🔗"},
+  {id:26,title:"Connectors",subtitle:"Because, although, however",cat:"Prepositions",color:"#1565C0",icon:"🔀"},
+  {id:27,title:"Word Order & Questions",subtitle:"SVO, do/does/did, tags",cat:"Sentences",color:"#C62828",icon:"❓"},
+  {id:28,title:"Reported Speech",subtitle:"She said that...",cat:"Sentences",color:"#6A1B9A",icon:"💬"},
+  {id:29,title:"Relative Clauses",subtitle:"Who, which, that",cat:"Sentences",color:"#2E7D32",icon:"🔗"},
+  {id:30,title:"Common Errors & False Friends",subtitle:"Errores típicos de hispanohablantes",cat:"Sentences",color:"#E65100",icon:"⚠"},
+  {id:31,title:"Register & Formality",subtitle:"Sir, ma'am, y el email",cat:"Practical",color:"#880E4F",icon:"🎩"},
+  {id:32,title:"Idioms & Expressions",subtitle:"Bless your heart & más",cat:"Practical",color:"#00695C",icon:"💡"},
+  {id:33,title:"Numbers, Money & Measurement",subtitle:"Imperial, Fahrenheit, tips",cat:"Practical",color:"#1565C0",icon:"💲"},
+  {id:34,title:"Small Talk & Conversation",subtitle:"La cultura de la charla",cat:"Practical",color:"#4527A0",icon:"🤝"},
+  {id:35,title:"Chattanooga English",subtitle:"El dialecto local",cat:"Practical",color:"#E65100",icon:"🏔"},
+];
+const categories=["Sounds","Verbs","Nouns","Pronouns","Adjectives","Prepositions","Sentences","Practical"];
+const catColors={Sounds:"#1565C0",Verbs:"#C62828",Nouns:"#C62828",Pronouns:"#1565C0",Adjectives:"#2E7D32",Prepositions:"#4527A0",Sentences:"#C62828",Practical:"#880E4F"};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+function Card({color,title,subtitle,children}){
+  return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
+    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
+      {subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}
+    </div>{children}
+  </div>);
+}
+function DarkBox({title,children}){
+  return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>
+    {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
+  </div>);
+}
+function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);}
+function EsNote({text}){return(<div style={{background:"#FFEBEE",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #FFCDD2",fontSize:12,color:"#C62828",lineHeight:1.5}}>🇪🇸 <strong>Para hispanohablantes:</strong> {text}</div>);}
+function ChattNote({text}){return(<div style={{background:"#E3F2FD",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #BBDEFB",fontSize:12,color:"#0D47A1",lineHeight:1.5}}>🏔 <strong>Chattanooga/Southern:</strong> {text}</div>);}
+function SG({items}){
+  return(<div>{items.map((item,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:6}}>
+    <div style={{fontSize:13,fontWeight:700,color:"#1a1a1a",marginBottom:4}}>{item.h}</div>
+    <div style={{fontSize:12,color:"#666",lineHeight:1.6,whiteSpace:"pre-line"}}>{item.b}</div>
+  </div>))}</div>);
+}
+function ExpandSection({label,color,children}){
+  const[open,setOpen]=useState(false);
+  return(<div style={{marginBottom:8}}>
+    <button onClick={()=>setOpen(!open)} style={{width:"100%",padding:"10px 16px",borderRadius:10,border:"1.5px solid #e0dcd5",background:open?color||"#1a1a1a":"#fff",color:open?"#fff":"#555",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <span>{label}</span><span style={{fontSize:16,transition:"transform 0.2s",transform:open?"rotate(180deg)":"rotate(0)"}}>⌄</span>
+    </button>
+    {open&&<div style={{marginTop:8}}>{children}</div>}
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 1: ALPHABET
+// ═══════════════════════════════════════════════════════════════
+function Guide1(){
+  const vowels="AEIOU".split("");
+  const consonants="BCDFGHJKLMNPQRSTVWXYZ".split("");
+  return(<div>
+    <DarkBox title="26 Letters, ~44 Sounds"><div style={{fontSize:14,lineHeight:1.6}}>
+      Spanish has near-perfect spelling: one letter = one sound. English is <strong style={{color:"#EF9A9A"}}>chaotic</strong>: the letter 'a' alone can make 6+ different sounds. This is the #1 challenge.
+    </div></DarkBox>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(40px,1fr))",gap:4,marginBottom:16}}>
+      {[...vowels,...consonants].sort().map(l=>{const isV=vowels.includes(l);return(
+        <div key={l} style={{aspectRatio:"1",borderRadius:8,background:isV?"#FFEBEE":"#fff",border:isV?"2px solid #FFCDD2":"1.5px solid #e0dcd5",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:700,color:isV?"#C62828":"#333"}}>{l}</div>
+      );})}
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+      <div style={{background:"#FFEBEE",borderRadius:10,padding:"12px",textAlign:"center",border:"1px solid #FFCDD2"}}>
+        <div style={{fontSize:24,fontWeight:800,color:"#C62828"}}>5</div>
+        <div style={{fontSize:12,color:"#C62828"}}>Vowel letters</div>
+        <div style={{fontSize:10,color:"#888",marginTop:2}}>But ~15 vowel SOUNDS</div>
+      </div>
+      <div style={{background:"#E3F2FD",borderRadius:10,padding:"12px",textAlign:"center",border:"1px solid #BBDEFB"}}>
+        <div style={{fontSize:24,fontWeight:800,color:"#1565C0"}}>21</div>
+        <div style={{fontSize:12,color:"#1565C0"}}>Consonant letters</div>
+        <div style={{fontSize:10,color:"#888",marginTop:2}}>Plus ~24 consonant sounds</div>
+      </div>
+    </div>
+    <EsNote text="En español, si ves una letra, sabes cómo suena. En inglés, la misma letra puede sonar completamente diferente según la palabra. 'A' suena distinto en: cat, cake, car, call, about."/>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 2: VOWEL SOUNDS
+// ═══════════════════════════════════════════════════════════════
+const vowelPairs=[
+  {en1:"ship",ipa1:"/ɪ/",en2:"sheep",ipa2:"/iː/",es:"español solo tiene /i/",color:"#C62828"},
+  {en1:"full",ipa1:"/ʊ/",en2:"fool",ipa2:"/uː/",es:"español solo tiene /u/",color:"#1565C0"},
+  {en1:"cat",ipa1:"/æ/",en2:"cut",ipa2:"/ʌ/",es:"ambos suenan como 'a' para hispanohablantes",color:"#2E7D32"},
+  {en1:"bed",ipa1:"/ɛ/",en2:"bad",ipa2:"/æ/",es:"el segundo no existe en español",color:"#6A1B9A"},
+  {en1:"not",ipa1:"/ɑː/",en2:"note",ipa2:"/oʊ/",es:"la 'o' inglesa es un diptongo",color:"#E65100"},
+];
+
+function Guide2(){
+  return(<div>
+    <DarkBox title="The Schwa: English's Secret Sound"><div style={{fontSize:14,lineHeight:1.6}}>
+      The most common sound in English is <strong style={{color:"#FFE77A"}}>schwa /ə/</strong> — a lazy, unstressed "uh." It doesn't exist in Spanish. It appears in: <em>about, banana, problem, support, the</em>.
+    </div></DarkBox>
+    <Card color="#C62828" title="Vowel Pairs That Cause Problems">
+      {vowelPairs.map((p,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i<vowelPairs.length-1?"1px solid #f0eeeb":"none"}}>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:4}}>
+          <div style={{textAlign:"center",minWidth:70}}>
+            <div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.en1}</div>
+            <div style={{fontSize:11,color:"#888",fontFamily:"monospace"}}>{p.ipa1}</div>
+          </div>
+          <div style={{fontSize:16,color:"#ccc"}}>vs</div>
+          <div style={{textAlign:"center",minWidth:70}}>
+            <div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.en2}</div>
+            <div style={{fontSize:11,color:"#888",fontFamily:"monospace"}}>{p.ipa2}</div>
+          </div>
+        </div>
+        <div style={{fontSize:11,color:"#888",fontStyle:"italic"}}>{p.es}</div>
+      </div>))}
+    </Card>
+    <EsNote text="El inglés tiene ~15 sonidos vocálicos. El español tiene 5. Esto significa que muchas palabras inglesas que suenan 'igual' para ti son en realidad diferentes. ship ≠ sheep, cat ≠ cut."/>
+    <ChattNote text="In Chattanooga, the 'pen/pin merger' is strong — 'pen' and 'pin' sound identical (both like 'pin'). Same with 'ten/tin', 'hem/him'. You'll hear this everywhere locally."/>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 3: CONSONANT CHALLENGES
+// ═══════════════════════════════════════════════════════════════
+function Guide3(){
+  const challenges=[
+    {sound:"/v/ vs /b/",en:"very ≠ berry, vote ≠ boat",tip:"For /v/, upper teeth touch lower lip. Spanish B/V are the same — English B/V are NOT.",color:"#C62828"},
+    {sound:"/ʃ/ (sh)",en:"ship, show, push",tip:"Put your lips forward like blowing out a candle and say 'shhh'. Spanish doesn't have this.",color:"#1565C0"},
+    {sound:"/dʒ/ (j)",en:"judge, job, age",tip:"Like 'ch' but voiced (throat vibrates). NOT the Spanish J (which is /x/).",color:"#2E7D32"},
+    {sound:"/z/",en:"zoo, easy, is, has",tip:"Like /s/ but voiced. Put your hand on your throat — you should feel vibration.",color:"#6A1B9A"},
+    {sound:"/θ/ & /ð/ (th)",en:"think vs the",tip:"Tongue between teeth! /θ/ = unvoiced (think). /ð/ = voiced (the, this).",color:"#E65100"},
+    {sound:"Initial S + consonant",en:"stop, speak, school",tip:"NO 'e' before it! Spanish adds 'e-': escuela, especial. English: school, special. Practice: 'ssssstop'.",color:"#880E4F"},
+    {sound:"Final consonant clusters",en:"texts /teksts/, strengths",tip:"English piles consonants at the end of words. Don't drop them or add vowels after.",color:"#00695C"},
+  ];
+  return(<div>
+    {challenges.map((c,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:`2px solid ${c.color}20`,marginBottom:6}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+        <span style={{background:c.color,color:"#fff",padding:"2px 10px",borderRadius:6,fontSize:13,fontWeight:800,fontFamily:"monospace"}}>{c.sound}</span>
+        <span style={{fontSize:13,color:"#555",fontStyle:"italic"}}>{c.en}</span>
+      </div>
+      <div style={{fontSize:12,color:"#666",lineHeight:1.5}}>{c.tip}</div>
+    </div>))}
+    <ChattNote text="Southern American English often softens or drops final consonants: 'didn't' → 'din't', 'last night' → 'las' night'. This is normal locally — you'll hear it but should still practice the full forms for formal situations."/>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 4: SPELLING
+// ═══════════════════════════════════════════════════════════════
+function Guide4(){return(<div>
+  <DarkBox title="Why Is English Spelling So Crazy?"><div style={{fontSize:13,lineHeight:1.6}}>
+    English borrowed from Latin, French, German, Greek, Norse, and more — and often <strong style={{color:"#EF9A9A"}}>kept the original spellings</strong> while pronunciation evolved. The result: pure chaos.
+  </div></DarkBox>
+  <SG items={[
+    {h:"-ough = 7 different sounds!",b:"through /uː/ · though /oʊ/ · thought /ɔː/\ntough /ʌf/ · cough /ɒf/ · bough /aʊ/ · hiccough /ʌp/"},
+    {h:"Common patterns that DO work",b:"-tion = /ʃən/ (nation, education, information)\n-ight = /aɪt/ (night, light, fight, right)\n-ness = /nəs/ (happiness, darkness, kindness)\n-ful = /fəl/ (beautiful, wonderful, careful)"},
+    {h:"Silent letters",b:"K in: know, knee, knife, knock\nW in: write, wrong, wrist, wrap\nB in: comb, bomb, climb, thumb\nGH in: night, daughter, though, weight"},
+    {h:"Same spelling, different sound",b:"read (present) /riːd/ vs read (past) /rɛd/\nlead (metal) /lɛd/ vs lead (guide) /liːd/\nwind (air) /wɪnd/ vs wind (turn) /waɪnd/"},
+  ]}/>
+  <EsNote text="No existe una regla confiable. Tienes que memorizar la ortografía de cada palabra. La buena noticia: autocorrect exists. La mala: todavía necesitas leer y reconocer palabras."/>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 5: STRESS & INTONATION
+// ═══════════════════════════════════════════════════════════════
+function Guide5(){
+  const stressPairs=[
+    {w1:"REcord",m1:"noun (disco, registro)",w2:"reCORD",m2:"verb (grabar)"},
+    {w1:"PREsent",m1:"noun/adj (regalo, presente)",w2:"preSENT",m2:"verb (presentar)"},
+    {w1:"OBject",m1:"noun (objeto)",w2:"obJECT",m2:"verb (objetar)"},
+    {w1:"PERmit",m1:"noun (permiso)",w2:"perMIT",m2:"verb (permitir)"},
+    {w1:"CONtract",m1:"noun (contrato)",w2:"conTRACT",m2:"verb (contratar)"},
+  ];
+  return(<div>
+    <DarkBox title="English = Stress-Timed"><div style={{fontSize:13,lineHeight:1.6}}>
+      Spanish gives each syllable equal time. English <strong style={{color:"#FFE77A"}}>rushes through unstressed syllables</strong> and hangs on stressed ones. This creates the characteristic English "rhythm."
+    </div></DarkBox>
+    <Card color="#E65100" title="Stress Changes Meaning">
+      {stressPairs.map((p,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr",padding:"8px 16px",borderBottom:i<stressPairs.length-1?"1px solid #f0eeeb":"none"}}>
+        <div><span style={{fontWeight:800,color:"#E65100"}}>{p.w1}</span><br/><span style={{fontSize:11,color:"#888"}}>{p.m1}</span></div>
+        <div><span style={{fontWeight:800,color:"#1565C0"}}>{p.w2}</span><br/><span style={{fontSize:11,color:"#888"}}>{p.m2}</span></div>
+      </div>))}
+    </Card>
+    <ChattNote text="The 'Southern drawl' stretches vowels and adds a melodic rise-fall pattern. Words get extra syllables: 'well' → 'we-ull', 'can't' → 'cay-unt'. This isn't wrong — it's the local music of the language."/>
+    <EsNote text="El error más común: dar la misma duración a cada sílaba. En inglés, las sílabas sin acento casi desaparecen. 'Banana' suena como 'buh-NA-nuh' — la primera y última sílaba se reducen a schwa."/>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 6-13: VERBS
+// ═══════════════════════════════════════════════════════════════
+function Guide6(){return(<div>
+  <SG items={[
+    {h:"Simple Present = habitual / general truth",b:"I work every day. = Trabajo cada día.\nShe speaks English. = Ella habla inglés.\nWater boils at 100°C. = El agua hierve a 100°C.\n⚠ Add -s/-es for he/she/it: he works, she goes, it rains"},
+    {h:"Present Progressive = right now",b:"I am working now. = Estoy trabajando ahora.\nShe is speaking on the phone. = Está hablando por teléfono."},
+    {h:"⚠ The DO/DOES auxiliary",b:"Questions: Do you work? Does she speak English?\nNegation: I don't work. She doesn't speak.\n¡NO existe en español! No digas: 'Work you here?' o 'She not speaks.'"},
+    {h:"Don't overuse progressive!",b:"❌ I am living in Chattanooga. (general fact)\n✓ I live in Chattanooga.\n❌ I am knowing the answer.\n✓ I know the answer. (stative verbs don't use progressive)"},
+  ]}/>
+  <EsNote text="El auxiliar DO/DOES es probablemente el hábito más difícil de construir. En español dices '¿Hablas inglés?' directamente. En inglés NECESITAS el auxiliar: 'Do you speak English?'"/>
+</div>);}
+
+function Guide7(){
+  const irregs=[
+    {base:"go",past:"went",pp:"gone"},{base:"come",past:"came",pp:"come"},{base:"see",past:"saw",pp:"seen"},
+    {base:"take",past:"took",pp:"taken"},{base:"give",past:"gave",pp:"given"},{base:"make",past:"made",pp:"made"},
+    {base:"get",past:"got",pp:"gotten"},{base:"know",past:"knew",pp:"known"},{base:"think",past:"thought",pp:"thought"},
+    {base:"say",past:"said",pp:"said"},{base:"tell",past:"told",pp:"told"},{base:"find",past:"found",pp:"found"},
+    {base:"eat",past:"ate",pp:"eaten"},{base:"drink",past:"drank",pp:"drunk"},{base:"write",past:"wrote",pp:"written"},
+    {base:"buy",past:"bought",pp:"bought"},{base:"bring",past:"brought",pp:"brought"},{base:"teach",past:"taught",pp:"taught"},
+  ];
+  return(<div>
+    <SG items={[
+      {h:"Regular -ed: THREE pronunciations",b:"/t/ after voiceless: worked, stopped, watched\n/d/ after voiced: played, opened, called\n/ɪd/ after t or d: wanted, needed, started"},
+    ]}/>
+    <Card color="#C62828" title="18 Essential Irregular Verbs">
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"6px 14px",fontSize:10,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}>
+        <div>Base</div><div>Past</div><div>Participle</div>
+      </div>
+      {irregs.map((v,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"5px 14px",borderBottom:i<irregs.length-1?"1px solid #f0eeeb":"none",fontSize:13}}>
+        <span style={{color:"#555"}}>{v.base}</span>
+        <span style={{fontWeight:700,color:"#C62828"}}>{v.past}</span>
+        <span style={{fontWeight:700,color:"#6A1B9A"}}>{v.pp}</span>
+      </div>))}
+    </Card>
+    <ChattNote text="'Might could' and double modals: 'I might could help you' = Tal vez pueda ayudarte. 'Used to could' = Antes podía. These are grammatically Southern, not 'errors.'"/>
+  </div>);
+}
+
+function Guide8(){return(<div>
+  <SG items={[
+    {h:"WILL = spontaneous / prediction / promise",b:"I'll help you. (espontáneo)\nIt will rain tomorrow. (predicción)\nI'll call you back. (promesa)"},
+    {h:"GOING TO = planned / evidence-based",b:"I'm going to visit my mom this weekend. (planificado)\nLook at those clouds — it's going to rain. (evidencia)"},
+    {h:"Present progressive = scheduled",b:"I'm flying to Atlanta on Friday. (ya tiene boleto)\nWe're meeting at 3. (ya está agendado)"},
+  ]}/>
+  <ChattNote text="'Fixin' to' (or 'finna') = about to, getting ready to. 'I'm fixin' to go to the store.' This is THE Southern future marker and you'll hear it constantly in Chattanooga. Completely normal and natural here."/>
+  <EsNote text="En español, 'voy a + infinitivo' cubre casi todo. En inglés necesitas elegir entre will, going to, y presente progresivo según el contexto."/>
+</div>);}
+
+function Guide9(){return(<div>
+  <DarkBox title="Present Perfect ≠ Pretérito Perfecto"><div style={{fontSize:13,lineHeight:1.6}}>
+    In Spanish: "he comido" = present perfect, used for recent past. In American English, we often use <strong style={{color:"#FFE77A"}}>simple past instead</strong>: "I ate" (not "I have eaten") for recent events.
+  </div></DarkBox>
+  <SG items={[
+    {h:"Present Perfect = experience / unfinished time / result now",b:"I have been to Paris. (experience — ¿alguna vez?)\nI have already eaten. (result affecting now)\nShe has lived here for 5 years. (started in past, still true)\nSignal words: ever, never, already, yet, just, for, since"},
+    {h:"Simple Past = specific time in the past",b:"I went to Paris last year. (cuándo specifically)\nI ate an hour ago. (specific time)\nShe lived here from 2010 to 2015. (finished)"},
+    {h:"American vs British usage",b:"British: 'I've just eaten.' American: 'I just ate.'\nBritish: 'Have you finished?' American: 'Did you finish?'\nIn Chattanooga, simple past dominates in casual speech."},
+    {h:"Past Perfect = the past before the past",b:"When I arrived, she had already left.\n= Cuando llegué, ella ya se había ido.\nSame concept as pluscuamperfecto."},
+  ]}/>
+</div>);}
+
+function Guide10(){
+  const modals=[
+    {m:"can",uses:"ability, permission, possibility",ex:"I can swim. Can I sit here? It can be cold in winter.",color:"#1565C0"},
+    {m:"could",uses:"past ability, polite request, possibility",ex:"I could swim when I was 5. Could you help me? It could rain.",color:"#1565C0"},
+    {m:"will",uses:"future, willingness, promise",ex:"I will help. Will you come? I'll be there.",color:"#2E7D32"},
+    {m:"would",uses:"conditional, polite, past habit",ex:"I would go if... Would you like tea? I would walk to school (when young).",color:"#2E7D32"},
+    {m:"should",uses:"advice, expectation",ex:"You should study. She should be here by now.",color:"#E65100"},
+    {m:"must",uses:"obligation, strong probability",ex:"You must wear a seatbelt. She must be tired (I'm sure).",color:"#C62828"},
+    {m:"may/might",uses:"permission (formal), possibility",ex:"May I come in? It might rain. She may be right.",color:"#6A1B9A"},
+  ];
+  return(<div>
+    {modals.map((m,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:5}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+        <span style={{background:m.color,color:"#fff",padding:"2px 10px",borderRadius:6,fontSize:14,fontWeight:800}}>{m.m}</span>
+        <span style={{fontSize:11,color:"#888"}}>{m.uses}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555",fontStyle:"italic"}}>{m.ex}</div>
+    </div>))}
+    <ChattNote text="Double modals are a Chattanooga signature: 'might could' (maybe can), 'might should' (maybe should), 'used to could' (was once able to). Standard English only allows one modal — Southern English stacks them."/>
+  </div>);
+}
+
+function Guide11(){return(<SG items={[
+  {h:"Zero conditional = general truth",b:"If you heat water, it boils. (if + present, present)\nSi calientas agua, hierve."},
+  {h:"First conditional = real/likely future",b:"If it rains, I will stay home. (if + present, will + base)\nSi llueve, me quedaré en casa."},
+  {h:"Second conditional = unreal/hypothetical now",b:"If I had money, I would travel. (if + past, would + base)\nSi tuviera dinero, viajaría.\n⚠ 'If I were' (not 'was') is formally correct: If I were you..."},
+  {h:"Third conditional = unreal past",b:"If I had studied, I would have passed. (if + past perfect, would have + pp)\nSi hubiera estudiado, habría pasado."},
+  {h:"⚠ Common error",b:"❌ If I would have money... (NO 'would' in the if-clause!)\n✓ If I had money...\nThis is the #1 conditional mistake for Spanish speakers."},
+]}/>);}
+
+function Guide12(){return(<SG items={[
+  {h:"Formation: be + past participle",b:"Present: The house is cleaned every week.\nPast: The house was built in 1920.\nFuture: The house will be sold.\nPerfect: The house has been painted."},
+  {h:"When to use passive",b:"When the doer is unknown: My car was stolen.\nWhen the doer is obvious: The law was passed. (by Congress)\nWhen the action matters more than the doer."},
+  {h:"'Get' passive (informal)",b:"He got fired. = Fue despedido.\nShe got promoted. = Fue ascendida.\nWe got invited. = Fuimos invitados.\nMore casual than 'be' passive — very common in Chattanooga speech."},
+  {h:"Don't overuse passive",b:"❌ The dinner was eaten by us. (awkward)\n✓ We ate dinner. (just use active voice)\nPassive is for when you NEED to shift focus away from the doer."},
+]}/>);}
+
+function Guide13(){
+  const pvGroups=[
+    {base:"get",pvs:[{pv:"get up",m:"levantarse"},{pv:"get over",m:"superar"},{pv:"get along",m:"llevarse bien"},{pv:"get by",m:"arreglárselas"},{pv:"get through",m:"superar/terminar"},{pv:"get away",m:"escaparse"}]},
+    {base:"take",pvs:[{pv:"take off",m:"despegar/quitarse"},{pv:"take on",m:"asumir"},{pv:"take out",m:"sacar/invitar"},{pv:"take over",m:"tomar control"}]},
+    {base:"look",pvs:[{pv:"look up",m:"buscar (info)"},{pv:"look after",m:"cuidar"},{pv:"look forward to",m:"esperar con ansias"},{pv:"look into",m:"investigar"}]},
+    {base:"turn",pvs:[{pv:"turn on/off",m:"encender/apagar"},{pv:"turn up",m:"aparecer/subir volumen"},{pv:"turn down",m:"rechazar/bajar volumen"},{pv:"turn out",m:"resultar"}]},
+  ];
+  const [selGroup,setSelGroup]=useState(0);
+  const g=pvGroups[selGroup];
+  return(<div>
+    <DarkBox title="The Nightmare (but you NEED them)"><div style={{fontSize:13}}>Phrasal verbs = verb + particle(s) with a meaning you <strong style={{color:"#EF9A9A"}}>can't guess</strong> from the parts. They're in every single English conversation.</div></DarkBox>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center",flexWrap:"wrap"}}>
+      {pvGroups.map((pg,i)=>(<button key={i} onClick={()=>setSelGroup(i)} style={{padding:"6px 14px",borderRadius:8,border:selGroup===i?"2.5px solid #4527A0":"1.5px solid #ddd",background:selGroup===i?"#4527A0":"#fff",color:selGroup===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{pg.base}</button>))}
+    </div>
+    <Card color="#4527A0" title={`Phrasal verbs with "${g.base}"`}>
+      {g.pvs.map((pv,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 16px",borderBottom:i<g.pvs.length-1?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:15,fontWeight:700,color:"#4527A0"}}>{pv.pv}</span>
+        <span style={{fontSize:13,color:"#888"}}>{pv.m}</span>
+      </div>))}
+    </Card>
+    <ChattNote text="Southern additions: 'carry' = to drive someone ('Can you carry me to the store?'), 'cut on/off' = turn on/off ('Cut the light on'), 'mash' = to press ('Mash that button')."/>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 14-17: NOUNS
+// ═══════════════════════════════════════════════════════════════
+function Guide14(){return(<div>
+  <SG items={[
+    {h:"A/AN = indefinite (uno, un, una)",b:"I saw a dog. = Vi un perro.\nShe's an engineer. = Es ingeniera.\nUse 'an' before vowel SOUNDS: an apple, an hour (silent h)\nUse 'a' before consonant SOUNDS: a university (sounds like 'yoo')"},
+    {h:"THE = definite (el, la, los, las)",b:"The dog is big. = El perro es grande.\nThe books are here. = Los libros están aquí.\nOne form for everything! No gender, no plural change."},
+    {h:"ZERO ARTICLE = no article",b:"❌ The life is beautiful. → ✓ Life is beautiful. (general)\n❌ I like the music. → ✓ I like music. (general category)\n❌ The water is important. → ✓ Water is important.\nGeneral/abstract concepts take NO article in English."},
+    {h:"⚠ Key differences from Spanish",b:"Languages: I speak Spanish. (NOT 'the Spanish')\nMeals: I had breakfast. (NOT 'the breakfast')\nNext/Last: next week, last Monday (NO article)\nWith possessives: my car (NOT 'the my car')"},
+  ]}/>
+  <EsNote text="El error más frecuente: poner 'the' donde el español usa 'el/la' para cosas generales. 'Me gusta LA música' = 'I like music' (sin THE). El inglés solo usa 'the' para cosas específicas."/>
+</div>);}
+
+function Guide15(){return(<SG items={[
+  {h:"Countable = you can count them",b:"a book / two books / many books\na car / three cars / few cars\nUse: a/an, many, few, a few, several, a number of"},
+  {h:"Uncountable = you CAN'T count them",b:"❌ informations, advices, furnitures, homeworks\n✓ information, advice, furniture, homework (always singular!)\nUse: much, a little, little, a piece of, some"},
+  {h:"Common uncountable nouns (that are countable in Spanish)",b:"information (información) · advice (consejo) · furniture (muebles)\nhomework (tarea) · research (investigación) · news (noticias)\ntravel (viaje) · luggage/baggage (equipaje) · progress (progreso)"},
+  {h:"Some/Any",b:"SOME in affirmative: I have some money.\nANY in questions/negations: Do you have any money? I don't have any.\nSOME in offers/requests: Would you like some tea? Can I have some water?"},
+  {h:"Much vs Many vs A lot of",b:"MUCH + uncountable: much water, much time\nMANY + countable: many books, many people\nA LOT OF + both: a lot of water, a lot of books (safest choice!)"},
+]}/>);}
+
+function Guide16(){return(<SG items={[
+  {h:"Regular: add -s or -es",b:"book → books · car → cars · house → houses\n-ch/-sh/-s/-x/-z: add -es: watch → watches, bus → buses\n-y after consonant: change to -ies: city → cities, baby → babies\n-f/-fe: often → -ves: knife → knives, wife → wives, leaf → leaves"},
+  {h:"Irregular plurals (memorize!)",b:"man → men · woman → women · child → children\ntooth → teeth · foot → feet · mouse → mice\nperson → people · sheep → sheep · fish → fish"},
+  {h:"Latin/Greek plurals (formal English)",b:"datum → data · criterion → criteria\nphenomenon → phenomena · analysis → analyses\ncactus → cacti · focus → foci\n(In casual English, 'data is' is common even though 'data are' is technically correct)"},
+  {h:"Always plural (no singular form)",b:"pants, jeans, shorts, glasses, scissors, stairs\nUse 'a pair of': a pair of pants, a pair of scissors"},
+]}/>);}
+
+function Guide17(){return(<SG items={[
+  {h:"'s for people, 'of' for things",b:"Maria's house (NOT 'the house of Maria')\nmy brother's car (NOT 'the car of my brother')\nBUT: the door of the house, the end of the movie (things use 'of')"},
+  {h:"Possessive pronouns",b:"mine, yours, his, hers, ours, theirs\nThis book is mine. (NOT 'is the mine')\nIs this yours? That car is theirs."},
+  {h:"Whose = ¿de quién?",b:"Whose book is this? = ¿De quién es este libro?\nWhose ≠ who's (who is): Who's there? vs Whose bag is this?"},
+  {h:"Its vs It's — the #1 English mistake",b:"ITS = possessive (su, de ello): The dog wagged its tail.\nIT'S = it is: It's raining. It's a nice day.\nNo apostrophe for possessive 'its'!"},
+]}/>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 18-20: PRONOUNS
+// ═══════════════════════════════════════════════════════════════
+function Guide18(){
+  const pronouns=[
+    {sub:"I",obj:"me",refl:"myself",poss:"my/mine"},{sub:"you",obj:"you",refl:"yourself",poss:"your/yours"},
+    {sub:"he",obj:"him",refl:"himself",poss:"his/his"},{sub:"she",obj:"her",refl:"herself",poss:"her/hers"},
+    {sub:"it",obj:"it",refl:"itself",poss:"its/—"},{sub:"we",obj:"us",refl:"ourselves",poss:"our/ours"},
+    {sub:"they",obj:"them",refl:"themselves",poss:"their/theirs"},
+  ];
+  return(<div>
+    <Card color="#1565C0" title="English Pronouns">
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",padding:"6px 14px",fontSize:10,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}>
+        <div>Subject</div><div>Object</div><div>Reflexive</div><div>Possessive</div>
+      </div>
+      {pronouns.map((p,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",padding:"6px 14px",borderBottom:i<pronouns.length-1?"1px solid #f0eeeb":"none",fontSize:13}}>
+        <span style={{fontWeight:700,color:"#1565C0"}}>{p.sub}</span>
+        <span style={{color:"#555"}}>{p.obj}</span>
+        <span style={{color:"#555"}}>{p.refl}</span>
+        <span style={{color:"#555"}}>{p.poss}</span>
+      </div>))}
+    </Card>
+    <SG items={[
+      {h:"⚠ English ALWAYS needs a subject",b:"❌ Is raining. → ✓ IT is raining.\n❌ Is important to study. → ✓ IT is important to study.\n❌ Are many people. → ✓ THERE are many people.\nSpanish drops subjects. English never does."},
+      {h:"⚠ 'They' as singular (for unknown/nonbinary gender)",b:"Someone left their bag. = Alguien dejó su bolsa.\nIf anyone calls, tell them I'm busy.\nThis is standard modern English, not an error."},
+    ]}/>
+  </div>);
+}
+
+function Guide19(){return(<div>
+  <DarkBox title="The Missing Pronoun"><div style={{fontSize:14,lineHeight:1.6}}>
+    English has no standard <strong style={{color:"#FFE77A"}}>second-person plural</strong>. "You" is both singular and plural. Different regions fill the gap differently.
+  </div></DarkBox>
+  <SG items={[
+    {h:"Y'ALL — the Chattanooga default 🏔",b:"Y'all want some sweet tea? = ¿Ustedes quieren té dulce?\nY'all come back now! = ¡Regresen pronto!\nUsed throughout the South. Warm, inclusive, and efficient.\nALL Y'ALL = emphasis: All y'all need to listen up."},
+    {h:"Other regional solutions",b:"You guys — most of the North/West\nYouse / youse guys — New York, Philadelphia\nYou all — slightly more formal South\nFolks — inclusive, increasingly popular"},
+    {h:"Why y'all is spreading",b:"Gender-neutral (unlike 'you guys')\nClear distinction from singular 'you'\nWarm and friendly tone\nIncreasingly adopted outside the South"},
+  ]}/>
+  <ChattNote text="In Chattanooga, y'all is not 'slang' — it's the standard second-person plural. Use it. People will appreciate it. It's one of the most useful features of Southern English."/>
+</div>);}
+
+function Guide20(){return(<SG items={[
+  {h:"This/That/These/Those",b:"this = este/esta (near) · that = ese/esa (far)\nthese = estos/estas · those = esos/esas\nSimpler than Spanish — no gender agreement!"},
+  {h:"Every / Each / All",b:"EVERY + singular noun: Every student passed.\nEACH + singular: Each student has a book.\nALL + plural: All students passed. All the water."},
+  {h:"Another / Other / Others",b:"ANOTHER + singular: another book (uno más)\nOTHER + plural: other books (otros)\nTHE OTHER: the other book (el otro)\nOTHERS (no noun): Others think differently."},
+  {h:"Enough / Such / So",b:"ENOUGH: enough money, tall enough\nSUCH + noun: such a beautiful day\nSO + adjective: so beautiful, so tired"},
+]}/>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 21-23: ADJECTIVES & ADVERBS
+// ═══════════════════════════════════════════════════════════════
+function Guide21(){
+  const order=["Opinion","Size","Age","Shape","Color","Origin","Material","Purpose"];
+  const colors=["#C62828","#E65100","#6A1B9A","#00695C","#1565C0","#880E4F","#2E7D32","#4527A0"];
+  return(<div>
+    <DarkBox title="The Unwritten Rule"><div style={{fontSize:13,lineHeight:1.6}}>
+      Native English speakers <strong style={{color:"#FFE77A"}}>feel</strong> the correct adjective order but usually can't explain it. "A lovely little old rectangular green French silver whittling knife" — every native speaker would put those in that exact order.
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:16}}>
+      {order.map((o,i)=>(<span key={o} style={{padding:"5px 10px",borderRadius:16,background:`${colors[i]}15`,color:colors[i],fontSize:12,fontWeight:700,border:`1px solid ${colors[i]}30`}}>{i+1}. {o}</span>))}
+    </div>
+    <SG items={[
+      {h:"Examples following the order",b:"a nice big house (opinion → size) ✓\n❌ a big nice house\na beautiful old Italian painting (opinion → age → origin) ✓\n❌ an old beautiful Italian painting"},
+      {h:"Practical shortcut: rarely more than 2-3",b:"In real speech, you rarely stack more than 2-3 adjectives.\nJust remember: opinion first, then physical properties, then origin/material."},
+    ]}/>
+    <Insight text="Good news for Spanish speakers: English adjectives don't change for gender or number! 'A tall man, a tall woman, tall people' — the adjective is always just 'tall.'"/>
+  </div>);
+}
+
+function Guide22(){return(<SG items={[
+  {h:"Short adjectives: -er / -est",b:"tall → taller → tallest\nbig → bigger → biggest (double final consonant)\nhappy → happier → happiest (y → i)"},
+  {h:"Long adjectives: more / most",b:"beautiful → more beautiful → most beautiful\ninteresting → more interesting → most interesting\nRule: 2+ syllables usually use more/most"},
+  {h:"Irregular (memorize!)",b:"good → better → best\nbad → worse → worst\nfar → farther/further → farthest/furthest\nlittle → less → least\nmuch/many → more → most"},
+  {h:"As...as comparisons",b:"She's as tall as me. = Es tan alta como yo.\nIt's not as cold as yesterday. = No hace tanto frío como ayer."},
+]}/>);}
+
+function Guide23(){return(<div>
+  <SG items={[
+    {h:"Frequency adverbs: before the main verb",b:"I always wake up early. (NOT 'I wake up always early')\nShe never eats meat. He usually drives to work.\nOrder: always > usually > often > sometimes > rarely > never"},
+    {h:"Manner adverbs: after the verb/object",b:"She speaks English fluently. (NOT 'She fluently speaks')\nHe drives carefully. They work hard."},
+    {h:"-ly is not always required",b:"He drives slow. / He drives slowly. (both OK in American English)\nShe works hard. (NOT 'hardly' — that means 'barely'!)\n'Good' vs 'well': She sings well. (NOT 'sings good' in formal English)"},
+  ]}/>
+  <ChattNote text="Southern intensifiers: 'right' = very ('It's right cold today'), 'real' = really ('That's real nice'), 'plumb' = completely ('plumb crazy'). 'Fixin' to die' = extremely ('I'm fixin' to die laughing')."/>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 24-26: PREPOSITIONS & CONNECTORS
+// ═══════════════════════════════════════════════════════════════
+function Guide24(){return(<div>
+  <DarkBox title="In / On / At — No Logic, Just Memorize"><div style={{fontSize:13}}>These three prepositions are the most frustrating part of English for Spanish speakers. The rules are <strong style={{color:"#EF9A9A"}}>mostly arbitrary</strong>.</div></DarkBox>
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+    <Card color="#C62828" title="Time">
+      <div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.8}}>
+        <strong style={{color:"#C62828"}}>IN</strong>: months, years, seasons, centuries, parts of day<br/>in January, in 2024, in summer, in the morning<br/><br/>
+        <strong style={{color:"#E65100"}}>ON</strong>: days, dates, specific days<br/>on Monday, on July 4th, on my birthday<br/><br/>
+        <strong style={{color:"#1565C0"}}>AT</strong>: clock times, mealtimes, night<br/>at 3 o'clock, at noon, at night
+      </div>
+    </Card>
+    <Card color="#1565C0" title="Place">
+      <div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.8}}>
+        <strong style={{color:"#C62828"}}>IN</strong>: enclosed spaces, cities, countries<br/>in the room, in Chattanooga, in the US<br/><br/>
+        <strong style={{color:"#E65100"}}>ON</strong>: surfaces, streets, floors<br/>on the table, on Main Street, on the 2nd floor<br/><br/>
+        <strong style={{color:"#1565C0"}}>AT</strong>: specific points, addresses<br/>at the door, at 123 Main St, at school
+      </div>
+    </Card>
+  </div>
+  <ChattNote text="'Over yonder' = over there (somewhere in that general direction). 'Up the road a piece' = a short distance away. 'Down the mountain' often just means 'in the valley' around Chattanooga."/>
+</div>);}
+
+function Guide25(){return(<SG items={[
+  {h:"Prepositions that DON'T match Spanish",b:"depend ON (not 'of') — depender de\nconsist OF (not 'in') — consistir en\ninterested IN (not 'for') — interesado en\ndream ABOUT (not 'with') — soñar con\nmarried TO (not 'with') — casado con\nworry ABOUT (not 'for') — preocuparse por"},
+  {h:"Listen TO / Look AT / Wait FOR",b:"I listen TO music. (NOT 'listen music')\nLook AT this! (NOT 'look this')\nI'm waiting FOR you. (NOT 'waiting you')\nSpanish: escuchar, mirar, esperar (no preposition needed)"},
+  {h:"Arrive IN / Arrive AT (never 'arrive TO')",b:"❌ I arrived to Chattanooga.\n✓ I arrived IN Chattanooga. (city/country)\n✓ I arrived AT the airport. (specific point)"},
+  {h:"'Different from' vs 'different than'",b:"Formally correct: different FROM\nAmerican casual: different THAN (very common in Chattanooga)\nBoth are understood and used."},
+]}/>);}
+
+function Guide26(){return(<SG items={[
+  {h:"Cause/Reason",b:"BECAUSE: I stayed home because it rained.\nSINCE/AS: Since you're here, let's start. (slightly formal)\nDUE TO: The delay was due to weather. (formal)"},
+  {h:"Contrast",b:"ALTHOUGH / EVEN THOUGH: Although it rained, we went.\nHOWEVER: It rained. However, we went. (separate sentences)\nBUT: It rained, but we went. (casual, most common)"},
+  {h:"Result",b:"SO: It rained, so I stayed home. (casual, most common)\nTHEREFORE: It rained. Therefore, I stayed home. (formal)\nAS A RESULT: formal writing"},
+  {h:"Addition",b:"AND: simple addition\nALSO / TOO / AS WELL: I speak Spanish. I also speak English.\nMOREOVER / FURTHERMORE: formal writing only"},
+  {h:"Formal vs Casual",b:"Casual: but, so, and, because\nFormal: however, therefore, furthermore, consequently\nUse casual in speech, formal in essays and emails to important people."},
+]}/>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 27-30: SENTENCE STRUCTURE
+// ═══════════════════════════════════════════════════════════════
+function Guide27(){return(<div>
+  <SG items={[
+    {h:"Basic order: Subject + Verb + Object",b:"I eat tacos. She reads books. We love Chattanooga.\nSame as Spanish! (Yo como tacos.)"},
+    {h:"Adjectives BEFORE nouns (opposite of Spanish!)",b:"a red car (NOT 'a car red')\na beautiful day (NOT 'a day beautiful')\nthe old house (NOT 'the house old')"},
+    {h:"Questions with DO/DOES/DID",b:"Statement: You like coffee.\nQuestion: Do you like coffee? (NOT 'Like you coffee?')\nPast: Did you go? (NOT 'Went you?')\nThis auxiliary system is the hardest habit to build."},
+    {h:"Tag questions",b:"You're from Mexico, aren't you?\nShe speaks English, doesn't she?\nThey came yesterday, didn't they?\nPositive sentence → negative tag (and vice versa)"},
+  ]}/>
+  <EsNote text="La mayor trampa: formar preguntas. En español inviertes el sujeto o simplemente subes la entonación. En inglés NECESITAS do/does/did: '¿Hablas inglés?' = 'Do you speak English?' NUNCA 'Speak you English?'"/>
+</div>);}
+
+function Guide28(){return(<SG items={[
+  {h:"Statements: backshift one tense",b:"'I am tired' → She said (that) she WAS tired.\n'I will go' → He said he WOULD go.\n'I went' → She said she HAD gone.\nPresent → Past · Past → Past Perfect · Will → Would"},
+  {h:"Questions: word order changes",b:"'Where do you live?' → He asked where I LIVED.\n(NOT 'He asked where did I live')\nReported questions use statement word order!"},
+  {h:"Commands",b:"'Sit down' → She told me to sit down.\n'Don't touch that' → He told me not to touch that.\nUse told + person + to + verb"},
+  {h:"When tense shift is optional",b:"If still true: 'She said she IS a doctor' (still true now) = OK\nRecent speech: 'He just said he LIKES it' = OK\nIn casual speech, strict backshifting is often relaxed."},
+]}/>);}
+
+function Guide29(){return(<SG items={[
+  {h:"Defining (no commas) — essential info",b:"The woman WHO called you is here. (which woman? the one who called)\nThe book THAT I bought is great. (which book? the one I bought)\n'That' is preferred over 'which' in American English for defining clauses."},
+  {h:"Non-defining (with commas) — extra info",b:"My sister, WHO lives in Atlanta, is visiting. (I only have one sister — extra info)\nThis book, WHICH I bought yesterday, is great. (the book is already identified)"},
+  {h:"When you can DROP the relative pronoun",b:"The book (that) I read... ✓ (object — can drop)\nThe man (who/that) I met... ✓ (object — can drop)\nThe man WHO called... ✗ (subject — cannot drop)"},
+  {h:"Where / When / Whose",b:"The restaurant WHERE we ate... (en el que comimos)\nThe day WHEN I arrived... (el día que llegué)\nThe man WHOSE car broke down... (cuyo carro se descompuso)"},
+]}/>);}
+
+function Guide30(){
+  const falseF=[
+    {es:"actualmente",looks:"actually",real:"currently/nowadays",correct:"Actually = en realidad/de hecho",d:5},
+    {es:"asistir",looks:"assist",real:"to attend",correct:"Assist = ayudar",d:5},
+    {es:"embarazada",looks:"embarrassed",real:"pregnant",correct:"Embarrassed = avergonzado/a",d:5},
+    {es:"realizar",looks:"realize",real:"to carry out",correct:"Realize = darse cuenta",d:4},
+    {es:"sensible",looks:"sensible",real:"sensitive",correct:"Sensible = sensato",d:4},
+    {es:"éxito",looks:"exit",real:"success",correct:"Exit = salida",d:4},
+    {es:"librería",looks:"library",real:"bookstore",correct:"Library = biblioteca",d:4},
+    {es:"soportar",looks:"support",real:"to tolerate",correct:"Support = apoyar",d:4},
+    {es:"constipado",looks:"constipated",real:"having a cold",correct:"Constipated = estreñido",d:5},
+    {es:"pretender",looks:"pretend",real:"to intend/aim",correct:"Pretend = fingir",d:3},
+  ];
+  const dColors={5:"#C62828",4:"#E65100",3:"#F9A825"};
+  return(<div>
+    <DarkBox title="Errors Típicos de Hispanohablantes"><div style={{fontSize:13}}>These are the <strong style={{color:"#EF9A9A"}}>most common mistakes</strong> Spanish speakers make, plus false cognates that cause embarrassment.</div></DarkBox>
+    <SG items={[
+      {h:"Gender leaking into English",b:"❌ 'She is a beautiful car' (el carro → she?)\n✓ 'It is a beautiful car.' Objects are always 'it' in English."},
+      {h:"Double negatives are WRONG in standard English",b:"❌ I don't have nothing. (= I DO have something!)\n✓ I don't have anything. / I have nothing.\nSpanish: 'No tengo nada' is correct. English: only ONE negative."},
+      {h:"'People' is plural!",b:"❌ People is nice here.\n✓ People ARE nice here.\n'People' = personas (always plural in this meaning)"},
+      {h:"Forgetting dummy 'it' and 'there'",b:"❌ Is cold today. → ✓ IT is cold today.\n❌ Are many restaurants. → ✓ THERE are many restaurants."},
+    ]}/>
+    <Card color="#C62828" title="False Friends (Falsos Amigos)">
+      {falseF.map((f,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"8px 14px",borderBottom:i<falseF.length-1?"1px solid #f0eeeb":"none",gap:8}}>
+        <div style={{width:5,height:5,borderRadius:"50%",background:dColors[f.d],flexShrink:0}}/>
+        <div style={{flex:1,minWidth:0}}>
+          <div><span style={{fontWeight:700,color:dColors[f.d]}}>{f.es}</span> <span style={{color:"#ccc"}}>≠</span> <span style={{color:"#999",textDecoration:"line-through"}}>{f.looks}</span></div>
+          <div style={{fontSize:11,color:"#888"}}>{f.correct}</div>
+        </div>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 31-35: PRACTICAL
+// ═══════════════════════════════════════════════════════════════
+function Guide31(){return(<div>
+  <SG items={[
+    {h:"Formal English (job interviews, business emails)",b:"Good morning/afternoon. How do you do?\nI would appreciate if you could...\nPlease find attached... Thank you for your consideration.\nSincerely, / Best regards,"},
+    {h:"Casual English (friends, texts)",b:"Hey! What's up? / How's it going?\nWanna grab lunch? (want to)\nGonna be late (going to) · Gotta go (got to)\nk / lol / brb / np = ok / laughing / be right back / no problem"},
+    {h:"Email register (semi-formal)",b:"Hi [name], / Hello [name],\nJust wanted to follow up on...\nLet me know if you have any questions.\nBest, / Thanks, / Cheers,"},
+  ]}/>
+  <ChattNote text="Chattanooga runs on 'sir' and 'ma'am' — they're used with cashiers, waiters, strangers, and authority figures. It's not servile, it's polite. Children are taught this from birth. Use it and you'll fit right in."/>
+</div>);}
+
+function Guide32(){return(<div>
+  <SG items={[
+    {h:"Universal American idioms",b:"It's a piece of cake = Es muy fácil\nBreak a leg = ¡Mucha suerte! (before a performance)\nHit the nail on the head = Dar en el clavo\nIt's raining cats and dogs = Llueve a cántaros\nCost an arm and a leg = Costar un ojo de la cara"},
+    {h:"🏔 Chattanooga & Southern expressions",b:"Bless your heart = ranges from genuine sympathy to polite insult\nI reckon = I think/suppose\nOver yonder = over there\nFixin' to = about to\nMight could = might be able to\nCarry me to = drive me to\nMash the button = press the button\nHowdy = hello\nY'all come back = goodbye (warm invitation to return)"},
+    {h:"Responses & reactions",b:"No way! = ¡No puede ser!\nYou're kidding! = ¡Estás bromeando!\nThat's awesome = Qué genial\nI'm down = I agree, I'll join\nMy bad = Mi culpa\nNo worries = De nada / No te preocupes"},
+  ]}/>
+  <ChattNote text="'Bless your heart' is the Swiss Army knife of Southern expressions. Context is everything: 'She works three jobs, bless her heart' (sympathy) vs 'He wore that to church, bless his heart' (gentle judgment)."/>
+</div>);}
+
+function Guide33(){return(<SG items={[
+  {h:"The imperial system (sorry)",b:"Temperature: Fahrenheit (32°F = 0°C, 72°F = comfortable)\nDistance: miles (1 mile ≈ 1.6 km)\nWeight: pounds/lbs (1 lb ≈ 0.45 kg)\nHeight: feet & inches (5'10\" = 178 cm)\nLiquid: gallons, quarts, cups, ounces"},
+  {h:"Money & prices",b:"$4.99 = 'four ninety-nine' (never 'four dollars and ninety-nine cents')\n$20 = 'twenty bucks' (casual)\n'A buck' = un dólar · 'A quarter' = 25¢ · 'A dime' = 10¢ · 'A nickel' = 5¢"},
+  {h:"Tipping culture (very important!)",b:"Restaurants: 18-20% of the bill (15% = low, 25% = generous)\nCoffee shops: $1-2 or 15-20%\nHairdresser/barber: 15-20%\nUber/Lyft: 15-20%\n⚠ NOT tipping is considered very rude in the US."},
+  {h:"Date format & time",b:"Month/Day/Year: 03/15/2024 = March 15, 2024\nNOT Day/Month/Year like most of the world\n12-hour clock with AM/PM: 3:00 PM (not 15:00)\nThis WILL cause confusion. Always double-check."},
+  {h:"Phone numbers",b:"(423) 555-1234 = 'four two three, five five five, one two three four'\nArea code for Chattanooga = 423"},
+]}/>);}
+
+function Guide34(){return(<div>
+  <SG items={[
+    {h:"'How are you?' is NOT a real question",b:"'How are you?' / 'How's it going?' = Hello.\nCorrect answer: 'Good, thanks! How about you?'\nDO NOT give a detailed answer about your health.\nIt's a greeting, not an inquiry."},
+    {h:"Small talk is social glue",b:"Americans (especially Southerners) chat with strangers.\nTopics: weather, sports, 'Where are you from?', compliments.\nThis isn't shallow — it's how trust and community are built."},
+    {h:"Complimenting strangers is normal",b:"'I love your shoes!' / 'Great shirt!' / 'Your hair looks amazing!'\nThis is normal and expected. Just say 'Thank you!'"},
+    {h:"The Chattanooga cashier chat",b:"Cashiers, waiters, and strangers WILL talk to you.\n'How y'all doing today?' — answer warmly.\n'Where are you from?' — they're being friendly, not nosy.\nThis is Southern hospitality. Embrace it."},
+  ]}/>
+  <ChattNote text="Chattanooga people are genuinely friendly — the warmth is real, not fake. If someone waves from their porch, wave back. If a stranger holds the door, say 'thank you' or 'I appreciate it.' You'll feel at home fast."/>
+</div>);}
+
+function Guide35(){return(<div>
+  <DarkBox title="Chattanooga: Where Appalachia Meets the Deep South"><div style={{fontSize:13,lineHeight:1.6}}>
+    Chattanooga sits at the <strong style={{color:"#FFE77A"}}>crossroads</strong> of Appalachian and Southern English. The local dialect blends features from both traditions, plus its own flavor.
+  </div></DarkBox>
+  <SG items={[
+    {h:"The pen/pin merger",b:"'pen' and 'pin' sound identical (both like 'pin')\n'ten' and 'tin' merge · 'hem' and 'him' merge\nIf someone says 'ink pen', they're specifying because 'pen' and 'pin' sound the same!"},
+    {h:"The Southern drawl",b:"Vowels get stretched and sometimes split into two syllables:\n'well' → 'we-ull' · 'can't' → 'cay-unt' · 'here' → 'he-yur'\nThis isn't lazy speech — it's a distinct phonological system."},
+    {h:"Y'all (singular group) & All y'all (emphasis)",b:"Y'all coming to dinner? = ¿Ustedes vienen a cenar?\nAll y'all need to listen = TODOS ustedes necesitan escuchar\nNever write 'ya'll' — the apostrophe replaces the 'ou' in 'you all'."},
+    {h:"Double modals",b:"Might could: I might could help you. (Tal vez pueda ayudarte)\nMight should: You might should call first. (Tal vez deberías llamar)\nUsed to could: I used to could run fast. (Antes podía correr rápido)\nFixin' to: I'm fixin' to leave. (Estoy a punto de irme)"},
+    {h:"Unique vocabulary",b:"Carry = drive someone ('Carry me to Walmart')\nCut on/off = turn on/off ('Cut the light on')\nMash = press ('Mash that button')\nHoller = small valley (geography) or to yell\nBuggy = shopping cart\nCoke = any soft drink ('What kind of Coke?' 'Sprite')"},
+    {h:"'Sir' and 'Ma'am' culture",b:"Expected in all interactions with strangers, elders, authority.\n'Yes sir' / 'Yes ma'am' — not submissive, just polite.\nChildren are corrected if they don't say it.\nUsing it shows you understand local culture."},
+    {h:"The 'fixin' to' construction",b:"= about to / getting ready to\n'I'm fixin' to go to the store.'\n'She's fixin' to have a baby.' (due any day)\n'It's fixin' to rain.' (about to start)\nThe most Chattanooga verb construction you can use."},
+  ]}/>
+  <Insight text="Chattanooga English is not 'bad English' — it's a distinct dialect with its own rules and history, just like any other variety. Understanding it helps you connect with the community and understand what people are really saying."/>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPONENTS ARRAY
+// ═══════════════════════════════════════════════════════════════
+const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32,Guide33,Guide34,Guide35];
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════════════════════════════
+const App = function EnglishGuide(){
+  const[page,setPage]=useState(0);
+  const[menuOpen,setMenuOpen]=useState(false);
+  const contentRef=useRef(null);
+  const meta=guidesMeta[page];
+  const GuideComp=guideComponents[page];
+  const total=guidesMeta.length;
+
+  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
+  const prev=()=>{if(page>0)goTo(page-1);};
+  const next=()=>{if(page<total-1)goTo(page+1);};
+
+  useEffect(()=>{
+    const handler=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();};
+    window.addEventListener("keydown",handler);return()=>window.removeEventListener("keydown",handler);
+  });
+
+  return(
+    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}`}</style>
+
+      <div style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
+        <button onClick={()=>setMenuOpen(!menuOpen)} style={{width:36,height:36,borderRadius:10,border:"1.5px solid #e0ddd5",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#555",flexShrink:0}}>☰</button>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
+          <div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div>
+        </div>
+        <div style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
+      </div>
+
+      <div ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
+        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
+      </div>
+
+      <div style={{background:"#fff",borderTop:"1px solid #eee",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <button onClick={prev} disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===0?"#f5f5f5":"#fff",color:page===0?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
+        <div style={{display:"flex",gap:2}}>
+          {guidesMeta.map((_,i)=>(<div key={i} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}
+        </div>
+        <button onClick={next} disabled={page===total-1} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===total-1?"#f5f5f5":"#fff",color:page===total-1?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
+      </div>
+
+      {menuOpen&&<div onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:20}}/>}
+      <div style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#fff",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.15)":"none",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}>
+          <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>American English</div>
+          <div style={{fontSize:12,color:"#999"}}>Para hispanohablantes · 35 guías</div>
+        </div>
+        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
+          {categories.map(cat=>{
+            const items=guidesMeta.filter(g=>g.cat===cat);
+            return(<div key={cat}>
+              <div style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
+              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
+                <button key={g.id} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?`${g.color}12`:"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent"}}>
+                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
+                    <div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div>
+                  </div>
+                  <span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span>
+                </button>
+              );})}
+            </div>);
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
