@@ -62,40 +62,52 @@ const catColors = { Pronunciation: "#2C5F2D", Verbs: "#B71C1C", Nouns: "#1565C0"
 // GUIDE 1: ALPHABET
 // ═══════════════════════════════════════════════════════════════
 const letters = [
-  { letter: "A", name: "a", ipa: "/a/", approx: "Like 'ah' in 'father'", tricky: false, tip: "Open, clear vowel. Never changes." },
-  { letter: "B", name: "be", ipa: "/b/, /β/", approx: "Like 'b' at start; softer between vowels", tricky: true, tip: "Between vowels, lips don't fully close." },
-  { letter: "C", name: "ce", ipa: "/k/, /s/", approx: "'k' before a/o/u; 's' before e/i", tricky: true, tip: "In Latin America, c before e/i = 's'. In Spain, it's 'th'." },
-  { letter: "D", name: "de", ipa: "/d/, /ð/", approx: "Hard 'd' at start; soft 'th' between vowels", tricky: true, tip: "Between vowels, sounds like 'th' in 'the'." },
-  { letter: "E", name: "e", ipa: "/e/", approx: "Like 'eh' in 'bet'", tricky: false, tip: "Always short and crisp." },
-  { letter: "F", name: "efe", ipa: "/f/", approx: "Same as English 'f'", tricky: false, tip: "Identical to English." },
-  { letter: "G", name: "ge", ipa: "/ɡ/, /x/", approx: "Hard 'g' before a/o/u; throaty 'h' before e/i", tricky: true, tip: "Before e/i, strong 'h' from throat." },
-  { letter: "H", name: "hache", ipa: "silent", approx: "Always silent", tricky: true, tip: "Never pronounced. 'Hola' = 'ola'." },
-  { letter: "I", name: "i", ipa: "/i/", approx: "Like 'ee' in 'see'", tricky: false, tip: "Always 'ee'. Short and pure." },
-  { letter: "J", name: "jota", ipa: "/x/", approx: "Strong throaty 'h'", tricky: true, tip: "Stronger than English 'h'. México: softer." },
-  { letter: "K", name: "ka", ipa: "/k/", approx: "Like English 'k'", tricky: false, tip: "Only in borrowed words." },
-  { letter: "L", name: "ele", ipa: "/l/", approx: "Like English 'l'", tricky: false, tip: "Lighter than English 'dark l'." },
-  { letter: "LL", name: "elle", ipa: "/ʝ/", approx: "Like 'y' in 'yes'", tricky: true, tip: "In Mexico: 'y' sound. Argentina: 'sh'." },
-  { letter: "M", name: "eme", ipa: "/m/", approx: "Same as English", tricky: false, tip: "Identical to English." },
-  { letter: "N", name: "ene", ipa: "/n/", approx: "Same as English", tricky: false, tip: "Identical to English." },
-  { letter: "Ñ", name: "eñe", ipa: "/ɲ/", approx: "Like 'ny' in 'canyon'", tricky: true, tip: "Unique to Spanish!" },
-  { letter: "O", name: "o", ipa: "/o/", approx: "Like 'oh' but shorter", tricky: false, tip: "Pure, round, short." },
-  { letter: "P", name: "pe", ipa: "/p/", approx: "Like 'p' but no puff of air", tricky: false, tip: "Unaspirated." },
-  { letter: "Q", name: "cu", ipa: "/k/", approx: "Always 'k'; u is silent in qu", tricky: false, tip: "que = 'keh', qui = 'kee'." },
-  { letter: "R", name: "ere", ipa: "/ɾ/", approx: "Single tap, like 'tt' in 'butter'", tricky: true, tip: "Quick tongue tap." },
-  { letter: "RR", name: "erre", ipa: "/r/", approx: "Rolled/trilled 'r'", tricky: true, tip: "Multiple rapid tongue taps." },
-  { letter: "S", name: "ese", ipa: "/s/", approx: "Like English 's'", tricky: false, tip: "Always clean 's'. Never buzzes." },
-  { letter: "T", name: "te", ipa: "/t/", approx: "Like 't' but dental", tricky: false, tip: "Tongue touches teeth." },
-  { letter: "U", name: "u", ipa: "/u/", approx: "Like 'oo' in 'moon'", tricky: false, tip: "Always 'oo'. Silent after q." },
-  { letter: "V", name: "ve", ipa: "/b/, /β/", approx: "Identical to B", tricky: true, tip: "No B/V difference!" },
-  { letter: "W", name: "doble ve", ipa: "/w/", approx: "Like English 'w'", tricky: false, tip: "Only in borrowed words." },
-  { letter: "X", name: "equis", ipa: "/ks/, /x/, /s/", approx: "Usually 'ks'; sometimes 'h'", tricky: true, tip: "In 'México' = 'h' (Nahuatl)." },
-  { letter: "Y", name: "ye", ipa: "/ʝ/, /i/", approx: "Like 'y'; alone = 'ee'", tricky: false, tip: "The word 'y' = 'ee'." },
-  { letter: "Z", name: "zeta", ipa: "/s/", approx: "Like 's' in Latin America", tricky: true, tip: "In Mexico: always 's'. Spain: 'th'." },
+  { letter: "A", name: "a", ipa: "/a/", speak: "a", approx: "Like 'ah' in 'father'", tricky: false, tip: "Open, clear vowel. Never changes." },
+  { letter: "B", name: "be", ipa: "/b/, /β/", speak: "ba", approx: "Like 'b' at start; softer between vowels", tricky: true, tip: "Between vowels, lips don't fully close." },
+  { letter: "C", name: "ce", ipa: "/k/, /s/", speak: "ca", approx: "'k' before a/o/u; 's' before e/i", tricky: true, tip: "In Latin America, c before e/i = 's'. In Spain, it's 'th'." },
+  { letter: "D", name: "de", ipa: "/d/, /ð/", speak: "da", approx: "Hard 'd' at start; soft 'th' between vowels", tricky: true, tip: "Between vowels, sounds like 'th' in 'the'." },
+  { letter: "E", name: "e", ipa: "/e/", speak: "e", approx: "Like 'eh' in 'bet'", tricky: false, tip: "Always short and crisp." },
+  { letter: "F", name: "efe", ipa: "/f/", speak: "fa", approx: "Same as English 'f'", tricky: false, tip: "Identical to English." },
+  { letter: "G", name: "ge", ipa: "/ɡ/, /x/", speak: "ga", approx: "Hard 'g' before a/o/u; throaty 'h' before e/i", tricky: true, tip: "Before e/i, strong 'h' from throat." },
+  { letter: "H", name: "hache", ipa: "silent", speak: null, approx: "Always silent", tricky: true, tip: "Never pronounced. 'Hola' = 'ola'." },
+  { letter: "I", name: "i", ipa: "/i/", speak: "i", approx: "Like 'ee' in 'see'", tricky: false, tip: "Always 'ee'. Short and pure." },
+  { letter: "J", name: "jota", ipa: "/x/", speak: "ja", approx: "Strong throaty 'h'", tricky: true, tip: "Stronger than English 'h'. México: softer." },
+  { letter: "K", name: "ka", ipa: "/k/", speak: "ka", approx: "Like English 'k'", tricky: false, tip: "Only in borrowed words." },
+  { letter: "L", name: "ele", ipa: "/l/", speak: "la", approx: "Like English 'l'", tricky: false, tip: "Lighter than English 'dark l'." },
+  { letter: "LL", name: "elle", ipa: "/ʝ/", speak: "lla", approx: "Like 'y' in 'yes'", tricky: true, tip: "In Mexico: 'y' sound. Argentina: 'sh'." },
+  { letter: "M", name: "eme", ipa: "/m/", speak: "ma", approx: "Same as English", tricky: false, tip: "Identical to English." },
+  { letter: "N", name: "ene", ipa: "/n/", speak: "na", approx: "Same as English", tricky: false, tip: "Identical to English." },
+  { letter: "Ñ", name: "eñe", ipa: "/ɲ/", speak: "ña", approx: "Like 'ny' in 'canyon'", tricky: true, tip: "Unique to Spanish!" },
+  { letter: "O", name: "o", ipa: "/o/", speak: "o", approx: "Like 'oh' but shorter", tricky: false, tip: "Pure, round, short." },
+  { letter: "P", name: "pe", ipa: "/p/", speak: "pa", approx: "Like 'p' but no puff of air", tricky: false, tip: "Unaspirated." },
+  { letter: "Q", name: "cu", ipa: "/k/", speak: "que", approx: "Always 'k'; u is silent in qu", tricky: false, tip: "que = 'keh', qui = 'kee'." },
+  { letter: "R", name: "ere", ipa: "/ɾ/", speak: "ara", approx: "Single tap, like 'tt' in 'butter'", tricky: true, tip: "Quick tongue tap." },
+  { letter: "RR", name: "erre", ipa: "/r/", speak: "arra", approx: "Rolled/trilled 'r'", tricky: true, tip: "Multiple rapid tongue taps." },
+  { letter: "S", name: "ese", ipa: "/s/", speak: "sa", approx: "Like English 's'", tricky: false, tip: "Always clean 's'. Never buzzes." },
+  { letter: "T", name: "te", ipa: "/t/", speak: "ta", approx: "Like 't' but dental", tricky: false, tip: "Tongue touches teeth." },
+  { letter: "U", name: "u", ipa: "/u/", speak: "u", approx: "Like 'oo' in 'moon'", tricky: false, tip: "Always 'oo'. Silent after q." },
+  { letter: "V", name: "ve", ipa: "/b/, /β/", speak: "va", approx: "Identical to B", tricky: true, tip: "No B/V difference!" },
+  { letter: "W", name: "doble ve", ipa: "/w/", speak: "wa", approx: "Like English 'w'", tricky: false, tip: "Only in borrowed words." },
+  { letter: "X", name: "equis", ipa: "/ks/, /x/, /s/", speak: "xa", approx: "Usually 'ks'; sometimes 'h'", tricky: true, tip: "In 'México' = 'h' (Nahuatl)." },
+  { letter: "Y", name: "ye", ipa: "/ʝ/, /i/", speak: "ya", approx: "Like 'y'; alone = 'ee'", tricky: false, tip: "The word 'y' = 'ee'." },
+  { letter: "Z", name: "zeta", ipa: "/s/", speak: "za", approx: "Like 's' in Latin America", tricky: true, tip: "In Mexico: always 's'. Spain: 'th'." },
 ];
+
+function speakSpanish(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "es";
+  utter.rate = 0.85;
+  if (onEnd) utter.onend = onEnd;
+  utter.onerror = () => { if (onEnd) onEnd(); };
+  window.speechSynthesis.speak(utter);
+}
 
 function Guide1() {
   const [sel, setSel] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [speaking, setSpeaking] = useState(false);
   const vowels = ["A","E","I","O","U"];
   const filtered = letters.filter(l => filter === "all" ? true : filter === "vowels" ? vowels.includes(l.letter) : l.tricky);
   return (
@@ -118,7 +130,7 @@ function Guide1() {
       {sel&&(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e8e5e0",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
         <div style={{background:"#2C5F2D",padding:"16px 20px",display:"flex",alignItems:"center",gap:16}}>
           <div style={{fontSize:40,fontWeight:700,color:"#FFE77A",minWidth:50,textAlign:"center"}}>{sel.letter}</div>
-          <div><div style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>Name: <strong style={{color:"#fff"}}>{sel.name}</strong></div><div style={{color:"#FFE77A",fontSize:16,fontFamily:"monospace",fontWeight:700}}>{sel.ipa}</div></div>
+          <div><div style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>Name: <strong style={{color:"#fff"}}>{sel.name}</strong></div><div onClick={(e)=>{e.stopPropagation();if(speaking||!sel.speak)return;setSpeaking(true);speakSpanish(sel.speak,()=>setSpeaking(false))}} style={{color:"#FFE77A",fontSize:16,fontFamily:"monospace",fontWeight:700,cursor:sel.speak&&window.speechSynthesis?"pointer":"default",display:"inline-flex",alignItems:"center",gap:6,opacity:speaking?0.6:1,transition:"opacity 0.15s"}}>{sel.ipa}{sel.speak&&window.speechSynthesis&&<span style={{fontSize:14,opacity:speaking?1:0.6,animation:speaking?"pulse 0.8s ease infinite":"none"}}>{speaking?"\uD83D\uDD0A":"\uD83D\uDD08"}</span>}</div></div>
         </div>
         <div style={{padding:"14px 18px"}}>
           <div style={{background:"#FFF8E7",borderRadius:8,padding:"10px 14px",marginBottom:10,border:"1px solid #F0E4C4"}}>
@@ -141,9 +153,9 @@ function VowelBar(){
   return(<div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #e8e5e0"}}>
     <div style={{padding:"8px 14px",background:"#FFF8E7",borderBottom:"1px solid #F0E4C4",fontSize:13,fontWeight:700,color:"#8B6914"}}>5 Vowels — Your Anchor</div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)"}}>
-      {vs.map((v,i)=>(<div key={v.l} style={{padding:"12px 6px",textAlign:"center",borderRight:i<4?"1px solid #f0eeeb":"none"}}>
+      {vs.map((v,i)=>(<div key={v.l} onClick={()=>window.speechSynthesis&&speakSpanish(v.l.toLowerCase())} style={{padding:"12px 6px",textAlign:"center",borderRight:i<4?"1px solid #f0eeeb":"none",cursor:window.speechSynthesis?"pointer":"default",transition:"background 0.15s"}} onMouseEnter={e=>{if(window.speechSynthesis)e.currentTarget.style.background="#FFF8E7"}} onMouseLeave={e=>{e.currentTarget.style.background="transparent"}}>
         <div style={{fontSize:24,fontWeight:700,color:"#2C5F2D"}}>{v.l}</div>
-        <div style={{fontSize:14,color:"#D4A843",fontWeight:700,fontFamily:"monospace"}}>{v.s}</div>
+        <div style={{fontSize:14,color:"#D4A843",fontWeight:700,fontFamily:"monospace"}}>{v.s}{window.speechSynthesis&&<span style={{marginLeft:4,fontSize:10,opacity:0.5}}>{"\uD83D\uDD08"}</span>}</div>
         <div style={{fontSize:10,color:"#999"}}>"{v.w}"</div>
       </div>))}
     </div>
@@ -783,7 +795,7 @@ const App = function SpanishGuide(){
 
   return(
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}`}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}`}</style>
 
       {/* TOP BAR */}
       <div style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
