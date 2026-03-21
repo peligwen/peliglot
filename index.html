@@ -2,14 +2,282 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peliglot — Interactive Language Guides</title>
-  <meta name="description" content="Free interactive grammar guides for Spanish, Arabic, English, German, and Hawaiian.">
+  <meta name="description" content="Free interactive grammar guides for Spanish, Arabic, and Hawaiian. Learn through visual, hands-on exploration.">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+      background: #FDFBF7;
+      color: #1a1a1a;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(27,94,32,0.04) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 50%, rgba(198,40,40,0.03) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .hero > * { position: relative; z-index: 1; }
+
+    .logo {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(36px, 7vw, 56px);
+      font-weight: 900;
+      line-height: 1.1;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: #2E7D32;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #888;
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto 12px;
+      line-height: 1.5;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaa;
+      background: #f0eeeb;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+
+    .guides {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .guide-card {
+      display: flex;
+      align-items: stretch;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #e8e5e0;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .guide-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .guide-card:active {
+      transform: translateY(-1px);
+    }
+
+    .card-accent {
+      width: 6px;
+      flex-shrink: 0;
+    }
+
+    .card-body {
+      flex: 1;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .card-icon {
+      font-size: 40px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .card-text { flex: 1; }
+
+    .card-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      font-size: 14px;
+      color: #888;
+      line-height: 1.4;
+    }
+
+    .card-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: #aaa;
+      background: #f5f3ef;
+      padding: 4px 10px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .card-arrow {
+      font-size: 20px;
+      color: #ccc;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .guide-card:hover .card-arrow {
+      transform: translateX(4px);
+      color: #999;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px 24px 40px;
+      font-size: 12px;
+      color: #bbb;
+      line-height: 1.6;
+    }
+
+    .footer a {
+      color: #999;
+      text-decoration: none;
+    }
+
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      .card-body { padding: 18px 16px; gap: 14px; }
+      .card-icon { font-size: 32px; }
+      .card-title { font-size: 18px; }
+      .hero { padding: 40px 20px 28px; }
+    }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+  <div class="hero">
+    <div class="logo">Peliglot</div>
+    <h1>Learn a language <em>visually</em></h1>
+    <p class="subtitle">
+      Interactive grammar guides you can flip through. 
+      No accounts, no ads, no tracking. Just open and learn.
+    </p>
+    <span class="tag">Free & Open Source</span>
+  </div>
+
+  <div class="guides">
+    <a href="guides/spanish.html" class="guide-card">
+      <div class="card-accent" style="background: #C62828;"></div>
+      <div class="card-body">
+        <div class="card-icon">🇪🇸</div>
+        <div class="card-text">
+          <div class="card-title">Español</div>
+          <div class="card-sub">Spanish grammar from pronunciation to false cognates. Mexican/US Spanish when applicable.</div>
+        </div>
+        <div class="card-count">25 guides</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="guides/arabic.html" class="guide-card">
+      <div class="card-accent" style="background: #1B5E20;"></div>
+      <div class="card-body">
+        <div class="card-icon">🇵🇸</div>
+        <div class="card-text">
+          <div class="card-title">العربية</div>
+          <div class="card-sub">Arabic writing system, grammar, and verb forms. Palestinian dialect notes throughout.</div>
+        </div>
+        <div class="card-count">30 guides</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="guides/english.html" class="guide-card">
+      <div class="card-accent" style="background: #1565C0;"></div>
+      <div class="card-body">
+        <div class="card-icon">🇺🇸</div>
+        <div class="card-text">
+          <div class="card-title">American English</div>
+          <div class="card-sub">English grammar for Spanish speakers. Sounds, verbs, articles, phrasal verbs. Chattanooga dialect notes throughout.</div>
+        </div>
+        <div class="card-count">35 guides</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="guides/german.html" class="guide-card">
+      <div class="card-accent" style="background: #1a1a1a;"></div>
+      <div class="card-body">
+        <div class="card-icon">🇩🇪</div>
+        <div class="card-text">
+          <div class="card-title">Deutsch</div>
+          <div class="card-sub">Cases, gender, word order, verb brackets, compound nouns, adjective endings, and modal particles. All the structure that makes German German.</div>
+        </div>
+        <div class="card-count">33 guides</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <a href="guides/hawaiian.html" class="guide-card">
+      <div class="card-accent" style="background: #00695C;"></div>
+      <div class="card-body">
+        <div class="card-icon">🌺</div>
+        <div class="card-text">
+          <div class="card-title">ʻŌlelo Hawaiʻi</div>
+          <div class="card-sub">Hawaiian sounds, sentence patterns, possessives, and cultural context. With language revival notes.</div>
+        </div>
+        <div class="card-count">30 guides</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>Built with care. All content is free to use.</p>
+    <p style="margin-top: 8px;"><a href="https://github.com/YOUR_USERNAME/peliglot">View on GitHub</a></p>
+  </div>
 </body>
 </html>
