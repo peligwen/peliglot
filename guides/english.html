@@ -21,7 +21,10 @@
   <script type="text/babel" data-type="module">
 const { useState, useEffect, useRef } = React;
 
-// METADATA
+
+// ═══════════════════════════════════════════════════════════════
+// DATOS DE LAS 35 GUÍAS
+// ═══════════════════════════════════════════════════════════════
 const guidesMeta = [
   {id:1,title:"The Alphabet",subtitle:"26 letras, 44+ sonidos",cat:"Pronunciación",color:"#1565C0",icon:"🔤"},
   {id:2,title:"Vowel Sounds",subtitle:"15 vocales vs tus 5",cat:"Pronunciación",color:"#C62828",icon:"🗣"},
@@ -62,7 +65,9 @@ const guidesMeta = [
 const categories=["Pronunciación","Verbos","Sustantivos","Pronombres","Adjetivos","Preposiciones","Oraciones","Práctico"];
 const catColors={Pronunciación:"#1565C0",Verbos:"#C62828",Sustantivos:"#C62828",Pronombres:"#1565C0",Adjetivos:"#2E7D32",Preposiciones:"#4527A0",Oraciones:"#C62828",Práctico:"#880E4F"};
 
+// ═══════════════════════════════════════════════════════════════
 // COMPONENTES COMPARTIDOS
+// ═══════════════════════════════════════════════════════════════
 function Card({color,title,subtitle,children}){
   return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
     <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -76,377 +81,1112 @@ function DarkBox({title,children}){
     {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
   </div>);
 }
-function Nota({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>{"💡 "}{text}</div>);}
-function Trampa({text}){return(<div style={{background:"#FFEBEE",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #FFCDD2",fontSize:12,color:"#C62828",lineHeight:1.5}}>{"⚠️ "}<strong>Trampa para hispanohablantes:</strong> {text}</div>);}
-function Chatt({text}){return(<div style={{background:"#E3F2FD",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #BBDEFB",fontSize:12,color:"#0D47A1",lineHeight:1.5}}>{"🏔 "}<strong>En Chattanooga:</strong> {text}</div>);}
-function SG({items}){
-  return(<div>{items.map((item,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:6}}>
-    <div style={{fontSize:13,fontWeight:700,color:"#1a1a1a",marginBottom:4}}>{item.h}</div>
-    <div style={{fontSize:12,color:"#666",lineHeight:1.6,whiteSpace:"pre-line"}}>{item.b}</div>
-  </div>))}</div>);
-}
+function Nota({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);}
+function Trampa({text}){return(<div style={{background:"#FFEBEE",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #FFCDD2",fontSize:12,color:"#C62828",lineHeight:1.5}}>⚠️ <strong>Trampa:</strong> {text}</div>);}
+function Chatt({text}){return(<div style={{background:"#E3F2FD",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #BBDEFB",fontSize:12,color:"#0D47A1",lineHeight:1.5}}>🏔 <strong>En Chattanooga:</strong> {text}</div>);}
 
-// GUÍA 1-5: PRONUNCIACIÓN
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 1: EL ALFABETO — CUADRÍCULA INTERACTIVA
+// ═══════════════════════════════════════════════════════════════
+const engLetters=[
+  {l:"A",sounds:["/æ/ cat","/eɪ/ cake","/ɑː/ car","/ɔː/ call","/ə/ about"],tricky:true,type:"vowel",tip:"¡5+ sonidos diferentes! En español la 'a' siempre suena igual."},
+  {l:"B",sounds:["/b/ big"],tricky:false,type:"consonant",tip:"Igual que en español, pero nunca se suaviza entre vocales."},
+  {l:"C",sounds:["/k/ cat","/s/ city"],tricky:true,type:"consonant",tip:"Antes de e/i = /s/. Antes de a/o/u = /k/. Similar al español."},
+  {l:"D",sounds:["/d/ dog"],tricky:false,type:"consonant",tip:"Siempre duro. Nunca se suaviza a /ð/ como en español."},
+  {l:"E",sounds:["/ɛ/ bed","/iː/ be","/ə/ the","/ɪ/ pretty"],tricky:true,type:"vowel",tip:"La 'e' muda al final de palabra es MUY común: cake, make, time."},
+  {l:"F",sounds:["/f/ fish"],tricky:false,type:"consonant",tip:"Igual que en español."},
+  {l:"G",sounds:["/ɡ/ go","/dʒ/ gym"],tricky:true,type:"consonant",tip:"Antes de e/i a veces = /dʒ/ (como 'judge'). ¡NO es la J española!"},
+  {l:"H",sounds:["/h/ hat"],tricky:true,type:"consonant",tip:"¡Se PRONUNCIA! Al contrario del español donde la H es muda."},
+  {l:"I",sounds:["/ɪ/ sit","/aɪ/ time","/iː/ machine","/ə/ pencil"],tricky:true,type:"vowel",tip:"Puede ser /ɪ/ (corta), /aɪ/ (como 'ai'), o /iː/ (larga)."},
+  {l:"J",sounds:["/dʒ/ judge"],tricky:true,type:"consonant",tip:"Sonido /dʒ/ — como 'ch' pero con vibración. NO es la J española."},
+  {l:"K",sounds:["/k/ king"],tricky:false,type:"consonant",tip:"Muda antes de N: know, knee, knife."},
+  {l:"L",sounds:["/l/ love"],tricky:false,type:"consonant",tip:"La 'dark L' al final (ball, feel) es más gruesa que en español."},
+  {l:"M",sounds:["/m/ man"],tricky:false,type:"consonant",tip:"Igual que en español."},
+  {l:"N",sounds:["/n/ no","/ŋ/ sing"],tricky:false,type:"consonant",tip:"El grupo -NG hace /ŋ/ (sing, ring) — un sonido nasal sin 'g' separada."},
+  {l:"O",sounds:["/ɑː/ not","/oʊ/ note","/uː/ do","/ə/ from"],tricky:true,type:"vowel",tip:"La 'o' en 'note' es un diptongo /oʊ/, no una 'o' pura como en español."},
+  {l:"P",sounds:["/p/ pen"],tricky:false,type:"consonant",tip:"Con aspiración (soplo de aire). La P española no tiene aspiración."},
+  {l:"Q",sounds:["/kw/ queen"],tricky:false,type:"consonant",tip:"Siempre seguida de U. Suena /kw/."},
+  {l:"R",sounds:["/ɹ/ red"],tricky:true,type:"consonant",tip:"La R inglesa NO vibra. La lengua se curva hacia atrás sin tocar nada."},
+  {l:"S",sounds:["/s/ sun","/z/ is, has"],tricky:true,type:"consonant",tip:"Puede ser /z/ (con vibración) entre vocales y en muchas terminaciones."},
+  {l:"T",sounds:["/t/ top","/ɾ/ butter"],tricky:false,type:"consonant",tip:"Con aspiración. Entre vocales puede sonar como la R española: 'butter' = 'barer'."},
+  {l:"U",sounds:["/ʌ/ cup","/uː/ blue","/ʊ/ put","/juː/ use"],tricky:true,type:"vowel",tip:"4 sonidos posibles. /ʌ/ en 'cup' no existe en español."},
+  {l:"V",sounds:["/v/ very"],tricky:true,type:"consonant",tip:"¡Dientes superiores tocan labio inferior! En español B y V suenan igual. En inglés son DIFERENTES."},
+  {l:"W",sounds:["/w/ water"],tricky:false,type:"consonant",tip:"Muda en: write, wrong, wrist, wrap."},
+  {l:"X",sounds:["/ks/ box","/ɡz/ exam"],tricky:false,type:"consonant",tip:"/ks/ al final, /ɡz/ antes de vocal acentuada."},
+  {l:"Y",sounds:["/j/ yes","/aɪ/ my","/ɪ/ gym"],tricky:false,type:"consonant",tip:"Como consonante = /j/ (yes). Como vocal = /aɪ/ (my) o /ɪ/ (gym)."},
+  {l:"Z",sounds:["/z/ zoo"],tricky:true,type:"consonant",tip:"Siempre con vibración /z/. NO es la Z española (/s/ o /θ/)."},
+];
+
 function Guide1(){
-  const vowels="AEIOU".split("");
+  const [sel,setSel]=useState(null);
   const [filter,setFilter]=useState("all");
-  const all="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const filtered=filter==="all"?all:filter==="vowels"?vowels:all.filter(l=>!vowels.includes(l));
+  const filtered=engLetters.filter(l=>filter==="all"?true:filter==="vowel"?l.type==="vowel":filter==="tricky"?l.tricky:l.type==="consonant");
   return(<div>
-    <DarkBox title="El problema fundamental"><div style={{fontSize:14,lineHeight:1.6}}>En español, una letra = un sonido. En inglés, la letra <strong style={{color:"#EF9A9A"}}>"a"</strong> sola puede hacer <strong style={{color:"#FFE77A"}}>6 sonidos diferentes</strong>.</div></DarkBox>
-    <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>
-      {[{id:"all",label:"Todas (26)"},{id:"vowels",label:"Vocales (5)"},{id:"consonants",label:"Consonantes (21)"}].map(f=>(
-        <button key={f.id} onClick={()=>setFilter(f.id)} style={{padding:"6px 14px",borderRadius:16,border:filter===f.id?"2px solid #1565C0":"1.5px solid #ddd",background:filter===f.id?"#1565C0":"#fff",color:filter===f.id?"#fff":"#666",fontSize:11,fontWeight:600,cursor:"pointer"}}>{f.label}</button>
+    <DarkBox title="El problema fundamental"><div style={{fontSize:14,lineHeight:1.6}}>
+      En español, una letra = un sonido. En inglés, la letra <strong style={{color:"#EF9A9A"}}>"A"</strong> sola hace <strong style={{color:"#FFE77A"}}>5+ sonidos diferentes</strong>. Toca cualquier letra para ver todos sus sonidos.
+    </div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {[{id:"all",l:"Todas (26)"},{id:"vowel",l:"Vocales (5)"},{id:"consonant",l:"Consonantes (21)"},{id:"tricky",l:"⚠ Problemáticas"}].map(f=>(
+        <button key={f.id} onClick={()=>{setFilter(f.id);setSel(null)}} style={{padding:"5px 12px",borderRadius:16,border:filter===f.id?"2px solid #1565C0":"1.5px solid #ddd",background:filter===f.id?"#1565C0":"#fff",color:filter===f.id?"#fff":"#666",fontSize:11,fontWeight:600,cursor:"pointer"}}>{f.l}</button>
       ))}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(40px,1fr))",gap:4,marginBottom:16}}>
-      {filtered.map(l=>{const isV=vowels.includes(l);return(
-        <div key={l} style={{aspectRatio:"1",borderRadius:8,background:isV?"#FFEBEE":"#fff",border:isV?"2px solid #FFCDD2":"1.5px solid #e0dcd5",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:700,color:isV?"#C62828":"#333"}}>{l}</div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(48px, 1fr))",gap:5,marginBottom:14}}>
+      {filtered.map(lt=>{const isSel=sel?.l===lt.l;const isV=lt.type==="vowel";return(
+        <button key={lt.l} onClick={()=>setSel(isSel?null:lt)} style={{aspectRatio:"1",border:isSel?"2.5px solid #1565C0":lt.tricky?"2px solid #E65100":"1.5px solid #e0dcd5",borderRadius:10,background:isSel?"#1565C0":isV?"#FFEBEE":"#fff",color:isSel?"#fff":"#1a1a1a",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",transform:isSel?"scale(1.08)":"scale(1)",transition:"all 0.15s"}}>
+          <span style={{fontSize:20,fontWeight:700,lineHeight:1}}>{lt.l}</span>
+          <span style={{fontSize:7,color:isSel?"rgba(255,255,255,0.6)":"#bbb",marginTop:1}}>{lt.type==="vowel"?"vocal":"cons."}</span>
+          {lt.tricky&&!isSel&&<div style={{position:"absolute",top:3,right:4,width:5,height:5,borderRadius:"50%",background:"#E65100"}}/>}
+        </button>
       );})}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
-      <div style={{background:"#FFEBEE",borderRadius:10,padding:"12px",textAlign:"center",border:"1px solid #FFCDD2"}}>
-        <div style={{fontSize:24,fontWeight:800,color:"#C62828"}}>5</div>
-        <div style={{fontSize:12,color:"#C62828"}}>letras vocales</div>
-        <div style={{fontSize:10,color:"#888",marginTop:2}}>¡Pero ~15 SONIDOS vocálicos!</div>
+    {sel&&(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+      <div style={{background:"#1565C0",padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
+        <div style={{fontSize:42,fontWeight:800,color:"#FFE77A",lineHeight:1}}>{sel.l}</div>
+        <div><div style={{color:"rgba(255,255,255,0.7)",fontSize:11}}>{sel.sounds.length} sonido{sel.sounds.length>1?"s":""} posible{sel.sounds.length>1?"s":""}</div></div>
       </div>
-      <div style={{background:"#E3F2FD",borderRadius:10,padding:"12px",textAlign:"center",border:"1px solid #BBDEFB"}}>
-        <div style={{fontSize:24,fontWeight:800,color:"#1565C0"}}>21</div>
-        <div style={{fontSize:12,color:"#1565C0"}}>letras consonantes</div>
-        <div style={{fontSize:10,color:"#888",marginTop:2}}>~24 sonidos consonánticos</div>
+      <div style={{padding:"12px 16px"}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>
+          {sel.sounds.map((s,i)=>(<span key={i} style={{padding:"5px 12px",borderRadius:8,background:"#E3F2FD",color:"#1565C0",fontSize:13,fontWeight:700,border:"1px solid #BBDEFB"}}>{s}</span>))}
+        </div>
+        <div style={{background:"#FFF8E7",borderRadius:8,padding:"8px 12px",border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914"}}>{sel.tip}</div>
       </div>
+    </div>)}
+    <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
+      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFEBEE",border:"1px solid #FFCDD2"}}/>Vocal</span>
+      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:5,height:5,borderRadius:"50%",background:"#E65100"}}/>Problemática</span>
+      <span>Toca cualquier letra para ver detalles</span>
     </div>
-    <Trampa text="Si ves 'a' en una palabra inglesa, NO sabes cómo suena hasta aprender esa palabra. 'A' suena diferente en: cat /æ/, cake /eɪ/, car /ɑː/, call /ɔː/, about /ə/." />
   </div>);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 2: SONIDOS VOCÁLICOS — EXPLORADOR INTERACTIVO
+// ═══════════════════════════════════════════════════════════════
+const vowelSounds=[
+  {ipa:"/iː/",word:"sheep",es:"Como la 'i' española pero más larga",cat:"close",color:"#1565C0"},
+  {ipa:"/ɪ/",word:"ship",es:"Más corta y relajada que /iː/. ¡No existe en español!",cat:"close",color:"#1565C0"},
+  {ipa:"/uː/",word:"fool",es:"Como la 'u' española pero más larga",cat:"close",color:"#6A1B9A"},
+  {ipa:"/ʊ/",word:"full",es:"Más corta y relajada que /uː/. ¡No existe en español!",cat:"close",color:"#6A1B9A"},
+  {ipa:"/eɪ/",word:"cake",es:"Diptongo — empieza en 'e' y se desliza a 'i'",cat:"mid",color:"#2E7D32"},
+  {ipa:"/ɛ/",word:"bed",es:"Parecida a la 'e' española pero más abierta",cat:"mid",color:"#2E7D32"},
+  {ipa:"/oʊ/",word:"note",es:"Diptongo — empieza en 'o' y se desliza a 'u'",cat:"mid",color:"#00695C"},
+  {ipa:"/ɔː/",word:"call",es:"'O' muy abierta y larga",cat:"mid",color:"#00695C"},
+  {ipa:"/æ/",word:"cat",es:"Entre 'a' y 'e' — abre mucho la boca. ¡No existe en español!",cat:"open",color:"#C62828"},
+  {ipa:"/ʌ/",word:"cup",es:"Como una 'a' corta y relajada. ¡No existe en español!",cat:"open",color:"#C62828"},
+  {ipa:"/ɑː/",word:"car",es:"'A' larga y profunda, de la garganta",cat:"open",color:"#C62828"},
+  {ipa:"/ə/",word:"about",es:"SCHWA — el sonido más común del inglés. Una 'a' débil, perezosa. ¡No existe en español!",cat:"schwa",color:"#E65100"},
+];
 
 function Guide2(){
-  const parejas=[
-    {en1:"ship",ipa1:"/ɪ/",en2:"sheep",ipa2:"/iː/",es:"El español solo tiene un sonido /i/. El inglés tiene dos.",color:"#C62828"},
-    {en1:"full",ipa1:"/ʊ/",en2:"fool",ipa2:"/uː/",es:"El español solo tiene /u/. En inglés hay dos longitudes.",color:"#1565C0"},
-    {en1:"cat",ipa1:"/æ/",en2:"cut",ipa2:"/ʌ/",es:"Ambos suenan como 'a' para ti, pero son MUY diferentes.",color:"#2E7D32"},
-    {en1:"bed",ipa1:"/ɛ/",en2:"bad",ipa2:"/æ/",es:"El segundo sonido /æ/ no existe en español.",color:"#6A1B9A"},
-    {en1:"not",ipa1:"/ɑː/",en2:"note",ipa2:"/oʊ/",es:"La 'o' inglesa en 'note' es realmente un diptongo /oʊ/.",color:"#E65100"},
-  ];
-  const [sel,setSel]=useState(null);
+  const [selCat,setSelCat]=useState("all");
+  const [selV,setSelV]=useState(null);
+  const cats=[{id:"all",l:"Todos (12)"},{id:"close",l:"Cerradas"},{id:"mid",l:"Medias"},{id:"open",l:"Abiertas"},{id:"schwa",l:"Schwa ə"}];
+  const filtered=selCat==="all"?vowelSounds:vowelSounds.filter(v=>v.cat===selCat);
   return(<div>
-    <DarkBox title="El sonido más importante: la schwa /ə/"><div style={{fontSize:14,lineHeight:1.6}}>El sonido más común del inglés es <strong style={{color:"#FFE77A"}}>schwa /ə/</strong> — una "a" débil e inacentuada. <strong style={{color:"#EF9A9A"}}>No existe en español.</strong> Aparece en: about, banana, problem, the.</div></DarkBox>
-    <Card color="#C62828" title="Parejas vocálicas problemáticas" subtitle="Toca para comparar">
-      {parejas.map((p,i)=>(<div key={i} onClick={()=>setSel(sel===i?null:i)} style={{padding:"10px 16px",borderBottom:i<parejas.length-1?"1px solid #f0eeeb":"none",cursor:"pointer",background:sel===i?"#FFF5F5":"transparent"}}>
-        <div style={{display:"flex",alignItems:"center",gap:12}}><div style={{textAlign:"center",minWidth:70}}><div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.en1}</div><div style={{fontSize:11,color:"#888",fontFamily:"monospace"}}>{p.ipa1}</div></div><div style={{fontSize:16,color:"#ccc",fontWeight:700}}>vs</div><div style={{textAlign:"center",minWidth:70}}><div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.en2}</div><div style={{fontSize:11,color:"#888",fontFamily:"monospace"}}>{p.ipa2}</div></div></div>
-        {sel===i&&<div style={{fontSize:12,color:"#888",fontStyle:"italic",marginTop:4,padding:"6px 8px",background:"#FFF8E7",borderRadius:6}}>{p.es}</div>}
-      </div>))}
-    </Card>
-    <Chatt text="En Chattanooga, 'pen' y 'pin' suenan idénticos (ambos como 'pin'). Si alguien dice 'ink pen', está aclarando porque los sonidos se fusionan aquí." />
+    <DarkBox title="Español: 5 vocales. Inglés: ~15."><div style={{fontSize:14,lineHeight:1.6}}>
+      El sonido más común del inglés es <strong style={{color:"#FFE77A"}}>schwa /ə/</strong> — una vocal débil que <strong style={{color:"#EF9A9A"}}>no existe en español</strong>. Aparece en casi toda palabra de más de una sílaba.
+    </div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {cats.map(c=>(<button key={c.id} onClick={()=>{setSelCat(c.id);setSelV(null)}} style={{padding:"5px 12px",borderRadius:16,border:selCat===c.id?"2px solid #C62828":"1.5px solid #ddd",background:selCat===c.id?"#C62828":"#fff",color:selCat===c.id?"#fff":"#666",fontSize:11,fontWeight:600,cursor:"pointer"}}>{c.l}</button>))}
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(90px,1fr))",gap:6,marginBottom:14}}>
+      {filtered.map((v,i)=>{const isSel=selV===i;return(
+        <button key={i} onClick={()=>setSelV(isSel?null:i)} style={{padding:"10px 6px",borderRadius:10,border:isSel?`2.5px solid ${v.color}`:"1.5px solid #e0dcd5",background:isSel?v.color:"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center",transition:"all 0.15s",transform:isSel?"scale(1.05)":"scale(1)"}}>
+          <div style={{fontSize:16,fontFamily:"monospace",fontWeight:800}}>{v.ipa}</div>
+          <div style={{fontSize:12,fontStyle:"italic",opacity:.8,marginTop:2}}>{v.word}</div>
+        </button>
+      );})}
+    </div>
+    {selV!==null&&(()=>{const v=filtered[selV];return(
+      <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${v.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+        <div style={{background:v.color,padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
+          <div style={{fontSize:32,fontWeight:800,color:"#FFE77A",fontFamily:"monospace"}}>{v.ipa}</div>
+          <div><div style={{color:"#fff",fontSize:16,fontWeight:700}}>{v.word}</div></div>
+        </div>
+        <div style={{padding:"12px 16px",fontSize:13,color:"#555",lineHeight:1.5}}>{v.es}</div>
+      </div>
+    );})()}
+    <Chatt text="En Chattanooga, 'pen' y 'pin' suenan idénticos (ambos como 'pin'). Igual con 'ten/tin'. Si alguien dice 'ink pen', está aclarando porque los sonidos se fusionan aquí." />
   </div>);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 3: CONSONANTES DIFÍCILES — TOCA PARA EXPLORAR
+// ═══════════════════════════════════════════════════════════════
+const consonantChallenges=[
+  {sound:"/v/ vs /b/",words:["very ≠ berry","vote ≠ boat","vest ≠ best"],tip:"Para /v/: dientes superiores tocan labio inferior. En español B/V suenan igual — en inglés son DIFERENTES.",color:"#C62828",cat:"labial"},
+  {sound:"/ʃ/ (sh)",words:["ship","show","push","she"],tip:"Labios hacia adelante como soplando una vela y di 'shhh'. No existe en español.",color:"#1565C0",cat:"sibilant"},
+  {sound:"/dʒ/ (j)",words:["judge","job","gym","age"],tip:"Como 'ch' pero con vibración en la garganta. NO es la J española (/x/ de 'jota').",color:"#2E7D32",cat:"sibilant"},
+  {sound:"/z/",words:["zoo","easy","is","has"],tip:"Como /s/ pero CON vibración. Mano en la garganta — debes sentir vibración. La S entre vocales en inglés muchas veces es /z/.",color:"#6A1B9A",cat:"sibilant"},
+  {sound:"/θ/ (th sorda)",words:["think","bath","three"],tip:"¡Lengua entre los dientes! Sin vibración. Como la Z de España.",color:"#E65100",cat:"dental"},
+  {sound:"/ð/ (th sonora)",words:["the","this","mother"],tip:"¡Lengua entre los dientes CON vibración! Como la D suave del español entre vocales.",color:"#E65100",cat:"dental"},
+  {sound:"S + consonante",words:["stop","speak","school","sport"],tip:"¡NO pongas 'e' antes! En español: escuela. En inglés: school. Practica: 'ssssstop'.",color:"#880E4F",cat:"cluster"},
+  {sound:"Grupos finales",words:["texts","months","strengths"],tip:"El inglés acumula consonantes al final. No las cortes ni añadas vocales.",color:"#00695C",cat:"cluster"},
+];
 
 function Guide3(){
-  const desafios=[
-    {sound:"/v/ vs /b/",en:"very ≠ berry",tip:"Para /v/, dientes superiores tocan labio inferior. En español B/V suenan igual — en inglés NO.",color:"#C62828"},
-    {sound:"/ʃ/ (sh)",en:"ship, show, push",tip:"Labios hacia adelante como soplando una vela y di 'shhh'. No existe en español.",color:"#1565C0"},
-    {sound:"/dʒ/ (j)",en:"judge, job, gym",tip:"Como 'ch' pero con vibración. NO es la J española.",color:"#2E7D32"},
-    {sound:"/z/",en:"zoo, easy, is, has",tip:"Como /s/ pero con vibración en la garganta.",color:"#6A1B9A"},
-    {sound:"/θ/ y /ð/",en:"think vs the",tip:"¡Lengua entre los dientes! /θ/ = sin voz (think). /ð/ = con voz (the).",color:"#E65100"},
-    {sound:"S + consonante",en:"stop, speak, school",tip:"¡NO pongas 'e' antes! En español: escuela. En inglés: school. Practica: 'ssssstop'.",color:"#880E4F"},
-  ];
   const [sel,setSel]=useState(null);
+  const [filter,setFilter]=useState("all");
+  const cats=[{id:"all",l:"Todos"},{id:"labial",l:"Labiales"},{id:"sibilant",l:"Sibilantes"},{id:"dental",l:"Dentales (TH)"},{id:"cluster",l:"Grupos"}];
+  const filtered=filter==="all"?consonantChallenges:consonantChallenges.filter(c=>c.cat===filter);
   return(<div>
-    <DarkBox title="Sonidos que no existen en español"><div style={{fontSize:13}}>Estos son los que más delatan el acento hispanohablante.</div></DarkBox>
-    {desafios.map((c,i)=>(<div key={i} onClick={()=>setSel(sel===i?null:i)} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:sel===i?"2px solid "+c.color:"1px solid #e0dcd5",marginBottom:6,cursor:"pointer"}}>
-      <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{background:c.color,color:"#fff",padding:"2px 10px",borderRadius:6,fontSize:13,fontWeight:800,fontFamily:"monospace"}}>{c.sound}</span><span style={{fontSize:13,color:"#555",fontStyle:"italic"}}>{c.en}</span></div>
-      {sel===i&&<div style={{fontSize:12,color:"#666",lineHeight:1.5,marginTop:6,padding:"8px 10px",background:"#FAFAF5",borderRadius:6}}>{c.tip}</div>}
-    </div>))}
-    <Chatt text="El inglés sureño suaviza consonantes finales: 'didn't' → 'din't'. Normal aquí, pero practica las formas completas para lo formal." />
+    <DarkBox title="8 desafíos de pronunciación"><div style={{fontSize:13}}>Estos sonidos no existen en español o funcionan diferente. Son los que más delatan el acento. Toca para explorar cada uno.</div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {cats.map(c=>(<button key={c.id} onClick={()=>{setFilter(c.id);setSel(null)}} style={{padding:"5px 10px",borderRadius:16,border:filter===c.id?"2px solid #2E7D32":"1.5px solid #ddd",background:filter===c.id?"#2E7D32":"#fff",color:filter===c.id?"#fff":"#666",fontSize:10,fontWeight:600,cursor:"pointer"}}>{c.l}</button>))}
+    </div>
+    {filtered.map((c,i)=>{const isSel=sel===i;return(
+      <div key={i} onClick={()=>setSel(isSel?null:i)} style={{background:"#fff",borderRadius:12,overflow:"hidden",border:isSel?`2.5px solid ${c.color}`:"1px solid #e0dcd5",marginBottom:8,cursor:"pointer",transition:"all 0.15s"}}>
+        <div style={{padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+          <span style={{background:c.color,color:"#fff",padding:"3px 12px",borderRadius:6,fontSize:14,fontWeight:800,fontFamily:"monospace"}}>{c.sound}</span>
+          <div style={{display:"flex",gap:4,flexWrap:"wrap",flex:1}}>{c.words.map((w,j)=>(<span key={j} style={{fontSize:12,color:"#888",fontStyle:"italic"}}>{w}{j<c.words.length-1?" ·":""}</span>))}</div>
+          <span style={{fontSize:14,color:"#ccc"}}>{isSel?"▲":"▼"}</span>
+        </div>
+        {isSel&&<div style={{padding:"10px 14px",borderTop:"1px solid #f0eeeb",background:"#FAFAF5",fontSize:12,color:"#555",lineHeight:1.6}}>{c.tip}</div>}
+      </div>
+    );})}
+    <Chatt text="El inglés sureño suaviza consonantes finales: 'didn't' → 'din't', 'last night' → 'las' night'. Normal aquí, pero practica las formas completas para situaciones formales." />
   </div>);
 }
 
-function Guide4(){return(<div>
-  <DarkBox title="¿Por qué es tan caótica?"><div style={{fontSize:13,lineHeight:1.6}}>El inglés tomó del latín, francés, alemán, griego — y <strong style={{color:"#EF9A9A"}}>conservó la ortografía original</strong> mientras la pronunciación evolucionaba.</div></DarkBox>
-  <SG items={[
-    {h:"-ough = ¡7 sonidos diferentes!",b:"through /uː/ · though /oʊ/ · thought /ɔː/\ntough /ʌf/ · cough /ɒf/ · bough /aʊ/ · hiccough /ʌp/"},
-    {h:"Patrones que SÍ funcionan",b:"-tion = /ʃən/ (nation, education)\n-ight = /aɪt/ (night, light, fight)\n-ness = /nəs/ (happiness, darkness)"},
-    {h:"Letras mudas",b:"K: know, knee, knife · W: write, wrong, wrist\nB: comb, bomb, climb · GH: night, daughter, though"},
-    {h:"Misma ortografía, diferente sonido",b:"read (presente) /riːd/ vs read (pasado) /rɛd/\nlead (metal) /lɛd/ vs lead (guiar) /liːd/"},
-  ]} />
-</div>);}
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 4: ORTOGRAFÍA — PATRONES INTERACTIVOS
+// ═══════════════════════════════════════════════════════════════
+const spellingPatterns=[
+  {pattern:"-tion",sound:"/ʃən/",examples:["nation","education","information","situation"],color:"#6A1B9A"},
+  {pattern:"-ight",sound:"/aɪt/",examples:["night","light","fight","right","might"],color:"#C62828"},
+  {pattern:"-ough",sound:"¡7 sonidos!",examples:["through /uː/","though /oʊ/","thought /ɔː/","tough /ʌf/","cough /ɒf/","bough /aʊ/"],color:"#E65100"},
+  {pattern:"-ness",sound:"/nəs/",examples:["happiness","darkness","kindness","sadness"],color:"#2E7D32"},
+  {pattern:"-ful",sound:"/fəl/",examples:["beautiful","wonderful","careful","useful"],color:"#1565C0"},
+  {pattern:"kn-",sound:"/n/ (k muda)",examples:["know","knee","knife","knock","knit"],color:"#880E4F"},
+  {pattern:"wr-",sound:"/r/ (w muda)",examples:["write","wrong","wrist","wrap","wreck"],color:"#00695C"},
+];
+
+function Guide4(){
+  const [sel,setSel]=useState(null);
+  return(<div>
+    <DarkBox title="¿Por qué es tan caótica?"><div style={{fontSize:13,lineHeight:1.6}}>
+      El inglés tomó del latín, francés, alemán, griego — y <strong style={{color:"#EF9A9A"}}>conservó la ortografía original</strong> mientras la pronunciación evolucionaba. Pero hay patrones que SÍ funcionan.
+    </div></DarkBox>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(90px,1fr))",gap:6,marginBottom:16}}>
+      {spellingPatterns.map((p,i)=>{const isSel=sel===i;return(
+        <button key={i} onClick={()=>setSel(isSel?null:i)} style={{padding:"10px 6px",borderRadius:10,border:isSel?`2.5px solid ${p.color}`:"1.5px solid #e0dcd5",background:isSel?p.color:"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center",transition:"all 0.15s"}}>
+          <div style={{fontSize:16,fontWeight:800,fontFamily:"monospace"}}>{p.pattern}</div>
+          <div style={{fontSize:10,opacity:.7,marginTop:2}}>{p.sound}</div>
+        </button>
+      );})}
+    </div>
+    {sel!==null&&(()=>{const p=spellingPatterns[sel];return(
+      <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${p.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+        <div style={{background:p.color,padding:"12px 16px",color:"#fff"}}><span style={{fontSize:18,fontWeight:800,fontFamily:"monospace"}}>{p.pattern}</span> <span style={{opacity:.7,marginLeft:8}}>= {p.sound}</span></div>
+        <div style={{padding:"10px 16px",display:"flex",flexWrap:"wrap",gap:6}}>
+          {p.examples.map((e,j)=>(<span key={j} style={{padding:"5px 12px",borderRadius:8,background:`${p.color}10`,color:p.color,fontSize:13,fontWeight:600,border:`1px solid ${p.color}25`}}>{e}</span>))}
+        </div>
+      </div>
+    );})()}
+    <Nota text="No existe una regla confiable para toda la ortografía inglesa. Pero estos patrones cubren miles de palabras. Memoriza los patrones, no las excepciones." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 5: ACENTO Y RITMO — PARES INTERACTIVOS
+// ═══════════════════════════════════════════════════════════════
+const stressPairs=[
+  {w1:"REcord",m1:"sustantivo (registro)",w2:"reCORD",m2:"verbo (grabar)",color:"#E65100"},
+  {w1:"PREsent",m1:"sustantivo (regalo)",w2:"preSENT",m2:"verbo (presentar)",color:"#1565C0"},
+  {w1:"OBject",m1:"sustantivo (objeto)",w2:"obJECT",m2:"verbo (objetar)",color:"#2E7D32"},
+  {w1:"PERmit",m1:"sustantivo (permiso)",w2:"perMIT",m2:"verbo (permitir)",color:"#6A1B9A"},
+  {w1:"CONtract",m1:"sustantivo (contrato)",w2:"conTRACT",m2:"verbo (contratar)",color:"#C62828"},
+  {w1:"PROduce",m1:"sustantivo (productos)",w2:"proDUCE",m2:"verbo (producir)",color:"#880E4F"},
+];
 
 function Guide5(){
-  const pares=[{w1:"REcord",m1:"sustantivo (registro)",w2:"reCORD",m2:"verbo (grabar)"},{w1:"PREsent",m1:"sustantivo (regalo)",w2:"preSENT",m2:"verbo (presentar)"},{w1:"OBject",m1:"sustantivo (objeto)",w2:"obJECT",m2:"verbo (objetar)"},];
+  const [selPair,setSelPair]=useState(null);
   return(<div>
-    <DarkBox title="Inglés = ritmo acentual"><div style={{fontSize:13,lineHeight:1.6}}>El español da el mismo tiempo a cada sílaba. El inglés <strong style={{color:"#FFE77A"}}>se apresura en las sin acento</strong> y se demora en las acentuadas.</div></DarkBox>
-    <Card color="#E65100" title="El acento cambia el significado">
-      {pares.map((p,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr",padding:"8px 16px",borderBottom:i<pares.length-1?"1px solid #f0eeeb":"none"}}><div><span style={{fontWeight:800,color:"#E65100"}}>{p.w1}</span><br/><span style={{fontSize:11,color:"#888"}}>{p.m1}</span></div><div><span style={{fontWeight:800,color:"#1565C0"}}>{p.w2}</span><br/><span style={{fontSize:11,color:"#888"}}>{p.m2}</span></div></div>))}
+    <DarkBox title="Inglés = ritmo acentual"><div style={{fontSize:13,lineHeight:1.6}}>
+      El español da el mismo tiempo a cada sílaba. El inglés <strong style={{color:"#FFE77A"}}>se apresura en las sin acento</strong> y se demora en las acentuadas. El acento puede cambiar el significado de una palabra.
+    </div></DarkBox>
+    <Card color="#E65100" title="El acento cambia el significado" subtitle="Toca para comparar">
+      {stressPairs.map((p,i)=>(<div key={i} onClick={()=>setSelPair(selPair===i?null:i)} style={{padding:"10px 16px",borderBottom:i<stressPairs.length-1?"1px solid #f0eeeb":"none",cursor:"pointer",background:selPair===i?"#FFF5F0":"transparent",transition:"background 0.15s"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",alignItems:"center"}}>
+          <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.w1}</div></div>
+          <div style={{width:30,height:30,borderRadius:"50%",background:p.color,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,margin:"0 8px"}}>vs</div>
+          <div style={{textAlign:"center"}}><div style={{fontSize:16,fontWeight:800,color:p.color}}>{p.w2}</div></div>
+        </div>
+        {selPair===i&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:8}}>
+          <div style={{padding:"6px 8px",borderRadius:6,background:"#FFF8E7",textAlign:"center",fontSize:11,color:"#8B6914"}}>{p.m1}</div>
+          <div style={{padding:"6px 8px",borderRadius:6,background:"#E3F2FD",textAlign:"center",fontSize:11,color:"#1565C0"}}>{p.m2}</div>
+        </div>}
+      </div>))}
     </Card>
-    <Trampa text="Dar la misma duración a cada sílaba es el error más común. 'Banana' suena como 'buh-NA-nuh' — la primera y última sílaba se reducen a schwa." />
+    <Trampa text="Dar la misma duración a cada sílaba como en español. 'Banana' suena como 'buh-NA-nuh' — la primera y última sílaba se reducen a schwa /ə/." />
     <Chatt text="El 'Southern drawl' estira vocales: 'well' → 'we-ull', 'can't' → 'cay-unt'. No es habla perezosa — es la música del dialecto local." />
   </div>);
 }
 
-// GUÍAS 6-13: VERBOS
-function Guide6(){return(<SG items={[
-  {h:"Simple Present = hábito / verdad general",b:"I work every day. She speaks English.\n⚠ Añade -s/-es para he/she/it: he works, she goes, it rains"},
-  {h:"Present Progressive = ahora mismo",b:"I am working now. She is speaking on the phone."},
-  {h:"⚠ El auxiliar DO/DOES (¡no existe en español!)",b:"Preguntas: Do you work? Does she speak English?\nNegación: I don't work. She doesn't speak.\n❌ NUNCA: 'Work you here?' · ✅ SIEMPRE: 'Do you work here?'"},
-  {h:"¡No abuses del progresivo!",b:"❌ I am living in Chattanooga. (hecho general)\n✅ I live in Chattanooga.\nVerbos de estado (know, want, like, love) NO usan progresivo."},
-]} />);}
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 6: PRESENT SIMPLE — CON REGLAS DO/DOES
+// ═══════════════════════════════════════════════════════════════
+const pronouns=["I","you","he/she/it","we","they"];
+const presConj={work:["work","work","works","work","work"],go:["go","go","goes","go","go"],have:["have","have","has","have","have"]};
+
+function Guide6(){
+  const [verb,setVerb]=useState("work");
+  const [showDo,setShowDo]=useState(false);
+  const forms=presConj[verb];
+  const col={work:"#1565C0",go:"#2E7D32",have:"#C62828"}[verb];
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {["work","go","have"].map(v=>(<button key={v} onClick={()=>setVerb(v)} style={{padding:"8px 20px",borderRadius:10,border:verb===v?`2.5px solid ${col}`:"1.5px solid #ddd",background:verb===v?col:"#fff",color:verb===v?"#fff":"#666",cursor:"pointer",fontWeight:800,fontSize:15}}>{v}</button>))}
+    </div>
+    <Card color={col} title={`Presente: ${verb}`} subtitle="Simple Present">
+      {pronouns.map((p,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"0 16px",height:44,borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+        <div style={{width:90,fontSize:13,color:"#999",fontWeight:500}}>{p}</div>
+        <div style={{flex:1,fontSize:18,fontWeight:700,color:col}}>{forms[i]}</div>
+        {i===2&&<span style={{background:"#FFF3E0",color:"#E65100",padding:"2px 8px",borderRadius:5,fontSize:10,fontWeight:700}}>¡cambia!</span>}
+      </div>))}
+    </Card>
+    <button onClick={()=>setShowDo(!showDo)} style={{width:"100%",padding:"12px 16px",borderRadius:10,border:"1.5px solid #e0dcd5",background:showDo?"#1565C0":"#fff",color:showDo?"#fff":"#555",fontSize:13,fontWeight:600,cursor:"pointer",marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <span>⚠️ El auxiliar DO/DOES (¡no existe en español!)</span><span style={{transform:showDo?"rotate(180deg)":"rotate(0)",transition:"transform 0.2s"}}>⌄</span>
+    </button>
+    {showDo&&<div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:13,color:"#555",lineHeight:1.7}}>
+        <strong style={{color:"#1565C0"}}>Preguntas:</strong> <em>Do you work? Does she speak English?</em><br/>
+        <strong style={{color:"#C62828"}}>Negación:</strong> <em>I don't work. She doesn't speak.</em><br/><br/>
+        ❌ NUNCA: <em>'Work you here?'</em> o <em>'She not speaks.'</em><br/>
+        ✅ SIEMPRE: <em>'Do you work here?' 'She doesn't speak.'</em>
+      </div>
+    </div>}
+    <Trampa text="El auxiliar DO/DOES es probablemente el hábito más difícil de construir. En español dices '¿Hablas inglés?' directamente. En inglés NECESITAS el auxiliar: 'Do you speak English?'" />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 7: PASADO — TABLA FILTRABLE DE IRREGULARES
+// ═══════════════════════════════════════════════════════════════
+const irregulars=[
+  {b:"go",p:"went",pp:"gone",es:"ir",grp:"unique"},{b:"come",p:"came",pp:"come",es:"venir",grp:"unique"},
+  {b:"see",p:"saw",pp:"seen",es:"ver",grp:"vowel"},{b:"take",p:"took",pp:"taken",es:"tomar",grp:"vowel"},
+  {b:"give",p:"gave",pp:"given",es:"dar",grp:"vowel"},{b:"make",p:"made",pp:"made",es:"hacer",grp:"same"},
+  {b:"get",p:"got",pp:"gotten",es:"obtener",grp:"vowel"},{b:"know",p:"knew",pp:"known",es:"saber",grp:"vowel"},
+  {b:"think",p:"thought",pp:"thought",es:"pensar",grp:"same"},{b:"say",p:"said",pp:"said",es:"decir",grp:"same"},
+  {b:"eat",p:"ate",pp:"eaten",es:"comer",grp:"vowel"},{b:"drink",p:"drank",pp:"drunk",es:"beber",grp:"vowel"},
+  {b:"write",p:"wrote",pp:"written",es:"escribir",grp:"vowel"},{b:"buy",p:"bought",pp:"bought",es:"comprar",grp:"same"},
+  {b:"bring",p:"brought",pp:"brought",es:"traer",grp:"same"},{b:"teach",p:"taught",pp:"taught",es:"enseñar",grp:"same"},
+  {b:"tell",p:"told",pp:"told",es:"contar",grp:"same"},{b:"find",p:"found",pp:"found",es:"encontrar",grp:"same"},
+  {b:"run",p:"ran",pp:"run",es:"correr",grp:"vowel"},{b:"read",p:"read",pp:"read",es:"leer",grp:"same"},
+  {b:"put",p:"put",pp:"put",es:"poner",grp:"nochange"},{b:"cut",p:"cut",pp:"cut",es:"cortar",grp:"nochange"},
+  {b:"let",p:"let",pp:"let",es:"dejar",grp:"nochange"},{b:"hit",p:"hit",pp:"hit",es:"golpear",grp:"nochange"},
+];
 
 function Guide7(){
-  const irregs=[{b:"go",p:"went",pp:"gone",es:"ir"},{b:"see",p:"saw",pp:"seen",es:"ver"},{b:"take",p:"took",pp:"taken",es:"tomar"},{b:"give",p:"gave",pp:"given",es:"dar"},{b:"make",p:"made",pp:"made",es:"hacer"},{b:"get",p:"got",pp:"gotten",es:"obtener"},{b:"know",p:"knew",pp:"known",es:"saber"},{b:"think",p:"thought",pp:"thought",es:"pensar"},{b:"say",p:"said",pp:"said",es:"decir"},{b:"eat",p:"ate",pp:"eaten",es:"comer"},{b:"write",p:"wrote",pp:"written",es:"escribir"},{b:"buy",p:"bought",pp:"bought",es:"comprar"},{b:"bring",p:"brought",pp:"brought",es:"traer"},{b:"tell",p:"told",pp:"told",es:"contar"},{b:"find",p:"found",pp:"found",es:"encontrar"},];
+  const [filter,setFilter]=useState("all");
+  const [hovered,setHovered]=useState(null);
+  const grps=[{id:"all",l:"Todos (24)"},{id:"vowel",l:"Cambia vocal"},{id:"same",l:"Past = PP"},{id:"nochange",l:"Sin cambio"},{id:"unique",l:"Únicos"}];
+  const filtered=filter==="all"?irregulars:irregulars.filter(v=>v.grp===filter);
+  const col={all:"#C62828",vowel:"#1565C0",same:"#2E7D32",nochange:"#6A1B9A",unique:"#E65100"}[filter];
   return(<div>
-    <SG items={[{h:"El -ed regular: TRES pronunciaciones",b:"/t/ consonante sorda: worked, stopped\n/d/ consonante sonora: played, opened\n/ɪd/ después de t o d: wanted, needed"}]} />
-    <Card color="#C62828" title="15 verbos irregulares esenciales" subtitle="Base → Pasado → Participio">
-      <div style={{display:"grid",gridTemplateColumns:"60px 1fr 1fr 1fr",padding:"6px 14px",fontSize:9,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}><div>Español</div><div>Base</div><div>Pasado</div><div>Participio</div></div>
-      {irregs.map((v,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"60px 1fr 1fr 1fr",padding:"4px 14px",borderBottom:i<irregs.length-1?"1px solid #f0eeeb":"none",fontSize:12}}><span style={{color:"#888",fontSize:10,fontStyle:"italic"}}>{v.es}</span><span style={{color:"#555"}}>{v.b}</span><span style={{fontWeight:700,color:"#C62828"}}>{v.p}</span><span style={{fontWeight:700,color:"#6A1B9A"}}>{v.pp}</span></div>))}
+    <DarkBox title="Tres pronunciaciones de -ed regular"><div style={{fontSize:14}}>
+      <span style={{color:"#FFE77A"}}>/t/</span> consonante sorda: work<strong>ed</strong>, stopp<strong>ed</strong> · 
+      <span style={{color:"#90CAF9"}}>/d/</span> consonante sonora: play<strong>ed</strong>, open<strong>ed</strong> · 
+      <span style={{color:"#EF9A9A"}}>/ɪd/</span> después de t/d: want<strong>ed</strong>, need<strong>ed</strong>
+    </div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {grps.map(g=>(<button key={g.id} onClick={()=>setFilter(g.id)} style={{padding:"5px 10px",borderRadius:16,border:filter===g.id?`2px solid ${col}`:"1.5px solid #ddd",background:filter===g.id?col:"#fff",color:filter===g.id?"#fff":"#666",fontSize:10,fontWeight:600,cursor:"pointer"}}>{g.l}</button>))}
+    </div>
+    <Card color={col} title={`Verbos irregulares: ${filtered.length}`} subtitle="Base → Pasado → Participio">
+      <div style={{display:"grid",gridTemplateColumns:"60px 1fr 1fr 1fr",padding:"6px 14px",fontSize:9,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}>
+        <div>Español</div><div>Base</div><div>Past</div><div>Past Part.</div>
+      </div>
+      {filtered.map((v,i)=>(<div key={i}
+        onMouseEnter={()=>setHovered(i)} onMouseLeave={()=>setHovered(null)}
+        style={{display:"grid",gridTemplateColumns:"60px 1fr 1fr 1fr",padding:"5px 14px",borderBottom:i<filtered.length-1?"1px solid #f0eeeb":"none",fontSize:12,background:hovered===i?"#FAFAF5":"transparent",transition:"background 0.1s"}}>
+        <span style={{color:"#888",fontSize:10,fontStyle:"italic"}}>{v.es}</span>
+        <span style={{color:"#555"}}>{v.b}</span>
+        <span style={{fontWeight:700,color:col}}>{v.p}</span>
+        <span style={{fontWeight:700,color:"#6A1B9A"}}>{v.pp}</span>
+      </div>))}
     </Card>
-    <Chatt text="Modales dobles: 'I might could help you' = Tal vez pueda ayudarte. 'Used to could' = Antes podía. Son gramaticalmente sureños, no errores." />
+    <Chatt text="Modales dobles: 'I might could help you' = Tal vez pueda ayudarte. 'Used to could' = Antes podía. Gramaticalmente sureños, no errores." />
   </div>);
 }
 
-function Guide8(){return(<div><SG items={[
-  {h:"WILL = espontáneo / predicción / promesa",b:"I'll help you. It will rain. I'll call you back."},
-  {h:"GOING TO = planificado / evidencia",b:"I'm going to visit my mom. Look — it's going to rain."},
-  {h:"Presente progresivo = agendado",b:"I'm flying to Atlanta on Friday. We're meeting at 3."},
-]}/><Chatt text="'Fixin' to' = a punto de. 'I'm fixin' to go to the store.' ES la marca del futuro sureño. La vas a escuchar constantemente en Chattanooga." /></div>);}
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 8-13: VERBOS (INTERACTIVOS)
+// ═══════════════════════════════════════════════════════════════
+function Guide8(){
+  const [mode,setMode]=useState("will");
+  const data={will:{label:"WILL",desc:"Espontáneo / predicción / promesa",ex:["I'll help you. (decisión espontánea)","It will rain tomorrow. (predicción)","I'll call you back. (promesa)"],color:"#1565C0"},going:{label:"GOING TO",desc:"Planificado / basado en evidencia",ex:["I'm going to visit my mom. (ya planificado)","Look — it's going to rain. (evidencia visible)"],color:"#2E7D32"},prog:{label:"PRESENTE PROGRESIVO",desc:"Agendado / con boleto",ex:["I'm flying to Atlanta on Friday. (ya tiene boleto)","We're meeting at 3. (ya confirmado)"],color:"#6A1B9A"}};
+  const d=data[mode];
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {Object.entries(data).map(([k,v])=>(<button key={k} onClick={()=>setMode(k)} style={{flex:1,maxWidth:140,padding:"10px 6px",borderRadius:10,border:mode===k?`2.5px solid ${v.color}`:"1.5px solid #ddd",background:mode===k?v.color:"#fff",color:mode===k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12,textAlign:"center"}}>{v.label}</button>))}
+    </div>
+    <Card color={d.color} title={d.label} subtitle={d.desc}>
+      {d.ex.map((e,i)=>(<div key={i} style={{padding:"8px 16px",borderBottom:i<d.ex.length-1?"1px solid #f0eeeb":"none",fontSize:13,color:"#555",fontStyle:"italic"}}>{e}</div>))}
+    </Card>
+    <Chatt text="'Fixin' to' (o 'finna') = a punto de. 'I'm fixin' to go to the store.' ES la marca del futuro sureño — la vas a escuchar constantemente." />
+  </div>);
+}
 
-function Guide9(){return(<div><DarkBox title="Present Perfect ≠ Pretérito Perfecto"><div style={{fontSize:13}}>En español: "he comido" = pasado reciente. En inglés americano, se usa el <strong style={{color:"#FFE77A"}}>pasado simple</strong>: "I ate" (no "I have eaten").</div></DarkBox><SG items={[
-  {h:"Present Perfect = experiencia / resultado actual",b:"I have been to Paris. (¿alguna vez?)\nShe has lived here for 5 years. (empezó y sigue)\nPalabras clave: ever, never, already, yet, just, for, since"},
-  {h:"Simple Past = momento específico",b:"I went to Paris last year. I ate an hour ago."},
-  {h:"Americano vs Británico",b:"Británico: 'I've just eaten.' Americano: 'I just ate.'\nEn Chattanooga, el pasado simple domina."},
-]}/></div>);}
+function Guide9(){
+  const [mode,setMode]=useState("pp");
+  const ppData={ex:["I have been to Paris. (experiencia — ¿alguna vez?)","I have already eaten. (resultado que afecta el presente)","She has lived here for 5 years. (empezó y sigue)"],signals:["ever","never","already","yet","just","for","since"],color:"#6A1B9A"};
+  const spData={ex:["I went to Paris last year. (cuándo specifically)","I ate an hour ago. (momento específico)","She lived here from 2010 to 2015. (terminado)"],signals:["yesterday","last week","ago","in 2020","when I was young"],color:"#C62828"};
+  const d=mode==="pp"?ppData:spData;
+  return(<div>
+    <DarkBox title="Present Perfect ≠ Pretérito Perfecto"><div style={{fontSize:13}}>En español "he comido" = pasado reciente. En inglés americano se usa el <strong style={{color:"#FFE77A"}}>pasado simple</strong>: "I ate" para eventos recientes.</div></DarkBox>
+    <div style={{display:"flex",gap:8,marginBottom:14,justifyContent:"center"}}>
+      {[{k:"pp",l:"Present Perfect",c:"#6A1B9A"},{k:"sp",l:"Simple Past",c:"#C62828"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:200,padding:"10px",borderRadius:10,border:mode===m.k?`2.5px solid ${m.c}`:"1.5px solid #ddd",background:mode===m.k?m.c:"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{m.l}</button>))}
+    </div>
+    <Card color={d.color} title={mode==="pp"?"Present Perfect":"Simple Past"} subtitle={mode==="pp"?"Experiencia / resultado actual":"Momento específico"}>
+      {d.ex.map((e,i)=>(<div key={i} style={{padding:"8px 16px",borderBottom:i<d.ex.length-1?"1px solid #f0eeeb":"none",fontSize:13,color:"#555",fontStyle:"italic"}}>{e}</div>))}
+    </Card>
+    <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12,justifyContent:"center"}}>
+      {d.signals.map(s=>(<span key={s} style={{padding:"4px 10px",borderRadius:14,background:`${d.color}12`,color:d.color,fontSize:11,fontWeight:600,border:`1px solid ${d.color}25`}}>{s}</span>))}
+    </div>
+  </div>);
+}
 
 function Guide10(){
-  const m=[{m:"can",es:"poder",ej:"I can swim. Can I sit here?"},{m:"could",es:"podría",ej:"Could you help me?"},{m:"will",es:"-ré",ej:"I will help."},{m:"would",es:"-ría",ej:"Would you like tea?"},{m:"should",es:"debería",ej:"You should study."},{m:"must",es:"deber",ej:"You must wear a seatbelt."},{m:"may/might",es:"puede que",ej:"It might rain."}];
-  const colors=["#1565C0","#1565C0","#2E7D32","#2E7D32","#E65100","#C62828","#6A1B9A"];
-  return(<div>{m.map((x,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:5}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{background:colors[i],color:"#fff",padding:"2px 10px",borderRadius:6,fontSize:14,fontWeight:800}}>{x.m}</span><span style={{fontSize:12,color:"#2E7D32",fontWeight:600}}>≈ {x.es}</span></div><div style={{fontSize:12,color:"#555",fontStyle:"italic"}}>{x.ej}</div></div>))}<Chatt text="Modales dobles: 'might could' (tal vez pueda), 'might should' (tal vez debería), 'used to could' (antes podía)." /></div>);
+  const modals=[
+    {m:"can",es:"poder",uses:"capacidad, permiso",ex:"I can swim. Can I sit here?",color:"#1565C0"},
+    {m:"could",es:"podría",uses:"pasado, cortesía, posibilidad",ex:"Could you help me? It could rain.",color:"#1565C0"},
+    {m:"will",es:"-ré (futuro)",uses:"futuro, voluntad, promesa",ex:"I'll help. I'll be there.",color:"#2E7D32"},
+    {m:"would",es:"-ría (cond.)",uses:"condicional, cortesía",ex:"Would you like tea? I would go if...",color:"#2E7D32"},
+    {m:"should",es:"debería",uses:"consejo, expectativa",ex:"You should study.",color:"#E65100"},
+    {m:"must",es:"deber",uses:"obligación, certeza",ex:"You must wear a seatbelt.",color:"#C62828"},
+    {m:"may/might",es:"puede que",uses:"permiso formal, posibilidad",ex:"May I come in? It might rain.",color:"#6A1B9A"},
+  ];
+  const [sel,setSel]=useState(null);
+  return(<div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(80px,1fr))",gap:6,marginBottom:14}}>
+      {modals.map((m,i)=>{const isSel=sel===i;return(
+        <button key={i} onClick={()=>setSel(isSel?null:i)} style={{padding:"10px 6px",borderRadius:10,border:isSel?`2.5px solid ${m.color}`:"1.5px solid #e0dcd5",background:isSel?m.color:"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center",transition:"all 0.15s"}}>
+          <div style={{fontSize:16,fontWeight:800}}>{m.m}</div>
+          <div style={{fontSize:10,opacity:.7}}>≈ {m.es}</div>
+        </button>
+      );})}
+    </div>
+    {sel!==null&&(()=>{const m=modals[sel];return(
+      <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${m.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+        <div style={{background:m.color,padding:"12px 16px",color:"#fff",display:"flex",justifyContent:"space-between"}}>
+          <span style={{fontSize:18,fontWeight:800}}>{m.m}</span><span style={{opacity:.7}}>{m.uses}</span>
+        </div>
+        <div style={{padding:"12px 16px"}}>
+          <div style={{fontSize:14,color:"#555",fontStyle:"italic",marginBottom:6}}>{m.ex}</div>
+          <div style={{background:"#FFF8E7",borderRadius:6,padding:"6px 10px",fontSize:12,color:"#8B6914"}}>En español ≈ <strong>{m.es}</strong></div>
+        </div>
+      </div>
+    );})()}
+    <Chatt text="Modales dobles — marca de Chattanooga: 'might could' (tal vez pueda), 'might should' (tal vez debería). El inglés estándar solo permite UNO. El sureño los acumula." />
+  </div>);
 }
 
-function Guide11(){return(<SG items={[
-  {h:"Cero = verdad general",b:"If you heat water, it boils. (if + presente, presente)"},
-  {h:"Primera = futuro probable",b:"If it rains, I will stay home. (if + presente, will + base)"},
-  {h:"Segunda = hipotético presente",b:"If I had money, I would travel. (if + pasado, would + base)\n⚠ 'If I were' (no 'was'): If I were you..."},
-  {h:"Tercera = irreal pasado",b:"If I had studied, I would have passed."},
-  {h:"⚠ ERROR MUY COMÚN",b:"❌ If I would have money...\n✅ If I had money... (¡NO 'would' en la cláusula con 'if'!)"},
-]}/>);}
+function Guide11(){
+  const conds=[
+    {n:"Cero",rule:"If + presente, presente",ex:"If you heat water, it boils.",es:"Si calientas agua, hierve.",use:"Verdad general",color:"#2E7D32"},
+    {n:"Primera",rule:"If + presente, will + base",ex:"If it rains, I will stay home.",es:"Si llueve, me quedaré en casa.",use:"Futuro probable",color:"#1565C0"},
+    {n:"Segunda",rule:"If + pasado, would + base",ex:"If I had money, I would travel.",es:"Si tuviera dinero, viajaría.",use:"Hipotético presente",color:"#6A1B9A"},
+    {n:"Tercera",rule:"If + past perfect, would have + pp",ex:"If I had studied, I would have passed.",es:"Si hubiera estudiado, habría pasado.",use:"Irreal pasado",color:"#C62828"},
+  ];
+  const [sel,setSel]=useState(null);
+  return(<div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:14}}>
+      {conds.map((c,i)=>{const isSel=sel===i;return(
+        <button key={i} onClick={()=>setSel(isSel?null:i)} style={{padding:"10px 4px",borderRadius:10,border:isSel?`2.5px solid ${c.color}`:"1.5px solid #e0dcd5",background:isSel?c.color:"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center"}}>
+          <div style={{fontSize:14,fontWeight:800}}>{c.n}</div>
+          <div style={{fontSize:9,opacity:.7}}>{c.use}</div>
+        </button>
+      );})}
+    </div>
+    {sel!==null&&(()=>{const c=conds[sel];return(
+      <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${c.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+        <div style={{background:c.color,padding:"12px 16px",color:"#fff"}}><span style={{fontWeight:800}}>{c.n} condicional</span> — <span style={{opacity:.8,fontFamily:"monospace",fontSize:12}}>{c.rule}</span></div>
+        <div style={{padding:"12px 16px"}}>
+          <div style={{fontSize:15,fontWeight:600,color:"#333",fontStyle:"italic",marginBottom:4}}>{c.ex}</div>
+          <div style={{fontSize:13,color:"#888"}}>{c.es}</div>
+        </div>
+      </div>
+    );})()}
+    <Trampa text="❌ If I WOULD have money... ¡NO 'would' en la cláusula con 'if'! ✅ If I HAD money... Este es el error #1 de hispanohablantes con condicionales." />
+  </div>);
+}
 
-function Guide12(){return(<SG items={[
-  {h:"Formación: be + participio pasado",b:"The house is cleaned. Was built. Will be sold. Has been painted."},
-  {h:"Cuándo usarla",b:"Actor desconocido: My car was stolen.\nLa acción importa más que el actor."},
-  {h:"Pasiva con 'get' (informal)",b:"He got fired. She got promoted. We got invited.\nMuy común en Chattanooga."},
-]}/>);}
+function Guide12(){return(<div>
+  <DarkBox title="Formación: be + participio pasado"><div style={{fontSize:13}}>
+    <span style={{color:"#90CAF9"}}>Presente:</span> The house <strong style={{color:"#FFE77A"}}>is cleaned</strong> every week.<br/>
+    <span style={{color:"#EF9A9A"}}>Pasado:</span> The house <strong style={{color:"#FFE77A"}}>was built</strong> in 1920.<br/>
+    <span style={{color:"#81C784"}}>Futuro:</span> The house <strong style={{color:"#FFE77A"}}>will be sold</strong>.<br/>
+    <span style={{color:"#CE93D8"}}>Perfecto:</span> The house <strong style={{color:"#FFE77A"}}>has been painted</strong>.
+  </div></DarkBox>
+  <Card color="#00838F" title="Pasiva con 'get' (informal)" subtitle="Muy usada en conversación">
+    {[{en:"He got fired.",es:"Lo despidieron."},{en:"She got promoted.",es:"La ascendieron."},{en:"We got invited.",es:"Nos invitaron."},{en:"It got stolen.",es:"Lo robaron."}].map((e,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 16px",borderBottom:i<3?"1px solid #f0eeeb":"none",fontSize:13}}><span style={{fontWeight:700,color:"#00838F",fontStyle:"italic"}}>{e.en}</span><span style={{color:"#888"}}>{e.es}</span></div>))}
+  </Card>
+  <Nota text="No abuses de la pasiva. ❌ 'The dinner was eaten by us.' ✅ 'We ate dinner.' Usa activa cuando el actor es conocido." />
+</div>);}
 
 function Guide13(){
-  const g=[{base:"get",pvs:[{pv:"get up",m:"levantarse"},{pv:"get over",m:"superar"},{pv:"get along",m:"llevarse bien"},{pv:"get by",m:"arreglárselas"}]},{base:"look",pvs:[{pv:"look up",m:"buscar (info)"},{pv:"look after",m:"cuidar"},{pv:"look forward to",m:"esperar con ansias"},{pv:"look into",m:"investigar"}]},{base:"turn",pvs:[{pv:"turn on/off",m:"encender/apagar"},{pv:"turn up",m:"aparecer"},{pv:"turn down",m:"rechazar"}]}];
-  const [sel,setSel]=useState(0);const gr=g[sel];
+  const groups=[
+    {base:"get",pvs:[{pv:"get up",m:"levantarse"},{pv:"get over",m:"superar"},{pv:"get along",m:"llevarse bien"},{pv:"get by",m:"arreglárselas"},{pv:"get through",m:"terminar/superar"},{pv:"get away",m:"escaparse"}]},
+    {base:"take",pvs:[{pv:"take off",m:"despegar/quitarse"},{pv:"take on",m:"asumir"},{pv:"take out",m:"sacar/invitar"},{pv:"take over",m:"tomar control"}]},
+    {base:"look",pvs:[{pv:"look up",m:"buscar (info)"},{pv:"look after",m:"cuidar"},{pv:"look forward to",m:"esperar con ansias"},{pv:"look into",m:"investigar"}]},
+    {base:"turn",pvs:[{pv:"turn on/off",m:"encender/apagar"},{pv:"turn up",m:"aparecer/subir vol."},{pv:"turn down",m:"rechazar/bajar vol."},{pv:"turn out",m:"resultar"}]},
+    {base:"come",pvs:[{pv:"come up with",m:"inventar/idear"},{pv:"come across",m:"encontrar por casualidad"},{pv:"come back",m:"regresar"},{pv:"come on",m:"¡vamos!/dale"}]},
+  ];
+  const [sel,setSel]=useState(0);const g=groups[sel];
   return(<div>
-    <DarkBox title="La pesadilla (pero los necesitas)"><div style={{fontSize:13}}>Phrasal verbs = verbo + partícula con significado que <strong style={{color:"#EF9A9A"}}>NO puedes adivinar</strong>.</div></DarkBox>
-    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>{g.map((pg,i)=>(<button key={i} onClick={()=>setSel(i)} style={{padding:"6px 14px",borderRadius:8,border:sel===i?"2.5px solid #4527A0":"1.5px solid #ddd",background:sel===i?"#4527A0":"#fff",color:sel===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{pg.base}</button>))}</div>
-    <Card color="#4527A0" title={"Phrasal verbs con \""+gr.base+"\""}>{gr.pvs.map((pv,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 16px",borderBottom:i<gr.pvs.length-1?"1px solid #f0eeeb":"none"}}><span style={{fontSize:15,fontWeight:700,color:"#4527A0"}}>{pv.pv}</span><span style={{fontSize:13,color:"#888"}}>{pv.m}</span></div>))}</Card>
-    <Chatt text="Sureñismos: 'carry' = llevar en carro, 'cut on/off' = encender/apagar, 'mash' = presionar." />
-  </div>);
-}
-
-// GUÍAS 14-17: SUSTANTIVOS
-function Guide14(){return(<SG items={[
-  {h:"A/AN = indefinido (un, una)",b:"I saw a dog. She's an engineer.\n'an' antes de SONIDO vocálico: an apple, an hour"},
-  {h:"THE = definido (el, la, los, las)",b:"The dog is big. The books are here.\n¡Una sola forma para todo! Sin género ni plural."},
-  {h:"SIN ARTÍCULO = conceptos generales",b:"❌ I like the music. → ✅ I like music.\n❌ The life is beautiful. → ✅ Life is beautiful.\nEn español usas 'el/la' para lo general. En inglés NO."},
-  {h:"⚠ Diferencias clave",b:"Idiomas: I speak Spanish (NO 'the Spanish')\nComidas: I had breakfast (NO 'the breakfast')\nCon posesivos: my car (NO 'the my car')"},
-]}/>);}
-
-function Guide15(){return(<SG items={[
-  {h:"Incontables que SÍ son contables en español",b:"❌ informations, advices, furnitures, homeworks\n✅ information, advice, furniture, homework (¡siempre singular!)"},
-  {h:"Much vs Many vs A lot of",b:"MUCH + incontable: much water\nMANY + contable: many books\nA LOT OF + ambos (¡la opción más segura!)"},
-  {h:"Some / Any",b:"SOME afirmativo: I have some money.\nANY preguntas/negaciones: Do you have any?"},
-]}/>);}
-
-function Guide16(){return(<SG items={[
-  {h:"Regular: -s o -es",b:"book→books · watch→watches · city→cities · knife→knives"},
-  {h:"Irregulares",b:"man→men · woman→women · child→children\ntooth→teeth · foot→feet · person→people · sheep→sheep"},
-  {h:"Siempre plurales",b:"pants, jeans, shorts, glasses, scissors\nUsa 'a pair of': a pair of pants"},
-]}/>);}
-
-function Guide17(){return(<SG items={[
-  {h:"'s para personas, 'of' para cosas",b:"Maria's house ✅ · the door of the house ✅"},
-  {h:"Its vs It's — el error #1",b:"ITS = posesivo: The dog wagged its tail.\nIT'S = it is: It's raining.\n¡Sin apóstrofo para posesivo!"},
-  {h:"Whose vs Who's",b:"Whose = ¿de quién? · Who's = who is"},
-]}/>);}
-
-// GUÍAS 18-20: PRONOMBRES
-function Guide18(){
-  const p=[{sub:"I",obj:"me",ref:"myself",pos:"my/mine",es:"yo"},{sub:"you",obj:"you",ref:"yourself",pos:"your/yours",es:"tú"},{sub:"he",obj:"him",ref:"himself",pos:"his",es:"él"},{sub:"she",obj:"her",ref:"herself",pos:"her/hers",es:"ella"},{sub:"it",obj:"it",ref:"itself",pos:"its",es:"ello"},{sub:"we",obj:"us",ref:"ourselves",pos:"our/ours",es:"nosotros"},{sub:"they",obj:"them",ref:"themselves",pos:"their/theirs",es:"ellos"}];
-  return(<div>
-    <Card color="#1565C0" title="Pronombres"><div style={{display:"grid",gridTemplateColumns:"50px 1fr 1fr 1fr 1fr",padding:"6px 14px",fontSize:9,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}><div></div><div>Sujeto</div><div>Objeto</div><div>Reflexivo</div><div>Posesivo</div></div>
-      {p.map((x,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"50px 1fr 1fr 1fr 1fr",padding:"5px 14px",borderBottom:i<p.length-1?"1px solid #f0eeeb":"none",fontSize:12}}><span style={{color:"#888",fontSize:10}}>{x.es}</span><span style={{fontWeight:700,color:"#1565C0"}}>{x.sub}</span><span>{x.obj}</span><span>{x.ref}</span><span>{x.pos}</span></div>))}
+    <DarkBox title="La pesadilla (pero los necesitas)"><div style={{fontSize:13}}>Phrasal verbs = verbo + partícula con significado que <strong style={{color:"#EF9A9A"}}>NO puedes adivinar</strong> por las partes. Están en cada conversación.</div></DarkBox>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center",flexWrap:"wrap"}}>
+      {groups.map((pg,i)=>(<button key={i} onClick={()=>setSel(i)} style={{padding:"7px 16px",borderRadius:10,border:sel===i?"2.5px solid #4527A0":"1.5px solid #ddd",background:sel===i?"#4527A0":"#fff",color:sel===i?"#fff":"#666",cursor:"pointer",fontWeight:800,fontSize:15}}>{pg.base}</button>))}
+    </div>
+    <Card color="#4527A0" title={`Phrasal verbs con "${g.base}"`}>
+      {g.pvs.map((pv,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 16px",borderBottom:i<g.pvs.length-1?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:15,fontWeight:700,color:"#4527A0"}}>{pv.pv}</span>
+        <span style={{fontSize:13,color:"#888"}}>{pv.m}</span>
+      </div>))}
     </Card>
-    <Trampa text="El inglés SIEMPRE necesita sujeto. ❌ 'Is raining.' ✅ 'IT is raining.' ❌ 'Are many people.' ✅ 'THERE are many people.'" />
+    <Chatt text="Sureñismos: 'carry' = llevar en carro ('Carry me to the store'), 'cut on/off' = encender/apagar, 'mash' = presionar ('Mash that button')." />
   </div>);
 }
 
-function Guide19(){return(<div>
-  <DarkBox title="El pronombre que falta"><div style={{fontSize:14}}>El inglés NO tiene 'ustedes'. "You" es singular Y plural. Cada región lo resuelve diferente.</div></DarkBox>
-  <SG items={[
-    {h:"Y'ALL — el estándar de Chattanooga 🏔",b:"Y'all want some sweet tea? = ¿Ustedes quieren té dulce?\nALL Y'ALL = énfasis: All y'all need to listen = TODOS ustedes"},
-    {h:"Otras soluciones regionales",b:"You guys — norte/oeste · Youse — Nueva York\nY'all es neutral en género, claro, cálido y se está expandiendo."},
-  ]}/>
-  <Chatt text="En Chattanooga, y'all NO es jerga — es el plural estándar de segunda persona. Úsalo." />
-</div>);}
-
-function Guide20(){return(<SG items={[
-  {h:"This/That/These/Those",b:"this = este/esta · that = ese/esa\nthese = estos/estas · those = esos/esas\n¡Sin concordancia de género!"},
-  {h:"Every / Each / All",b:"EVERY + singular: Every student passed.\nALL + plural: All students passed."},
-  {h:"Another / Other",b:"ANOTHER + singular: another book\nOTHER + plural: other books"},
-]}/>);}
-
-// GUÍAS 21-23: ADJETIVOS
-function Guide21(){
-  const orden=["Opinión","Tamaño","Edad","Forma","Color","Origen","Material","Propósito"];
-  const cl=["#C62828","#E65100","#6A1B9A","#00695C","#1565C0","#880E4F","#2E7D32","#4527A0"];
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 14-17: SUSTANTIVOS (INTERACTIVOS)
+// ═══════════════════════════════════════════════════════════════
+function Guide14(){
+  const [mode,setMode]=useState("a");
+  const data={
+    a:{title:"A / AN = indefinido",color:"#2E7D32",rules:[{r:"A antes de SONIDO consonántico",ex:"a dog, a house, a university (/juː/)"},{r:"AN antes de SONIDO vocálico",ex:"an apple, an hour (h muda), an MBA"},{r:"Para profesiones y clasificaciones",ex:"She's a teacher. It's a nice day."}]},
+    the:{title:"THE = definido",color:"#1565C0",rules:[{r:"Algo específico/ya mencionado",ex:"The book on the table. The teacher said..."},{r:"Único en su tipo",ex:"the sun, the moon, the president"},{r:"Con superlativos",ex:"the biggest, the best, the most beautiful"}]},
+    zero:{title:"SIN ARTÍCULO = general",color:"#C62828",rules:[{r:"Conceptos generales/abstractos",ex:"Life is beautiful. Water is important."},{r:"Idiomas, comidas, deportes",ex:"I speak Spanish. I had breakfast. I play soccer."},{r:"Con next/last, posesivos",ex:"next week, last Monday, my car"}]},
+  };
+  const d=data[mode];
   return(<div>
-    <DarkBox title="La regla secreta"><div style={{fontSize:13}}>Los nativos <strong style={{color:"#FFE77A"}}>sienten</strong> el orden correcto pero no lo pueden explicar.</div></DarkBox>
-    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:16}}>{orden.map((o,i)=>(<span key={o} style={{padding:"4px 8px",borderRadius:12,background:cl[i]+"15",color:cl[i],fontSize:10,fontWeight:700,border:"1px solid "+cl[i]+"30"}}>{i+1}. {o}</span>))}</div>
-    <SG items={[{h:"Ejemplos",b:"a nice big house ✅ (opinión → tamaño)\n❌ a big nice house\na beautiful old Italian painting ✅\n❌ an old beautiful Italian painting"}]}/>
-    <Nota text="¡Los adjetivos ingleses NO cambian por género ni número! 'A tall man, a tall woman, tall people' — siempre solo 'tall'. ¡Alivio enorme!" />
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {Object.entries(data).map(([k,v])=>(<button key={k} onClick={()=>setMode(k)} style={{flex:1,maxWidth:140,padding:"10px",borderRadius:10,border:mode===k?`2.5px solid ${v.color}`:"1.5px solid #ddd",background:mode===k?v.color:"#fff",color:mode===k?"#fff":"#666",cursor:"pointer",fontWeight:800,fontSize:14}}>{k==="zero"?"∅ NADA":k.toUpperCase()}</button>))}
+    </div>
+    <Card color={d.color} title={d.title}>
+      {d.rules.map((r,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i<d.rules.length-1?"1px solid #f0eeeb":"none"}}>
+        <div style={{fontSize:13,fontWeight:700,color:d.color,marginBottom:3}}>{r.r}</div>
+        <div style={{fontSize:12,color:"#888",fontStyle:"italic"}}>{r.ex}</div>
+      </div>))}
+    </Card>
+    <Trampa text="El error más frecuente: poner 'the' donde el español usa 'el/la' para lo general. 'Me gusta LA música' = 'I like music' (sin THE)." />
   </div>);
 }
 
-function Guide22(){return(<SG items={[
-  {h:"Cortos: -er / -est",b:"tall → taller → tallest\nbig → bigger → biggest"},
-  {h:"Largos: more / most",b:"beautiful → more beautiful → most beautiful"},
-  {h:"Irregulares",b:"good → better → best\nbad → worse → worst\nfar → farther → farthest"},
-  {h:"As...as",b:"She's as tall as me. = Es tan alta como yo."},
-]}/>);}
 
-function Guide23(){return(<div><SG items={[
-  {h:"Frecuencia: ANTES del verbo",b:"I always wake up early. She never eats meat."},
-  {h:"Modo: DESPUÉS del verbo/objeto",b:"She speaks English fluently. He drives carefully."},
-  {h:"-ly no siempre es necesario",b:"He drives slow/slowly (ambos OK en americano)\n⚠ 'hard' ≠ 'hardly': She works hard (mucho) vs hardly (apenas)"},
-]}/><Chatt text="Intensificadores: 'right' = muy ('right cold'), 'real' = realmente ('real nice'), 'plumb' = completamente ('plumb crazy')." /></div>);}
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 15-17: SUSTANTIVOS (ENRIQUECIDAS)
+// ═══════════════════════════════════════════════════════════════
+function Guide15(){
+  const uncountables=[{en:"information",es:"información"},{en:"advice",es:"consejo"},{en:"furniture",es:"muebles"},{en:"homework",es:"tarea"},{en:"research",es:"investigación"},{en:"news",es:"noticias"},{en:"travel",es:"viaje"},{en:"luggage",es:"equipaje"},{en:"progress",es:"progreso"},{en:"money",es:"dinero"}];
+  return(<div>
+    <DarkBox title="Contables vs Incontables"><div style={{fontSize:13}}>Algunos sustantivos que son contables en español son <strong style={{color:"#EF9A9A"}}>incontables en inglés</strong> — ¡NUNCA les pongas -s!</div></DarkBox>
+    <Card color="#C62828" title="Incontables que SÍ son contables en español" subtitle="¡NUNCA les pongas -s!">
+      <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:0}}>
+        {uncountables.map((u,i)=>(<div key={i} style={{padding:"6px 14px",borderBottom:i<8?"1px solid #f0eeeb":"none",borderRight:i%2===0?"1px solid #f0eeeb":"none",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#C62828"}}>❌ {u.en}s</span>
+          <span style={{fontSize:11,color:"#888"}}>{u.es}</span>
+        </div>))}
+      </div>
+    </Card>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+      {[{q:"MUCH",use:"+ incontable",ex:"much water, much time",color:"#1565C0"},{q:"MANY",use:"+ contable",ex:"many books, many people",color:"#2E7D32"},{q:"A LOT OF",use:"+ ambos ✅",ex:"a lot of water, a lot of books",color:"#E65100"}].map(q=>(<div key={q.q} style={{background:q.color,borderRadius:10,padding:"10px",textAlign:"center",color:"#fff"}}>
+        <div style={{fontSize:16,fontWeight:800}}>{q.q}</div>
+        <div style={{fontSize:10,opacity:.8}}>{q.use}</div>
+        <div style={{fontSize:10,fontStyle:"italic",opacity:.7,marginTop:2}}>{q.ex}</div>
+      </div>))}
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
+      <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5"}}>
+        <div style={{fontSize:12,fontWeight:700,color:"#1565C0",marginBottom:4}}>SOME en afirmativo</div>
+        <div style={{fontSize:12,color:"#555"}}>I have some money. There's some water.</div>
+      </div>
+      <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5"}}>
+        <div style={{fontSize:12,fontWeight:700,color:"#C62828",marginBottom:4}}>ANY en preguntas/negación</div>
+        <div style={{fontSize:12,color:"#555"}}>Do you have any? I don't have any money.</div>
+      </div>
+    </div>
+    <Nota text="A LOT OF funciona con contables e incontables — es la opción más segura si no estás seguro/a." />
+  </div>);
+}
 
-// GUÍAS 24-26: PREPOSICIONES
-function Guide24(){return(<div>
-  <DarkBox title="In / On / At — sin lógica"><div style={{fontSize:13}}>Las reglas son <strong style={{color:"#EF9A9A"}}>mayormente arbitrarias</strong>.</div></DarkBox>
+function Guide16(){
+  const irregPlurals=[{s:"man",p:"men"},{s:"woman",p:"women"},{s:"child",p:"children"},{s:"tooth",p:"teeth"},{s:"foot",p:"feet"},{s:"mouse",p:"mice"},{s:"person",p:"people"},{s:"sheep",p:"sheep"},{s:"fish",p:"fish"}];
+  return(<div>
+    <Card color="#2E7D32" title="Plurales regulares">
+      {[{rule:"Regla general: + s",ex:"book → books · car → cars · dog → dogs",color:"#2E7D32"},{rule:"-ch/-sh/-s/-x/-z: + es",ex:"watch → watches · bus → buses · box → boxes",color:"#1565C0"},{rule:"Consonante + y → -ies",ex:"city → cities · baby → babies · party → parties",color:"#6A1B9A"},{rule:"-f/-fe → -ves",ex:"knife → knives · wife → wives · leaf → leaves",color:"#E65100"}].map((r,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${r.color}`}}>
+        <div style={{fontSize:13,fontWeight:700,color:r.color}}>{r.rule}</div>
+        <div style={{fontSize:12,color:"#888",fontStyle:"italic"}}>{r.ex}</div>
+      </div>))}
+    </Card>
+    <Card color="#C62828" title="Plurales irregulares (¡memoriza!)">
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:0}}>
+        {irregPlurals.map((w,i)=>(<div key={i} style={{padding:"8px 10px",borderBottom:i<6?"1px solid #f0eeeb":"none",borderRight:(i%3<2)?"1px solid #f0eeeb":"none",textAlign:"center"}}>
+          <span style={{fontSize:13,color:"#999"}}>{w.s}</span>
+          <span style={{color:"#ccc",margin:"0 4px"}}>→</span>
+          <span style={{fontSize:13,fontWeight:700,color:"#C62828"}}>{w.p}</span>
+        </div>))}
+      </div>
+    </Card>
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>Siempre plurales (sin forma singular):</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+        {["pants","jeans","shorts","glasses","scissors","stairs"].map(w=>(<span key={w} style={{padding:"3px 10px",borderRadius:8,background:"#EDE7F6",color:"#6A1B9A",fontSize:12,fontWeight:600,border:"1px solid #D1C4E9"}}>{w}</span>))}
+      </div>
+      <div style={{fontSize:11,color:"#888",marginTop:4}}>Usa 'a pair of': a pair of pants, a pair of scissors</div>
+    </div>
+  </div>);
+}
+
+function Guide17(){return(<div>
+  <DarkBox title="Its vs It's — el error #1 del inglés"><div style={{fontSize:14,lineHeight:1.6}}>
+    <strong style={{color:"#FFE77A"}}>ITS</strong> = posesivo (su, de ello): <em>The dog wagged its tail.</em><br/>
+    <strong style={{color:"#EF9A9A"}}>IT'S</strong> = it is / it has: <em>It's raining. It's been a long day.</em><br/>
+    <span style={{color:"#aaa",fontSize:12}}>¡Sin apóstrofo para el posesivo! Hasta los nativos se equivocan.</span>
+  </div></DarkBox>
   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
-    <Card color="#C62828" title="Tiempo"><div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.8}}><strong style={{color:"#C62828"}}>IN</strong>: meses, años, estaciones<br/><strong style={{color:"#E65100"}}>ON</strong>: días, fechas<br/><strong style={{color:"#1565C0"}}>AT</strong>: horas, noche</div></Card>
-    <Card color="#1565C0" title="Lugar"><div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.8}}><strong style={{color:"#C62828"}}>IN</strong>: espacios cerrados, ciudades<br/><strong style={{color:"#E65100"}}>ON</strong>: superficies, calles<br/><strong style={{color:"#1565C0"}}>AT</strong>: puntos específicos</div></Card>
+    <Card color="#E65100" title="'s para personas">
+      <div style={{padding:"10px 14px",fontSize:13,color:"#555",lineHeight:1.6}}>
+        Maria<strong style={{color:"#E65100"}}>'s</strong> house<br/>
+        my brother<strong style={{color:"#E65100"}}>'s</strong> car<br/>
+        the children<strong style={{color:"#E65100"}}>'s</strong> toys<br/>
+        <span style={{fontSize:11,color:"#888"}}>NO: 'the house of Maria'</span>
+      </div>
+    </Card>
+    <Card color="#1565C0" title="'of' para cosas">
+      <div style={{padding:"10px 14px",fontSize:13,color:"#555",lineHeight:1.6}}>
+        the door <strong style={{color:"#1565C0"}}>of</strong> the house<br/>
+        the end <strong style={{color:"#1565C0"}}>of</strong> the movie<br/>
+        the color <strong style={{color:"#1565C0"}}>of</strong> the car<br/>
+        <span style={{fontSize:11,color:"#888"}}>NO: 'the house's door'</span>
+      </div>
+    </Card>
   </div>
-  <Chatt text="'Over yonder' = por allá. 'Up the road a piece' = a poca distancia." />
+  <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12,justifyContent:"center"}}>
+    {[{p:"mine",es:"mío"},{p:"yours",es:"tuyo"},{p:"his",es:"de él"},{p:"hers",es:"de ella"},{p:"ours",es:"nuestro"},{p:"theirs",es:"de ellos"}].map(x=>(<span key={x.p} style={{padding:"5px 12px",borderRadius:8,background:"#FFF3E0",color:"#E65100",fontSize:13,fontWeight:700,border:"1px solid #FFCC80"}}>{x.p} <span style={{fontWeight:400,color:"#888",fontSize:11}}>({x.es})</span></span>))}
+  </div>
+  <Nota text="Whose = ¿de quién? ('Whose book is this?') · Whose ≠ Who's (who is). 'Who's there?' vs 'Whose bag is this?'" />
 </div>);}
 
-function Guide25(){return(<SG items={[
-  {h:"Preposiciones que NO coinciden",b:"depend ON (depender DE) · consist OF (consistir EN)\ninterested IN (interesado EN) · dream ABOUT (soñar CON)\nmarried TO (casado CON) · worry ABOUT (preocuparse POR)"},
-  {h:"Verbos que NECESITAN preposición en inglés",b:"Listen TO music · Look AT this · Wait FOR you\nEn español no llevan preposición: escuchar, mirar, esperar."},
-  {h:"Arrive IN / AT (¡nunca TO!)",b:"❌ arrived to Chattanooga ✅ arrived IN Chattanooga"},
-]}/>);}
-
-function Guide26(){return(<SG items={[
-  {h:"Causa",b:"BECAUSE (casual) · SINCE/AS (formal) · DUE TO (muy formal)"},
-  {h:"Contraste",b:"BUT (casual) · ALTHOUGH (medio) · HOWEVER (formal, oraciones separadas)"},
-  {h:"Resultado",b:"SO (casual) · THEREFORE (formal)"},
-  {h:"Formal vs Casual",b:"Hablar: but, so, because\nEscribir: however, therefore, furthermore"},
-]}/>);}
-
-// GUÍAS 27-30: ORACIONES
-function Guide27(){return(<div><SG items={[
-  {h:"Orden: Sujeto + Verbo + Objeto",b:"I eat tacos. ¡Igual que español!"},
-  {h:"Adjetivos ANTES del sustantivo",b:"a red car (NO 'a car red') · the old house (NO 'the house old')"},
-  {h:"Preguntas con DO/DOES/DID",b:"Do you work? Did she go? ❌ NUNCA 'Work you?'"},
-  {h:"Tag questions",b:"You speak Spanish, don't you? (¿verdad?)"},
-]}/><Trampa text="Formar preguntas es la trampa #1. En español inviertes o subes la entonación. En inglés NECESITAS do/does/did." /></div>);}
-
-function Guide28(){return(<SG items={[
-  {h:"Retroceso de tiempo",b:"'I am tired' → She said she WAS tired.\n'I will go' → He said he WOULD go.\nPresente→Pasado · Will→Would"},
-  {h:"Preguntas reportadas",b:"'Where do you live?' → He asked where I LIVED.\n¡Orden de afirmación, NO de pregunta!"},
-]}/>);}
-
-function Guide29(){return(<SG items={[
-  {h:"Definitorias (sin comas)",b:"The woman WHO called is here. (¿cuál? la que llamó)\n'That' se prefiere en americano."},
-  {h:"Explicativas (con comas)",b:"My sister, WHO lives in Atlanta, is visiting. (info extra)"},
-  {h:"Se puede omitir el pronombre relativo si es objeto",b:"The book (that) I read ✅ · The man WHO called ❌ (sujeto, no se omite)"},
-]}/>);}
-
-function Guide30(){
-  const f=[{es:"actualmente",en:"actually",real:"currently",bien:"Actually = en realidad",d:5},{es:"asistir",en:"assist",real:"to attend",bien:"Assist = ayudar",d:5},{es:"embarazada",en:"embarrassed",real:"pregnant",bien:"Embarrassed = avergonzado/a",d:5},{es:"sensible",en:"sensible",real:"sensitive",bien:"Sensible = sensato/a",d:4},{es:"éxito",en:"exit",real:"success",bien:"Exit = salida",d:4},{es:"librería",en:"library",real:"bookstore",bien:"Library = biblioteca",d:4},{es:"constipado",en:"constipated",real:"having a cold",bien:"Constipated = estreñido",d:5},{es:"soportar",en:"support",real:"to tolerate",bien:"Support = apoyar",d:4}];
-  const dc={5:"#C62828",4:"#E65100"};
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 18-20: PRONOMBRES
+// ═══════════════════════════════════════════════════════════════
+function Guide18(){
+  const prns=[
+    {sub:"I",obj:"me",ref:"myself",pos:"my/mine",es:"yo/me/mi"},
+    {sub:"you",obj:"you",ref:"yourself",pos:"your/yours",es:"tú/te/tu"},
+    {sub:"he",obj:"him",ref:"himself",pos:"his",es:"él/lo/su"},
+    {sub:"she",obj:"her",ref:"herself",pos:"her/hers",es:"ella/la/su"},
+    {sub:"it",obj:"it",ref:"itself",pos:"its",es:"ello/lo/su"},
+    {sub:"we",obj:"us",ref:"ourselves",pos:"our/ours",es:"nos./nos"},
+    {sub:"they",obj:"them",ref:"themselves",pos:"their/theirs",es:"ellos/los"},
+  ];
+  const [hlCol,setHlCol]=useState(null);
+  const cols=["#1565C0","#C62828","#6A1B9A","#2E7D32"];
+  const labels=["Sujeto","Objeto","Reflexivo","Posesivo"];
   return(<div>
-    <DarkBox title="Errores típicos"><div style={{fontSize:13}}>Los errores <strong style={{color:"#EF9A9A"}}>más comunes</strong> que cometemos los hispanohablantes.</div></DarkBox>
-    <SG items={[
-      {h:"Género filtrado al inglés",b:"❌ 'She is a beautiful car' ✅ 'IT is a beautiful car'\nObjetos SIEMPRE son 'it'."},
-      {h:"Doble negación = INCORRECTA",b:"❌ I don't have nothing. ✅ I don't have anything.\nEn español: 'No tengo nada' es correcto. En inglés: solo UNA negación."},
-      {h:"Olvidar sujetos vacíos",b:"❌ Is cold. ✅ IT is cold. ❌ Are many. ✅ THERE are many."},
-    ]}/>
-    <Card color="#C62828" title="Falsos Amigos">{f.map((x,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"6px 14px",borderBottom:i<f.length-1?"1px solid #f0eeeb":"none",gap:6}}><div style={{width:5,height:5,borderRadius:"50%",background:dc[x.d],flexShrink:0}}/><div style={{flex:1}}><span style={{fontWeight:700,color:dc[x.d]}}>{x.es}</span> <span style={{color:"#ccc"}}>≠</span> <span style={{color:"#999",textDecoration:"line-through"}}>{x.en}</span><br/><span style={{fontSize:11,color:"#888"}}>{x.bien}</span></div></div>))}</Card>
+    <div style={{display:"flex",gap:4,marginBottom:12,justifyContent:"center"}}>
+      {labels.map((l,i)=>(<button key={i} onClick={()=>setHlCol(hlCol===i?null:i)} style={{padding:"5px 10px",borderRadius:16,border:hlCol===i?`2px solid ${cols[i]}`:"1.5px solid #ddd",background:hlCol===i?cols[i]:"#fff",color:hlCol===i?"#fff":"#666",fontSize:10,fontWeight:600,cursor:"pointer"}}>{l}</button>))}
+    </div>
+    <Card color="#1565C0" title="Pronombres en inglés" subtitle="Toca columnas para resaltar">
+      <div style={{display:"grid",gridTemplateColumns:"50px 1fr 1fr 1fr 1fr",padding:"6px 10px",fontSize:9,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}>
+        <div>ES</div>{labels.map((l,i)=>(<div key={i} style={{textAlign:"center",color:hlCol===i?cols[i]:"#999",borderBottom:hlCol===i?`3px solid ${cols[i]}`:"3px solid transparent",transition:"all 0.15s"}}>{l}</div>))}
+      </div>
+      {prns.map((p,j)=>(<div key={j} style={{display:"grid",gridTemplateColumns:"50px 1fr 1fr 1fr 1fr",padding:"5px 10px",borderBottom:j<prns.length-1?"1px solid #f0eeeb":"none",fontSize:12}}>
+        <span style={{color:"#aaa",fontSize:9}}>{p.es}</span>
+        {[p.sub,p.obj,p.ref,p.pos].map((v,i)=>(<span key={i} style={{textAlign:"center",fontWeight:hlCol===i?800:600,color:hlCol===i?cols[i]:"#333",background:hlCol===i?`${cols[i]}10`:"transparent",borderRadius:4,transition:"all 0.15s"}}>{v}</span>))}
+      </div>))}
+    </Card>
+    <Trampa text="El inglés SIEMPRE necesita sujeto. ❌ 'Is raining.' → ✅ 'IT is raining.' ❌ 'Are many people.' → ✅ 'THERE are many people.' En español se omite — en inglés nunca." />
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>'They' como singular (género desconocido/no binario)</div>
+      <div style={{fontSize:12,color:"#555"}}>Someone left <strong>their</strong> bag. · If anyone calls, tell <strong>them</strong> I'm busy.<br/><span style={{fontSize:11,color:"#888"}}>Esto es inglés moderno estándar, no un error.</span></div>
+    </div>
   </div>);
 }
 
-// GUÍAS 31-35: PRÁCTICO
-function Guide31(){return(<div><SG items={[
-  {h:"Formal (entrevistas, correos)",b:"Good morning. I would appreciate if you could...\nSincerely, / Best regards,"},
-  {h:"Casual (amigos, textos)",b:"Hey! What's up? Wanna grab lunch?\nk / lol / brb = ok / jaja / ya vuelvo"},
-  {h:"Email (semi-formal)",b:"Hi [nombre], Just wanted to follow up...\nBest, / Thanks,"},
-]}/><Chatt text="Chattanooga funciona con 'sir' y 'ma'am'. No es servil — es educado. A los niños se les enseña desde pequeños. Úsalos." /></div>);}
+function Guide19(){
+  const solutions=[
+    {term:"Y'all",region:"Sur (Chattanooga ✓)",desc:"Neutral en género, claro, cálido. Contracción de 'you all'. ALL Y'ALL = énfasis.",color:"#C62828"},
+    {term:"You guys",region:"Norte / Oeste",desc:"El más común fuera del sur. Criticado por no ser neutral en género.",color:"#1565C0"},
+    {term:"Youse",region:"Nueva York, Filadelfia",desc:"Regional, cada vez menos usado fuera de esas áreas.",color:"#6A1B9A"},
+    {term:"Folks",region:"Nacional (creciendo)",desc:"Inclusivo, moderno, cada vez más adoptado en contextos profesionales.",color:"#2E7D32"},
+  ];
+  return(<div>
+    <DarkBox title="El pronombre que falta"><div style={{fontSize:14}}>El inglés estándar NO tiene 'ustedes'. "You" es singular Y plural. Cada región lo resuelve diferente.</div></DarkBox>
+    {solutions.map((s,i)=>(<div key={i} style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:`2px solid ${s.color}`,marginBottom:8}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+        <span style={{fontSize:22,fontWeight:800,color:s.color}}>{s.term}</span>
+        <span style={{fontSize:11,color:"#888",marginLeft:"auto"}}>{s.region}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555"}}>{s.desc}</div>
+    </div>))}
+    <Chatt text="En Chattanooga, y'all NO es jerga — es el plural estándar de segunda persona. Úsalo. Nunca escribas 'ya'll' — el apóstrofo reemplaza 'ou' de 'you all'." />
+  </div>);
+}
 
-function Guide32(){return(<div><SG items={[
-  {h:"Modismos universales",b:"Piece of cake = pan comido · Break a leg = ¡mucha suerte!\nHit the nail on the head = dar en el clavo\nCost an arm and a leg = costar un ojo de la cara"},
-  {h:"🏔 Expresiones de Chattanooga",b:"Bless your heart = simpatía genuina O insulto suave\nI reckon = creo/supongo · Over yonder = por allá\nFixin' to = a punto de · Might could = tal vez pueda\nCarry me to = llévame a · Mash the button = presiona el botón\nCoke = cualquier refresco ('What kind of Coke?' 'Sprite')"},
-]}/><Chatt text="'Bless your heart' — el contexto es todo. Simpatía: 'She works three jobs, bless her heart.' Juicio suave: 'He wore that to church, bless his heart.'" /></div>);}
-
-function Guide33(){return(<SG items={[
-  {h:"Sistema imperial",b:"°F: 32=frío, 72=agradable, 100=muy caliente\nMillas (1 mi ≈ 1.6 km) · Libras (1 lb ≈ 0.45 kg)\nPies/pulgadas: 5'10\" = 178 cm"},
-  {h:"Dinero",b:"$4.99 = 'four ninety-nine'\nBuck = dólar · Quarter = 25¢ · Dime = 10¢ · Nickel = 5¢"},
-  {h:"Propinas (¡obligatorias!)",b:"Restaurantes: 18-20% · Café: $1-2\nNO dejar propina = MUY grosero en EE.UU."},
-  {h:"Fechas: Mes/Día/Año",b:"03/15/2024 = 15 de marzo. ¡NO es Día/Mes/Año!\nReloj de 12 horas: 3:00 PM (no 15:00)\nCódigo de área de Chattanooga: 423"},
-]}/>);}
-
-function Guide34(){return(<div><SG items={[
-  {h:"'How are you?' NO es pregunta real",b:"Respuesta: 'Good, thanks! You?' NO des detalles de tu salud. Es un saludo."},
-  {h:"Small talk = pegamento social",b:"Temas: clima, deportes, '¿De dónde eres?', cumplidos.\nNo es superficial — construye confianza."},
-  {h:"Cumplidos a desconocidos = normal",b:"'I love your shoes!' 'Great shirt!' Solo di 'Thank you!'"},
-]}/><Chatt text="La gente de Chattanooga es genuinamente amigable. Si alguien te saluda desde su pórtico, saluda de vuelta. Si te detienen la puerta, di 'thank you'. Te sentirás en casa rápido." /></div>);}
-
-function Guide35(){return(<div>
-  <DarkBox title="Donde los Apalaches se encuentran con el Sur Profundo"><div style={{fontSize:13}}>Chattanooga está en la <strong style={{color:"#FFE77A"}}>encrucijada</strong> del inglés apalachino y sureño.</div></DarkBox>
-  <SG items={[
-    {h:"Fusión pen/pin",b:"'pen' y 'pin' suenan idénticos (ambos como 'pin').\nSi dicen 'ink pen', están aclarando."},
-    {h:"Southern drawl",b:"Vocales estiradas: 'well'→'we-ull', 'can't'→'cay-unt'\nNo es habla perezosa — es un sistema fonológico."},
-    {h:"Y'all y All y'all",b:"Y'all = ustedes · All y'all = TODOS ustedes\nNunca escribas 'ya'll' — el apóstrofo va entre y y all."},
-    {h:"Modales dobles",b:"Might could = tal vez pueda\nMight should = tal vez debería\nUsed to could = antes podía\nFixin' to = a punto de"},
-    {h:"Vocabulario único",b:"Carry = llevar en carro · Cut on/off = encender/apagar\nMash = presionar · Holler = valle pequeño o gritar\nBuggy = carrito de super · Coke = cualquier refresco"},
-    {h:"Cultura de 'Sir' y 'Ma'am'",b:"Se espera con desconocidos, mayores, autoridades.\n'Yes sir' / 'Yes ma'am' — educación, no sumisión.\nUsarlo muestra que entiendes la cultura."},
-  ]}/>
-  <Nota text="El inglés de Chattanooga NO es 'mal inglés'. Es un dialecto con sus propias reglas e historia. Entenderlo te ayuda a conectar con la comunidad." />
+function Guide20(){return(<div>
+  <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,marginBottom:16}}>
+    {[{en:"this",es:"este/esta",note:"cerca de mí",color:"#6A1B9A"},{en:"that",es:"ese/esa",note:"lejos de mí",color:"#E65100"},{en:"these",es:"estos/estas",note:"cerca, plural",color:"#6A1B9A"},{en:"those",es:"esos/esas",note:"lejos, plural",color:"#E65100"}].map((d,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"12px",border:`2px solid ${d.color}30`,textAlign:"center"}}>
+      <div style={{fontSize:22,fontWeight:800,color:d.color}}>{d.en}</div>
+      <div style={{fontSize:12,color:"#888"}}>{d.es}</div>
+      <div style={{fontSize:10,color:"#aaa"}}>{d.note}</div>
+    </div>))}
+  </div>
+  <Nota text="¡Más simple que en español — sin concordancia de género! this/that/these/those no cambian por masculino/femenino." />
+  <Card color="#6A1B9A" title="Cuantificadores esenciales">
+    {[{q:"every + singular",ex:"Every student passed. (Cada estudiante)",color:"#6A1B9A"},
+      {q:"each + singular",ex:"Each student has a book. (Cada uno)",color:"#6A1B9A"},
+      {q:"all + plural",ex:"All students passed. (Todos)",color:"#1565C0"},
+      {q:"another + singular",ex:"another book = otro más",color:"#2E7D32"},
+      {q:"other + plural",ex:"other books = otros libros",color:"#2E7D32"},
+      {q:"the other",ex:"the other book = el otro (específico)",color:"#E65100"},
+      {q:"enough (después del adj.)",ex:"tall enough, enough money",color:"#C62828"},
+      {q:"such + sustantivo",ex:"such a beautiful day",color:"#C62828"},
+      {q:"so + adjetivo",ex:"so beautiful, so tired",color:"#C62828"},
+    ].map((q,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"6px 14px",borderBottom:i<8?"1px solid #f0eeeb":"none",gap:8}}>
+      <span style={{background:q.color,color:"#fff",padding:"2px 8px",borderRadius:4,fontSize:11,fontWeight:700,flexShrink:0,minWidth:100}}>{q.q}</span>
+      <span style={{fontSize:12,color:"#555"}}>{q.ex}</span>
+    </div>))}
+  </Card>
 </div>);}
 
-// ARRAY Y APP PRINCIPAL
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 21-23: ADJETIVOS
+// ═══════════════════════════════════════════════════════════════
+function Guide21(){
+  const order=["Opinión","Tamaño","Edad","Forma","Color","Origen","Material","Propósito"];
+  const colors=["#C62828","#E65100","#6A1B9A","#00695C","#1565C0","#880E4F","#2E7D32","#4527A0"];
+  return(<div>
+    <DarkBox title="La regla que nadie te explica"><div style={{fontSize:13}}>Los nativos <strong style={{color:"#FFE77A"}}>sienten</strong> el orden correcto pero no lo pueden explicar. "A lovely little old rectangular green French silver whittling knife" — en ESE orden exacto.</div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:16}}>
+      {order.map((o,i)=>(<span key={o} style={{padding:"5px 10px",borderRadius:16,background:`${colors[i]}15`,color:colors[i],fontSize:11,fontWeight:700,border:`1px solid ${colors[i]}30`}}>{i+1}. {o}</span>))}
+    </div>
+    <Card color="#2E7D32" title="Ejemplos">
+      {[{correct:"a nice big house",wrong:"a big nice house",rule:"opinión → tamaño"},{correct:"a beautiful old Italian painting",wrong:"an old beautiful Italian painting",rule:"opinión → edad → origen"},{correct:"a small round wooden table",wrong:"a wooden round small table",rule:"tamaño → forma → material"}].map((e,i)=>(<div key={i} style={{padding:"8px 16px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+        <span style={{color:"#2E7D32",fontWeight:700}}>✅ {e.correct}</span><br/>
+        <span style={{color:"#C62828",fontSize:12}}>❌ {e.wrong}</span> <span style={{color:"#aaa",fontSize:11}}>({e.rule})</span>
+      </div>))}
+    </Card>
+    <Nota text="¡Los adjetivos ingleses NO cambian por género ni número! 'A tall man, a tall woman, tall people' — siempre solo 'tall'. ¡Alivio enorme vs español!" />
+  </div>);
+}
+
+function Guide22(){
+  const [mode,setMode]=useState("short");
+  const tables={
+    short:{title:"Cortos: -er / -est",data:[{b:"tall",c:"taller",s:"tallest"},{b:"big",c:"bigger",s:"biggest"},{b:"happy",c:"happier",s:"happiest"},{b:"nice",c:"nicer",s:"nicest"},{b:"hot",c:"hotter",s:"hottest"}],color:"#E65100"},
+    long:{title:"Largos (2+ sílabas): more / most",data:[{b:"beautiful",c:"more beautiful",s:"most beautiful"},{b:"interesting",c:"more interesting",s:"most interesting"},{b:"expensive",c:"more expensive",s:"most expensive"},{b:"important",c:"more important",s:"most important"}],color:"#1565C0"},
+    irreg:{title:"Irregulares (memoriza)",data:[{b:"good",c:"better",s:"best"},{b:"bad",c:"worse",s:"worst"},{b:"far",c:"farther",s:"farthest"},{b:"little",c:"less",s:"least"},{b:"much/many",c:"more",s:"most"}],color:"#C62828"},
+  };
+  const t=tables[mode];
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {Object.entries(tables).map(([k,v])=>(<button key={k} onClick={()=>setMode(k)} style={{flex:1,maxWidth:160,padding:"8px",borderRadius:10,border:mode===k?`2.5px solid ${v.color}`:"1.5px solid #ddd",background:mode===k?v.color:"#fff",color:mode===k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{v.title.split(":")[0]}</button>))}
+    </div>
+    <Card color={t.color} title={t.title}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"6px 14px",fontSize:10,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}><div>Base</div><div>Comparativo</div><div>Superlativo</div></div>
+      {t.data.map((a,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",padding:"7px 14px",borderBottom:i<t.data.length-1?"1px solid #f0eeeb":"none",fontSize:13}}>
+        <span style={{color:"#888"}}>{a.b}</span>
+        <span style={{fontWeight:700,color:t.color}}>{a.c}</span>
+        <span style={{fontWeight:700,color:"#6A1B9A"}}>{a.s}</span>
+      </div>))}
+    </Card>
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:13,fontWeight:700,color:"#2E7D32",marginBottom:4}}>Comparaciones con as...as:</div>
+      <div style={{fontSize:13,color:"#555"}}>She's <strong>as tall as</strong> me. = Es tan alta como yo.<br/>It's <strong>not as cold as</strong> yesterday. = No hace tanto frío como ayer.</div>
+    </div>
+    <Chatt text="Intensificadores sureños: 'right' = muy ('right cold'), 'real' = realmente ('real nice'), 'plumb' = completamente ('plumb crazy')." />
+  </div>);
+}
+
+function Guide23(){return(<div>
+  <Card color="#00695C" title="Dónde van los adverbios">
+    {[{type:"Frecuencia: ANTES del verbo principal",ex:"I always wake up early. She never eats meat. He usually drives.",words:["always","usually","often","sometimes","rarely","never"],color:"#00695C"},
+      {type:"Modo: DESPUÉS del verbo/objeto",ex:"She speaks English fluently. He drives carefully. They work hard.",words:["fluently","carefully","quickly","slowly","well","hard"],color:"#1565C0"},
+    ].map((r,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i===0?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:13,fontWeight:700,color:r.color,marginBottom:4}}>{r.type}</div>
+      <div style={{fontSize:12,color:"#555",fontStyle:"italic",marginBottom:6}}>{r.ex}</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{r.words.map(w=>(<span key={w} style={{padding:"3px 8px",borderRadius:12,background:`${r.color}10`,color:r.color,fontSize:11,fontWeight:600,border:`1px solid ${r.color}25`}}>{w}</span>))}</div>
+    </div>))}
+  </Card>
+  <DarkBox title="Trampas con adverbios"><div style={{fontSize:13,lineHeight:1.6,textAlign:"left"}}>
+    <strong style={{color:"#EF9A9A"}}>hard ≠ hardly:</strong> She works <strong style={{color:"#FFE77A"}}>hard</strong> (mucho) vs She <strong style={{color:"#FFE77A"}}>hardly</strong> works (apenas)<br/>
+    <strong style={{color:"#90CAF9"}}>-ly no siempre necesario:</strong> He drives slow / slowly (ambos OK en americano)<br/>
+    <strong style={{color:"#81C784"}}>good vs well:</strong> She sings <strong style={{color:"#FFE77A"}}>well</strong> (formal) · She sings <strong style={{color:"#FFE77A"}}>good</strong> (casual americano)
+  </div></DarkBox>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 24: IN/ON/AT — EXPLORADOR INTERACTIVO
+// ═══════════════════════════════════════════════════════════════
+function Guide24(){
+  const [mode,setMode]=useState("time");
+  const rules={time:[
+    {prep:"IN",use:"Meses, años, estaciones, partes del día",items:["in January","in 2024","in summer","in the morning"],color:"#C62828"},
+    {prep:"ON",use:"Días, fechas específicas",items:["on Monday","on July 4th","on my birthday","on weekends"],color:"#E65100"},
+    {prep:"AT",use:"Horas, comidas, 'night'",items:["at 3 o'clock","at noon","at night","at Christmas"],color:"#1565C0"},
+  ],place:[
+    {prep:"IN",use:"Espacios cerrados, ciudades, países",items:["in the room","in Chattanooga","in the US","in a car"],color:"#C62828"},
+    {prep:"ON",use:"Superficies, calles, pisos, transporte público",items:["on the table","on Main St","on the 2nd floor","on the bus"],color:"#E65100"},
+    {prep:"AT",use:"Puntos específicos, direcciones, eventos",items:["at the door","at 123 Main St","at school","at the party"],color:"#1565C0"},
+  ]};
+  return(<div>
+    <DarkBox title="Sin lógica, solo memoriza"><div style={{fontSize:13}}>Estas tres preposiciones son la parte más frustrante del inglés. Las reglas son <strong style={{color:"#EF9A9A"}}>mayormente arbitrarias</strong>.</div></DarkBox>
+    <div style={{display:"flex",gap:8,marginBottom:14,justifyContent:"center"}}>
+      {[{k:"time",l:"⏰ Tiempo"},{k:"place",l:"📍 Lugar"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:180,padding:"10px",borderRadius:10,border:mode===m.k?"2.5px solid #C62828":"1.5px solid #ddd",background:mode===m.k?"#C62828":"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{m.l}</button>))}
+    </div>
+    {rules[mode].map((r,i)=>(<div key={i} style={{background:"#fff",borderRadius:12,overflow:"hidden",border:`2px solid ${r.color}`,marginBottom:8}}>
+      <div style={{background:r.color,padding:"8px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{color:"#fff",fontSize:20,fontWeight:800}}>{r.prep}</span>
+        <span style={{color:"rgba(255,255,255,0.7)",fontSize:11}}>{r.use}</span>
+      </div>
+      <div style={{padding:"8px 14px",display:"flex",flexWrap:"wrap",gap:4}}>
+        {r.items.map((e,j)=>(<span key={j} style={{padding:"4px 10px",borderRadius:8,background:`${r.color}10`,color:r.color,fontSize:12,fontWeight:600,border:`1px solid ${r.color}20`}}>{e}</span>))}
+      </div>
+    </div>))}
+    <Chatt text="'Over yonder' = por allá. 'Up the road a piece' = a poca distancia. 'Down the mountain' = en el valle." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 25-26: PREPOSICIONES Y CONECTORES
+// ═══════════════════════════════════════════════════════════════
+function Guide25(){
+  const pairs=[
+    {en:"depend ON",es:"depender DE",color:"#C62828"},{en:"consist OF",es:"consistir EN",color:"#1565C0"},
+    {en:"interested IN",es:"interesado EN",color:"#2E7D32"},{en:"dream ABOUT",es:"soñar CON",color:"#6A1B9A"},
+    {en:"married TO",es:"casado CON",color:"#E65100"},{en:"worry ABOUT",es:"preocuparse POR",color:"#880E4F"},
+    {en:"listen TO",es:"escuchar ∅",color:"#C62828"},{en:"look AT",es:"mirar ∅",color:"#1565C0"},
+    {en:"wait FOR",es:"esperar ∅",color:"#2E7D32"},{en:"arrive IN/AT",es:"llegar A (¡nunca TO!)",color:"#E65100"},
+  ];
+  return(<div>
+    <DarkBox title="No coinciden con el español"><div style={{fontSize:13}}>Las preposiciones que acompañan a cada verbo son <strong style={{color:"#EF9A9A"}}>diferentes en cada idioma</strong>. Memorízalas como unidad.</div></DarkBox>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+      {pairs.map((p,i)=>(<div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:`1.5px solid ${p.color}20`,textAlign:"center"}}>
+        <div style={{fontSize:14,fontWeight:800,color:p.color}}>{p.en}</div>
+        <div style={{fontSize:11,color:"#888",marginTop:2}}>{p.es}</div>
+      </div>))}
+    </div>
+    <Trampa text="❌ I arrived TO Chattanooga. ✅ I arrived IN Chattanooga (ciudad). ✅ I arrived AT the airport (punto). Nunca 'arrive to'." />
+  </div>);
+}
+
+function Guide26(){
+  const connectors=[
+    {fn:"Causa",cas:"because",form:"since / due to",color:"#C62828"},
+    {fn:"Contraste",cas:"but",form:"although / however",color:"#1565C0"},
+    {fn:"Resultado",cas:"so",form:"therefore / as a result",color:"#2E7D32"},
+    {fn:"Adición",cas:"and / also / too",form:"moreover / furthermore",color:"#6A1B9A"},
+    {fn:"Condición",cas:"if",form:"provided that / unless",color:"#E65100"},
+  ];
+  return(<div>
+    <Card color="#1565C0" title="Conectores: Casual ↔ Formal">
+      <div style={{display:"grid",gridTemplateColumns:"75px 1fr 1fr",padding:"6px 14px",fontSize:10,fontWeight:700,color:"#999",borderBottom:"1px solid #eee"}}><div>Función</div><div>Casual (hablar)</div><div>Formal (escribir)</div></div>
+      {connectors.map((c,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"75px 1fr 1fr",padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:12,fontWeight:700,color:c.color}}>{c.fn}</span>
+        <span style={{fontSize:14,fontWeight:700,color:"#333"}}>{c.cas}</span>
+        <span style={{fontSize:12,color:"#888"}}>{c.form}</span>
+      </div>))}
+    </Card>
+    <Nota text="Usa los conectores casuales al hablar, los formales al escribir. 'However' en una conversación suena raro. 'But' en un ensayo suena informal." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 27-29: ESTRUCTURA DE ORACIONES
+// ═══════════════════════════════════════════════════════════════
+function Guide27(){return(<div>
+  <DarkBox title="Adjetivos ANTES del sustantivo"><div style={{fontSize:14}}>
+    <span style={{color:"#81C784"}}>✅ a <strong style={{color:"#FFE77A"}}>red</strong> car</span> · <span style={{color:"#EF9A9A"}}>❌ a car red</span><br/>
+    <span style={{color:"#81C784"}}>✅ the <strong style={{color:"#FFE77A"}}>old</strong> house</span> · <span style={{color:"#EF9A9A"}}>❌ the house old</span><br/>
+    <span style={{color:"#aaa",fontSize:12}}>¡Al revés del español!</span>
+  </div></DarkBox>
+  <Card color="#C62828" title="⚠ Preguntas con DO/DOES/DID" subtitle="¡Obligatorio!">
+    {[{type:"Afirmación",ex:"You like coffee.",col:"#2E7D32"},{type:"Pregunta",ex:"DO you like coffee? (NO 'Like you coffee?')",col:"#C62828"},{type:"Negación",ex:"I DON'T like coffee. (NO 'I not like coffee.')",col:"#C62828"},{type:"Pasado",ex:"DID you go? (NO 'Went you?')",col:"#C62828"}].map((r,i)=>(<div key={i} style={{padding:"8px 16px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${r.col}`}}>
+      <span style={{fontSize:11,fontWeight:700,color:r.col}}>{r.type}:</span> <span style={{fontSize:13,color:"#555",fontStyle:"italic"}}>{r.ex}</span>
+    </div>))}
+  </Card>
+  <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>Tag questions (muletillas):</div>
+    <div style={{fontSize:13,color:"#555",lineHeight:1.6}}>
+      You're from Mexico, <strong style={{color:"#6A1B9A"}}>aren't you?</strong> (¿verdad?)<br/>
+      She speaks English, <strong style={{color:"#6A1B9A"}}>doesn't she?</strong><br/>
+      <span style={{fontSize:11,color:"#888"}}>Oración positiva → tag negativo (y viceversa)</span>
+    </div>
+  </div>
+  <Trampa text="Formar preguntas es la trampa #1. En español inviertes o subes la entonación. En inglés NECESITAS do/does/did. Siempre." />
+</div>);}
+
+function Guide28(){return(<div>
+  <Card color="#6A1B9A" title="Retroceso de tiempo verbal (Reported Speech)">
+    {[{direct:"'I am tired'",reported:"She said she WAS tired.",rule:"Presente → Pasado"},
+      {direct:"'I will go'",reported:"He said he WOULD go.",rule:"Will → Would"},
+      {direct:"'I went'",reported:"She said she HAD gone.",rule:"Pasado → Past Perfect"},
+      {direct:"'I can help'",reported:"He said he COULD help.",rule:"Can → Could"},
+    ].map((r,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 30px 1fr",alignItems:"center",gap:4}}>
+        <span style={{fontSize:13,color:"#888",textAlign:"right"}}>{r.direct}</span>
+        <span style={{fontSize:14,color:"#ccc",textAlign:"center"}}>→</span>
+        <span style={{fontSize:13,fontWeight:700,color:"#6A1B9A"}}>{r.reported}</span>
+      </div>
+      <div style={{fontSize:10,color:"#aaa",marginTop:2,textAlign:"center"}}>{r.rule}</div>
+    </div>))}
+  </Card>
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5"}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#C62828",marginBottom:4}}>Preguntas reportadas</div>
+      <div style={{fontSize:12,color:"#555"}}>'Where do you live?'<br/>→ He asked where I <strong>lived</strong>.<br/><span style={{fontSize:11,color:"#888"}}>¡Orden de afirmación, NO de pregunta!</span></div>
+    </div>
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5"}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#2E7D32",marginBottom:4}}>Mandatos reportados</div>
+      <div style={{fontSize:12,color:"#555"}}>'Sit down'<br/>→ She told me <strong>to sit down</strong>.<br/>'Don't touch' → told me <strong>not to touch</strong>.</div>
+    </div>
+  </div>
+</div>);}
+
+function Guide29(){return(<div>
+  <Card color="#2E7D32" title="Pronombres relativos" subtitle="Quién, cuál, que, cuyo">
+    {[{pron:"WHO",use:"personas (sujeto)",ex:"The woman who called is here.",color:"#2E7D32"},
+      {pron:"WHICH",use:"cosas (no-definitorias, con comas)",ex:"This book, which I bought yesterday, is great.",color:"#1565C0"},
+      {pron:"THAT",use:"personas o cosas (definitorias, sin comas)",ex:"The book that I read was good.",color:"#6A1B9A"},
+      {pron:"WHOSE",use:"posesión",ex:"The man whose car broke down...",color:"#E65100"},
+      {pron:"WHERE",use:"lugar",ex:"The restaurant where we ate...",color:"#C62828"},
+      {pron:"∅ omitido",use:"cuando es OBJETO (se puede omitir)",ex:"The book (that) I read... ✅ The man (who) I met... ✅",color:"#888"},
+    ].map((r,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${r.color}`}}>
+      <span style={{background:r.color,color:"#fff",padding:"1px 8px",borderRadius:4,fontSize:12,fontWeight:800}}>{r.pron}</span> <span style={{fontSize:11,color:"#888"}}>{r.use}</span><br/>
+      <span style={{fontSize:12,color:"#555",fontStyle:"italic"}}>{r.ex}</span>
+    </div>))}
+  </Card>
+  <Trampa text="Sujeto = NO se puede omitir: 'The man WHO called...' ✅ Objeto = SÍ se puede omitir: 'The book (that) I read...' ✅" />
+</div>);}
+
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍA 30: ERRORES COMUNES Y FALSOS AMIGOS
+// ═══════════════════════════════════════════════════════════════
+function Guide30(){
+  const falsos=[
+    {es:"actualmente",parece:"actually",real:"currently",bien:"Actually = en realidad",d:5},
+    {es:"asistir",parece:"assist",real:"to attend",bien:"Assist = ayudar",d:5},
+    {es:"embarazada",parece:"embarrassed",real:"pregnant",bien:"Embarrassed = avergonzado/a",d:5},
+    {es:"realizar",parece:"realize",real:"to carry out",bien:"Realize = darse cuenta",d:4},
+    {es:"sensible",parece:"sensible",real:"sensitive",bien:"Sensible = sensato/a",d:4},
+    {es:"éxito",parece:"exit",real:"success",bien:"Exit = salida",d:4},
+    {es:"librería",parece:"library",real:"bookstore",bien:"Library = biblioteca",d:4},
+    {es:"constipado",parece:"constipated",real:"having a cold",bien:"Constipated = estreñido",d:5},
+    {es:"soportar",parece:"support",real:"to tolerate",bien:"Support = apoyar",d:4},
+    {es:"molestar",parece:"molest",real:"to bother",bien:"Molest = abusar (¡MUY diferente!)",d:5},
+  ];
+  const dColors={5:"#C62828",4:"#E65100"};
+  const [search,setSearch]=useState("");
+  const filtered=falsos.filter(f=>f.es.includes(search.toLowerCase())||f.parece.includes(search.toLowerCase()));
+  return(<div>
+    <Card color="#E65100" title="Errores estructurales que todos cometemos">
+      {[{wrong:"She is a beautiful car",right:"IT is a beautiful car",rule:"Objetos = siempre 'it'. No filtres el género del español."},
+        {wrong:"I don't have nothing",right:"I don't have anything",rule:"Solo UNA negación en inglés. Doble negación = positivo."},
+        {wrong:"People is nice here",right:"People ARE nice here",rule:"'People' = siempre plural."},
+        {wrong:"Is cold today",right:"IT is cold today",rule:"Sujeto vacío (it/there) es obligatorio siempre."},
+        {wrong:"I am agree",right:"I agree",rule:"'Agree' ya es verbo — no necesita 'am'."},
+      ].map((e,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><span style={{color:"#C62828",fontSize:13}}>❌ {e.wrong}</span><span style={{color:"#2E7D32",fontSize:13}}>✅ {e.right}</span></div>
+        <div style={{fontSize:11,color:"#888",marginTop:2}}>{e.rule}</div>
+      </div>))}
+    </Card>
+    <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Buscar falso amigo..." style={{width:"100%",padding:"8px 14px",borderRadius:10,border:"1.5px solid #ddd",fontSize:13,marginBottom:8,outline:"none"}}/>
+    <Card color="#C62828" title={`Falsos Amigos (${filtered.length})`}>
+      {filtered.map((f,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"7px 14px",borderBottom:i<filtered.length-1?"1px solid #f0eeeb":"none",gap:8}}>
+        <div style={{width:5,height:5,borderRadius:"50%",background:dColors[f.d],flexShrink:0}}/>
+        <div style={{flex:1}}><span style={{fontWeight:700,color:dColors[f.d]}}>{f.es}</span> <span style={{color:"#ccc"}}>≠</span> <span style={{color:"#999",textDecoration:"line-through"}}>{f.parece}</span><br/><span style={{fontSize:11,color:"#888"}}>{f.bien}</span></div>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUÍAS 31-35: PRÁCTICO — TODO VISIBLE
+// ═══════════════════════════════════════════════════════════════
+function Guide31(){
+  const [mode,setMode]=useState("formal");
+  const data={
+    formal:{title:"Formal (entrevistas, correos)",examples:["Good morning/afternoon.","I would appreciate if you could...","Please find attached...","Sincerely, / Best regards,"],color:"#880E4F"},
+    casual:{title:"Casual (amigos, textos)",examples:["Hey! What's up? / How's it going?","Wanna grab lunch? (want to)","Gonna be late (going to)","k / lol / brb / np = ok / jaja / ya vuelvo / de nada"],color:"#00695C"},
+    email:{title:"Email (semi-formal)",examples:["Hi [nombre], / Hello [nombre],","Just wanted to follow up on...","Let me know if you have any questions.","Best, / Thanks, / Cheers,"],color:"#1565C0"},
+  };
+  const d=data[mode];
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {Object.entries(data).map(([k,v])=>(<button key={k} onClick={()=>setMode(k)} style={{flex:1,maxWidth:140,padding:"8px",borderRadius:10,border:mode===k?`2.5px solid ${v.color}`:"1.5px solid #ddd",background:mode===k?v.color:"#fff",color:mode===k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:11}}>{v.title.split("(")[0]}</button>))}
+    </div>
+    <Card color={d.color} title={d.title}>
+      {d.examples.map((e,i)=>(<div key={i} style={{padding:"8px 16px",borderBottom:i<d.examples.length-1?"1px solid #f0eeeb":"none",fontSize:13,color:"#555",fontStyle:"italic"}}>{e}</div>))}
+    </Card>
+    <Chatt text="Chattanooga funciona con 'sir' y 'ma'am'. No es servil — es educado. A los niños se les enseña desde pequeños. Úsalos y encajarás." />
+  </div>);
+}
+
+function Guide32(){
+  const [mode,setMode]=useState("universal");
+  const universal=[{en:"It's a piece of cake",es:"Es pan comido"},{en:"Break a leg",es:"¡Mucha suerte!"},{en:"Hit the nail on the head",es:"Dar en el clavo"},{en:"Cost an arm and a leg",es:"Costar un ojo de la cara"},{en:"No way!",es:"¡No puede ser!"},{en:"My bad",es:"Mi culpa"},{en:"I'm down",es:"Le entro / me apunto"},{en:"It's not my cup of tea",es:"No es lo mío"}];
+  const southern=[{en:"Bless your heart",es:"Simpatía genuina O insulto suave"},{en:"I reckon",es:"Yo creo / supongo"},{en:"Over yonder",es:"Por allá"},{en:"Fixin' to",es:"A punto de"},{en:"Might could",es:"Tal vez pueda"},{en:"Carry me to the store",es:"Llévame a la tienda (en carro)"},{en:"Mash the button",es:"Presiona el botón"},{en:"Coke (= any soda)",es:"Cualquier refresco ('What kind of Coke?' 'Sprite')"}];
+  const items=mode==="universal"?universal:southern;
+  return(<div>
+    <div style={{display:"flex",gap:8,marginBottom:14,justifyContent:"center"}}>
+      {[{k:"universal",l:"🇺🇸 Universales",c:"#00695C"},{k:"southern",l:"🏔 Chattanooga",c:"#E65100"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:200,padding:"10px",borderRadius:10,border:mode===m.k?`2.5px solid ${m.c}`:"1.5px solid #ddd",background:mode===m.k?m.c:"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{m.l}</button>))}
+    </div>
+    <Card color={mode==="universal"?"#00695C":"#E65100"} title={mode==="universal"?"Modismos americanos":"Expresiones de Chattanooga"}>
+      {items.map((e,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 16px",borderBottom:i<items.length-1?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+        <span style={{fontSize:14,fontWeight:700,color:mode==="universal"?"#00695C":"#E65100"}}>{e.en}</span>
+        <span style={{fontSize:12,color:"#888",textAlign:"right",maxWidth:"50%"}}>{e.es}</span>
+      </div>))}
+    </Card>
+    <Chatt text="'Bless your heart' — el contexto es todo. Simpatía: 'She works three jobs, bless her heart.' Juicio suave: 'He wore that to church, bless his heart.'" />
+  </div>);
+}
+
+function Guide33(){
+  const conversions=[{us:"°F",metric:"°C",rule:"32°F = 0°C · 72°F = agradable · 100°F = muy caliente",icon:"🌡"},{us:"millas",metric:"km",rule:"1 milla ≈ 1.6 km",icon:"🛣"},{us:"libras (lbs)",metric:"kg",rule:"1 lb ≈ 0.45 kg · 150 lbs ≈ 68 kg",icon:"⚖"},{us:"pies/pulgadas",metric:"cm",rule:"5'10\" = 178 cm · 6' = 183 cm",icon:"📏"},{us:"galones",metric:"litros",rule:"1 galón ≈ 3.8 litros",icon:"🥛"}];
+  return(<div>
+    <Card color="#1565C0" title="Sistema imperial (perdón)">
+      {conversions.map((c,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"30px 80px 50px 1fr",alignItems:"center",padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none",gap:6}}>
+        <span style={{fontSize:18}}>{c.icon}</span>
+        <span style={{fontSize:13,fontWeight:700,color:"#1565C0"}}>{c.us}</span>
+        <span style={{fontSize:11,color:"#aaa"}}>{c.metric}</span>
+        <span style={{fontSize:11,color:"#888"}}>{c.rule}</span>
+      </div>))}
+    </Card>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+      <Card color="#C62828" title="Propinas (¡obligatorias!)">
+        {[{place:"Restaurantes",tip:"18-20%"},{place:"Cafeterías",tip:"$1-2"},{place:"Peluquería",tip:"15-20%"},{place:"Uber/Lyft",tip:"15-20%"}].map((t,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",fontSize:12}}>
+          <span style={{color:"#555"}}>{t.place}</span><span style={{fontWeight:700,color:"#C62828"}}>{t.tip}</span>
+        </div>))}
+      </Card>
+      <Card color="#E65100" title="Dinero">
+        {[{n:"$4.99",say:"'four ninety-nine'"},{n:"$20",say:"'twenty bucks' (casual)"},{n:"25¢",say:"a quarter"},{n:"10¢ / 5¢",say:"a dime / a nickel"}].map((m,i)=>(<div key={i} style={{padding:"5px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",fontSize:12}}>
+          <span style={{fontWeight:700,color:"#E65100"}}>{m.n}</span> = <span style={{color:"#555"}}>{m.say}</span>
+        </div>))}
+      </Card>
+    </div>
+    <Trampa text="Fechas: Mes/Día/Año (03/15 = 15 de marzo). Reloj: 12 horas AM/PM. NO dejar propina = MUY grosero. Código de área Chattanooga: 423." />
+  </div>);
+}
+
+function Guide34(){return(<div>
+  <DarkBox title="'How are you?' NO es una pregunta real"><div style={{fontSize:14,lineHeight:1.6}}>
+    Es un <strong style={{color:"#FFE77A"}}>saludo</strong>, no una consulta médica.<br/>
+    Respuesta correcta: <strong style={{color:"#81C784"}}>"Good, thanks! You?"</strong><br/>
+    <span style={{color:"#EF9A9A"}}>NO des detalles sobre tu salud.</span>
+  </div></DarkBox>
+  <Card color="#4527A0" title="El small talk como pegamento social">
+    {[{topic:"Clima",ex:"Beautiful day, isn't it? — Tema #1 universal.",color:"#4527A0"},
+      {topic:"'Where are you from?'",ex:"Están siendo amigables, no entrometidos. Responde con calidez.",color:"#1565C0"},
+      {topic:"Cumplidos a desconocidos",ex:"'I love your shoes!' — Completamente normal. Solo di 'Thank you!'",color:"#2E7D32"},
+      {topic:"Despedida",ex:"'Have a good one!' = Que te vaya bien. 'Take care!' = ¡Cuídate!",color:"#E65100"},
+    ].map((t,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${t.color}`}}>
+      <span style={{fontSize:13,fontWeight:700,color:t.color}}>{t.topic}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{t.ex}</span>
+    </div>))}
+  </Card>
+  <Chatt text="La gente de Chattanooga es genuinamente amigable. Si alguien te saluda desde su pórtico, saluda de vuelta. Si te detienen la puerta, di 'thank you'. Te sentirás en casa rápido." />
+</div>);}
+
+function Guide35(){
+  const features=[
+    {name:"Fusión pen/pin",desc:"'pen' y 'pin' suenan idénticos (ambos como 'pin'). Igual con 'ten/tin', 'hem/him'. Si alguien dice 'ink pen', están aclarando porque los sonidos se fusionan.",color:"#C62828"},
+    {name:"Southern drawl",desc:"Las vocales se estiran y a veces se dividen: 'well' → 'we-ull', 'can't' → 'cay-unt', 'here' → 'he-yur'. No es habla perezosa — es un sistema fonológico distinto.",color:"#1565C0"},
+    {name:"Y'all / All y'all",desc:"Y'all = ustedes (2+). All y'all = TODOS ustedes (énfasis). Nunca escribas 'ya'll' — el apóstrofo reemplaza 'ou' de 'you all'.",color:"#2E7D32"},
+    {name:"Modales dobles",desc:"Might could = tal vez pueda. Might should = tal vez debería. Used to could = antes podía. Fixin' to = estoy a punto de. El inglés estándar solo permite UN modal. El sureño los acumula.",color:"#6A1B9A"},
+    {name:"Vocabulario único",desc:"Carry = llevar a alguien en carro ('Carry me to Walmart'). Cut on/off = encender/apagar ('Cut the light on'). Mash = presionar ('Mash that button'). Holler = valle pequeño o gritar. Buggy = carrito de super. Coke = CUALQUIER refresco ('What kind of Coke?' 'Sprite').",color:"#E65100"},
+    {name:"Sir y Ma'am",desc:"Se espera en TODAS las interacciones con desconocidos, mayores y autoridades. 'Yes sir' / 'Yes ma'am' — no es ser sumiso, es ser educado. A los niños se les corrige si no lo dicen. Usarlo muestra que entiendes la cultura local.",color:"#880E4F"},
+  ];
+  return(<div>
+    <DarkBox title="Donde los Apalaches se encuentran con el Sur Profundo"><div style={{fontSize:13}}>Chattanooga está en la <strong style={{color:"#FFE77A"}}>encrucijada</strong> del inglés apalachino y sureño. El dialecto local mezcla ambas tradiciones, más su propio sabor.</div></DarkBox>
+    {features.map((f,i)=>(<div key={i} style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:`2px solid ${f.color}20`,marginBottom:8}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+        <div style={{width:4,height:24,borderRadius:2,background:f.color,flexShrink:0}}/>
+        <span style={{fontSize:15,fontWeight:800,color:f.color}}>{f.name}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>{f.desc}</div>
+    </div>))}
+    <Nota text="El inglés de Chattanooga NO es 'mal inglés'. Es un dialecto distinto con sus propias reglas e historia. Entenderlo te ayuda a conectar con la comunidad y comprender lo que la gente realmente dice." />
+  </div>);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ARRAY DE COMPONENTES
+// ═══════════════════════════════════════════════════════════════
 const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32,Guide33,Guide34,Guide35];
 
-const App = function(){
-  const[page,setPage]=useState(0);const[menuOpen,setMenuOpen]=useState(false);const contentRef=useRef(null);
-  const meta=guidesMeta[page];const GuideComp=guideComponents[page];const total=guidesMeta.length;
+// ═══════════════════════════════════════════════════════════════
+// APLICACIÓN PRINCIPAL
+// ═══════════════════════════════════════════════════════════════
+const App = function EnglishGuide(){
+  const[page,setPage]=useState(0);
+  const[menuOpen,setMenuOpen]=useState(false);
+  const contentRef=useRef(null);
+  const meta=guidesMeta[page];
+  const GuideComp=guideComponents[page];
+  const total=guidesMeta.length;
+
   const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
-  const prev=()=>{if(page>0)goTo(page-1);};const next=()=>{if(page<total-1)goTo(page+1);};
-  useEffect(()=>{const handler=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();};window.addEventListener("keydown",handler);return()=>window.removeEventListener("keydown",handler);});
+  const prev=()=>{if(page>0)goTo(page-1);};
+  const next=()=>{if(page<total-1)goTo(page+1);};
+
+  useEffect(()=>{
+    const handler=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();};
+    window.addEventListener("keydown",handler);return()=>window.removeEventListener("keydown",handler);
+  });
+
   return(
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
-      <style>{"@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}"}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}`}</style>
+
       <div style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
         <button onClick={()=>setMenuOpen(!menuOpen)} style={{width:36,height:36,borderRadius:10,border:"1.5px solid #e0ddd5",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#555",flexShrink:0}}>☰</button>
-        <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div><div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div></div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
+          <div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div>
+        </div>
         <div style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
       </div>
-      <div ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}><div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div></div>
+
+      <div ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
+        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
+      </div>
+
       <div style={{background:"#fff",borderTop:"1px solid #eee",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
         <button onClick={prev} disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===0?"#f5f5f5":"#fff",color:page===0?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Anterior</button>
-        <div style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
+        <div style={{display:"flex",gap:2}}>
+          {guidesMeta.map((_,i)=>(<div key={i} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}
+        </div>
         <button onClick={next} disabled={page===total-1} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===total-1?"#f5f5f5":"#fff",color:page===total-1?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Siguiente →</button>
       </div>
+
       {menuOpen&&<div onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:20}}/>}
       <div style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#fff",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.15)":"none",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}><div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>Inglés Americano</div><div style={{fontSize:12,color:"#999"}}>35 guías para hispanohablantes</div></div>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}>
+          <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>Inglés Americano</div>
+          <div style={{fontSize:12,color:"#999"}}>35 guías interactivas para hispanohablantes</div>
+        </div>
         <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
-          {categories.map(cat=>{const items=guidesMeta.filter(g=>g.cat===cat);return(<div key={cat}><div style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
-            {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(<button key={g.id} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?g.color+"12":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?"3px solid "+g.color:"3px solid transparent"}}><span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span><div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div><div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div></div><span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span></button>);})}
-          </div>);})}
+          {categories.map(cat=>{
+            const items=guidesMeta.filter(g=>g.cat===cat);
+            return(<div key={cat}>
+              <div style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
+              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
+                <button key={g.id} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?`${g.color}12`:"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent"}}>
+                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
+                    <div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div>
+                  </div>
+                  <span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span>
+                </button>
+              );})}
+            </div>);
+          })}
         </div>
       </div>
     </div>
