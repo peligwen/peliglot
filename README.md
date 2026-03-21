@@ -2,9 +2,7 @@
 
 **Interactive language learning guides you can flip through.**
 
-Free, open-source visual grammar references for Spanish, Arabic, and Hawaiian. No accounts, no ads, no tracking. Just open and learn.
-
-🌐 **[Live Site →](https://YOUR_USERNAME.github.io/peliglot/)**
+Free, open-source visual grammar references for Spanish, Arabic, English (for Spanish speakers), German, and Hawaiian. No accounts, no ads, no tracking. Just open and learn.
 
 ---
 
@@ -16,53 +14,65 @@ Covers pronunciation, all major verb tenses, noun gender/plurals, pronouns, ser 
 ### 🇵🇸 Arabic (30 guides)
 The full writing system (alphabet, diacritics, connected writing), phonology, noun system (gender, plurals, case, iḍāfa), pronouns, verb forms I–X, sentence structure, and the root system. Includes Palestinian Arabic dialect notes throughout.
 
+### 🇺🇸 American English — for Spanish speakers (35 guides)
+All UI in Spanish. Pronunciation challenges, the full verb system (tenses, modals, conditionals, phrasal verbs), articles, countable/uncountable nouns, adjective order, prepositions, sentence structure, false friends, and practical/cultural guides. Chattanooga/Southern English dialect notes throughout.
+
+### 🇩🇪 German (33 guides)
+The four cases, two-way prepositions, grammatical gender with prediction patterns, five plural types, compound nouns, adjective endings, the V2 word order rule, verb brackets, separable/inseparable prefixes, modal verbs, Perfekt vs Präteritum, Konjunktiv II, modal particles, and formal/informal register.
+
 ### 🌺 Hawaiian (30 guides)
 The 13-letter alphabet, ʻokina & kahakō, VSO sentence structure, the O/A possessive class system, personal pronouns (with dual and inclusive/exclusive we), TAM markers, directional particles, and cultural context including language revival.
 
-## How It Works
+## Tech Stack
 
-Each language guide is a single self-contained HTML file with React rendered client-side. No build step, no server, no dependencies to install.
+- **React** — UI components
+- **Vite** — build tool
+- **React Router** — client-side routing with lazy-loaded guides
+- **Cloudflare Pages** — hosting
 
-- **Prev/Next buttons** to flip through guides sequentially
-- **Arrow keys** for keyboard navigation
-- **Dot indicators** to jump to any guide
-- **☰ Sidebar menu** with categorized navigation
-- **Interactive elements** — tap letters, toggle views, expand sections
+Each language guide is code-split into its own chunk for fast initial loads.
 
-## Hosting
+## Deployment (Cloudflare Pages)
 
-The site is static HTML — deploy anywhere:
+1. Push this repo to GitHub
+2. In Cloudflare Pages dashboard, connect the repo
+3. Set build settings:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+   - **Node version:** `18` (or higher)
+4. Deploy
 
-- **GitHub Pages** (recommended): Enable Pages in repo settings, set source to `main` branch, root folder
-- **Netlify**: Drag and drop the repo folder
-- **Any web server**: Just serve the files
+Cloudflare will automatically rebuild on each push.
 
 ## Local Development
-
-No build step needed. Just open `index.html` in a browser:
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/peliglot.git
 cd peliglot
-open index.html
+npm install
+npm run dev
 ```
 
-Or use a local server:
-
-```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
+Open `http://localhost:5173`
 
 ## Project Structure
 
 ```
 peliglot/
-├── index.html              # Landing page
-├── guides/
-│   ├── spanish.html        # 25 Spanish grammar guides
-│   ├── arabic.html         # 30 Arabic grammar guides
-│   └── hawaiian.html       # 30 Hawaiian grammar guides
+├── index.html              # Vite entry point
+├── package.json
+├── vite.config.js
+├── public/
+│   └── _redirects          # Cloudflare SPA routing
+├── src/
+│   ├── main.jsx            # React mount
+│   ├── App.jsx             # Router + landing page
+│   └── guides/
+│       ├── spanish.jsx     # 25 guides
+│       ├── arabic.jsx      # 30 guides
+│       ├── english.jsx     # 35 guides (UI in Spanish)
+│       ├── german.jsx      # 33 guides
+│       └── hawaiian.jsx    # 30 guides
 └── README.md
 ```
 
