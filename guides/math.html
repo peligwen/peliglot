@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Math as a Language — Peliglot</title>
+  <meta name="description" content="32 interactive guides to practical math — from number sense to personal finance">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+    body { -webkit-font-smoothing: antialiased; }
+  </style>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+const { useState, useEffect, useRef } = React;
+
+
+// ═══════════════════════════════════════════════════════════════
+// METADATA
+// ═══════════════════════════════════════════════════════════════
+const guidesMeta=[
+  {id:1,title:"How Numbers Work",subtitle:"Place value & the number line",cat:"Numbers",color:"#1565C0",icon:"🔢"},
+  {id:2,title:"Negative Numbers",subtitle:"Debt, temperature & direction",cat:"Numbers",color:"#C62828",icon:"➖"},
+  {id:3,title:"Fractions, Decimals & %",subtitle:"Three ways to say the same thing",cat:"Numbers",color:"#2E7D32",icon:"🍕"},
+  {id:4,title:"Ratios & Proportions",subtitle:"Recipes, maps & exchange rates",cat:"Numbers",color:"#E65100",icon:"⚖"},
+  {id:5,title:"Order of Operations",subtitle:"Why PEMDAS exists",cat:"Numbers",color:"#6A1B9A",icon:"📐"},
+  {id:6,title:"Variables & Expressions",subtitle:"The blank in a sentence",cat:"Unknowns",color:"#1565C0",icon:"❌"},
+  {id:7,title:"Solving Equations",subtitle:"The balance scale",cat:"Unknowns",color:"#C62828",icon:"⚖"},
+  {id:8,title:"Inequalities",subtitle:"Ranges, not single answers",cat:"Unknowns",color:"#2E7D32",icon:"↔"},
+  {id:9,title:"Formulas You Use",subtitle:"Distance, area, temperature",cat:"Unknowns",color:"#E65100",icon:"🧮"},
+  {id:10,title:"Functions",subtitle:"Input → rule → output",cat:"Unknowns",color:"#6A1B9A",icon:"⚙"},
+  {id:11,title:"Area & Perimeter",subtitle:"How much space, how much fence",cat:"Shapes",color:"#C62828",icon:"📏"},
+  {id:12,title:"Volume & Surface Area",subtitle:"How much it holds",cat:"Shapes",color:"#1565C0",icon:"📦"},
+  {id:13,title:"Angles & Triangles",subtitle:"180° and Pythagoras",cat:"Shapes",color:"#2E7D32",icon:"📐"},
+  {id:14,title:"Circles",subtitle:"π and the universal ratio",cat:"Shapes",color:"#E65100",icon:"⭕"},
+  {id:15,title:"Coordinate Geometry",subtitle:"The x-y grid as a map",cat:"Shapes",color:"#6A1B9A",icon:"📍"},
+  {id:16,title:"Linear Growth",subtitle:"y = mx + b in real life",cat:"Growth",color:"#1565C0",icon:"📈"},
+  {id:17,title:"Exponential Growth",subtitle:"Doubling, compound interest",cat:"Growth",color:"#C62828",icon:"🚀"},
+  {id:18,title:"Logarithms",subtitle:"The inverse of exponentials",cat:"Growth",color:"#2E7D32",icon:"🔍"},
+  {id:19,title:"Sequences & Series",subtitle:"Patterns that repeat",cat:"Growth",color:"#E65100",icon:"🔗"},
+  {id:20,title:"Probability Basics",subtitle:"How likely is it?",cat:"Growth",color:"#6A1B9A",icon:"🎲"},
+  {id:21,title:"Mean, Median, Mode",subtitle:"Finding the center",cat:"Data",color:"#C62828",icon:"📊"},
+  {id:22,title:"Spread & Distribution",subtitle:"Bell curves & standard deviation",cat:"Data",color:"#1565C0",icon:"🔔"},
+  {id:23,title:"Reading Graphs",subtitle:"How charts tell (and lie about) stories",cat:"Data",color:"#2E7D32",icon:"📉"},
+  {id:24,title:"Correlation vs Causation",subtitle:"The most important distinction",cat:"Data",color:"#E65100",icon:"🔀"},
+  {id:25,title:"Probability in Practice",subtitle:"Why 99% accurate doesn't mean what you think",cat:"Data",color:"#6A1B9A",icon:"🏥"},
+  {id:26,title:"Sampling & Bias",subtitle:"Why polls get it wrong",cat:"Data",color:"#880E4F",icon:"🎯"},
+  {id:27,title:"Compound Interest",subtitle:"Time × money × patience",cat:"Money",color:"#1565C0",icon:"💰"},
+  {id:28,title:"Loans & Debt",subtitle:"How amortization really works",cat:"Money",color:"#C62828",icon:"🏦"},
+  {id:29,title:"Taxes & Brackets",subtitle:"Marginal vs effective rates",cat:"Money",color:"#2E7D32",icon:"📋"},
+  {id:30,title:"Risk & Expected Value",subtitle:"Should I take the deal?",cat:"Money",color:"#E65100",icon:"🎰"},
+  {id:31,title:"Estimation",subtitle:"Back-of-envelope math",cat:"Wild",color:"#1565C0",icon:"🤔"},
+  {id:32,title:"Math You Already Do",subtitle:"Cooking, tipping, driving, shopping",cat:"Wild",color:"#2E7D32",icon:"🛒"},
+];
+const categories=["Numbers","Unknowns","Shapes","Growth","Data","Money","Wild"];
+const catLabels={Numbers:"Numbers & Number Sense",Unknowns:"The Language of Unknowns",Shapes:"Shapes & Space",Growth:"Patterns & Growth",Data:"Data & Decisions",Money:"Money Math",Wild:"Math in the Wild"};
+const catColors={Numbers:"#1565C0",Unknowns:"#C62828",Shapes:"#2E7D32",Growth:"#1565C0",Data:"#C62828",Money:"#2E7D32",Wild:"#1565C0"};
+
+// ═══════════════════════════════════════════════════════════════
+// SHARED COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+function Card({color,title,subtitle,children}){return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}><div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>{subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}</div>{children}</div>);}
+function DarkBox({title,children}){return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>{title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}</div>);}
+function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);}
+function Slider({label,min,max,step,value,onChange,unit,color}){return(<div style={{marginBottom:12}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}><span style={{color:"#888"}}>{label}</span><span style={{fontWeight:700,color:color||"#1565C0"}}>{typeof value==="number"?value.toLocaleString():value}{unit||""}</span></div><input type="range" min={min} max={max} step={step||1} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:"100%",accentColor:color||"#1565C0"}}/></div>);}
+function NumInput({label,value,onChange,unit,color}){return(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><span style={{fontSize:12,color:"#888",minWidth:80}}>{label}</span><input type="number" value={value} onChange={e=>onChange(Number(e.target.value))} style={{flex:1,padding:"6px 10px",borderRadius:8,border:"1.5px solid #ddd",fontSize:14,fontWeight:700,color:color||"#1565C0",outline:"none",maxWidth:120}}/>{unit&&<span style={{fontSize:12,color:"#888"}}>{unit}</span>}</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 1: HOW NUMBERS WORK
+// ═══════════════════════════════════════════════════════════════
+function Guide1(){
+  const [zoom,setZoom]=useState(0);
+  const ranges=[[0,10,1],[0,1,0.1],[0,0.1,0.01],[0,0.01,0.001]];
+  const [lo,hi,step]=ranges[zoom];
+  const ticks=[];for(let i=lo;i<=hi;i=Math.round((i+step)*1000)/1000)ticks.push(i);
+  return(<div>
+    <DarkBox title="Numbers are addresses on an infinite line"><div style={{fontSize:14,lineHeight:1.6}}>
+      Every number has a <strong style={{color:"#FFE77A"}}>position</strong>. Between any two numbers, there are <strong style={{color:"#FFE77A"}}>infinitely more</strong>. Zoom in and the line never runs out of detail.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:12,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>
+        {["0-10","0-1","0-0.1","0-0.01"].map((l,i)=>(<button key={i} onClick={()=>setZoom(i)} style={{padding:"5px 12px",borderRadius:8,border:zoom===i?"2.5px solid #1565C0":"1.5px solid #ddd",background:zoom===i?"#1565C0":"#fff",color:zoom===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{l}</button>))}
+      </div>
+      <div style={{position:"relative",height:60,marginBottom:8}}>
+        <div style={{position:"absolute",top:20,left:0,right:0,height:3,background:"#1565C0",borderRadius:2}}/>
+        {ticks.map((t,i)=>(<div key={i} style={{position:"absolute",left:`${((t-lo)/(hi-lo))*100}%`,top:12}}>
+          <div style={{width:2,height:18,background:"#1565C0",margin:"0 auto"}}/>
+          <div style={{fontSize:9,color:"#888",textAlign:"center",marginTop:2,transform:"translateX(-50%)",whiteSpace:"nowrap"}}>{t}</div>
+        </div>))}
+      </div>
+      <div style={{textAlign:"center",fontSize:11,color:"#aaa"}}>Zoom level {zoom+1}/4 — between any two ticks, there are infinitely more numbers</div>
+    </div>
+    <Card color="#1565C0" title="Place value — each position is ×10">
+      {[{pos:"Thousands",val:"1,000",mult:"×10³"},{pos:"Hundreds",val:"100",mult:"×10²"},{pos:"Tens",val:"10",mult:"×10¹"},{pos:"Ones",val:"1",mult:"×10⁰"},{pos:"Tenths",val:"0.1",mult:"×10⁻¹"},{pos:"Hundredths",val:"0.01",mult:"×10⁻²"}].map((p,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"100px 60px 1fr",padding:"6px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+        <span style={{fontSize:13,fontWeight:700,color:"#1565C0"}}>{p.pos}</span>
+        <span style={{fontSize:13,color:"#555"}}>{p.val}</span>
+        <span style={{fontSize:12,color:"#aaa",fontFamily:"monospace"}}>{p.mult}</span>
+      </div>))}
+    </Card>
+    <Insight text="Decimals aren't a different kind of number — they're just addresses between the whole numbers. 3.7 lives between 3 and 4, closer to 4. That's it." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 2: NEGATIVE NUMBERS
+// ═══════════════════════════════════════════════════════════════
+function Guide2(){
+  const scenarios=[
+    {label:"Bank balance",positive:"$500 in savings",zero:"$0 — broke",negative:"-$200 — you owe the bank",color:"#2E7D32"},
+    {label:"Temperature",positive:"30°F above zero",zero:"0°F — the baseline",negative:"-10°F — below zero, very cold",color:"#1565C0"},
+    {label:"Elevation",positive:"5,000 ft — mountain",zero:"0 ft — sea level",negative:"-282 ft — Death Valley",color:"#E65100"},
+    {label:"Profit/Loss",positive:"+$10K — profit",zero:"$0 — breakeven",negative:"-$5K — loss",color:"#C62828"},
+  ];
+  return(<div>
+    <DarkBox title="The number line extends left"><div style={{fontSize:14}}>
+      Negative numbers aren't abstract — they're the <strong style={{color:"#FFE77A"}}>other direction</strong>. Debt, below zero, underground, losses. The number line doesn't stop at zero; it mirrors infinitely to the left.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:12,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16,position:"relative",height:70}}>
+      <div style={{position:"absolute",top:20,left:"5%",right:"5%",height:3,background:"linear-gradient(90deg,#C62828,#ccc 50%,#2E7D32)",borderRadius:2}}/>
+      {[-5,-4,-3,-2,-1,0,1,2,3,4,5].map(n=>(<div key={n} style={{position:"absolute",left:`${5+(n+5)*8.18}%`,top:12}}>
+        <div style={{width:2,height:n===0?24:16,background:n<0?"#C62828":n>0?"#2E7D32":"#1a1a1a",margin:"0 auto"}}/>
+        <div style={{fontSize:n===0?14:10,fontWeight:n===0?800:400,color:n<0?"#C62828":n>0?"#2E7D32":"#1a1a1a",textAlign:"center",marginTop:2}}>{n}</div>
+      </div>))}
+    </div>
+    {scenarios.map((s,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:6}}>
+      <div style={{fontSize:13,fontWeight:700,color:s.color,marginBottom:4}}>{s.label}</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,fontSize:11}}>
+        <div style={{padding:"4px 6px",borderRadius:4,background:"#E8F5E9",color:"#2E7D32",textAlign:"center"}}>{s.positive}</div>
+        <div style={{padding:"4px 6px",borderRadius:4,background:"#f5f3ef",color:"#888",textAlign:"center"}}>{s.zero}</div>
+        <div style={{padding:"4px 6px",borderRadius:4,background:"#FFEBEE",color:"#C62828",textAlign:"center"}}>{s.negative}</div>
+      </div>
+    </div>))}
+    <Insight text="Why negative × negative = positive? Think of it as reversing direction twice. Face right (+). Turn around (×-1) = face left. Turn around again (×-1) = face right again. Two reversals = back to positive." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 3: FRACTIONS, DECIMALS & PERCENTAGES — CONVERTER
+// ═══════════════════════════════════════════════════════════════
+function Guide3(){
+  const [num,setNum]=useState(3);
+  const [den,setDen]=useState(4);
+  const dec=num/den;const pct=dec*100;
+  return(<div>
+    <DarkBox title="Three languages for the same idea"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>¾</strong> and <strong style={{color:"#FFE77A"}}>0.75</strong> and <strong style={{color:"#FFE77A"}}>75%</strong> are the same number written three ways. Fractions divide, decimals place, percentages compare to 100.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{display:"flex",gap:12,alignItems:"center",justifyContent:"center",marginBottom:12}}>
+        <div style={{textAlign:"center"}}>
+          <input type="number" value={num} onChange={e=>setNum(Number(e.target.value)||0)} style={{width:50,fontSize:20,fontWeight:800,textAlign:"center",border:"none",borderBottom:"3px solid #1565C0",outline:"none",color:"#1565C0"}}/>
+          <div style={{height:3,background:"#1a1a1a",margin:"4px 0"}}/>
+          <input type="number" value={den} onChange={e=>setDen(Math.max(1,Number(e.target.value)||1))} style={{width:50,fontSize:20,fontWeight:800,textAlign:"center",border:"none",borderBottom:"3px solid #C62828",outline:"none",color:"#C62828"}}/>
+        </div>
+        <span style={{fontSize:24,color:"#ccc"}}>=</span>
+        <div style={{textAlign:"center",padding:"10px 20px",background:"#E3F2FD",borderRadius:10}}>
+          <div style={{fontSize:24,fontWeight:800,color:"#1565C0"}}>{dec===Infinity?"∞":isNaN(dec)?"?":dec.toFixed(dec%1===0?0:4).replace(/0+$/,"").replace(/\.$/,"")}</div>
+          <div style={{fontSize:10,color:"#888"}}>decimal</div>
+        </div>
+        <span style={{fontSize:24,color:"#ccc"}}>=</span>
+        <div style={{textAlign:"center",padding:"10px 20px",background:"#E8F5E9",borderRadius:10}}>
+          <div style={{fontSize:24,fontWeight:800,color:"#2E7D32"}}>{isNaN(pct)?"?":pct.toFixed(pct%1===0?0:2)}%</div>
+          <div style={{fontSize:10,color:"#888"}}>percent</div>
+        </div>
+      </div>
+      {/* Visual fraction */}
+      <div style={{display:"flex",gap:2,justifyContent:"center",height:32}}>
+        {Array.from({length:Math.min(den,20)}).map((_,i)=>(<div key={i} style={{flex:1,maxWidth:30,background:i<num?"#1565C0":"#eee",borderRadius:3,border:"1px solid #ddd"}}/>))}
+      </div>
+      <div style={{textAlign:"center",fontSize:11,color:"#888",marginTop:6}}>{num} out of {den} parts filled</div>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+      {[{frac:"1/2",dec:"0.5",pct:"50%"},{frac:"1/3",dec:"0.333...",pct:"33.3%"},{frac:"1/4",dec:"0.25",pct:"25%"},{frac:"1/5",dec:"0.2",pct:"20%"},{frac:"3/4",dec:"0.75",pct:"75%"},{frac:"1/10",dec:"0.1",pct:"10%"}].map(c=>(<div key={c.frac} style={{background:"#fff",borderRadius:8,padding:"8px",border:"1px solid #e0dcd5",textAlign:"center"}}>
+        <div style={{fontSize:14,fontWeight:700,color:"#1565C0"}}>{c.frac}</div>
+        <div style={{fontSize:11,color:"#555"}}>{c.dec} = {c.pct}</div>
+      </div>))}
+    </div>
+    <Insight text="Quick mental math: to find 15% of something, find 10% (move the decimal left) then add half of that. 15% of $80: 10% = $8, half = $4, total = $12." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 4: RATIOS & PROPORTIONS — RECIPE SCALER
+// ═══════════════════════════════════════════════════════════════
+function Guide4(){
+  const [servings,setServings]=useState(4);
+  const base=4;const mult=servings/base;
+  const recipe=[{ing:"Flour",amt:2,unit:"cups"},{ing:"Sugar",amt:1,unit:"cup"},{ing:"Eggs",amt:3,unit:""},{ing:"Butter",amt:0.5,unit:"cup"},{ing:"Milk",amt:1,unit:"cup"},{ing:"Vanilla",amt:2,unit:"tsp"}];
+  return(<div>
+    <DarkBox title="Ratios keep relationships constant"><div style={{fontSize:14}}>
+      A ratio says: "for every X of this, you need Y of that." Scale up or down and the <strong style={{color:"#FFE77A"}}>relationship stays the same</strong>. Recipes, maps, exchange rates, unit pricing — all ratios.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Servings" min={1} max={16} value={servings} onChange={setServings} color="#E65100" />
+      <div style={{fontSize:12,color:"#888",textAlign:"center",marginBottom:8}}>Base recipe: {base} servings · Multiplier: ×{mult.toFixed(2)}</div>
+      {recipe.map((r,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<recipe.length-1?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:13,color:"#555"}}>{r.ing}</span>
+        <span style={{fontSize:14,fontWeight:700,color:"#E65100"}}>{(r.amt*mult)%1===0?(r.amt*mult):(r.amt*mult).toFixed(2)} {r.unit}</span>
+      </div>))}
+    </div>
+    <Insight text="Unit pricing is a ratio: $4.99 for 16 oz vs $6.99 for 24 oz. Divide price by size: $0.31/oz vs $0.29/oz. The bigger one is cheaper per unit. Ratios help you compare anything." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 5: ORDER OF OPERATIONS
+// ═══════════════════════════════════════════════════════════════
+function Guide5(){return(<div>
+  <DarkBox title="It's a language agreement, not a math law"><div style={{fontSize:14}}>
+    PEMDAS isn't "true" the way 2+2=4 is true. It's a <strong style={{color:"#FFE77A"}}>convention</strong> — a shared agreement on how to read math notation, like grammar rules for a language.
+  </div></DarkBox>
+  <Card color="#6A1B9A" title="PEMDAS / BODMAS" subtitle="The reading order">
+    {[{step:"P / B",name:"Parentheses / Brackets",desc:"Do what's inside ( ) first",ex:"(3 + 2) × 4 = 5 × 4 = 20",color:"#C62828"},
+      {step:"E / O",name:"Exponents / Orders",desc:"Powers and roots",ex:"3² + 1 = 9 + 1 = 10",color:"#E65100"},
+      {step:"M & D",name:"Multiply & Divide",desc:"Left to right (equal priority)",ex:"12 ÷ 3 × 2 = 4 × 2 = 8",color:"#1565C0"},
+      {step:"A & S",name:"Add & Subtract",desc:"Left to right (equal priority)",ex:"10 - 3 + 2 = 7 + 2 = 9",color:"#2E7D32"},
+    ].map((s,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${s.color}`}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
+        <span style={{background:s.color,color:"#fff",padding:"2px 8px",borderRadius:4,fontSize:14,fontWeight:800}}>{s.step}</span>
+        <span style={{fontSize:13,fontWeight:700,color:"#333"}}>{s.name}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555"}}>{s.desc}</div>
+      <div style={{fontSize:12,color:"#888",fontFamily:"monospace",marginTop:2}}>{s.ex}</div>
+    </div>))}
+  </Card>
+  <Insight text="The viral equation '6 ÷ 2(1+2) = ?' causes arguments because the notation is ambiguous, not because people are bad at math. In real math and programming, you'd add parentheses to make it clear." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 6-10: ALGEBRA
+// ═══════════════════════════════════════════════════════════════
+function Guide6(){return(<div>
+  <DarkBox title="A variable is just a blank in a sentence"><div style={{fontSize:14}}>
+    "Something + 3 = 7" → "<strong style={{color:"#FFE77A"}}>x</strong> + 3 = 7." That's it. The letter stands for a number you don't know yet. Algebra is just finding the blank.
+  </div></DarkBox>
+  <Card color="#1565C0" title="English → Math translation">
+    {[{en:"A number plus five",math:"x + 5"},{en:"Three times a number",math:"3x"},{en:"A number divided by two",math:"x / 2"},{en:"Five less than a number",math:"x - 5"},{en:"A number squared",math:"x²"},{en:"Double a number, then add one",math:"2x + 1"}].map((t,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",padding:"8px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+      <span style={{fontSize:13,color:"#555"}}>{t.en}</span>
+      <span style={{fontSize:16,color:"#ccc",margin:"0 12px"}}>→</span>
+      <span style={{fontSize:16,fontWeight:800,color:"#1565C0",fontFamily:"monospace"}}>{t.math}</span>
+    </div>))}
+  </Card>
+  <Insight text="The = sign means 'is the same as,' not 'the answer is.' 3 + 4 = 7 reads as '3 plus 4 is the same as 7.' This matters when you start rearranging equations." />
+</div>);}
+
+function Guide7(){
+  const [x,setX]=useState(5);
+  return(<div>
+    <DarkBox title="The balance scale"><div style={{fontSize:14}}>
+      An equation is a <strong style={{color:"#FFE77A"}}>balanced scale</strong>. Whatever you do to one side, you must do to the other. This one rule solves every equation.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{textAlign:"center",fontSize:16,fontWeight:700,color:"#C62828",marginBottom:8,fontFamily:"monospace"}}>2x + 3 = {2*x+3}</div>
+      <Slider label="x =" min={-10} max={20} value={x} onChange={setX} color="#C62828" />
+      <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center"}}>
+        <div style={{textAlign:"center",padding:"12px",background:Math.abs(2*x+3-13)<0.1?"#E8F5E9":"#FFF3E0",borderRadius:10,border:"1px solid #ddd"}}>
+          <div style={{fontSize:11,color:"#888"}}>Left side</div>
+          <div style={{fontSize:24,fontWeight:800,color:"#C62828"}}>{2*x+3}</div>
+          <div style={{fontSize:11,color:"#888"}}>2({x}) + 3</div>
+        </div>
+        <div style={{fontSize:24,color:Math.abs(2*x+3-13)<0.1?"#2E7D32":"#ccc"}}>{Math.abs(2*x+3-13)<0.1?"=":"≠"}</div>
+        <div style={{textAlign:"center",padding:"12px",background:Math.abs(2*x+3-13)<0.1?"#E8F5E9":"#E3F2FD",borderRadius:10,border:"1px solid #ddd"}}>
+          <div style={{fontSize:11,color:"#888"}}>Right side</div>
+          <div style={{fontSize:24,fontWeight:800,color:"#1565C0"}}>13</div>
+        </div>
+      </div>
+      {Math.abs(2*x+3-13)<0.1&&<div style={{textAlign:"center",marginTop:8,fontSize:14,fontWeight:700,color:"#2E7D32"}}>✅ Balanced! x = {x}</div>}
+    </div>
+    <Card color="#C62828" title="Solving step by step">
+      {[{step:"Start:",eq:"2x + 3 = 13"},{step:"Subtract 3 from both sides:",eq:"2x = 10"},{step:"Divide both sides by 2:",eq:"x = 5"}].map((s,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:12,color:"#888"}}>{s.step}</span><br/>
+        <span style={{fontSize:18,fontWeight:700,color:"#C62828",fontFamily:"monospace"}}>{s.eq}</span>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+function Guide8(){return(<div>
+  <DarkBox title="The answer is a range, not a single number"><div style={{fontSize:14}}>
+    "I need <strong style={{color:"#FFE77A"}}>at least</strong> $500" → x ≥ 500. The answer isn't one number — it's every number from 500 upward. Inequalities describe <strong style={{color:"#FFE77A"}}>conditions</strong>, not exact values.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="Inequality symbols">
+    {[{sym:">",name:"Greater than",ex:"x > 5 means x can be 6, 7, 100, but NOT 5"},
+      {sym:"<",name:"Less than",ex:"x < 10 means x can be 9, 0, -3, but NOT 10"},
+      {sym:"≥",name:"Greater than or equal to",ex:"x ≥ 18 means you must be 18 OR older"},
+      {sym:"≤",name:"Less than or equal to",ex:"x ≤ 100 means up to and including 100"},
+    ].map((s,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",display:"flex",alignItems:"center",gap:12}}>
+      <span style={{fontSize:28,fontWeight:800,color:"#2E7D32",fontFamily:"monospace",minWidth:36,textAlign:"center"}}>{s.sym}</span>
+      <div><span style={{fontWeight:700,color:"#333"}}>{s.name}</span><br/><span style={{fontSize:12,color:"#888"}}>{s.ex}</span></div>
+    </div>))}
+  </Card>
+  <Insight text="Real-world inequalities: speed limits (v ≤ 65), minimum wage (pay ≥ $7.25), credit scores (score ≥ 700 for best rates), cooking temperatures (internal temp ≥ 165°F for chicken)." />
+</div>);}
+
+function Guide9(){
+  const [dist,setDist]=useState(150);const [rate,setRate]=useState(60);
+  const [l,setL]=useState(10);const [w,setW]=useState(12);
+  const [c,setC]=useState(20);
+  return(<div>
+    <DarkBox title="Formulas are reusable equations someone already solved"><div style={{fontSize:14}}>
+      You don't need to derive them — just <strong style={{color:"#FFE77A"}}>plug in your numbers</strong>. Every formula is a tool waiting for your specific inputs.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"14px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:13,fontWeight:700,color:"#E65100",marginBottom:8}}>Distance = Rate × Time</div>
+      <div style={{display:"flex",gap:8}}><NumInput label="Distance" value={dist} onChange={setDist} unit="miles" color="#E65100"/><NumInput label="Speed" value={rate} onChange={setRate} unit="mph" color="#E65100"/></div>
+      <div style={{fontSize:16,fontWeight:700,color:"#E65100",textAlign:"center",padding:"8px",background:"#FFF3E0",borderRadius:8,marginTop:8}}>Time = {(dist/rate).toFixed(1)} hours ({Math.round(dist/rate*60)} min)</div>
+    </div>
+    <div style={{background:"#fff",borderRadius:14,padding:"14px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:13,fontWeight:700,color:"#1565C0",marginBottom:8}}>Area = Length × Width</div>
+      <div style={{display:"flex",gap:8}}><NumInput label="Length" value={l} onChange={setL} unit="ft" color="#1565C0"/><NumInput label="Width" value={w} onChange={setW} unit="ft" color="#1565C0"/></div>
+      <div style={{fontSize:16,fontWeight:700,color:"#1565C0",textAlign:"center",padding:"8px",background:"#E3F2FD",borderRadius:8,marginTop:8}}>Area = {l*w} sq ft</div>
+    </div>
+    <div style={{background:"#fff",borderRadius:14,padding:"14px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:13,fontWeight:700,color:"#C62828",marginBottom:8}}>°F ↔ °C</div>
+      <NumInput label="°Celsius" value={c} onChange={setC} color="#C62828"/>
+      <div style={{fontSize:16,fontWeight:700,color:"#C62828",textAlign:"center",padding:"8px",background:"#FFEBEE",borderRadius:8,marginTop:4}}>{c}°C = {((c*9/5)+32).toFixed(1)}°F</div>
+    </div>
+  </div>);
+}
+
+function Guide10(){
+  const [input,setInput]=useState(5);
+  const [rule,setRule]=useState(0);
+  const rules=[{name:"Double + 1",fn:x=>2*x+1,formula:"f(x) = 2x + 1"},{name:"Square",fn:x=>x*x,formula:"f(x) = x²"},{name:"Half - 3",fn:x=>x/2-3,formula:"f(x) = x/2 - 3"}];
+  const r=rules[rule];
+  return(<div>
+    <DarkBox title="A machine: input → rule → output"><div style={{fontSize:14}}>
+      A function takes a number in, applies a rule, and gives a number out. <strong style={{color:"#FFE77A"}}>Every function is just a rule.</strong> f(x) = 2x + 1 means "double it and add one."
+    </div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center"}}>
+      {rules.map((rl,i)=>(<button key={i} onClick={()=>setRule(i)} style={{padding:"6px 14px",borderRadius:8,border:rule===i?"2.5px solid #6A1B9A":"1.5px solid #ddd",background:rule===i?"#6A1B9A":"#fff",color:rule===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{rl.name}</button>))}
+    </div>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"2px solid #6A1B9A",marginBottom:16}}>
+      <div style={{textAlign:"center",fontFamily:"monospace",fontSize:16,fontWeight:700,color:"#6A1B9A",marginBottom:12}}>{r.formula}</div>
+      <Slider label="Input (x)" min={-10} max={10} value={input} onChange={setInput} color="#6A1B9A" />
+      <div style={{display:"grid",gridTemplateColumns:"1fr auto 1fr auto 1fr",gap:8,alignItems:"center",textAlign:"center"}}>
+        <div style={{padding:"10px",background:"#EDE7F6",borderRadius:10}}><div style={{fontSize:10,color:"#888"}}>Input</div><div style={{fontSize:24,fontWeight:800,color:"#6A1B9A"}}>{input}</div></div>
+        <div style={{fontSize:20,color:"#ccc"}}>→</div>
+        <div style={{padding:"10px",background:"#f5f3ef",borderRadius:10}}><div style={{fontSize:10,color:"#888"}}>Rule</div><div style={{fontSize:14,fontWeight:700,color:"#555"}}>{r.name}</div></div>
+        <div style={{fontSize:20,color:"#ccc"}}>→</div>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:10}}><div style={{fontSize:10,color:"#888"}}>Output</div><div style={{fontSize:24,fontWeight:800,color:"#2E7D32"}}>{r.fn(input)}</div></div>
+      </div>
+    </div>
+    <Insight text="Spreadsheet formulas are functions. =A1*2+1 takes cell A1 as input, doubles it, adds 1. Every formula in Excel/Sheets is a function. You've been using them all along." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 11-15: SHAPES (with live calculations)
+// ═══════════════════════════════════════════════════════════════
+function Guide11(){
+  const [l,setL]=useState(8);const [w,setW]=useState(5);
+  return(<div>
+    <DarkBox title="How much space (area) vs how much fence (perimeter)"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>Area</strong> = the surface inside a shape (square units). <strong style={{color:"#FFE77A"}}>Perimeter</strong> = the distance around the edge (linear units). Same shape, different questions.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Length" min={1} max={20} value={l} onChange={setL} color="#C62828" unit=" ft"/>
+      <Slider label="Width" min={1} max={20} value={w} onChange={setW} color="#1565C0" unit=" ft"/>
+      <div style={{display:"flex",justifyContent:"center",marginBottom:12}}>
+        <div style={{width:Math.min(l*20,300),height:Math.min(w*20,200),background:"#E3F2FD",border:"3px solid #1565C0",borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#1565C0"}}>{l*w} ft²</span>
+          <span style={{position:"absolute",bottom:-18,fontSize:11,color:"#C62828"}}>{l} ft</span>
+          <span style={{position:"absolute",right:-30,fontSize:11,color:"#1565C0",transform:"rotate(90deg)"}}>{w} ft</span>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:20}}>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Area</div><div style={{fontSize:20,fontWeight:800,color:"#1565C0"}}>{l*w} ft²</div><div style={{fontSize:10,color:"#888"}}>{l} × {w}</div></div>
+        <div style={{padding:"10px",background:"#FFEBEE",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Perimeter</div><div style={{fontSize:20,fontWeight:800,color:"#C62828"}}>{2*(l+w)} ft</div><div style={{fontSize:10,color:"#888"}}>2({l}+{w})</div></div>
+      </div>
+    </div>
+    <Card color="#2E7D32" title="Common area formulas">
+      {[{shape:"Rectangle",formula:"l × w",note:"Length times width"},{shape:"Triangle",formula:"½ × b × h",note:"Half of base times height"},{shape:"Circle",formula:"π × r²",note:"Pi times radius squared"}].map((f,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+        <span style={{fontWeight:600,color:"#333"}}>{f.shape}</span>
+        <span style={{fontWeight:800,color:"#2E7D32",fontFamily:"monospace"}}>{f.formula}</span>
+        <span style={{fontSize:11,color:"#888"}}>{f.note}</span>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+function Guide12(){
+  const [l,setL]=useState(10);const [w,setW]=useState(8);const [h,setH]=useState(6);
+  return(<div>
+    <DarkBox title="How much it holds (volume) vs how much wrapping (surface area)"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>Volume</strong> = 3D space inside (cubic units). <strong style={{color:"#FFE77A"}}>Surface area</strong> = total outside area. Volume = how much water it holds. Surface area = how much paint to cover it.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Length" min={1} max={20} value={l} onChange={setL} color="#1565C0" unit=" ft"/>
+      <Slider label="Width" min={1} max={20} value={w} onChange={setW} color="#2E7D32" unit=" ft"/>
+      <Slider label="Height" min={1} max={20} value={h} onChange={setH} color="#E65100" unit=" ft"/>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        <div style={{padding:"12px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Volume</div><div style={{fontSize:22,fontWeight:800,color:"#1565C0"}}>{(l*w*h).toLocaleString()} ft³</div><div style={{fontSize:10,color:"#888"}}>{l} × {w} × {h}</div></div>
+        <div style={{padding:"12px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Surface Area</div><div style={{fontSize:22,fontWeight:800,color:"#E65100"}}>{(2*(l*w+l*h+w*h)).toLocaleString()} ft²</div><div style={{fontSize:10,color:"#888"}}>2(lw+lh+wh)</div></div>
+      </div>
+    </div>
+    <Insight text="To find how much soil for a garden bed: Volume = length × width × depth. A 4×8 ft bed that's 1 ft deep = 32 cubic feet of soil. Most bags are 1-2 cubic feet." />
+  </div>);
+}
+
+function Guide13(){
+  const [a,setA]=useState(3);const [b,setB]=useState(4);const c=Math.sqrt(a*a+b*b);
+  return(<div>
+    <DarkBox title="The Pythagorean theorem = finding the diagonal"><div style={{fontSize:14}}>
+      a² + b² = c². If you know two sides of a right triangle, you can find the third. This is the most practically useful theorem in all of math — it's how GPS, construction, and navigation work.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Side a" min={1} max={20} value={a} onChange={setA} color="#C62828" />
+      <Slider label="Side b" min={1} max={20} value={b} onChange={setB} color="#1565C0" />
+      <div style={{textAlign:"center",fontSize:14,fontFamily:"monospace",color:"#555",marginBottom:8}}>
+        <span style={{color:"#C62828"}}>{a}²</span> + <span style={{color:"#1565C0"}}>{b}²</span> = <span style={{color:"#C62828"}}>{a*a}</span> + <span style={{color:"#1565C0"}}>{b*b}</span> = <span style={{fontWeight:800,color:"#2E7D32"}}>{a*a+b*b}</span>
+      </div>
+      <div style={{textAlign:"center",fontSize:20,fontWeight:800,color:"#2E7D32"}}>c = √{a*a+b*b} = {c.toFixed(2)}</div>
+    </div>
+    <Insight text="Practical use: need to know the diagonal of a room? A 12×16 ft room has a diagonal of √(144+256) = √400 = 20 ft. That's how much cable you need corner to corner." />
+  </div>);
+}
+
+function Guide14(){
+  const [r,setR]=useState(5);
+  return(<div>
+    <DarkBox title="π = the universal ratio"><div style={{fontSize:14}}>
+      Take ANY circle. Divide its circumference by its diameter. You <strong style={{color:"#FFE77A"}}>always get π ≈ 3.14159...</strong> This is true for every circle that has ever existed or ever will. It's a fundamental constant of the universe.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Radius" min={1} max={20} value={r} onChange={setR} color="#E65100" unit=" units"/>
+      <div style={{display:"flex",justifyContent:"center",margin:"16px 0"}}>
+        <div style={{width:Math.min(r*16,200),height:Math.min(r*16,200),borderRadius:"50%",border:"3px solid #E65100",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>r = {r}</div></div>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+        <div style={{padding:"10px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Diameter</div><div style={{fontSize:18,fontWeight:800,color:"#E65100"}}>{r*2}</div></div>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Circumference</div><div style={{fontSize:18,fontWeight:800,color:"#1565C0"}}>{(2*Math.PI*r).toFixed(1)}</div></div>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Area</div><div style={{fontSize:18,fontWeight:800,color:"#2E7D32"}}>{(Math.PI*r*r).toFixed(1)}</div></div>
+      </div>
+    </div>
+  </div>);
+}
+
+function Guide15(){return(<div>
+  <DarkBox title="Every point has an address"><div style={{fontSize:14}}>
+    The <strong style={{color:"#FFE77A"}}>coordinate plane</strong> is a map where every location has an (x, y) address. X = horizontal position. Y = vertical. (3, 5) means "go right 3, up 5." It's how GPS, game graphics, and data visualization work.
+  </div></DarkBox>
+  <Card color="#6A1B9A" title="Key concepts">
+    {[{concept:"Slope = steepness = rise/run",desc:"How much y changes per unit of x. Slope of 2 means 'up 2 for every 1 to the right.' Negative slope = downhill."},
+      {concept:"Distance = Pythagorean theorem",desc:"Distance between (1,2) and (4,6) = √((4-1)²+(6-2)²) = √(9+16) = √25 = 5. Same formula as the triangle diagonal."},
+      {concept:"Midpoint = average the coordinates",desc:"Midpoint of (2,4) and (8,10) = ((2+8)/2, (4+10)/2) = (5, 7). Just average the x's and average the y's."},
+    ].map((c,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:13,fontWeight:700,color:"#6A1B9A"}}>{c.concept}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{c.desc}</div>
+    </div>))}
+  </Card>
+  <Insight text="Slope is everywhere: a road grade of 6% means 6 ft of rise per 100 ft of run (slope = 0.06). A roof pitch of 4/12 means 4 inches up per 12 inches across (slope = 0.33)." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 16-20: GROWTH & PROBABILITY
+// ═══════════════════════════════════════════════════════════════
+function Guide16(){
+  const [base,setBase]=useState(40000);const [raise,setRaise]=useState(2000);
+  const years=[0,1,2,3,4,5,6,7,8,9,10];
+  return(<div>
+    <DarkBox title="Constant rate of change"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>y = mx + b</strong>. m = rate (slope). b = starting value (intercept). Every straight-line graph is this formula. Salary with annual raise, rent increasing each year, gas fill-ups over time.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Starting salary" min={20000} max={100000} step={5000} value={base} onChange={setBase} color="#1565C0" unit=""/>
+      <Slider label="Annual raise" min={0} max={10000} step={500} value={raise} onChange={setRaise} color="#2E7D32" unit=""/>
+      <div style={{display:"flex",gap:2,alignItems:"flex-end",height:100,justifyContent:"center",marginBottom:8}}>
+        {years.map(y=>{const val=base+raise*y;const maxVal=base+raise*10;return(
+          <div key={y} style={{width:24,background:"#1565C0",borderRadius:"3px 3px 0 0",height:`${(val/maxVal)*100}%`,display:"flex",alignItems:"flex-start",justifyContent:"center"}}>
+            <span style={{fontSize:7,color:"#fff",marginTop:2}}>{y}</span>
+          </div>
+        );})}
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:12}}>
+        <span style={{color:"#888"}}>Year 0: <strong style={{color:"#1565C0"}}>${base.toLocaleString()}</strong></span>
+        <span style={{color:"#888"}}>Year 10: <strong style={{color:"#2E7D32"}}>${(base+raise*10).toLocaleString()}</strong></span>
+      </div>
+    </div>
+    <Insight text="The formula: Salary in year N = $base + $raise × N. If you start at $40K with $2K annual raises, year 10 = $40K + $2K×10 = $60K. Linear growth adds the same amount each period." />
+  </div>);
+}
+
+function Guide17(){
+  const [monthly,setMonthly]=useState(200);const [rate,setRate]=useState(7);const [years,setYears]=useState(30);
+  const r=rate/100/12;const n=years*12;
+  const total=monthly*n;
+  const future=monthly*(((1+r)**n-1)/r);
+  return(<div>
+    <DarkBox title="The most important growth pattern for your money"><div style={{fontSize:14}}>
+      Exponential growth = <strong style={{color:"#FFE77A"}}>the growth itself grows</strong>. Compound interest earns interest on your interest. It starts slow, then explodes. Time is the key ingredient.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Monthly investment" min={50} max={2000} step={50} value={monthly} onChange={setMonthly} color="#1565C0" unit=""/>
+      <Slider label="Annual return" min={1} max={15} step={0.5} value={rate} onChange={setRate} color="#2E7D32" unit="%"/>
+      <Slider label="Years" min={1} max={50} value={years} onChange={setYears} color="#E65100" />
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:8}}>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>You put in</div><div style={{fontSize:18,fontWeight:800,color:"#1565C0"}}>${total.toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Interest earned</div><div style={{fontSize:18,fontWeight:800,color:"#2E7D32"}}>${Math.round(future-total).toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Total value</div><div style={{fontSize:18,fontWeight:800,color:"#E65100"}}>${Math.round(future).toLocaleString()}</div></div>
+      </div>
+    </div>
+    <Insight text="The Rule of 72: divide 72 by your interest rate to find how many years to double. At 7%, your money doubles roughly every 72/7 ≈ 10 years. At 10%, every 7.2 years." />
+  </div>);
+}
+
+function Guide18(){return(<div>
+  <DarkBox title="The inverse of exponentials"><div style={{fontSize:14}}>
+    Exponential: 2<sup>?</sup> = 8. Answer: 3. Logarithm: log₂(8) = <strong style={{color:"#FFE77A"}}>3</strong>. A logarithm asks: "<strong style={{color:"#FFE77A"}}>How many times do I multiply?</strong>" Our senses work logarithmically — that's why decibels, Richter scale, and pH are all log scales.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="Log scales in daily life">
+    {[{name:"Decibels (sound)",desc:"Every +10 dB = 10× louder. 30 dB (whisper) → 60 dB (conversation) → 90 dB (lawnmower) → 120 dB (pain)",color:"#2E7D32"},
+      {name:"Richter scale (earthquakes)",desc:"Every +1 = 10× stronger shaking, 31.6× more energy. A 7.0 is NOT 'a little worse' than 6.0 — it's 10× worse.",color:"#C62828"},
+      {name:"pH (acidity)",desc:"Every -1 = 10× more acidic. pH 4 is 10× more acidic than pH 5, and 100× more acidic than pH 6.",color:"#1565C0"},
+    ].map((s,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${s.color}`}}>
+      <span style={{fontWeight:700,color:s.color}}>{s.name}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{s.desc}</span>
+    </div>))}
+  </Card>
+  <Insight text="We use log scales because our senses perceive things logarithmically. A sound 10× louder only FEELS about 2× louder. That's why we need decibels instead of raw energy measurements." />
+</div>);}
+
+function Guide19(){return(<div>
+  <DarkBox title="Patterns that repeat or accumulate"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Arithmetic sequence</strong>: add the same amount each time (2, 5, 8, 11...). <strong style={{color:"#FFE77A"}}>Geometric sequence</strong>: multiply by the same amount each time (2, 6, 18, 54...).
+  </div></DarkBox>
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
+    <Card color="#E65100" title="Arithmetic (+3 each time)">
+      <div style={{display:"flex",gap:4,padding:"10px 14px",flexWrap:"wrap"}}>
+        {[2,5,8,11,14,17,20,23].map(n=>(<span key={n} style={{width:32,height:32,borderRadius:6,background:"#FFF3E0",color:"#E65100",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700}}>{n}</span>))}
+      </div>
+    </Card>
+    <Card color="#6A1B9A" title="Geometric (×3 each time)">
+      <div style={{display:"flex",gap:4,padding:"10px 14px",flexWrap:"wrap"}}>
+        {[2,6,18,54,162,486].map(n=>(<span key={n} style={{padding:"4px 6px",borderRadius:6,background:"#EDE7F6",color:"#6A1B9A",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700}}>{n}</span>))}
+      </div>
+    </Card>
+  </div>
+  <Insight text="Savings plan = arithmetic series (save $500/month for 12 months = $6,000). Investment growth = geometric series (compound returns multiply). Understanding which pattern applies tells you what to expect." />
+</div>);}
+
+function Guide20(){
+  const [flips,setFlips]=useState(0);const [heads,setHeads]=useState(0);
+  const flip=()=>{const n=100;let h=0;for(let i=0;i<n;i++)if(Math.random()<0.5)h++;setFlips(f=>f+n);setHeads(hd=>hd+h);};
+  const reset=()=>{setFlips(0);setHeads(0);};
+  return(<div>
+    <DarkBox title="How likely is it?"><div style={{fontSize:14}}>
+      Probability = a number between <strong style={{color:"#FFE77A"}}>0 (impossible)</strong> and <strong style={{color:"#FFE77A"}}>1 (certain)</strong>. A fair coin is 0.5. Roll a 6 on a die: 1/6 ≈ 0.167. Probability is the language of uncertainty.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{textAlign:"center",marginBottom:8,fontSize:14,fontWeight:700,color:"#6A1B9A"}}>Coin Flip Simulator</div>
+      <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:12}}>
+        <button onClick={flip} style={{padding:"8px 20px",borderRadius:8,background:"#6A1B9A",color:"#fff",border:"none",cursor:"pointer",fontWeight:700}}>Flip 100 coins</button>
+        <button onClick={reset} style={{padding:"8px 20px",borderRadius:8,background:"#eee",color:"#666",border:"none",cursor:"pointer",fontWeight:700}}>Reset</button>
+      </div>
+      {flips>0&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+        <div style={{padding:"8px",background:"#EDE7F6",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Total flips</div><div style={{fontSize:18,fontWeight:800,color:"#6A1B9A"}}>{flips}</div></div>
+        <div style={{padding:"8px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Heads</div><div style={{fontSize:18,fontWeight:800,color:"#1565C0"}}>{heads} ({(heads/flips*100).toFixed(1)}%)</div></div>
+        <div style={{padding:"8px",background:"#FFEBEE",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Tails</div><div style={{fontSize:18,fontWeight:800,color:"#C62828"}}>{flips-heads} ({((flips-heads)/flips*100).toFixed(1)}%)</div></div>
+      </div>}
+      {flips===0&&<div style={{textAlign:"center",fontSize:12,color:"#aaa"}}>Press the button to start flipping</div>}
+    </div>
+    <Insight text="With few flips, you might get 60% heads. With thousands, it converges toward 50%. This is the Law of Large Numbers — probability is about long-term patterns, not individual events." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 21-26: DATA & STATISTICS
+// ═══════════════════════════════════════════════════════════════
+function Guide21(){
+  const [data,setData]=useState([30,35,40,42,45,50,55,250]);
+  const sorted=[...data].sort((a,b)=>a-b);
+  const mean=data.reduce((a,b)=>a+b,0)/data.length;
+  const mid=Math.floor(sorted.length/2);
+  const median=sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+  const freq={};data.forEach(d=>{freq[d]=(freq[d]||0)+1;});const modeVal=Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+  return(<div>
+    <DarkBox title="Three ways to find the 'center' of data"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>Mean</strong> = add all, divide by count (the "average"). <strong style={{color:"#FFE77A"}}>Median</strong> = the middle value when sorted. <strong style={{color:"#FFE77A"}}>Mode</strong> = most frequent value. Each tells a different story.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:12,justifyContent:"center"}}>
+        {data.map((d,i)=>(<span key={i} style={{padding:"4px 10px",borderRadius:6,background:d===250?"#FFEBEE":"#E3F2FD",color:d===250?"#C62828":"#1565C0",fontSize:14,fontWeight:700,border:"1px solid "+(d===250?"#FFCDD2":"#BBDEFB")}}>{d}</span>))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Mean (average)</div><div style={{fontSize:20,fontWeight:800,color:"#1565C0"}}>{mean.toFixed(1)}</div><div style={{fontSize:9,color:"#aaa"}}>Pulled up by the outlier!</div></div>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Median (middle)</div><div style={{fontSize:20,fontWeight:800,color:"#2E7D32"}}>{median}</div><div style={{fontSize:9,color:"#aaa"}}>Not affected by outlier</div></div>
+        <div style={{padding:"10px",background:"#EDE7F6",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Mode (most frequent)</div><div style={{fontSize:20,fontWeight:800,color:"#6A1B9A"}}>{modeVal?modeVal[0]:"none"}</div><div style={{fontSize:9,color:"#aaa"}}>({modeVal?modeVal[1]:0}× occurrence)</div></div>
+      </div>
+    </div>
+    <Insight text="'Average salary' is almost always misleading because a few very high earners pull the mean way up. Median household income is more honest — it tells you what the person in the MIDDLE earns." />
+  </div>);
+}
+
+function Guide22(){return(<div>
+  <DarkBox title="How spread out is the data?"><div style={{fontSize:14}}>
+    Two classes can have the same average test score but very different <strong style={{color:"#FFE77A"}}>spreads</strong>. In one class everyone scored 75-85. In the other, scores ranged from 30-100. The spread tells you how consistent the data is.
+  </div></DarkBox>
+  <Card color="#1565C0" title="The bell curve (normal distribution)">
+    {[{range:"Within 1 standard deviation",pct:"68%",desc:"Most data falls here. The 'typical' range."},
+      {range:"Within 2 standard deviations",pct:"95%",desc:"Almost everything. This is what 'normal' means statistically."},
+      {range:"Within 3 standard deviations",pct:"99.7%",desc:"Virtually all data. Anything beyond 3 SD is extremely rare."},
+    ].map((r,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"1fr 60px 1fr",padding:"8px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+      <span style={{fontSize:13,fontWeight:600,color:"#333"}}>{r.range}</span>
+      <span style={{fontSize:18,fontWeight:800,color:"#1565C0",textAlign:"center"}}>{r.pct}</span>
+      <span style={{fontSize:11,color:"#888"}}>{r.desc}</span>
+    </div>))}
+  </Card>
+  <Insight text="IQ scores: mean=100, SD=15. 'Within 2 SD' = 70-130, which covers 95% of people. A score of 145 is 3 SD above the mean — that's the top 0.15%. Standard deviation tells you HOW unusual something is." />
+</div>);}
+
+function Guide23(){return(<div>
+  <DarkBox title="Every graph tells a story — but some graphs lie"><div style={{fontSize:14}}>
+    The same data can look dramatically different depending on <strong style={{color:"#FFE77A"}}>axis scales</strong>, <strong style={{color:"#FFE77A"}}>time ranges</strong>, and <strong style={{color:"#FFE77A"}}>chart types</strong>. Always check the axes before believing a graph.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="How graphs mislead">
+    {[{trick:"Truncated Y-axis",desc:"Starting the Y-axis at 95 instead of 0 makes a tiny change (95→97) look dramatic. Always check where the axis starts.",color:"#C62828"},
+      {trick:"Cherry-picked time range",desc:"A stock that's 'up 20% this week' might be down 40% this year. The time window changes the story completely.",color:"#E65100"},
+      {trick:"Misleading 3D/perspective",desc:"3D pie charts distort sizes — the front slices look bigger. 3D bar charts hide actual values.",color:"#6A1B9A"},
+      {trick:"Dual axes",desc:"Two different Y-axes can make any two things look correlated by adjusting the scales independently.",color:"#1565C0"},
+    ].map((t,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${t.color}`}}>
+      <span style={{fontWeight:700,color:t.color}}>{t.trick}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{t.desc}</span>
+    </div>))}
+  </Card>
+</div>);}
+
+function Guide24(){return(<div>
+  <DarkBox title="THE most important statistical concept"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Correlation</strong> = two things tend to happen together. <strong style={{color:"#EF9A9A"}}>Causation</strong> = one thing CAUSES the other. Ice cream sales and drowning deaths both go up in summer — but ice cream doesn't cause drowning. <strong style={{color:"#FFE77A"}}>Summer heat</strong> causes both.
+  </div></DarkBox>
+  <Card color="#E65100" title="Spurious correlations that are real data">
+    {[{a:"Nicholas Cage movies",b:"swimming pool drownings",c:"Both happen to follow similar random trends"},
+      {a:"Organic food sales",b:"autism diagnoses",c:"Both increased over time — as did internet usage, smartphone sales, etc."},
+      {a:"Ice cream sales",b:"shark attacks",c:"Both increase in summer. The hidden variable: warm weather drives people to the beach AND to buy ice cream."},
+    ].map((s,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:13,color:"#333"}}><strong style={{color:"#E65100"}}>{s.a}</strong> <span style={{color:"#ccc"}}>correlates with</span> <strong style={{color:"#E65100"}}>{s.b}</strong></div>
+      <div style={{fontSize:11,color:"#888",marginTop:2}}>Why: {s.c}</div>
+    </div>))}
+  </Card>
+  <Insight text="When you see 'X is linked to Y' in a headline, ask: is there a hidden third variable that causes BOTH? Is the sample size big enough? Was this an experiment or just observation? Most correlations aren't causation." />
+</div>);}
+
+function Guide25(){return(<div>
+  <DarkBox title="Why '99% accurate' doesn't mean what you think"><div style={{fontSize:14}}>
+    A disease affects 1 in 1,000 people. A test is 99% accurate. You test positive. What's the probability you actually have it? Most people say 99%. The real answer: <strong style={{color:"#EF9A9A"}}>about 9%</strong>.
+  </div></DarkBox>
+  <Card color="#6A1B9A" title="The math (Bayes' theorem, intuitively)">
+    {[{step:"Start with 10,000 people",desc:"10 actually have the disease (1 in 1,000). 9,990 don't."},
+      {step:"Test the 10 who have it",desc:"99% accuracy → 10 test positive (true positives), 0 missed."},
+      {step:"Test the 9,990 who don't",desc:"99% accuracy → 100 test positive BY MISTAKE (false positives)."},
+      {step:"Count the positives",desc:"110 total positives. But only 10 actually have the disease."},
+      {step:"Your probability",desc:"10 out of 110 = 9.1%. NOT 99%."},
+    ].map((s,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+      <span style={{background:"#6A1B9A",color:"#fff",padding:"1px 8px",borderRadius:4,fontSize:11,fontWeight:700}}>{i+1}</span> <span style={{fontWeight:700,color:"#333",marginLeft:6}}>{s.step}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{s.desc}</span>
+    </div>))}
+  </Card>
+  <Insight text="This is why doctors don't diagnose from a single test. The rarer the condition, the more false positives dominate. Always ask for confirmation testing." />
+</div>);}
+
+function Guide26(){return(<div>
+  <DarkBox title="Why polls get it wrong"><div style={{fontSize:14}}>
+    A poll of 1,000 people can represent 300 million — IF the sample is <strong style={{color:"#FFE77A"}}>random and representative</strong>. When it's not, you get garbage results dressed up as data.
+  </div></DarkBox>
+  <Card color="#880E4F" title="Common biases">
+    {[{bias:"Selection bias",desc:"Surveying people at a gym about exercise habits. The sample isn't representative of the general population.",color:"#C62828"},
+      {bias:"Survivorship bias",desc:"'Most successful people dropped out of college' — ignoring the millions of dropouts who aren't successful.",color:"#E65100"},
+      {bias:"Confirmation bias",desc:"Looking for data that supports what you already believe and ignoring data that doesn't.",color:"#1565C0"},
+      {bias:"Response bias",desc:"People answer surveys how they think they SHOULD, not what they actually do. 'Do you exercise regularly?' Everyone says yes.",color:"#6A1B9A"},
+    ].map((b,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${b.color}`}}>
+      <span style={{fontWeight:700,color:b.color}}>{b.bias}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{b.desc}</span>
+    </div>))}
+  </Card>
+  <Insight text="When you see a statistic, ask: WHO was sampled? HOW MANY? HOW were they selected? WHO paid for the study? These four questions catch most bad data." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 27-30: MONEY MATH (interactive calculators)
+// ═══════════════════════════════════════════════════════════════
+function Guide27(){
+  const [initial,setInitial]=useState(1000);const [monthly,setMonthly]=useState(200);const [rate,setRate]=useState(7);const [years,setYears]=useState(30);
+  const r=rate/100/12;const n=years*12;
+  const fvInitial=initial*(1+r)**n;
+  const fvMonthly=monthly*(((1+r)**n-1)/r);
+  const total=fvInitial+fvMonthly;const contributed=initial+monthly*n;
+  return(<div>
+    <DarkBox title="Time × money × patience"><div style={{fontSize:14}}>
+      Compound interest is <strong style={{color:"#FFE77A"}}>interest earning interest</strong>. The earlier you start, the more time does the work for you. The difference between starting at 25 vs 35 is enormous.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <NumInput label="Start with" value={initial} onChange={setInitial} unit="$" color="#1565C0"/>
+      <Slider label="Monthly contribution" min={0} max={2000} step={50} value={monthly} onChange={setMonthly} color="#1565C0" unit=""/>
+      <Slider label="Annual return" min={1} max={15} step={0.5} value={rate} onChange={setRate} color="#2E7D32" unit="%"/>
+      <Slider label="Years" min={1} max={50} value={years} onChange={setYears} color="#E65100" />
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:8}}>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>You contribute</div><div style={{fontSize:20,fontWeight:800,color:"#1565C0"}}>${contributed.toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Interest earns</div><div style={{fontSize:20,fontWeight:800,color:"#2E7D32"}}>${Math.round(total-contributed).toLocaleString()}</div></div>
+      </div>
+      <div style={{padding:"12px",background:"#FFF3E0",borderRadius:8,textAlign:"center",marginTop:8}}><div style={{fontSize:10,color:"#888"}}>Total after {years} years</div><div style={{fontSize:26,fontWeight:800,color:"#E65100"}}>${Math.round(total).toLocaleString()}</div></div>
+    </div>
+  </div>);
+}
+
+function Guide28(){
+  const [principal,setPrincipal]=useState(250000);const [rate,setRate]=useState(6.5);const [years,setYears]=useState(30);
+  const r=rate/100/12;const n=years*12;
+  const payment=principal*(r*(1+r)**n)/((1+r)**n-1);
+  const totalPaid=payment*n;const totalInterest=totalPaid-principal;
+  return(<div>
+    <DarkBox title="How amortization really works"><div style={{fontSize:14}}>
+      Most of your early payments go to <strong style={{color:"#EF9A9A"}}>interest</strong>, not principal. It takes years before you're meaningfully paying down the loan. This is how banks make money.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <NumInput label="Loan amount" value={principal} onChange={setPrincipal} unit="$" color="#C62828"/>
+      <Slider label="Interest rate" min={1} max={15} step={0.25} value={rate} onChange={setRate} color="#C62828" unit="%"/>
+      <Slider label="Term" min={5} max={30} step={5} value={years} onChange={setYears} unit=" years" color="#E65100"/>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:8}}>
+        <div style={{padding:"10px",background:"#FFEBEE",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Monthly payment</div><div style={{fontSize:20,fontWeight:800,color:"#C62828"}}>${Math.round(payment).toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Total interest</div><div style={{fontSize:20,fontWeight:800,color:"#E65100"}}>${Math.round(totalInterest).toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#E3F2FD",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Total paid</div><div style={{fontSize:20,fontWeight:800,color:"#1565C0"}}>${Math.round(totalPaid).toLocaleString()}</div></div>
+      </div>
+    </div>
+    <Insight text={`On a $${principal.toLocaleString()} mortgage at ${rate}%, you pay $${Math.round(totalInterest).toLocaleString()} in interest — ${Math.round(totalInterest/principal*100)}% of the original loan amount. That's the true cost of borrowing.`} />
+  </div>);
+}
+
+function Guide29(){
+  const brackets=[{min:0,max:11600,rate:10},{min:11601,max:47150,rate:12},{min:47151,max:100525,rate:22},{min:100526,max:191950,rate:24},{min:191951,max:243725,rate:32},{min:243726,max:609350,rate:35},{min:609351,max:Infinity,rate:37}];
+  const [income,setIncome]=useState(75000);
+  let tax=0;let remaining=income;
+  const breakdown=brackets.map(b=>{const taxable=Math.min(Math.max(remaining,0),b.max-b.min+1);const t=taxable*b.rate/100;tax+=t;remaining-=taxable;return{...b,taxable,tax:t};}).filter(b=>b.taxable>0);
+  const effective=income>0?(tax/income*100):0;
+  return(<div>
+    <DarkBox title="Why 'moving into a higher bracket' isn't bad"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>Marginal tax</strong> = only the income IN that bracket gets taxed at that rate. Making $100K doesn't mean ALL $100K is taxed at 22%. The first ~$11K is taxed at 10%, the next ~$35K at 12%, etc.
+    </div></DarkBox>
+    <div style={{background:"#fff",borderRadius:14,padding:"16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <Slider label="Taxable income" min={10000} max={500000} step={5000} value={income} onChange={setIncome} color="#2E7D32" unit=""/>
+      {breakdown.map((b,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"60px 1fr 80px",padding:"5px 0",borderBottom:i<breakdown.length-1?"1px solid #f0eeeb":"none",alignItems:"center",fontSize:12}}>
+        <span style={{fontWeight:800,color:"#2E7D32"}}>{b.rate}%</span>
+        <div style={{background:"#E8F5E9",borderRadius:4,height:16,position:"relative",overflow:"hidden"}}><div style={{background:"#2E7D32",height:"100%",width:`${(b.taxable/income)*100}%`,borderRadius:4}}/></div>
+        <span style={{textAlign:"right",color:"#555"}}>${Math.round(b.tax).toLocaleString()}</span>
+      </div>))}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
+        <div style={{padding:"10px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Total tax</div><div style={{fontSize:20,fontWeight:800,color:"#2E7D32"}}>${Math.round(tax).toLocaleString()}</div></div>
+        <div style={{padding:"10px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Effective rate</div><div style={{fontSize:20,fontWeight:800,color:"#E65100"}}>{effective.toFixed(1)}%</div></div>
+      </div>
+    </div>
+    <Insight text="Your effective rate is ALWAYS lower than your marginal bracket. At $75K income, your marginal rate is 22% but your effective rate is only ~16%. The brackets protect you." />
+  </div>);
+}
+
+function Guide30(){return(<div>
+  <DarkBox title="Should I take the deal?"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Expected value</strong> = (probability of winning × amount won) – (probability of losing × amount lost). If EV is positive, the deal favors you over time. If negative, walk away.
+  </div></DarkBox>
+  <Card color="#E65100" title="Expected value in practice">
+    {[{scenario:"Lottery ticket ($2, 1 in 300M chance of $500M)",ev:"-$0.33",verdict:"Negative EV. You lose ~$0.33 per ticket on average. Entertainment, not investment.",color:"#C62828"},
+      {scenario:"Insurance ($1200/year, 1% chance of $50K claim)",ev:"-$700",verdict:"Negative EV for you, positive for the insurer. You're paying for peace of mind.",color:"#E65100"},
+      {scenario:"Coin flip: win $150 heads, lose $100 tails",ev:"+$25",verdict:"Positive EV! Take this bet every time. Over many flips, you profit $25 on average.",color:"#2E7D32"},
+    ].map((s,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:13,color:"#333"}}>{s.scenario}</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginTop:4}}>
+        <span style={{fontWeight:800,color:s.color,fontSize:16}}>EV: {s.ev}</span>
+        <span style={{fontSize:11,color:"#888"}}>{s.verdict}</span>
+      </div>
+    </div>))}
+  </Card>
+  <Insight text="Casinos have a positive expected value on every game — that's their business model. The 'house edge' is the gap between true odds and the payout. Over millions of bets, the math always wins." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 31-32: MATH IN THE WILD
+// ═══════════════════════════════════════════════════════════════
+function Guide31(){return(<div>
+  <DarkBox title="The power of back-of-envelope math"><div style={{fontSize:14}}>
+    A <strong style={{color:"#FFE77A"}}>Fermi estimate</strong> breaks impossible-seeming questions into smaller pieces you CAN estimate. You don't need the exact answer — being within 10× is often good enough.
+  </div></DarkBox>
+  <Card color="#1565C0" title="Example: How many piano tuners in Chicago?">
+    {[{step:"Population of Chicago",est:"~3 million people"},
+      {step:"People per household",est:"~2.5 → ~1.2M households"},
+      {step:"% with pianos",est:"~5% → ~60,000 pianos"},
+      {step:"Tunings per year",est:"~1-2 → ~90,000 tunings/year"},
+      {step:"Tunings per tuner per day",est:"~4 → ~1,000 per tuner/year"},
+      {step:"Piano tuners needed",est:"90,000 / 1,000 = ~90 tuners"},
+    ].map((s,i)=>(<div key={i} style={{padding:"6px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none"}}>
+      <span style={{fontSize:12,fontWeight:700,color:"#1565C0"}}>{s.step}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{s.est}</span>
+    </div>))}
+  </Card>
+  <Insight text="The real answer is about 80-100. Fermi estimates don't give exact numbers — they give you the right ORDER OF MAGNITUDE, which is often all you need to make a decision." />
+</div>);}
+
+function Guide32(){return(<div>
+  <DarkBox title="You already speak math — you just don't know it"><div style={{fontSize:14}}>
+    Every one of these is math. You've been doing it your whole life. The only difference between 'math I do' and 'math class' is <strong style={{color:"#FFE77A"}}>notation</strong>.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="Math you do without thinking">
+    {[{task:"Doubling a recipe",math:"Ratios & multiplication. Double 1¾ cups = 3½ cups.",icon:"🍳"},
+      {task:"Tipping 20%",math:"Percentages. Move decimal left (10%), double it (20%). $45 → $4.50 → $9.",icon:"💵"},
+      {task:"Splitting a bill",math:"Division. $120 among 4 people = $30 each. Add tip: $30 × 1.2 = $36.",icon:"🧾"},
+      {task:"Driving time",math:"Rate × time. 180 miles at 60 mph = 3 hours. Leave at 2 PM, arrive at 5 PM.",icon:"🚗"},
+      {task:"Unit pricing",math:"Division & comparison. $4.99/16oz vs $6.49/24oz. Which is cheaper per ounce?",icon:"🛒"},
+      {task:"Sale prices",math:"Percentages. 30% off $80 = $80 × 0.70 = $56. Or: 10% = $8, ×3 = $24 off → $56.",icon:"🏷"},
+      {task:"Comparing phone plans",math:"Linear equations. $40/mo unlimited vs $20/mo + $0.10/text. When does unlimited win?",icon:"📱"},
+      {task:"Mortgage shopping",math:"Compound interest. 6% vs 6.5% on $300K over 30 years = $70K+ difference.",icon:"🏠"},
+    ].map((t,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"8px 14px",borderBottom:i<7?"1px solid #f0eeeb":"none",gap:10}}>
+      <span style={{fontSize:22}}>{t.icon}</span>
+      <div style={{flex:1}}><span style={{fontWeight:700,color:"#2E7D32"}}>{t.task}</span><br/><span style={{fontSize:12,color:"#555"}}>{t.math}</span></div>
+    </div>))}
+  </Card>
+  <Insight text="Math anxiety comes from notation and abstraction — not from the concepts. You already understand ratios (recipes), percentages (tips), rates (driving), and compound growth (savings). You speak math. The guide just gave you the vocabulary." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPONENT ARRAY & MAIN APP
+// ═══════════════════════════════════════════════════════════════
+const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32];
+
+const App = function MathGuide(){
+  const[page,setPage]=useState(0);
+  const[menuOpen,setMenuOpen]=useState(false);
+  const contentRef=useRef(null);
+  const meta=guidesMeta[page];
+  const GuideComp=guideComponents[page];
+  const total=guidesMeta.length;
+
+  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
+  const prev=()=>{if(page>0)goTo(page-1);};
+  const next=()=>{if(page<total-1)goTo(page+1);};
+
+  useEffect(()=>{
+    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();};
+    window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);
+  });
+
+  return(
+    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}input[type=range]{height:6px;border-radius:3px;}`}</style>
+
+      <div style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
+        <button onClick={()=>setMenuOpen(!menuOpen)} style={{width:36,height:36,borderRadius:10,border:"1.5px solid #e0ddd5",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#555",flexShrink:0}}>☰</button>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
+          <div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div>
+        </div>
+        <div style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
+      </div>
+
+      <div ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
+        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
+      </div>
+
+      <div style={{background:"#fff",borderTop:"1px solid #eee",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <button onClick={prev} disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===0?"#f5f5f5":"#fff",color:page===0?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
+        <div style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
+        <button onClick={next} disabled={page===total-1} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===total-1?"#f5f5f5":"#fff",color:page===total-1?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
+      </div>
+
+      {menuOpen&&<div onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:20}}/>}
+      <div style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#fff",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.15)":"none",display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}>
+          <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>Math as a Language</div>
+          <div style={{fontSize:12,color:"#999"}}>32 Interactive Guides</div>
+        </div>
+        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
+          {categories.map(cat=>{
+            const items=guidesMeta.filter(g=>g.cat===cat);
+            return(<div key={cat}>
+              <div style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{catLabels[cat]}</div>
+              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
+                <button key={g.id} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?`${g.color}12`:"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent"}}>
+                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
+                    <div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div>
+                  </div>
+                  <span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span>
+                </button>
+              );})}
+            </div>);
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
