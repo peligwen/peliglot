@@ -84,6 +84,17 @@ function DarkBox({title,children}){
 }
 function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);}
 
+function speakGerman(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "de";
+  utter.rate = 0.85;
+  if (onEnd) utter.onend = onEnd;
+  utter.onerror = () => { if (onEnd) onEnd(); };
+  window.speechSynthesis.speak(utter);
+}
+
 // ═══════════════════════════════════════════════════════════════
 // GUIDE 1: ALPHABET — INTERACTIVE GRID
 // ═══════════════════════════════════════════════════════════════
@@ -119,7 +130,7 @@ function Guide1(){
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(64px, 1fr))",gap:5,marginBottom:14}}>
       {filtered.map((lt,i)=>{const isSel=sel===i;return(
-        <button key={i} onClick={()=>setSel(isSel?null:i)} style={{padding:"10px 4px",border:isSel?`2.5px solid ${lt.color}`:"1.5px solid #e0dcd5",borderRadius:10,background:isSel?lt.color:"#fff",color:isSel?"#fff":"#1a1a1a",cursor:"pointer",textAlign:"center",transition:"all 0.15s",transform:isSel?"scale(1.05)":"scale(1)"}}>
+        <button key={i} onClick={()=>{setSel(isSel?null:i);speakGerman(lt.l);}} style={{padding:"10px 4px",border:isSel?`2.5px solid ${lt.color}`:"1.5px solid #e0dcd5",borderRadius:10,background:isSel?lt.color:"#fff",color:isSel?"#fff":"#1a1a1a",cursor:"pointer",textAlign:"center",transition:"all 0.15s",transform:isSel?"scale(1.05)":"scale(1)"}}>
           <div style={{fontSize:lt.l.length>2?14:18,fontWeight:800,lineHeight:1.2}}>{lt.l}</div>
           <div style={{fontSize:8,color:isSel?"rgba(255,255,255,0.6)":"#aaa",marginTop:2}}>{lt.n}</div>
         </button>

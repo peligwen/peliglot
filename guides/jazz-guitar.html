@@ -18,6 +18,7 @@
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"></script>
   <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha384-c6Uo4N9c3SOEigMVzP6IshUG1wQ5uMp3xeoQFiHWAQ86joWdgyajkvopySyKy/Z6"></script>
 </head>
 <body>
   <div id="root"></div>
@@ -66,10 +67,29 @@ const catColors={Harmony:"#5D4037",Melody:"#C62828",Rhythm:"#E65100","ii-V-I":"#
 // ═══════════════════════════════════════════════════════════════
 // SHARED COMPONENTS
 // ═══════════════════════════════════════════════════════════════
-function Card({color,title,subtitle,children}){return(<div style={{background:"#1e1e1e",borderRadius:14,overflow:"hidden",border:"1px solid #333",marginBottom:16}}><div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>{subtitle&&<span style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>{subtitle}</span>}</div>{children}</div>);}
-function DarkBox({title,children}){return(<div style={{background:"linear-gradient(135deg,#2a2218,#1a1510)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#e8dcc8",textAlign:"center",border:"1px solid #3a3025"}}>{title&&<div style={{fontSize:10,color:"#7a6e5e",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}</div>);}
+// COMPONENT VARIATIONS: Dark warm-brown theme (intentional jazz aesthetic)
+// Card: bg #1e1e1e, border #333, subtitle opacity 0.5
+// DarkBox: warm brown gradient, cream text #e8dcc8, brown border #3a3025
+// Insight: 🎸 emoji, dark brown bg, warm tan text #c4a87a
+function Card({color, title, subtitle, children}) {
+  return(<div style={{background:"#1e1e1e",borderRadius:14,overflow:"hidden",border:"1px solid #333",marginBottom:16}}>
+    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
+      {subtitle&&<span style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>{subtitle}</span>}
+    </div>{children}
+  </div>);
+}
+function DarkBox({title, children}) {
+  return(<div style={{background:"linear-gradient(135deg,#2a2218,#1a1510)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#e8dcc8",textAlign:"center",border:"1px solid #3a3025"}}>
+    {title&&<div style={{fontSize:10,color:"#7a6e5e",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
+  </div>);
+}
 function Insight({text}){return(<div style={{background:"#2a2218",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #3a3025",fontSize:12,color:"#c4a87a",lineHeight:1.5}}>🎸 {text}</div>);}
-function Ref({name,text}){return(<div style={{background:"#1a1a1a",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #333",fontSize:12,color:"#999",lineHeight:1.5}}>🎧 <strong style={{color:"#aaa"}}>{name}:</strong> {text}</div>);}
+function Ref({name, text}) {
+  return(<div style={{background:"#1a1a1a",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #333",fontSize:12,color:"#999",lineHeight:1.5}}>
+    🎧 <strong style={{color:"#aaa"}}>{name}:</strong> {text}
+  </div>);
+}
 
 // FRETBOARD DIAGRAM
 function Fretboard({frets=5,startFret=0,dots=[],labels={},highlightColor="#c4a87a",title}){
@@ -99,14 +119,40 @@ function Fretboard({frets=5,startFret=0,dots=[],labels={},highlightColor="#c4a87
 }
 
 // ═══════════════════════════════════════════════════════════════
+// AUDIO ENGINE
+// ═══════════════════════════════════════════════════════════════
+const synth = {current: null};
+function getSynth() {
+  if (!synth.current) {
+    synth.current = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {type: "triangle"},
+      envelope: {attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8},
+      volume: -12
+    }).toDestination();
+  }
+  return synth.current;
+}
+async function playNote(note, dur="8n") { await Tone.start(); getSynth().triggerAttackRelease(note, dur); }
+async function playChord(notes, dur="2n") { await Tone.start(); getSynth().triggerAttackRelease(notes, dur); }
+async function playSequence(notes, tempo=400) {
+  await Tone.start(); const s = getSynth();
+  for (let i = 0; i < notes.length; i++) {
+    if (Array.isArray(notes[i])) s.triggerAttackRelease(notes[i], "4n");
+    else s.triggerAttackRelease(notes[i], "8n");
+    await new Promise(r => setTimeout(r, tempo));
+  }
+}
+const playBtnStyle = {padding:"6px 12px",borderRadius:8,background:"#3a3025",color:"#c4a87a",border:"1px solid #4a4035",cursor:"pointer",fontSize:12,fontWeight:700};
+
+// ═══════════════════════════════════════════════════════════════
 // GUIDE 1: VOICE LEADING
 // ═══════════════════════════════════════════════════════════════
 function Guide1(){
   const [pair,setPair]=useState(0);
   const pairs=[
-    {from:"Dm7",to:"G7",fromNotes:[{string:4,fret:5,label:"D"},{string:3,fret:5,label:"A"},{string:2,fret:5,label:"C"},{string:1,fret:5,label:"F"}],toNotes:[{string:4,fret:5,label:"D"},{string:3,fret:4,label:"G"},{string:2,fret:4,label:"B"},{string:1,fret:5,label:"F"}],motion:"Root stays, 5th drops to root, 7th drops to 3rd, 3rd stays as 7th"},
-    {from:"G7",to:"Cmaj7",fromNotes:[{string:4,fret:5,label:"D"},{string:3,fret:4,label:"G"},{string:2,fret:4,label:"B"},{string:1,fret:5,label:"F"}],toNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"G"},{string:2,fret:5,label:"C"},{string:1,fret:4,label:"E"}],motion:"Each voice moves by a half step or stays. The 7th (F) resolves down to E."},
-    {from:"Cmaj7",to:"Fmaj7",fromNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"G"},{string:2,fret:5,label:"C"},{string:1,fret:4,label:"E"}],toNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"A"},{string:2,fret:5,label:"C"},{string:1,fret:5,label:"F"}],motion:"E stays, G moves to A, C stays, E moves to F. Maximum common tones."},
+    {from:"Dm7",to:"G7",fromNotes:[{string:4,fret:5,label:"D"},{string:3,fret:5,label:"A"},{string:2,fret:5,label:"C"},{string:1,fret:5,label:"F"}],toNotes:[{string:4,fret:5,label:"D"},{string:3,fret:4,label:"G"},{string:2,fret:4,label:"B"},{string:1,fret:5,label:"F"}],motion:"Root stays, 5th drops to root, 7th drops to 3rd, 3rd stays as 7th",fromAudio:["D4","A4","C5","F5"],toAudio:["D4","G4","B4","F5"]},
+    {from:"G7",to:"Cmaj7",fromNotes:[{string:4,fret:5,label:"D"},{string:3,fret:4,label:"G"},{string:2,fret:4,label:"B"},{string:1,fret:5,label:"F"}],toNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"G"},{string:2,fret:5,label:"C"},{string:1,fret:4,label:"E"}],motion:"Each voice moves by a half step or stays. The 7th (F) resolves down to E.",fromAudio:["D4","G4","B4","F5"],toAudio:["E4","G4","C5","E5"]},
+    {from:"Cmaj7",to:"Fmaj7",fromNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"G"},{string:2,fret:5,label:"C"},{string:1,fret:4,label:"E"}],toNotes:[{string:4,fret:5,label:"E"},{string:3,fret:5,label:"A"},{string:2,fret:5,label:"C"},{string:1,fret:5,label:"F"}],motion:"E stays, G moves to A, C stays, E moves to F. Maximum common tones.",fromAudio:["E4","G4","C5","E5"],toAudio:["E4","A4","C5","F5"]},
   ];
   const p=pairs[pair];
   return(<div>
@@ -126,6 +172,11 @@ function Guide1(){
       </div>
     </div>
     <div style={{background:"#1e1e1e",borderRadius:10,padding:"10px 14px",border:"1px solid #333",marginBottom:12,fontSize:12,color:"#aaa"}}>{p.motion}</div>
+    <div style={{display:"flex",gap:6,justifyContent:"center",marginBottom:12}}>
+      <button onClick={()=>playChord(p.fromAudio)} style={playBtnStyle}>▶ {p.from}</button>
+      <button onClick={()=>playChord(p.toAudio)} style={playBtnStyle}>▶ {p.to}</button>
+      <button onClick={()=>playSequence([p.fromAudio, p.toAudio], 600)} style={playBtnStyle}>▶ Play {p.from} → {p.to}</button>
+    </div>
     <Insight text="The guide tone line (3rds and 7ths moving through a progression) IS a melody. Practice playing just the guide tones through a standard — that's the harmonic skeleton everything else hangs on." />
   </div>);
 }
@@ -138,20 +189,20 @@ function Guide2(){
   const [chordType,setChordType]=useState(0);
   const chords=[
     {name:"Cmaj7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:3,label:"C"},{string:4,fret:4,label:"G"},{string:3,fret:4,label:"B"},{string:2,fret:5,label:"E"}],sf:2},
-      {inv:"1st",dots:[{string:5,fret:7,label:"E"},{string:4,fret:7,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:6},
+      {inv:"Root",dots:[{string:5,fret:3,label:"C"},{string:4,fret:4,label:"G"},{string:3,fret:4,label:"B"},{string:2,fret:5,label:"E"}],sf:2,audio:["C3","G3","B3","E4"]},
+      {inv:"1st",dots:[{string:5,fret:7,label:"E"},{string:4,fret:7,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:6,audio:["E3","B3","E4","G4"]},
     ],drop3:[
-      {inv:"Root",dots:[{string:6,fret:8,label:"C"},{string:4,fret:9,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:7},
+      {inv:"Root",dots:[{string:6,fret:8,label:"C"},{string:4,fret:9,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:7,audio:["C3","B3","E4","G4"]},
     ]},
     {name:"Dm7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:5,label:"D"},{string:4,fret:5,label:"A"},{string:3,fret:5,label:"C"},{string:2,fret:6,label:"F"}],sf:4},
+      {inv:"Root",dots:[{string:5,fret:5,label:"D"},{string:4,fret:5,label:"A"},{string:3,fret:5,label:"C"},{string:2,fret:6,label:"F"}],sf:4,audio:["D3","A3","C4","F4"]},
     ],drop3:[
-      {inv:"Root",dots:[{string:6,fret:10,label:"D"},{string:4,fret:10,label:"C"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"A"}],sf:9},
+      {inv:"Root",dots:[{string:6,fret:10,label:"D"},{string:4,fret:10,label:"C"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"A"}],sf:9,audio:["D3","C4","F4","A4"]},
     ]},
     {name:"G7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:10,label:"G"},{string:4,fret:9,label:"D"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"B"}],sf:8},
+      {inv:"Root",dots:[{string:5,fret:10,label:"G"},{string:4,fret:9,label:"D"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"B"}],sf:8,audio:["G3","D4","F4","B4"]},
     ],drop3:[
-      {inv:"Root",dots:[{string:6,fret:3,label:"G"},{string:4,fret:3,label:"F"},{string:3,fret:4,label:"B"},{string:2,fret:3,label:"D"}],sf:2},
+      {inv:"Root",dots:[{string:6,fret:3,label:"G"},{string:4,fret:3,label:"F"},{string:3,fret:4,label:"B"},{string:2,fret:3,label:"D"}],sf:2,audio:["G2","F3","B3","D4"]},
     ]},
   ];
   const ch=chords[chordType];
@@ -166,7 +217,7 @@ function Guide2(){
     <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center"}}>
       {chords.map((c,i)=>(<button key={i} onClick={()=>setChordType(i)} style={{padding:"5px 14px",borderRadius:8,border:chordType===i?"2px solid #81C784":"1.5px solid #444",background:chordType===i?"#1B5E20":"#1e1e1e",color:chordType===i?"#81C784":"#888",cursor:"pointer",fontWeight:700}}>{c.name}</button>))}
     </div>
-    {voicings.map((v,i)=>(<div key={i}><Fretboard frets={5} startFret={v.sf} dots={v.dots} highlightColor={type==="drop2"?"#c4a87a":"#81C784"} title={`${ch.name} ${type} — ${v.inv} inversion`}/></div>))}
+    {voicings.map((v,i)=>(<div key={i}><Fretboard frets={5} startFret={v.sf} dots={v.dots} highlightColor={type==="drop2"?"#c4a87a":"#81C784"} title={`${ch.name} ${type} — ${v.inv} inversion`}/>{v.audio&&<div style={{textAlign:"center",marginBottom:12}}><button onClick={()=>playChord(v.audio)} style={playBtnStyle}>▶ Play {ch.name} {v.inv}</button></div>}</div>))}
     <Insight text="Master Drop 2 voicings on the middle four strings (5-4-3-2 and 4-3-2-1) first. These cover 90% of comping situations. Drop 3 adds bass-register depth for solo guitar or duo settings." />
   </div>);
 }
@@ -176,10 +227,10 @@ function Guide2(){
 // ═══════════════════════════════════════════════════════════════
 function Guide3(){
   const shells=[
-    {name:"Cmaj7",root:6,dots:[{string:6,fret:8,label:"R"},{string:4,fret:9,label:"7"},{string:3,fret:9,label:"3"}],sf:7,note:"Root on 6th string. 5th omitted — bass has it."},
-    {name:"Dm7",root:5,dots:[{string:5,fret:5,label:"R"},{string:3,fret:5,label:"b7"},{string:2,fret:6,label:"b3"}],sf:4,note:"Root on 5th string. Three notes, full chord identity."},
-    {name:"G7",root:6,dots:[{string:6,fret:3,label:"R"},{string:4,fret:3,label:"b7"},{string:3,fret:4,label:"3"}],sf:2,note:"Dominant 7th shell. The b7 and 3 form a tritone — maximum tension."},
-    {name:"Cm7",root:6,dots:[{string:6,fret:8,label:"R"},{string:4,fret:8,label:"b7"},{string:3,fret:8,label:"b3"}],sf:7,note:"Minor shell. All three notes on the same fret — easy shape."},
+    {name:"Cmaj7",root:6,dots:[{string:6,fret:8,label:"R"},{string:4,fret:9,label:"7"},{string:3,fret:9,label:"3"}],sf:7,note:"Root on 6th string. 5th omitted — bass has it.",audio:["C3","B3","E4"]},
+    {name:"Dm7",root:5,dots:[{string:5,fret:5,label:"R"},{string:3,fret:5,label:"b7"},{string:2,fret:6,label:"b3"}],sf:4,note:"Root on 5th string. Three notes, full chord identity.",audio:["D3","C4","F4"]},
+    {name:"G7",root:6,dots:[{string:6,fret:3,label:"R"},{string:4,fret:3,label:"b7"},{string:3,fret:4,label:"3"}],sf:2,note:"Dominant 7th shell. The b7 and 3 form a tritone — maximum tension.",audio:["G2","F3","B3"]},
+    {name:"Cm7",root:6,dots:[{string:6,fret:8,label:"R"},{string:4,fret:8,label:"b7"},{string:3,fret:8,label:"b3"}],sf:7,note:"Minor shell. All three notes on the same fret — easy shape.",audio:["C3","Bb3","Eb4"]},
   ];
   return(<div>
     <DarkBox title="Root, 3rd, 7th — that's the whole chord"><div style={{fontSize:14}}>
@@ -191,7 +242,7 @@ function Guide3(){
         <span style={{fontSize:11,color:"#666"}}>root on string {s.root}</span>
       </div>
       <Fretboard frets={4} startFret={s.sf} dots={s.dots} highlightColor="#c4a87a"/>
-      <div style={{fontSize:11,color:"#888"}}>{s.note}</div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><div style={{fontSize:11,color:"#888",flex:1}}>{s.note}</div><button onClick={()=>playChord(s.audio)} style={playBtnStyle}>▶ Play</button></div>
     </div>))}
     <Insight text="In a band with bass, piano, and drums, playing big voicings muddies everything. Shell voicings let you comp clearly without stepping on anyone. Freddie Green took this further — sometimes just root + 3rd." />
     <Ref name="Listen" text="Freddie Green with Count Basie — the ultimate in shell voicing economy. Joe Pass solo guitar for the opposite: full voicings when you ARE the whole band." />
@@ -470,18 +521,36 @@ function Guide17(){return(<div>
 // ═══════════════════════════════════════════════════════════════
 // GUIDES 18-21: ii-V-I LABORATORY
 // ═══════════════════════════════════════════════════════════════
-function Guide18(){return(<div>
+function Guide18(){
+  const iiVI_C = {dm7:["D3","A3","C4","F4"], g7:["D3","G3","B3","F4"], cmaj7:["E3","G3","C4","E4"]};
+  const iiVI_F = {dm7:["G3","D4","F4","Bb4"], g7:["G3","C4","E4","Bb4"], cmaj7:["A3","C4","F4","A4"]};
+  const iiVI_Bb = {dm7:["C4","G4","Bb4","Eb5"], g7:["C4","F4","A4","Eb5"], cmaj7:["D4","F4","Bb4","D5"]};
+  const guideTones = [["F4","C5"],["F4","B4"],["E4","B4"]];
+  return(<div>
   <DarkBox title="The single most important progression in jazz"><div style={{fontSize:14}}>
     <strong style={{color:"#c4a87a"}}>Dm7 → G7 → Cmaj7.</strong> Master this in all 12 keys and you can navigate 80% of the standard repertoire. Every device — voice leading, arpeggios, enclosures, chromaticism — should be practiced over ii-V-I first.
   </div></DarkBox>
+  <div style={{display:"flex",gap:6,justifyContent:"center",flexWrap:"wrap",marginBottom:12}}>
+    <button onClick={()=>playSequence([iiVI_C.dm7, iiVI_C.g7, iiVI_C.cmaj7], 700)} style={playBtnStyle}>▶ ii-V-I in C</button>
+    <button onClick={()=>playSequence([iiVI_F.dm7, iiVI_F.g7, iiVI_F.cmaj7], 700)} style={playBtnStyle}>▶ ii-V-I in F</button>
+    <button onClick={()=>playSequence([iiVI_Bb.dm7, iiVI_Bb.g7, iiVI_Bb.cmaj7], 700)} style={playBtnStyle}>▶ ii-V-I in Bb</button>
+  </div>
+  <div style={{display:"flex",gap:6,justifyContent:"center",flexWrap:"wrap",marginBottom:12}}>
+    <button onClick={()=>playChord(iiVI_C.dm7)} style={playBtnStyle}>▶ Dm7</button>
+    <button onClick={()=>playChord(iiVI_C.g7)} style={playBtnStyle}>▶ G7</button>
+    <button onClick={()=>playChord(iiVI_C.cmaj7)} style={playBtnStyle}>▶ Cmaj7</button>
+  </div>
   <Card color="#2E7D32" title="Approaches over major ii-V-I">
-    {[{approach:"Guide tones",line:"F→F (Dm7) → F→B (G7) → E→B (Cmaj7)",desc:"3rds and 7ths moving by half step. The skeleton of voice-led harmony."},
-      {approach:"Enclosure into 3rd of resolution",line:"Over G7: approach E (3rd of C) from F above and Eb below → land on E",desc:"THE most-used device. Target the 3rd of the I chord."},
-      {approach:"Scale-based with bebop note",line:"Dm7: D dorian → G7: G mixolydian bebop → Cmaj7: C major",desc:"Add the natural 7 (F#) to G mixolydian for downbeat alignment."},
-      {approach:"Arpeggio superimposition",line:"Dm7: Fmaj7 arp → G7: Bdim7 arp → Cmaj7: Em7 arp",desc:"Each arp outlines upper extensions of the underlying chord."},
-      {approach:"Pentatonic approach",line:"Dm7: F major pent → G7: Ab minor pent → Cmaj7: D major pent",desc:"Pentatonics as color filters. The G7 pent creates altered tension."},
+    {[{approach:"Guide tones",line:"F→F (Dm7) → F→B (G7) → E→B (Cmaj7)",desc:"3rds and 7ths moving by half step. The skeleton of voice-led harmony.",audio:guideTones},
+      {approach:"Enclosure into 3rd of resolution",line:"Over G7: approach E (3rd of C) from F above and Eb below → land on E",desc:"THE most-used device. Target the 3rd of the I chord.",audio:null},
+      {approach:"Scale-based with bebop note",line:"Dm7: D dorian → G7: G mixolydian bebop → Cmaj7: C major",desc:"Add the natural 7 (F#) to G mixolydian for downbeat alignment.",audio:null},
+      {approach:"Arpeggio superimposition",line:"Dm7: Fmaj7 arp → G7: Bdim7 arp → Cmaj7: Em7 arp",desc:"Each arp outlines upper extensions of the underlying chord.",audio:[["F4","A4","C5","E5"],["B3","D4","F4","Ab4"],["E4","G4","B4","D5"]]},
+      {approach:"Pentatonic approach",line:"Dm7: F major pent → G7: Ab minor pent → Cmaj7: D major pent",desc:"Pentatonics as color filters. The G7 pent creates altered tension.",audio:null},
     ].map((a,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<4?"1px solid #333":"none"}}>
-      <span style={{fontWeight:700,color:"#81C784"}}>{a.approach}</span><br/>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontWeight:700,color:"#81C784"}}>{a.approach}</span>
+        {a.audio&&<button onClick={()=>playSequence(a.audio, 600)} style={playBtnStyle}>▶ Play</button>}
+      </div>
       <div style={{fontSize:12,color:"#ccc",fontFamily:"monospace",margin:"4px 0"}}>{a.line}</div>
       <span style={{fontSize:11,color:"#888"}}>{a.desc}</span>
     </div>))}

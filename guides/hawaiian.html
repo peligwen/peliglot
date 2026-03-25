@@ -66,6 +66,7 @@ const catColors={Sounds:"#1B5E20",Sentences:"#0D47A1",Nouns:"#C62828",Pronouns:"
 
 // ═══════════════════════════════════════════════════════════════
 // SHARED COMPONENTS
+// COMPONENT VARIATIONS: DarkBox uses earth-tone gradient (#2a2520), Insight uses 🌺 emoji
 // ═══════════════════════════════════════════════════════════════
 function Card({color,title,subtitle,children}){
   return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
@@ -97,6 +98,19 @@ function ExpandSection({label,color,children}){
     </button>
     {open&&<div style={{marginTop:8}}>{children}</div>}
   </div>);
+}
+
+// Note: Hawaiian (haw) voice support varies by browser/OS.
+// Falls back to default voice if Hawaiian is unavailable.
+function speakHawaiian(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "haw";
+  utter.rate = 0.85;
+  if (onEnd) utter.onend = onEnd;
+  utter.onerror = () => { if (onEnd) onEnd(); };
+  window.speechSynthesis.speak(utter);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -133,7 +147,7 @@ function Guide1(){
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(58px, 1fr))",gap:6,marginBottom:16}}>
       {filtered.map(l=>{const isSel=sel?.l===l.l;const isV=l.type==="vowel";const isOkina=l.l==="ʻ";return(
-        <button key={l.l} onClick={()=>setSel(isSel?null:l)} style={{aspectRatio:"1",border:isSel?"2.5px solid #1B5E20":isOkina?"2px solid #C62828":"1.5px solid #e0dcd5",borderRadius:12,background:isSel?"#1B5E20":isV?"#E8F5E9":isOkina?"#FFF3E0":"#fff",color:isSel?"#FFE77A":"#1a1a1a",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",transform:isSel?"scale(1.08)":"scale(1)",transition:"all 0.15s",fontSize:isOkina?28:24,fontWeight:700,fontFamily:"'Georgia',serif"}}>
+        <button key={l.l} onClick={()=>{setSel(isSel?null:l);speakHawaiian(l.l);}} style={{aspectRatio:"1",border:isSel?"2.5px solid #1B5E20":isOkina?"2px solid #C62828":"1.5px solid #e0dcd5",borderRadius:12,background:isSel?"#1B5E20":isV?"#E8F5E9":isOkina?"#FFF3E0":"#fff",color:isSel?"#FFE77A":"#1a1a1a",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",transform:isSel?"scale(1.08)":"scale(1)",transition:"all 0.15s",fontSize:isOkina?28:24,fontWeight:700,fontFamily:"'Georgia',serif"}}>
           {l.l}
           <span style={{fontSize:8,color:isSel?"rgba(255,231,122,0.7)":"#aaa",marginTop:2,fontFamily:"system-ui,sans-serif",fontWeight:400}}>{l.type}</span>
         </button>

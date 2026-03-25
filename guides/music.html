@@ -68,9 +68,15 @@ const catColors={"Building Blocks":"#1a1a1a",Chords:"#C62828",Rhythm:"#E65100",P
 // ═══════════════════════════════════════════════════════════════
 // AUDIO ENGINE
 // ═══════════════════════════════════════════════════════════════
-const synth={current:null};
-function getSynth(){
-  if(!synth.current){synth.current=new Tone.PolySynth(Tone.Synth,{oscillator:{type:"triangle"},envelope:{attack:0.02,decay:0.3,sustain:0.2,release:0.8},volume:-12}).toDestination();}
+const synth = {current: null};
+function getSynth() {
+  if (!synth.current) {
+    synth.current = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {type: "triangle"},
+      envelope: {attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8},
+      volume: -12
+    }).toDestination();
+  }
   return synth.current;
 }
 async function playNote(note,dur="8n"){await Tone.start();getSynth().triggerAttackRelease(note,dur);}
@@ -85,8 +91,20 @@ function noteName(n){return NOTE_NAMES[n]?`${n}/${NOTE_NAMES[n]}`:n;}
 // ═══════════════════════════════════════════════════════════════
 // SHARED COMPONENTS
 // ═══════════════════════════════════════════════════════════════
-function Card({color,title,subtitle,children}){return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}><div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>{subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}</div>{children}</div>);}
-function DarkBox({title,children}){return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>{title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}</div>);}
+// COMPONENT VARIATIONS: Insight uses 🎵 emoji (music context)
+function Card({color, title, subtitle, children}) {
+  return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
+    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
+      {subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}
+    </div>{children}
+  </div>);
+}
+function DarkBox({title, children}) {
+  return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>
+    {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
+  </div>);
+}
 function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>🎵 {text}</div>);}
 
 // MINI PIANO — reusable interactive keyboard
