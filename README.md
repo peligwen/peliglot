@@ -12,7 +12,7 @@ Free, open-source visual guides for languages and music theory. No accounts, no 
 
 | Guide | Description | Count |
 |-------|-------------|-------|
-| 🇪🇸 **Spanish** | Pronunciation, all major verb tenses, noun gender/plurals, pronouns, ser vs estar, por vs para, sentence structure, numbers, formality, and false cognates. Mexican/US Spanish where applicable. | 25 guides |
+| 🇪🇸 **Spanish** | Pronunciation, all major verb tenses, noun gender/plurals, pronouns, ser vs estar, por vs para, sentence structure, numbers, formality, and false cognates. Mexican/US Spanish where applicable. | 27 guides |
 | 🇵🇸 **Arabic** | The full writing system (alphabet, diacritics, connected writing), phonology, noun system (gender, plurals, case, iḍāfa), pronouns, verb forms I–X, sentence structure, and the root system. Palestinian dialect notes throughout. | 30 guides |
 | 🇺🇸 **American English** | Inglés americano para hispanohablantes — sounds, verbs, articles, phrasal verbs, and more. Chattanooga dialect notes. | 35 guides |
 | 🇩🇪 **German** | Cases, gender, word order, verb brackets, compound nouns, adjective endings, and modal particles. | 33 guides |
@@ -23,6 +23,8 @@ Free, open-source visual guides for languages and music theory. No accounts, no 
 | Guide | Description | Count |
 |-------|-------------|-------|
 | 🎹 **Music Theory** | Notes, scales, chords, rhythm, progressions, melody, and genre — with interactive piano and playable audio. | 30 guides |
+| 🎸 **Jazz Guitar** | Voice leading, chord voicings, comping, improvisation, and jazz standards — for experienced musicians. | 30 guides |
+| 🧮 **Math** | Number sense, algebra, geometry, growth, data, and personal finance — interactive visual guides. | 32 guides |
 
 ## How It Works
 
@@ -67,12 +69,14 @@ peliglot/
 ├── index.html              # Landing page
 ├── wrangler.jsonc           # Cloudflare Workers config
 ├── guides/
-│   ├── spanish.html         # 25 Spanish grammar guides
+│   ├── spanish.html         # 27 Spanish grammar guides
 │   ├── arabic.html          # 30 Arabic grammar guides
 │   ├── english.html         # 35 American English guides
 │   ├── german.html          # 33 German grammar guides
 │   ├── hawaiian.html        # 30 Hawaiian grammar guides
-│   └── music.html           # 30 Music theory guides
+│   ├── music.html           # 30 Music theory guides
+│   ├── jazz-guitar.html     # 30 Jazz guitar guides
+│   └── math.html            # 32 Math guides
 └── README.md
 ```
 

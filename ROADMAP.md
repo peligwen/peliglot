@@ -37,13 +37,13 @@ A practical plan for improving the project, organized by effort and impact.
 
 Low-effort fixes that improve accuracy and trust immediately.
 
-- [ ] **Fix README.md** — Add Jazz Guitar and Math to guide table and project structure; update Spanish count from 25 to 27; correct total to 247
-- [ ] **Fix index.html Spanish card** — Change "25 guides" to "27 guides"
-- [ ] **Fix spanish.html data comment** — Change "DATA FOR ALL 25 GUIDES" to "DATA FOR ALL 27 GUIDES"
-- [ ] **Remove `user-scalable=no`** from all 8 guide viewport meta tags (accessibility violation, blocks pinch-to-zoom)
-- [ ] **Add `lang` attribute** to each guide's `<html>` tag matching its content language (`es`, `ar`, `en`, `de`, `haw`, `en`)
-- [ ] **Add SRI hashes** to all CDN `<script>` tags (`integrity` + `crossorigin` attributes)
-- [ ] **Add Open Graph meta tags** (`og:title`, `og:description`, `og:type`) to index.html and all guides
+- [x] **Fix README.md** — Add Jazz Guitar and Math to guide table and project structure; update Spanish count from 25 to 27; correct total to 247
+- [x] **Fix index.html Spanish card** — Change "25 guides" to "27 guides"
+- [x] **Fix spanish.html data comment** — Change "DATA FOR ALL 25 GUIDES" to "DATA FOR ALL 27 GUIDES"
+- [x] **Remove `user-scalable=no`** from all 8 guide viewport meta tags (accessibility violation, blocks pinch-to-zoom)
+- [x] **Add `lang` attribute** to each guide's `<html>` tag matching its content language (`es`, `ar`, `en`, `de`, `haw`, `en`)
+- [x] **Add SRI hashes** to all CDN `<script>` tags (`integrity` + `crossorigin` attributes)
+- [x] **Add Open Graph meta tags** (`og:title`, `og:description`, `og:type`) to index.html and all guides
 
 ---
 
