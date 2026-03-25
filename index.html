@@ -55,6 +55,11 @@
     .footer { text-align: center; padding: 20px 24px 40px; font-size: 12px; color: #bbb; line-height: 1.6; }
     .footer a { color: #999; text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+    *:focus-visible { outline: 2px solid #2E7D32; outline-offset: 2px; border-radius: 4px; }
+    .skip-link { position: absolute; top: -40px; left: 0; background: #1a1a1a; color: #fff; padding: 8px 16px; z-index: 100; font-size: 14px; text-decoration: none; border-radius: 0 0 8px 0; }
+    .skip-link:focus { top: 0; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+    @media (prefers-color-scheme: dark) { body { background: #1a1a1a !important; color: #e0e0e0 !important; } .guide-card { background: #2a2a2a; border-color: #3a3a3a; } .card-sub { color: #aaa; } .card-count { background: #3a3a3a; color: #ccc; } .hero h1, h1 { color: #e0e0e0 !important; } .tag { background: #333; color: #aaa; } .section-label { color: #888; } }
     @media (max-width: 480px) {
       .card-body { padding: 18px 16px; gap: 14px; }
       .card-icon { font-size: 32px; }
@@ -64,7 +69,8 @@
   </style>
 </head>
 <body>
-  <div class="hero">
+  <a href="#guides" class="skip-link">Skip to content</a>
+  <header role="banner" class="hero">
     <div class="logo">Peliglot</div>
     <h1>Learn <em>visually</em></h1>
     <p class="subtitle">
@@ -72,12 +78,12 @@
       No accounts, no ads, no tracking. Just open and learn.
     </p>
     <span class="tag">Free & Open Source</span>
-  </div>
+  </header>
 
-  <div class="guides">
-    <div class="section-label">Languages</div>
+  <main id="guides" role="main" class="guides">
+    <h2 class="section-label">Languages</h2>
 
-    <a href="guides/spanish.html" class="guide-card">
+    <a href="guides/spanish.html" class="guide-card" aria-label="Español — 27 Spanish grammar guides">
       <div class="card-accent" style="background: #C62828;"></div>
       <div class="card-body">
         <div class="card-icon">🇪🇸</div>
@@ -90,7 +96,7 @@
       </div>
     </a>
 
-    <a href="guides/arabic.html" class="guide-card">
+    <a href="guides/arabic.html" class="guide-card" aria-label="Arabic — 30 Arabic grammar guides">
       <div class="card-accent" style="background: #1B5E20;"></div>
       <div class="card-body">
         <div class="card-icon">🇵🇸</div>
@@ -103,7 +109,7 @@
       </div>
     </a>
 
-    <a href="guides/english.html" class="guide-card">
+    <a href="guides/english.html" class="guide-card" aria-label="American English — 35 guides">
       <div class="card-accent" style="background: #1565C0;"></div>
       <div class="card-body">
         <div class="card-icon">🇺🇸</div>
@@ -116,7 +122,7 @@
       </div>
     </a>
 
-    <a href="guides/german.html" class="guide-card">
+    <a href="guides/german.html" class="guide-card" aria-label="Deutsch — 33 German grammar guides">
       <div class="card-accent" style="background: #1a1a1a;"></div>
       <div class="card-body">
         <div class="card-icon">🇩🇪</div>
@@ -129,7 +135,7 @@
       </div>
     </a>
 
-    <a href="guides/hawaiian.html" class="guide-card">
+    <a href="guides/hawaiian.html" class="guide-card" aria-label="Hawaiian — 30 Hawaiian language guides">
       <div class="card-accent" style="background: #00695C;"></div>
       <div class="card-body">
         <div class="card-icon">🌺</div>
@@ -142,9 +148,9 @@
       </div>
     </a>
 
-    <div class="section-label">Beyond Language</div>
+    <h2 class="section-label">Beyond Language</h2>
 
-    <a href="guides/music.html" class="guide-card">
+    <a href="guides/music.html" class="guide-card" aria-label="Music Theory — 30 interactive guides">
       <div class="card-accent" style="background: linear-gradient(180deg, #C62828, #1565C0);"></div>
       <div class="card-body">
         <div class="card-icon">🎹</div>
@@ -157,7 +163,7 @@
       </div>
     </a>
 
-    <a href="guides/jazz-guitar.html" class="guide-card">
+    <a href="guides/jazz-guitar.html" class="guide-card" aria-label="Jazz Guitar — 30 guides for experienced musicians">
       <div class="card-accent" style="background: linear-gradient(180deg, #8D6E63, #3E2723);"></div>
       <div class="card-body">
         <div class="card-icon">🎸</div>
@@ -170,7 +176,7 @@
       </div>
     </a>
 
-    <a href="guides/math.html" class="guide-card">
+    <a href="guides/math.html" class="guide-card" aria-label="Math — 32 interactive guides">
       <div class="card-accent" style="background: linear-gradient(180deg, #1565C0, #2E7D32);"></div>
       <div class="card-body">
         <div class="card-icon">🧮</div>
@@ -182,11 +188,11 @@
         <div class="card-arrow">→</div>
       </div>
     </a>
-  </div>
+  </main>
 
-  <div class="footer">
+  <footer class="footer" role="contentinfo">
     <p>Built with care. All content is free to use.</p>
     <p style="margin-top: 8px;"><a href="https://github.com/YOUR_USERNAME/peliglot">View on GitHub</a></p>
-  </div>
+  </footer>
 </body>
 </html>

@@ -864,35 +864,36 @@ const App = function MusicGuide(){
   const next=()=>{if(page<total-1)goTo(page+1);};
 
   useEffect(()=>{
-    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();};
+    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();if(e.key==="Escape")setMenuOpen(false);};
     window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);
   });
 
   return(
     <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#0D0D0D",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative",color:"#eee"}}>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}`}</style>
+      <a href="#main-content" className="skip-link">Skip to content</a>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}*:focus-visible{outline:2px solid #C62828;outline-offset:2px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#C62828;color:#fff;padding:8px 16px;z-index:100;font-size:14px;text-decoration:none;border-radius:0 0 8px 0}.skip-link:focus{top:0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}`}</style>
 
-      <div style={{background:"#151515",borderBottom:"1px solid #2a2a2a",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
-        <button onClick={()=>setMenuOpen(!menuOpen)} style={{width:36,height:36,borderRadius:10,border:"1.5px solid #333",background:"#1a1a1a",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#888",flexShrink:0}}>☰</button>
+      <header role="banner" style={{background:"#151515",borderBottom:"1px solid #2a2a2a",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
+        <button onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"} aria-expanded={menuOpen} aria-controls="sidebar-menu" style={{width:36,height:36,borderRadius:10,border:"1.5px solid #333",background:"#1a1a1a",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#888",flexShrink:0}}>☰</button>
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontSize:14,fontWeight:800,color:"#eee",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
           <div style={{fontSize:11,color:"#666"}}>{meta.subtitle}</div>
         </div>
-        <div style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
-      </div>
+        <div aria-label={"Guide "+(page+1)+" of 30"} style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
+      </header>
 
-      <div ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
+      <main id="main-content" role="main" ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
         <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
-      </div>
+      </main>
 
-      <div style={{background:"#151515",borderTop:"1px solid #2a2a2a",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <button onClick={prev} disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===0?"#111":"#1a1a1a",color:page===0?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
-        <div style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#333",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
-        <button onClick={next} disabled={page===total-1} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===total-1?"#111":"#1a1a1a",color:page===total-1?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
-      </div>
+      <nav role="navigation" aria-label="Guide navigation" style={{background:"#151515",borderTop:"1px solid #2a2a2a",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <button onClick={prev} aria-label="Previous guide" disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===0?"#111":"#1a1a1a",color:page===0?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
+        <div role="tablist" aria-label="Guide pages" style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} role="tab" aria-selected={i===page} aria-label={"Guide "+(i+1)+": "+guidesMeta[i].title} tabIndex={i===page?0:-1} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")goTo(i);}} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#333",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
+        <button onClick={next} aria-label="Next guide" disabled={page===29} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===total-1?"#111":"#1a1a1a",color:page===total-1?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
+      </nav>
 
-      {menuOpen&&<div onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:20}}/>}
-      <div style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#151515",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.4)":"none",display:"flex",flexDirection:"column"}}>
+      {menuOpen&&<div aria-hidden="true" onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:20}}/>}
+      <aside id="sidebar-menu" role="navigation" aria-label="Guide list" onKeyDown={e=>{if(e.key==="Escape")setMenuOpen(false);}} style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#151515",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.4)":"none",display:"flex",flexDirection:"column"}}>
         <div style={{padding:"16px 20px",borderBottom:"1px solid #2a2a2a",flexShrink:0}}>
           <div style={{fontSize:18,fontWeight:800,color:"#eee"}}>Music Theory</div>
           <div style={{fontSize:12,color:"#666"}}>30 Interactive Guides</div>
@@ -901,9 +902,9 @@ const App = function MusicGuide(){
           {categories.map(cat=>{
             const items=guidesMeta.filter(g=>g.cat===cat);
             return(<div key={cat}>
-              <div style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat]==="@1a1a1a"?"#888":catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
+              <div role="heading" aria-level="2" style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat]==="@1a1a1a"?"#888":catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
               {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
-                <button key={g.id} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?"#252525":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent",color:"#ccc"}}>
+                <button key={g.id} onClick={()=>goTo(idx)} aria-current={isActive?"page":undefined} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?"#252525":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent",color:"#ccc"}}>
                   <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?"#fff":"#aaa",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
@@ -915,7 +916,7 @@ const App = function MusicGuide(){
             </div>);
           })}
         </div>
-      </div>
+      </aside>
     </div>
   );
 }
