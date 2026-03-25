@@ -51,12 +51,12 @@ Low-effort fixes that improve accuracy and trust immediately.
 
 Fixes to content data and formatting that make the project reliable.
 
-- [ ] **Audit all guide counts** against their data arrays and update every reference (README, index.html, in-file comments) to match
-- [ ] **Normalize code formatting** — Pick a style (readable, not minified) and apply consistently across all 8 guide files; document the convention
-- [ ] **Standardize shared components** — Ensure Card, DarkBox, and Insight have identical signatures and styling across files (intentional per-guide variations like the Hawaiian hibiscus are fine, but document them)
-- [ ] **Add speech synthesis to more language guides** — Currently only spanish.html uses `speechSynthesis`; Arabic, German, Hawaiian, and English guides would benefit
-- [ ] **Add Tone.js audio to jazz-guitar.html** — Jazz Guitar currently has no audio playback despite being a music guide; Music Theory uses Tone.js and can serve as the reference implementation
-- [ ] **Review guides 26-27 in Spanish** (Calor, El Tiempo) — These were added after the original 25 and should be verified for consistency with earlier guides
+- [x] **Audit all guide counts** against their data arrays and update every reference (README, index.html, in-file comments) to match
+- [x] **Normalize code formatting** — Pick a style (readable, not minified) and apply consistently across all 8 guide files; document the convention
+- [x] **Standardize shared components** — Ensure Card, DarkBox, and Insight have identical signatures and styling across files (intentional per-guide variations like the Hawaiian hibiscus are fine, but document them)
+- [x] **Add speech synthesis to more language guides** — Currently only spanish.html uses `speechSynthesis`; Arabic, German, Hawaiian, and English guides would benefit
+- [x] **Add Tone.js audio to jazz-guitar.html** — Jazz Guitar currently has no audio playback despite being a music guide; Music Theory uses Tone.js and can serve as the reference implementation
+- [x] **Review guides 26-27 in Spanish** (Calor, El Tiempo) — These were added after the original 25 and should be verified for consistency with earlier guides
 
 ---
 
@@ -64,14 +64,14 @@ Fixes to content data and formatting that make the project reliable.
 
 Making the guides usable by everyone.
 
-- [ ] **Add ARIA labels** to all interactive elements (navigation buttons, sidebar toggle, guide cards, expandable sections)
-- [ ] **Add `role` attributes** to landmark regions (navigation, main content, sidebar)
-- [ ] **Ensure keyboard navigation works fully** — Tab order through sidebar items, Enter/Space to activate, Escape to close sidebar
-- [ ] **Add skip-to-content links** at the top of each guide
-- [ ] **Provide text alternatives** for all color-coded information (category colors should also have text labels)
-- [ ] **Test with screen readers** (VoiceOver, NVDA) and document findings
-- [ ] **Add `prefers-reduced-motion` media query** — Disable transitions/animations for users who request it
-- [ ] **Add `prefers-color-scheme: dark` support** — Guides already have a DarkBox component; extend to a full dark mode
+- [x] **Add ARIA labels** to all interactive elements (navigation buttons, sidebar toggle, guide cards, expandable sections)
+- [x] **Add `role` attributes** to landmark regions (navigation, main content, sidebar)
+- [x] **Ensure keyboard navigation works fully** — Tab order through sidebar items, Enter/Space to activate, Escape to close sidebar
+- [x] **Add skip-to-content links** at the top of each guide
+- [x] **Provide text alternatives** for all color-coded information (category colors should also have text labels)
+- [x] **Test with screen readers** (VoiceOver, NVDA) and document findings
+- [x] **Add `prefers-reduced-motion` media query** — Disable transitions/animations for users who request it
+- [x] **Add `prefers-color-scheme: dark` support** — Guides already have a DarkBox component; extend to a full dark mode
 
 ---
 
