@@ -1,4 +1,4 @@
-const CACHE_NAME = 'peliglot-v1';
+const CACHE_NAME = 'peliglot-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -7,9 +7,15 @@ const ASSETS = [
   '/guides/english.html',
   '/guides/german.html',
   '/guides/hawaiian.html',
+  '/guides/french.html',
+  '/guides/japanese.html',
+  '/guides/portuguese.html',
   '/guides/music.html',
   '/guides/jazz-guitar.html',
-  '/guides/math.html'
+  '/guides/math.html',
+  '/guides/music2.html',
+  '/guides/statistics.html',
+  '/guides/programming.html'
 ];
 
 self.addEventListener('install', e => {

@@ -103,12 +103,12 @@ Improvements to reliability, developer experience, and performance.
 
 New guides and content expansion, once the foundation is solid.
 
-- [ ] **French** — High demand, well-resourced language, pairs naturally with the existing Spanish guide structure
-- [ ] **Japanese** — Writing systems (hiragana, katakana, kanji) would showcase the interactive component approach
-- [ ] **Portuguese** — Leverage the existing Spanish content structure; highlight differences
-- [ ] **Music Theory II** — Advanced topics: modulation, counterpoint, orchestration, form analysis
-- [ ] **Statistics** — Natural extension of the Math guide; data literacy is broadly useful
-- [ ] **Programming fundamentals** — The "language-as-metaphor" approach used in Math and Music could extend to teaching programming concepts visually
+- [x] **French** — High demand, well-resourced language, pairs naturally with the existing Spanish guide structure
+- [x] **Japanese** — Writing systems (hiragana, katakana, kanji) would showcase the interactive component approach
+- [x] **Portuguese** — Leverage the existing Spanish content structure; highlight differences
+- [x] **Music Theory II** — Advanced topics: modulation, counterpoint, orchestration, form analysis
+- [x] **Statistics** — Natural extension of the Math guide; data literacy is broadly useful
+- [x] **Programming fundamentals** — The "language-as-metaphor" approach used in Math and Music could extend to teaching programming concepts visually
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "name": "Peliglot — Interactive Learning Guides",
   "short_name": "Peliglot",
-  "description": "Free interactive guides for languages, music, and math. No accounts, no ads, no tracking.",
+  "description": "Free interactive guides for languages, music, math, statistics, and programming. No accounts, no ads, no tracking.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FDFBF7",

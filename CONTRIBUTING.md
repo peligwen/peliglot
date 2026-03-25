@@ -17,6 +17,12 @@ guides/
   music.html
   jazz-guitar.html
   math.html
+  french.html
+  japanese.html
+  portuguese.html
+  music2.html
+  statistics.html
+  programming.html
 ```
 
 Each guide is a standalone HTML file. There are no shared bundles or generated assets.

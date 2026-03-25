@@ -17,6 +17,9 @@ Free, open-source visual guides for languages and music theory. No accounts, no 
 | 🇺🇸 **American English** | Inglés americano para hispanohablantes — sounds, verbs, articles, phrasal verbs, and more. Chattanooga dialect notes. | 35 guides |
 | 🇩🇪 **German** | Cases, gender, word order, verb brackets, compound nouns, adjective endings, and modal particles. | 33 guides |
 | 🌺 **Hawaiian** | The 13-letter alphabet, ʻokina & kahakō, VSO sentence structure, the O/A possessive class system, personal pronouns (with dual and inclusive/exclusive we), TAM markers, directional particles, and cultural context including language revival. | 30 guides |
+| 🇫🇷 **French** | Pronunciation, nasal vowels, liaison, articles, verb tenses (present through subjunctive), pronouns, negation, comparisons, formality (tu/vous), false friends, and regional French. | 30 guides |
+| 🇯🇵 **Japanese** | Hiragana, katakana, basic kanji, sentence structure (SOV), particles, verb groups, te-form, adjectives, politeness levels, counters, onomatopoeia, and loanwords. | 30 guides |
+| 🇧🇷 **Portuguese** | Brazilian Portuguese pronunciation, nasal vowels, verb tenses, ser vs estar, personal infinitive, pronouns, prepositions — with Spanish comparison notes and European Portuguese variants. | 30 guides |
 
 ### Beyond Language
 
@@ -25,6 +28,9 @@ Free, open-source visual guides for languages and music theory. No accounts, no 
 | 🎹 **Music Theory** | Notes, scales, chords, rhythm, progressions, melody, and genre — with interactive piano and playable audio. | 30 guides |
 | 🎸 **Jazz Guitar** | Voice leading, chord voicings, comping, improvisation, and jazz standards — for experienced musicians. | 30 guides |
 | 🧮 **Math** | Number sense, algebra, geometry, growth, data, and personal finance — interactive visual guides. | 32 guides |
+| 🎼 **Music Theory II** | Extended harmony, modulation, counterpoint, form analysis, orchestration, and 20th-century techniques — with playable audio. | 30 guides |
+| 📊 **Statistics** | Descriptive stats, probability, distributions, hypothesis testing, regression, and data literacy — interactive visualizations. | 30 guides |
+| 💻 **Programming** | Variables, control flow, functions, data structures, algorithms, and patterns — visual, language-agnostic approach. | 30 guides |
 
 ## How It Works
 
@@ -74,9 +80,15 @@ peliglot/
 │   ├── english.html         # 35 American English guides
 │   ├── german.html          # 33 German grammar guides
 │   ├── hawaiian.html        # 30 Hawaiian grammar guides
+│   ├── french.html          # 30 French grammar guides
+│   ├── japanese.html        # 30 Japanese language guides
+│   ├── portuguese.html      # 30 Portuguese grammar guides
 │   ├── music.html           # 30 Music theory guides
 │   ├── jazz-guitar.html     # 30 Jazz guitar guides
-│   └── math.html            # 32 Math guides
+│   ├── math.html            # 32 Math guides
+│   ├── music2.html          # 30 Advanced music theory guides
+│   ├── statistics.html      # 30 Statistics guides
+│   └── programming.html     # 30 Programming fundamentals guides
 └── README.md
 ```
 
