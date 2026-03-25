@@ -357,16 +357,27 @@ function Guide6(){
   </div>);
 }
 
+const progUseYes=[
+  {ex:"Estoy comiendo ahora.",en:"I'm eating right now.",use:"Action happening right now"},
+  {ex:"Está lloviendo.",en:"It's raining (at this moment).",use:"Current, ongoing event"},
+  {ex:"Estaban bailando cuando llegué.",en:"They were dancing when I arrived.",use:"Background action interrupted"},
+];
+const progUseNo=[
+  {ex:"Vivo en Madrid. (NOT estoy viviendo)",en:"I live in Madrid.",use:"Ongoing state — use simple present"},
+  {ex:"Estudio español. (NOT estoy estudiando)",en:"I study Spanish.",use:"Habitual action — use simple present"},
+  {ex:"Mañana voy al cine. (NOT estaré yendo)",en:"Tomorrow I'm going to the movies.",use:"Future plans — use simple present or ir a"},
+];
+
 function Guide7(){
   const [mode,setMode]=useState("present");
   const estar=mode==="present"?["estoy","estás","está","estamos","estáis","están"]:["estaba","estabas","estaba","estábamos","estabais","estaban"];
   const col=mode==="present"?"#E65100":"#283593";
   return(<div>
-    <DarkBox title="The Formula"><div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,flexWrap:"wrap"}}>
+    <DarkBox title="The Formula"><div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10,flexWrap:"wrap",marginBottom:8}}>
       <span style={{background:col,padding:"6px 14px",borderRadius:8,fontWeight:700}}>ESTAR</span>
       <span style={{fontSize:20,color:"#444"}}>+</span>
       <span style={{background:"#555",padding:"6px 14px",borderRadius:8,fontWeight:700}}>-ANDO / -IENDO</span>
-    </div></DarkBox>
+    </div><div style={{fontSize:12,color:"#aaa"}}>Only for actions happening <strong style={{color:"#FFE77A"}}>right at this moment</strong>. Spanish uses this far less than English!</div></DarkBox>
     <div style={{display:"flex",gap:8,marginBottom:16,justifyContent:"center"}}>
       {[{k:"present",l:"Present Progressive"},{k:"past",l:"Past Progressive"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:200,padding:"10px",borderRadius:10,border:mode===m.k?`2.5px solid ${col}`:"1.5px solid #ddd",background:mode===m.k?col:"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:13}}>{m.l}</button>))}
     </div>
@@ -376,14 +387,37 @@ function Guide7(){
         <div style={{fontSize:16,fontWeight:700}}><span style={{color:col}}>{estar[i]}</span><span style={{color:"#ccc",margin:"0 6px"}}>+</span><span style={{color:"#1a1a1a"}}>hablando</span></div>
       </div>))}
     </Card>
-    <Insight text="Don't overuse it! Spanish uses the progressive much less than English. It emphasizes right-this-moment actions."/>
+    <Card color="#2E7D32" title="When TO Use the Progressive" subtitle="right-now actions only">
+      {progUseYes.map((u,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i<progUseYes.length-1?"1px solid #f0eeeb":"none"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#2E7D32",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>{u.use}</div>
+        <div style={{fontSize:15,fontWeight:700}}>{u.ex}</div>
+        <div style={{fontSize:12,color:"#888"}}>{u.en}</div>
+      </div>))}
+    </Card>
+    <Card color="#C62828" title="When NOT to Use It" subtitle="use simple present instead">
+      {progUseNo.map((u,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i<progUseNo.length-1?"1px solid #f0eeeb":"none"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#C62828",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>{u.use}</div>
+        <div style={{fontSize:15,fontWeight:700}}>{u.ex}</div>
+        <div style={{fontSize:12,color:"#888"}}>{u.en}</div>
+      </div>))}
+    </Card>
+    <Insight text="English 'I'm eating' can mean right now OR generally — Spanish only uses the progressive for right now. 'I'm studying Spanish (in general)' = Estudio español."/>
   </div>);
 }
 
 const haberForms={pp:{l:"Presente Perfecto",f:["he","has","ha","hemos","habéis","han"],c:"#1B5E20"},plup:{l:"Pluscuamperfecto",f:["había","habías","había","habíamos","habíais","habían"],c:"#4A148C"},futP:{l:"Futuro Perfecto",f:["habré","habrás","habrá","habremos","habréis","habrán"],c:"#E65100"},condP:{l:"Condicional Perfecto",f:["habría","habrías","habría","habríamos","habríais","habrían"],c:"#01579B"},ppS:{l:"Perfecto Subjuntivo",f:["haya","hayas","haya","hayamos","hayáis","hayan"],c:"#880E4F"},plupS:{l:"Pluscuamp. Subj.",f:["hubiera","hubieras","hubiera","hubiéramos","hubierais","hubieran"],c:"#3E2723"}};
 
+const perfectUses={
+  pp:{use:"Actions with present relevance",ex:"He viajado a España.",en:"I have traveled to Spain.",tip:"Like English present perfect. Often with ya, todavía, nunca, alguna vez."},
+  plup:{use:"Action completed before another past action",ex:"Cuando llegué, ya habían comido.",en:"When I arrived, they had already eaten.",tip:"The 'earlier past' — sets up what happened before the main past event."},
+  futP:{use:"Action that will be done by a future point",ex:"Para las 5, habré terminado.",en:"By 5:00, I will have finished.",tip:"Also used for probability: 'Habrá salido' = He must have left."},
+  condP:{use:"Would have done (hypothetical past)",ex:"Habría ido, pero llovía.",en:"I would have gone, but it was raining.",tip:"Often paired with si + pluperfect subjunctive: Si hubiera sabido, habría venido."},
+  ppS:{use:"Subjunctive: hoping/doubting something happened",ex:"Espero que hayan llegado bien.",en:"I hope they've arrived safely.",tip:"Triggered by subjunctive triggers (esperar, dudar, ojalá) + a completed action."},
+  plupS:{use:"Hypothetical about a completed past event",ex:"Si hubiera estudiado, habría aprobado.",en:"If I had studied, I would have passed.",tip:"The 'if only' tense — for regrets and contrary-to-fact past conditions."},
+};
+
 function Guide8(){
-  const [at,setAt]=useState("pp");const t=haberForms[at];
+  const [at,setAt]=useState("pp");const t=haberForms[at];const u=perfectUses[at];
   return(<div>
     <DarkBox title="One Formula, Six Tenses"><div style={{fontSize:14}}>
       <strong style={{color:"#FFE77A"}}>HABER</strong> (conjugated) + <strong>PARTICIPIO</strong> (-ado/-ido)<br/>
@@ -401,6 +435,14 @@ function Guide8(){
         <div style={{fontSize:16,fontWeight:700}}><span style={{color:t.c}}>{t.f[i]}</span><span style={{color:"#ccc",margin:"0 6px"}}>+</span><span>hablado</span></div>
       </div>))}
     </Card>
+    <Card color={t.c} title={"When to Use: "+t.l} subtitle={u.use}>
+      <div style={{padding:"12px 16px"}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:4}}>{u.ex}</div>
+        <div style={{fontSize:13,color:"#888",marginBottom:10}}>{u.en}</div>
+        <div style={{background:`${t.c}10`,borderRadius:8,padding:"10px 12px",border:`1px solid ${t.c}25`,fontSize:12,color:"#555",lineHeight:1.5}}>{u.tip}</div>
+      </div>
+    </Card>
+    <Insight text="Never separate haber from the participle! 'No he comido' (correct) — nothing goes between them except 'no'."/>
   </div>);
 }
 
@@ -510,14 +552,43 @@ const pluralRules=[
 ];
 function Guide12(){return(<div>{pluralRules.map((r,i)=>(<Card key={i} color={r.color} title={r.l}>{r.ex.map((e,j)=>(<div key={j} style={{display:"flex",alignItems:"center",padding:"8px 16px",borderBottom:j<r.ex.length-1?"1px solid #f0eeeb":"none"}}><span style={{flex:1,fontSize:15,color:"#999"}}>{e.s}</span><span style={{fontSize:18,color:"#ccc",margin:"0 12px"}}>→</span><span style={{flex:1,fontSize:15,fontWeight:700,color:r.color}}>{e.p}</span></div>))}</Card>))}</div>);}
 
-function Guide13(){return(<SimpleGuide title="Adjective Agreement" items={[
-  {h:"4-Form (-o/-a/-os/-as)",b:"Most adjectives: alto/alta/altos/altas"},
-  {h:"2-Form (-e / consonant)",b:"Only number changes: grande → grandes, difícil → difíciles"},
-  {h:"Nationality adds feminine -a",b:"español/española, francés/francesa, alemán/alemana"},
-  {h:"Default position: AFTER noun",b:"la casa roja = the red house (distinguishing)"},
-  {h:"Before noun = subjective/emotional",b:"la hermosa vista = the beautiful view"},
-  {h:"⚠ Meaning shifts",b:"pobre mujer (unfortunate) vs mujer pobre (no money)\nviejo amigo (long-time) vs amigo viejo (elderly)\ngran hombre (great) vs hombre grande (big)"},
-]}/>);}
+function Guide13(){
+  const [gen,setGen]=useState("m");const [num,setNum]=useState("s");
+  const adjs=[
+    {base:"alto",forms:{ms:"alto",fs:"alta",mp:"altos",fp:"altas"},en:"tall",type:"4-form"},
+    {base:"rojo",forms:{ms:"rojo",fs:"roja",mp:"rojos",fp:"rojas"},en:"red",type:"4-form"},
+    {base:"grande",forms:{ms:"grande",fs:"grande",mp:"grandes",fp:"grandes"},en:"big",type:"2-form"},
+    {base:"difícil",forms:{ms:"difícil",fs:"difícil",mp:"difíciles",fp:"difíciles"},en:"difficult",type:"2-form"},
+    {base:"español",forms:{ms:"español",fs:"española",mp:"españoles",fp:"españolas"},en:"Spanish",type:"nationality"},
+  ];
+  const key=gen+num;const nouns={ms:"el chico",fs:"la chica",mp:"los chicos",fp:"las chicas"};
+  const col=gen==="m"?"#1565C0":"#AD1457";
+  const shifts=[{a:"pobre",before:"unfortunate",after:"poor (no money)"},{a:"viejo",before:"long-time (friend)",after:"elderly"},{a:"grande/gran",before:"great",after:"big (size)"},{a:"nuevo",before:"another/different",after:"brand-new"},{a:"único",before:"only",after:"unique"}];
+  return(<div>
+    <DarkBox title="Agreement Rule"><div style={{fontSize:14}}>Adjectives must match the noun in <strong style={{color:"#90CAF9"}}>gender</strong> and <strong style={{color:"#FFE77A"}}>number</strong>. Toggle below to see how they change.</div></DarkBox>
+    <div style={{display:"flex",gap:8,marginBottom:10,justifyContent:"center"}}>
+      {[{k:"m",l:"Masculine",c:"#1565C0"},{k:"f",l:"Feminine",c:"#AD1457"}].map(g=>(<button key={g.k} onClick={()=>setGen(g.k)} style={{flex:1,maxWidth:160,padding:"10px",borderRadius:10,border:gen===g.k?`2.5px solid ${g.c}`:"1.5px solid #ddd",background:gen===g.k?g.c:"#fff",color:gen===g.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{g.l}</button>))}
+    </div>
+    <div style={{display:"flex",gap:8,marginBottom:16,justifyContent:"center"}}>
+      {[{k:"s",l:"Singular"},{k:"p",l:"Plural"}].map(n=>(<button key={n.k} onClick={()=>setNum(n.k)} style={{flex:1,maxWidth:160,padding:"10px",borderRadius:10,border:num===n.k?`2.5px solid ${col}`:"1.5px solid #ddd",background:num===n.k?col:"#fff",color:num===n.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{n.l}</button>))}
+    </div>
+    <Card color={col} title={nouns[key]} subtitle="adjective forms">
+      {adjs.map((a,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"8px 16px",borderBottom:i<adjs.length-1?"1px solid #f0eeeb":"none"}}>
+        <div style={{flex:1}}><span style={{fontSize:16,fontWeight:700,color:col}}>{a.forms[key]}</span></div>
+        <div style={{fontSize:11,color:"#999"}}>{a.en}</div>
+        <div style={{marginLeft:8,padding:"2px 8px",borderRadius:5,fontSize:9,fontWeight:700,background:a.type==="4-form"?"#E3F2FD":a.type==="2-form"?"#F3E5F5":"#FFF3E0",color:a.type==="4-form"?"#1565C0":a.type==="2-form"?"#6A1B9A":"#E65100"}}>{a.type}</div>
+      </div>))}
+    </Card>
+    <Card color="#1a1a1a" title="Placement: Before vs After = Meaning Shift">
+      {shifts.map((s,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"80px 1fr 1fr",alignItems:"center",padding:"8px 16px",borderBottom:i<shifts.length-1?"1px solid #f0eeeb":"none",fontSize:12}}>
+        <span style={{fontWeight:800,color:"#333"}}>{s.a}</span>
+        <span style={{color:"#2E7D32"}}>before = {s.before}</span>
+        <span style={{color:"#C62828"}}>after = {s.after}</span>
+      </div>))}
+    </Card>
+    <Insight text="Default position is AFTER the noun: 'la casa roja'. Before the noun adds subjective or emotional emphasis: 'la hermosa vista'."/>
+  </div>);
+}
 
 function Guide14(){
   const data=[
@@ -545,15 +616,37 @@ function Guide14(){
   </div>);
 }
 
-function Guide15(){return(<SimpleGuide title="Pronoun Placement" items={[
-  {h:"Before conjugated verb",b:"Lo veo. (I see him.) Me llama. (She calls me.)"},
-  {h:"Attached to infinitive",b:"Quiero verlo. = Lo quiero ver. (I want to see it.)"},
-  {h:"Attached to gerund",b:"Estoy haciéndolo. = Lo estoy haciendo."},
-  {h:"Attached to affirmative command",b:"¡Dímelo! (Tell it to me!) ¡Hazlo! (Do it!)"},
-  {h:"Before negative command",b:"¡No lo hagas! (Don't do it!) ¡No me digas!"},
-  {h:"Double pronouns: IO before DO",b:"Le + lo → SE lo. ¡Le lo is NEVER correct!"},
-  {h:"Order: se → IO → DO",b:"Se lo digo. (I tell it to him.) Mnemonic: RID"},
-]}/>);}
+function Guide15(){
+  const [ctx,setCtx]=useState(0);
+  const placements=[
+    {rule:"Before conjugated verb",ctx:"Conjugated",exEs:"Lo veo.",exEn:"I see him.",parts:[{t:"Lo",hi:true},{t:" "},{t:"veo",hi:false}],note:"Pronoun always goes right before the conjugated verb."},
+    {rule:"Attached to infinitive",ctx:"Infinitive",exEs:"Quiero verlo.",exEn:"I want to see it.",parts:[{t:"Quiero"},{t:" "},{t:"ver",hi:false},{t:"lo",hi:true}],alt:"Lo quiero ver.",note:"Two options: attach to infinitive OR move before conjugated verb."},
+    {rule:"Attached to gerund",ctx:"Gerund (-ando/-iendo)",exEs:"Estoy haciéndolo.",exEn:"I'm doing it.",parts:[{t:"Estoy"},{t:" "},{t:"haciéndo",hi:false},{t:"lo",hi:true}],alt:"Lo estoy haciendo.",note:"Two options again. Note the accent mark added to keep stress!"},
+    {rule:"Attached to affirmative command",ctx:"Command (+)",exEs:"¡Dímelo!",exEn:"Tell it to me!",parts:[{t:"Dí",hi:false},{t:"me",hi:true},{t:"lo",hi:true}],note:"Must attach. Order: IO (me) before DO (lo). Accent added."},
+    {rule:"Before negative command",ctx:"Command (−)",exEs:"¡No lo hagas!",exEn:"Don't do it!",parts:[{t:"¡No "},{t:"lo",hi:true},{t:" "},{t:"hagas",hi:false},{t:"!"}],note:"Negative commands put pronouns BEFORE the verb — like conjugated verbs."},
+    {rule:"Double: IO + DO → SE lo",ctx:"Double pronouns",exEs:"Se lo digo.",exEn:"I tell it to him.",parts:[{t:"Se",hi:true},{t:" "},{t:"lo",hi:true},{t:" "},{t:"digo",hi:false}],note:"Le/les + lo/la → SE lo/la. 'Le lo' is NEVER correct! Mnemonic: RID (Reflexive, Indirect, Direct)."},
+  ];
+  const p=placements[ctx];const col="#E65100";
+  return(<div>
+    <DarkBox title="Where Do Pronouns Go?"><div style={{fontSize:13}}>Placement depends on the verb form. Tap each context below to see the rule.</div></DarkBox>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:5}}>
+      {placements.slice(0,3).map((pl,i)=>(<button key={i} onClick={()=>setCtx(i)} style={{padding:"8px 4px",borderRadius:8,border:ctx===i?`2.5px solid ${col}`:"1.5px solid #ddd",background:ctx===i?col:"#fff",color:ctx===i?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{pl.ctx}</button>))}
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:16}}>
+      {placements.slice(3).map((pl,i)=>(<button key={i+3} onClick={()=>setCtx(i+3)} style={{padding:"8px 4px",borderRadius:8,border:ctx===i+3?`2.5px solid ${col}`:"1.5px solid #ddd",background:ctx===i+3?col:"#fff",color:ctx===i+3?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{pl.ctx}</button>))}
+    </div>
+    <div style={{background:"#FAFAF5",borderRadius:12,padding:"20px 16px",textAlign:"center",border:"1px solid #eee",marginBottom:16}}>
+      <div style={{fontSize:11,fontWeight:700,color:col,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>{p.rule}</div>
+      <div style={{fontSize:24,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexWrap:"wrap"}}>
+        {p.parts.map((part,i)=>(<span key={i} style={{color:part.hi?col:"#333",background:part.hi?`${col}15`:"transparent",padding:part.hi?"2px 5px":"0",borderRadius:4}}>{part.t}</span>))}
+      </div>
+      <div style={{fontSize:13,color:"#888",marginTop:6,fontStyle:"italic"}}>{p.exEn}</div>
+      {p.alt&&<div style={{fontSize:13,color:"#aaa",marginTop:4}}>Also valid: <strong style={{color:"#555"}}>{p.alt}</strong></div>}
+    </div>
+    <div style={{background:`${col}10`,borderRadius:10,padding:"10px 14px",marginBottom:12,border:`1px solid ${col}25`,fontSize:12,color:"#555",lineHeight:1.5}}>{p.note}</div>
+    <Insight text="1st & 2nd person (me, te, nos) are the same for DO, IO, and reflexive. The split only matters in 3rd person: lo/la (DO), le (IO), se (reflexive)."/>
+  </div>);
+}
 
 function Guide16(){
   const [io,setIo]=useState(0);const [sing,setSing]=useState(true);
@@ -667,14 +760,59 @@ function Guide21(){
   </div>);
 }
 
-function Guide22(){return(<SimpleGuide title="Comparatives & Superlatives" items={[
-  {h:"más + adj + que = more...than",b:"Ella es más alta que yo. (She's taller than me.)"},
-  {h:"menos + adj + que = less...than",b:"Es menos caro que el otro."},
-  {h:"tan + adj + como = as...as",b:"Soy tan alto como mi papá."},
-  {h:"tanto/a/os/as + noun + como",b:"Tengo tantos amigos como tú. (tanto agrees!)"},
-  {h:"Superlative: el/la más + adj + de",b:"Es el más alto de la clase. (Use DE not 'en')"},
-  {h:"⚠ Irregulars — don't say 'más bueno'",b:"bueno → mejor · malo → peor\ngrande → mayor (age) · pequeño → menor (age)"},
-]}/>);}
+function Guide22(){
+  const [mode,setMode]=useState("comp");
+  const compTypes=[
+    {id:"more",label:"MÁS...QUE",formula:"más + adj + que",color:"#C62828",
+      examples:[{es:"Ella es más alta que yo.",en:"She is taller than me."},{es:"Este libro es más interesante que ese.",en:"This book is more interesting than that one."}]},
+    {id:"less",label:"MENOS...QUE",formula:"menos + adj + que",color:"#1565C0",
+      examples:[{es:"Es menos caro que el otro.",en:"It's less expensive than the other."},{es:"Hoy estoy menos cansado que ayer.",en:"Today I'm less tired than yesterday."}]},
+    {id:"equal",label:"TAN...COMO",formula:"tan + adj + como",color:"#2E7D32",
+      examples:[{es:"Soy tan alto como mi papá.",en:"I'm as tall as my dad."},{es:"Es tan difícil como pensaba.",en:"It's as difficult as I thought."}]},
+  ];
+  const [compSel,setCompSel]=useState("more");
+  const comp=compTypes.find(c=>c.id===compSel);
+  const irregs=[{reg:"bueno",comp:"mejor",sup:"el/la mejor",en:"good → better → best"},{reg:"malo",comp:"peor",sup:"el/la peor",en:"bad → worse → worst"},{reg:"grande",comp:"mayor",sup:"el/la mayor",en:"old → older → oldest (age)"},{reg:"pequeño",comp:"menor",sup:"el/la menor",en:"young → younger → youngest (age)"}];
+  return(<div>
+    <div style={{display:"flex",gap:8,marginBottom:16,justifyContent:"center"}}>
+      {[{k:"comp",l:"Comparatives"},{k:"super",l:"Superlatives"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:180,padding:"10px",borderRadius:10,border:mode===m.k?"2.5px solid #C62828":"1.5px solid #ddd",background:mode===m.k?"#C62828":"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{m.l}</button>))}
+    </div>
+    {mode==="comp"&&(<div>
+      <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center",flexWrap:"wrap"}}>
+        {compTypes.map(c=>(<button key={c.id} onClick={()=>setCompSel(c.id)} style={{padding:"8px 14px",borderRadius:8,border:compSel===c.id?`2.5px solid ${c.color}`:"1.5px solid #ddd",background:compSel===c.id?c.color:"#fff",color:compSel===c.id?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{c.label}</button>))}
+      </div>
+      <div style={{background:"#FAFAF5",borderRadius:12,padding:"14px",textAlign:"center",border:"1px solid #eee",marginBottom:14}}>
+        <div style={{fontSize:10,fontWeight:700,color:comp.color,textTransform:"uppercase",letterSpacing:1,marginBottom:6}}>Formula</div>
+        <div style={{fontSize:18,fontWeight:800,color:comp.color}}>{comp.formula}</div>
+      </div>
+      <Card color={comp.color} title={comp.label} subtitle="examples">
+        {comp.examples.map((ex,i)=>(<div key={i} style={{padding:"10px 16px",borderBottom:i<comp.examples.length-1?"1px solid #f0eeeb":"none"}}>
+          <div style={{fontSize:15,fontWeight:700}}>{ex.es}</div>
+          <div style={{fontSize:12,color:"#888"}}>{ex.en}</div>
+        </div>))}
+      </Card>
+      {compSel==="equal"&&<Insight text="For nouns instead of adjectives, use tanto/a/os/as + noun + como. 'Tanto' must agree: Tengo tantos amigos como tú."/>}
+    </div>)}
+    {mode==="super"&&(<div>
+      <DarkBox title="Superlative Formula"><div style={{fontSize:14}}>
+        <strong style={{color:"#FFE77A"}}>el/la/los/las</strong> + más/menos + adj + <strong style={{color:"#FFE77A"}}>de</strong><br/>
+        <span style={{color:"#aaa",fontSize:12}}>Use DE (not "en") for "in" — Es el más alto <u>de</u> la clase.</span>
+      </div></DarkBox>
+      <Card color="#C62828" title="Examples">
+        <div style={{padding:"10px 16px",borderBottom:"1px solid #f0eeeb"}}><div style={{fontSize:15,fontWeight:700}}>Es el más alto de la clase.</div><div style={{fontSize:12,color:"#888"}}>He's the tallest in the class.</div></div>
+        <div style={{padding:"10px 16px"}}><div style={{fontSize:15,fontWeight:700}}>Es la película menos aburrida del año.</div><div style={{fontSize:12,color:"#888"}}>It's the least boring movie of the year.</div></div>
+      </Card>
+    </div>)}
+    <Card color="#1a1a1a" title="Irregulars — Never Say 'Más Bueno'">
+      {irregs.map((ir,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"75px 65px 85px 1fr",alignItems:"center",padding:"8px 16px",borderBottom:i<irregs.length-1?"1px solid #f0eeeb":"none",fontSize:12}}>
+        <span style={{color:"#999"}}>{ir.reg}</span>
+        <span style={{fontWeight:700,color:"#C62828"}}>{ir.comp}</span>
+        <span style={{fontWeight:700,color:"#6A1B9A"}}>{ir.sup}</span>
+        <span style={{color:"#aaa",fontSize:10}}>{ir.en}</span>
+      </div>))}
+    </Card>
+  </div>);
+}
 
 function Guide23(){return(<SimpleGuide title="Numbers, Dates & Time" items={[
   {h:"0-15: unique forms to memorize",b:"cero, uno, dos...diez, once, doce, trece, catorce, quince"},
