@@ -80,22 +80,22 @@ Making the guides usable by everyone.
 Improvements to reliability, developer experience, and performance.
 
 ### Developer Experience
-- [ ] **Add a CONTRIBUTING.md** — Document the file structure, component conventions, how to add a new guide, and formatting rules
-- [ ] **Add a basic CI pipeline** (GitHub Actions) — HTML validation, link checking, file size monitoring
-- [ ] **Add a linter config** — At minimum, an `.editorconfig` for consistent indentation
-- [ ] **Add automated guide-count verification** — A CI check that parses each file's data array length and compares against documented counts
+- [x] **Add a CONTRIBUTING.md** — Document the file structure, component conventions, how to add a new guide, and formatting rules
+- [x] **Add a basic CI pipeline** (GitHub Actions) — HTML validation, link checking, file size monitoring
+- [x] **Add a linter config** — At minimum, an `.editorconfig` for consistent indentation
+- [x] **Add automated guide-count verification** — A CI check that parses each file's data array length and compares against documented counts
 
 ### Performance & Reliability
-- [ ] **Add CDN fallback loading** — If cdnjs fails, fall back to unpkg or jsdelivr (or local copies)
-- [ ] **Add `<link rel="preconnect">` for cdnjs.cloudflare.com** to reduce connection latency
-- [ ] **Evaluate Babel standalone removal** — Babel standalone is 2+ MB; consider precompiling JSX to `React.createElement` calls at authoring time, keeping the "no build step" ethos for deployment while reducing page weight
-- [ ] **Add error boundaries** to the React app in each guide so a single broken component does not crash the entire page
+- [x] **Add CDN fallback loading** — If cdnjs fails, fall back to unpkg or jsdelivr (or local copies)
+- [x] **Add `<link rel="preconnect">` for cdnjs.cloudflare.com** to reduce connection latency
+- [x] **Evaluate Babel standalone removal** — Babel standalone is 2+ MB; consider precompiling JSX to `React.createElement` calls at authoring time, keeping the "no build step" ethos for deployment while reducing page weight
+- [x] **Add error boundaries** to the React app in each guide so a single broken component does not crash the entire page
 
 ### Features
-- [ ] **Add localStorage progress tracking** — Save the last-visited guide index per file; show a "Resume" indicator on return
-- [ ] **Add search functionality to index.html** — Client-side search across guide titles, subtopics, and categories
-- [ ] **Add URL hash routing** — Allow linking directly to a specific guide (e.g., `spanish.html#15`) and update the hash on navigation
-- [ ] **Add PWA support** — Service worker for offline access, manifest.json, installable on mobile
+- [x] **Add localStorage progress tracking** — Save the last-visited guide index per file; show a "Resume" indicator on return
+- [x] **Add search functionality to index.html** — Client-side search across guide titles, subtopics, and categories
+- [x] **Add URL hash routing** — Allow linking directly to a specific guide (e.g., `spanish.html#15`) and update the hash on navigation
+- [x] **Add PWA support** — Service worker for offline access, manifest.json, installable on mobile
 
 ---
 

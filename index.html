@@ -9,6 +9,8 @@
   <meta property="og:description" content="Free interactive guides for languages. No accounts, no ads, no tracking.">
   <meta property="og:type" content="website">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2E7D32">
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
@@ -55,11 +57,12 @@
     .footer { text-align: center; padding: 20px 24px 40px; font-size: 12px; color: #bbb; line-height: 1.6; }
     .footer a { color: #999; text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+    #guide-search:focus { border-color: #2E7D32; }
     *:focus-visible { outline: 2px solid #2E7D32; outline-offset: 2px; border-radius: 4px; }
     .skip-link { position: absolute; top: -40px; left: 0; background: #1a1a1a; color: #fff; padding: 8px 16px; z-index: 100; font-size: 14px; text-decoration: none; border-radius: 0 0 8px 0; }
     .skip-link:focus { top: 0; }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
-    @media (prefers-color-scheme: dark) { body { background: #1a1a1a !important; color: #e0e0e0 !important; } .guide-card { background: #2a2a2a; border-color: #3a3a3a; } .card-sub { color: #aaa; } .card-count { background: #3a3a3a; color: #ccc; } .hero h1, h1 { color: #e0e0e0 !important; } .tag { background: #333; color: #aaa; } .section-label { color: #888; } }
+    @media (prefers-color-scheme: dark) { body { background: #1a1a1a !important; color: #e0e0e0 !important; } .guide-card { background: #2a2a2a; border-color: #3a3a3a; } .card-sub { color: #aaa; } .card-count { background: #3a3a3a; color: #ccc; } .hero h1, h1 { color: #e0e0e0 !important; } .tag { background: #333; color: #aaa; } .section-label { color: #888; } #guide-search { background: #2a2a2a; border-color: #3a3a3a; color: #e0e0e0; } }
     @media (max-width: 480px) {
       .card-body { padding: 18px 16px; gap: 14px; }
       .card-icon { font-size: 32px; }
@@ -78,6 +81,9 @@
       No accounts, no ads, no tracking. Just open and learn.
     </p>
     <span class="tag">Free & Open Source</span>
+    <div style="margin-top: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
+      <input type="search" id="guide-search" placeholder="Search guides..." aria-label="Search guides" style="width: 100%; padding: 10px 16px; font-size: 15px; font-family: inherit; border: 1.5px solid #e0ddd5; border-radius: 12px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.2s;">
+    </div>
   </header>
 
   <main id="guides" role="main" class="guides">
@@ -194,5 +200,28 @@
     <p>Built with care. All content is free to use.</p>
     <p style="margin-top: 8px;"><a href="https://github.com/YOUR_USERNAME/peliglot">View on GitHub</a></p>
   </footer>
+  <script>
+    document.getElementById('guide-search').addEventListener('input', function(e) {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('.guide-card').forEach(function(card) {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) || q === '' ? '' : 'none';
+      });
+      document.querySelectorAll('.section-label').forEach(function(label) {
+        var next = label.nextElementSibling;
+        var hasVisible = false;
+        while (next && !next.classList.contains('section-label')) {
+          if (next.classList.contains('guide-card') && next.style.display !== 'none') hasVisible = true;
+          next = next.nextElementSibling;
+        }
+        label.style.display = hasVisible || q === '' ? '' : 'none';
+      });
+    });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function() {});
+    }
+  </script>
 </body>
 </html>
