@@ -1,0 +1,36 @@
+export const guidesMeta = [
+  {id:1,title:"Voice Leading",subtitle:"Minimum motion, maximum harmony",cat:"Harmony",color:"#8D6E63",icon:"🎵"},
+  {id:2,title:"Drop 2 & Drop 3",subtitle:"The bread & butter voicings",cat:"Harmony",color:"#5D4037",icon:"🎸"},
+  {id:3,title:"Shell Voicings",subtitle:"Root, 3rd, 7th — less is more",cat:"Harmony",color:"#795548",icon:"🦴"},
+  {id:4,title:"Tensions & Extensions",subtitle:"9, 11, 13 and their alterations",cat:"Harmony",color:"#4E342E",icon:"🎨"},
+  {id:5,title:"Quartal Voicings",subtitle:"4ths, clusters & ambiguity",cat:"Harmony",color:"#6D4C41",icon:"🔲"},
+  {id:6,title:"Chord Substitution",subtitle:"Tritone subs, diminished, reharmonization",cat:"Harmony",color:"#3E2723",icon:"🔄"},
+  {id:7,title:"Bebop Scales",subtitle:"Chord tones on downbeats",cat:"Melody",color:"#C62828",icon:"🏃"},
+  {id:8,title:"Arpeggios as Skeleton",subtitle:"Through the changes, not over them",cat:"Melody",color:"#D84315",icon:"🦴"},
+  {id:9,title:"Enclosures & Approaches",subtitle:"Surrounding target notes",cat:"Melody",color:"#BF360C",icon:"🎯"},
+  {id:10,title:"The Blues Language",subtitle:"The vocabulary inside all jazz",cat:"Melody",color:"#1565C0",icon:"😢"},
+  {id:11,title:"Chromaticism",subtitle:"Outside playing & tension-resolution",cat:"Melody",color:"#AD1457",icon:"🌀"},
+  {id:12,title:"Pentatonic Superimposition",subtitle:"Color filters over harmony",cat:"Melody",color:"#6A1B9A",icon:"🔮"},
+  {id:13,title:"Motivic Development",subtitle:"Narrative over noodling",cat:"Melody",color:"#4527A0",icon:"📖"},
+  {id:14,title:"Swing Eighths",subtitle:"The feel spectrum",cat:"Rhythm",color:"#E65100",icon:"🕺"},
+  {id:15,title:"Comping Rhythms",subtitle:"Charleston, catches & space",cat:"Rhythm",color:"#EF6C00",icon:"🥁"},
+  {id:16,title:"Rhythmic Displacement",subtitle:"3 over 4 and shifted licks",cat:"Rhythm",color:"#F57C00",icon:"↗"},
+  {id:17,title:"Rubato & Ballad Time",subtitle:"Stretching and compressing time",cat:"Rhythm",color:"#FF8F00",icon:"🌊"},
+  {id:18,title:"Major ii-V-I",subtitle:"The essential progression",cat:"ii-V-I",color:"#2E7D32",icon:"🔑"},
+  {id:19,title:"Minor ii-V-i",subtitle:"The altered dominant palette",cat:"ii-V-I",color:"#1B5E20",icon:"🌑"},
+  {id:20,title:"Turnarounds & Cycles",subtitle:"Bird changes, Coltrane changes",cat:"ii-V-I",color:"#33691E",icon:"🔁"},
+  {id:21,title:"Playing Over Standards",subtitle:"Form, melody & storytelling",cat:"ii-V-I",color:"#388E3C",icon:"📜"},
+  {id:22,title:"Right Hand Technique",subtitle:"Pick, fingers, hybrid & dynamics",cat:"Tone",color:"#37474F",icon:"✋"},
+  {id:23,title:"The Jazz Guitar Sound",subtitle:"Tone knob, amp, hollow-body",cat:"Tone",color:"#455A64",icon:"🔊"},
+  {id:24,title:"Effects in Modern Jazz",subtitle:"Frisell, Scofield, Lage",cat:"Tone",color:"#546E7A",icon:"🎛"},
+  {id:25,title:"Recording Jazz Guitar",subtitle:"Mic placement, DI & the room",cat:"Tone",color:"#607D8B",icon:"🎙"},
+  {id:26,title:"Reading Charts",subtitle:"Lead sheets, slashes & hits",cat:"Navigation",color:"#1a1a1a",icon:"📋"},
+  {id:27,title:"Comping Behind a Soloist",subtitle:"Listening, responding, supporting",cat:"Navigation",color:"#212121",icon:"🗣"},
+  {id:28,title:"Soloing Over Form",subtitle:"Keeping your place in 32 bars",cat:"Navigation",color:"#424242",icon:"🗺"},
+  {id:29,title:"Transcription",subtitle:"The single best practice method",cat:"Navigation",color:"#616161",icon:"👂"},
+  {id:30,title:"Practice to Bandstand",subtitle:"Structuring practice, finding your voice",cat:"Navigation",color:"#757575",icon:"🎤"},
+];
+
+export const categories = ["Harmony","Melody","Rhythm","ii-V-I","Tone","Navigation"];
+
+export const catColors = {Harmony:"#5D4037",Melody:"#C62828",Rhythm:"#E65100","ii-V-I":"#2E7D32",Tone:"#455A64",Navigation:"#1a1a1a"};

@@ -1,0 +1,36 @@
+export const guidesMeta = [
+  { id:1, title:"الأبجدية", subtitle:"The Arabic Alphabet", cat:"Writing", color:"#1B5E20", icon:"أ" },
+  { id:2, title:"الحركات", subtitle:"Short Vowels & Diacritics", cat:"Writing", color:"#B71C1C", icon:"َ" },
+  { id:3, title:"الشمسية والقمرية", subtitle:"Sun & Moon Letters", cat:"Writing", color:"#E65100", icon:"☀" },
+  { id:4, title:"الكتابة المتّصلة", subtitle:"Connected Writing", cat:"Writing", color:"#4527A0", icon:"✍" },
+  { id:5, title:"الأرقام والترقيم", subtitle:"Numbers & Punctuation", cat:"Writing", color:"#00695C", icon:"٣" },
+  { id:6, title:"الأصوات الصعبة", subtitle:"Emphatic & Throat Sounds", cat:"Phonology", color:"#880E4F", icon:"🗣" },
+  { id:7, title:"قواعد الهمزة", subtitle:"Hamza Rules", cat:"Phonology", color:"#1565C0", icon:"ء" },
+  { id:8, title:"التاء المربوطة", subtitle:"Tā' Marbūṭa & Alif Maqṣūra", cat:"Phonology", color:"#2E7D32", icon:"ة" },
+  { id:9, title:"أداة التعريف", subtitle:"The Definite Article al-", cat:"Nouns", color:"#C62828", icon:"ال" },
+  { id:10, title:"الجنس", subtitle:"Gender", cat:"Nouns", color:"#AD1457", icon:"♂♀" },
+  { id:11, title:"حالات الاسم", subtitle:"Noun States & Iḍāfa", cat:"Nouns", color:"#0D47A1", icon:"📎" },
+  { id:12, title:"الجمع", subtitle:"Plurals: Sound & Broken", cat:"Nouns", color:"#6A1B9A", icon:"➕" },
+  { id:13, title:"المثنّى", subtitle:"The Dual Form", cat:"Nouns", color:"#00838F", icon:"٢" },
+  { id:14, title:"الإعراب", subtitle:"Case Endings", cat:"Nouns", color:"#E65100", icon:"ٌ" },
+  { id:15, title:"الضمائر المنفصلة", subtitle:"Personal Pronouns", cat:"Pronouns", color:"#1B5E20", icon:"👤" },
+  { id:16, title:"الضمائر المتّصلة", subtitle:"Attached Pronouns", cat:"Pronouns", color:"#B71C1C", icon:"🔗" },
+  { id:17, title:"الإشارة والموصول", subtitle:"Demonstratives & Relatives", cat:"Pronouns", color:"#4527A0", icon:"👉" },
+  { id:18, title:"الفعل الماضي", subtitle:"Past Tense", cat:"Verbs", color:"#C62828", icon:"⏪" },
+  { id:19, title:"الفعل المضارع", subtitle:"Present Tense & Moods", cat:"Verbs", color:"#1565C0", icon:"▶" },
+  { id:20, title:"فعل الأمر", subtitle:"Imperative", cat:"Verbs", color:"#E65100", icon:"❗" },
+  { id:21, title:"الأوزان II–X", subtitle:"Verb Forms II–X", cat:"Verbs", color:"#6A1B9A", icon:"⚙" },
+  { id:22, title:"الأفعال الشاذّة", subtitle:"Irregular Verbs", cat:"Verbs", color:"#880E4F", icon:"⚡" },
+  { id:23, title:"المصدر والاسم", subtitle:"Verbal Nouns & Participles", cat:"Verbs", color:"#00695C", icon:"📝" },
+  { id:24, title:"الجملة الاسمية والفعلية", subtitle:"Sentence Types", cat:"Sentences", color:"#0D47A1", icon:"📐" },
+  { id:25, title:"النفي", subtitle:"Negation", cat:"Sentences", color:"#C62828", icon:"✗" },
+  { id:26, title:"الاستفهام", subtitle:"Questions", cat:"Sentences", color:"#2E7D32", icon:"❓" },
+  { id:27, title:"حروف الجرّ", subtitle:"Prepositions", cat:"Sentences", color:"#4527A0", icon:"↔" },
+  { id:28, title:"العدد والمعدود", subtitle:"Numbers & Counting", cat:"Practical", color:"#E65100", icon:"🔢" },
+  { id:29, title:"الفصحى واللهجات", subtitle:"MSA vs Dialect", cat:"Practical", color:"#1565C0", icon:"🗺" },
+  { id:30, title:"نظام الجذور", subtitle:"Root System", cat:"Practical", color:"#1B5E20", icon:"🌳" },
+];
+
+export const categories = ["Writing","Phonology","Nouns","Pronouns","Verbs","Sentences","Practical"];
+
+export const catColors = {Writing:"#1B5E20",Phonology:"#880E4F",Nouns:"#C62828",Pronouns:"#1B5E20",Verbs:"#C62828",Sentences:"#0D47A1",Practical:"#1565C0"};

@@ -1,0 +1,36 @@
+export const guidesMeta = [
+  {id:1,title:"Ka Pī'āpā",subtitle:"The Hawaiian Alphabet",cat:"Sounds",color:"#1B5E20",icon:"🌺"},
+  {id:2,title:"Nā Wauela",subtitle:"Vowels & Diphthongs",cat:"Sounds",color:"#00695C",icon:"🔤"},
+  {id:3,title:"Ka Puana 'Ana",subtitle:"Pronunciation & Syllables",cat:"Sounds",color:"#4527A0",icon:"🗣"},
+  {id:4,title:"ʻOkina a me Kahakō",subtitle:"Glottal Stop & Macron",cat:"Sounds",color:"#C62828",icon:"ʻ"},
+  {id:5,title:"Nā Papa'ōlelo",subtitle:"Basic Sentence Patterns",cat:"Sentences",color:"#0D47A1",icon:"📐"},
+  {id:6,title:"Nā Pepeke",subtitle:"Pepeke Framework",cat:"Sentences",color:"#6A1B9A",icon:"🔀"},
+  {id:7,title:"Nā Kuhikuhi",subtitle:"Markers & Particles",cat:"Sentences",color:"#E65100",icon:"🔗"},
+  {id:8,title:"Nā Nīnau",subtitle:"Questions",cat:"Sentences",color:"#00838F",icon:"❓"},
+  {id:9,title:"Ka Hō'ole",subtitle:"Negation",cat:"Sentences",color:"#880E4F",icon:"✗"},
+  {id:10,title:"Nā 'Aticala",subtitle:"Articles & Definiteness",cat:"Nouns",color:"#2E7D32",icon:"📎"},
+  {id:11,title:"O a me A",subtitle:"O-class vs A-class Possessives",cat:"Nouns",color:"#C62828",icon:"⚖️"},
+  {id:12,title:"Ko'u / Ka'u",subtitle:"Possessive Pronouns",cat:"Nouns",color:"#1565C0",icon:"👤"},
+  {id:13,title:"Kēia / Kēnā / Kēlā",subtitle:"Demonstratives & Location",cat:"Nouns",color:"#E65100",icon:"👉"},
+  {id:14,title:"Ko a me Kā",subtitle:"Possessive Phrases",cat:"Nouns",color:"#4527A0",icon:"🏠"},
+  {id:15,title:"Nā Papa Inoa",subtitle:"Personal Pronouns",cat:"Pronouns",color:"#1B5E20",icon:"👥"},
+  {id:16,title:"Kahi a me Kēia",subtitle:"Locatives & Demonstrative Pronouns",cat:"Pronouns",color:"#00695C",icon:"📍"},
+  {id:17,title:"Ka Pili",subtitle:"Relative Clauses",cat:"Pronouns",color:"#880E4F",icon:"🔗"},
+  {id:18,title:"Nā Kaha Manawa",subtitle:"Tense-Aspect-Mood Markers",cat:"Verbs",color:"#C62828",icon:"⏱"},
+  {id:19,title:"Nā Haʻina",subtitle:"Stative Verbs",cat:"Verbs",color:"#0D47A1",icon:"💭"},
+  {id:20,title:"Ke Kauoha",subtitle:"Commands & Requests",cat:"Verbs",color:"#E65100",icon:"❗"},
+  {id:21,title:"Mai / Aku / Aʻe / Iho",subtitle:"Directional Particles",cat:"Verbs",color:"#6A1B9A",icon:"↔"},
+  {id:22,title:"Ka Hoʻopili",subtitle:"Complex Sentences",cat:"Verbs",color:"#00838F",icon:"🔗"},
+  {id:23,title:"Ka Leo Hana ʻia",subtitle:"Passive & Voice",cat:"Verbs",color:"#2E7D32",icon:"📝"},
+  {id:24,title:"Nā Helu",subtitle:"Numbers & Counting",cat:"Vocabulary",color:"#C62828",icon:"🔢"},
+  {id:25,title:"Ka Manawa",subtitle:"Time & Calendar",cat:"Vocabulary",color:"#1565C0",icon:"📅"},
+  {id:26,title:"Ka ʻOhana",subtitle:"Family & Relationships",cat:"Vocabulary",color:"#E65100",icon:"👨‍👩‍👧‍👦"},
+  {id:27,title:"Ka ʻĀina",subtitle:"Nature & Place",cat:"Vocabulary",color:"#1B5E20",icon:"🌴"},
+  {id:28,title:"Nā 'Ōlelo Maʻamau",subtitle:"Common Phrases",cat:"Vocabulary",color:"#4527A0",icon:"💬"},
+  {id:29,title:"Ka Hoʻōla 'Ōlelo",subtitle:"Language Revival",cat:"Culture",color:"#880E4F",icon:"🌱"},
+  {id:30,title:"Pidgin a me ʻŌlelo Hawaiʻi",subtitle:"Pidgin vs Hawaiian",cat:"Culture",color:"#00695C",icon:"🗺"},
+];
+
+export const categories = ["Sounds","Sentences","Nouns","Pronouns","Verbs","Vocabulary","Culture"];
+
+export const catColors = {Sounds:"#1B5E20",Sentences:"#0D47A1",Nouns:"#C62828",Pronouns:"#1B5E20",Verbs:"#C62828",Vocabulary:"#4527A0",Culture:"#880E4F"};

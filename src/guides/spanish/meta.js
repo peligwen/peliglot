@@ -1,0 +1,42 @@
+export const guidesMeta = [
+  { id: 1, title: "El Alfabeto", subtitle: "Alphabet & Sounds", cat: "Pronunciation", color: "#2C5F2D", icon: "🔤" },
+  { id: 2, title: "Acentos", subtitle: "Accent Marks & Stress", cat: "Pronunciation", color: "#E63946", icon: "´" },
+  { id: 3, title: "Cambios Ortográficos", subtitle: "Spelling Changes", cat: "Pronunciation", color: "#C2185B", icon: "✂️" },
+  { id: 4, title: "Presente Indicativo", subtitle: "Present Tense", cat: "Verbs", color: "#D84315", icon: "▶" },
+  { id: 5, title: "Pretérito vs Imperfecto", subtitle: "Two Past Tenses", cat: "Verbs", color: "#B71C1C", icon: "⏪" },
+  { id: 6, title: "Futuro y Condicional", subtitle: "Future & Conditional", cat: "Verbs", color: "#00897B", icon: "⏩" },
+  { id: 7, title: "Progresivo", subtitle: "Estar + Gerund", cat: "Verbs", color: "#E65100", icon: "🔄" },
+  { id: 8, title: "Tiempos Perfectos", subtitle: "Haber + Participle", cat: "Verbs", color: "#1B5E20", icon: "✓" },
+  { id: 9, title: "Cambios de Raíz", subtitle: "Boot Verbs", cat: "Verbs", color: "#C62828", icon: "👢" },
+  { id: 10, title: "Irregulares", subtitle: "Irregular Verb Dashboard", cat: "Verbs", color: "#1a1a1a", icon: "⚡" },
+  { id: 11, title: "Género", subtitle: "Masculine & Feminine", cat: "Nouns", color: "#1565C0", icon: "♂♀" },
+  { id: 12, title: "Pluralización", subtitle: "Making Plurals", cat: "Nouns", color: "#2E7D32", icon: "➕" },
+  { id: 13, title: "Adjetivos", subtitle: "Agreement & Placement", cat: "Nouns", color: "#AD1457", icon: "📐" },
+  { id: 14, title: "Pronombres", subtitle: "All Pronoun Types", cat: "Pronouns", color: "#1565C0", icon: "👤" },
+  { id: 15, title: "Posición de Objetos", subtitle: "DO/IO Placement", cat: "Pronouns", color: "#E65100", icon: "↔" },
+  { id: 16, title: "Gustar", subtitle: "Verbs Like Gustar", cat: "Pronouns", color: "#D84315", icon: "❤️" },
+  { id: 17, title: "Ser vs Estar", subtitle: "Two Verbs for 'To Be'", cat: "Core", color: "#0D47A1", icon: "⚖️" },
+  { id: 18, title: "Por vs Para", subtitle: "Two 'For' Words", cat: "Prepositions", color: "#00695C", icon: "🔀" },
+  { id: 19, title: "Verbos + Preposiciones", subtitle: "Verb-Preposition Pairs", cat: "Prepositions", color: "#4527A0", icon: "🔗" },
+  { id: 20, title: "Preguntas", subtitle: "Question Formation", cat: "Sentences", color: "#0277BD", icon: "❓" },
+  { id: 21, title: "Negación", subtitle: "Negation Patterns", cat: "Sentences", color: "#C62828", icon: "✗" },
+  { id: 22, title: "Comparativos", subtitle: "Comparatives & Superlatives", cat: "Sentences", color: "#C62828", icon: "⬆⬇" },
+  { id: 23, title: "Números y Fechas", subtitle: "Numbers, Dates & Time", cat: "Practical", color: "#0277BD", icon: "🔢" },
+  { id: 24, title: "Tú vs Usted", subtitle: "Formal vs Informal", cat: "Practical", color: "#37474F", icon: "🎩" },
+  { id: 25, title: "Falsos Cognados", subtitle: "False Cognates", cat: "Practical", color: "#C62828", icon: "⚠️" },
+  { id: 26, title: "Calor", subtitle: "Estar Caliente vs Tener Calor", cat: "Core", color: "#E65100", icon: "🌡️" },
+  { id: 27, title: "El Tiempo", subtitle: "Weather Expressions", cat: "Practical", color: "#0277BD", icon: "🌤️" },
+];
+
+export const categories = ["Pronunciation", "Verbs", "Nouns", "Pronouns", "Core", "Prepositions", "Sentences", "Practical"];
+
+export const catColors = {
+  Pronunciation: "#2C5F2D",
+  Verbs: "#B71C1C",
+  Nouns: "#1565C0",
+  Pronouns: "#E65100",
+  Core: "#0D47A1",
+  Prepositions: "#4527A0",
+  Sentences: "#C62828",
+  Practical: "#37474F",
+};
