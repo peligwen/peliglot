@@ -3,7 +3,7 @@ import { lightTheme } from '../../styles/themes';
 import { guidesMeta, categories, catColors } from './meta';
 import { guideComponents } from './components';
 
-export default function EnglishGuide() {
+export function Component() {
   return (
     <GuideShell
       guidesMeta={guidesMeta}

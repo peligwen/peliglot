@@ -3,7 +3,7 @@ import { jazzTheme } from '../../styles/themes';
 import { guidesMeta, categories, catColors } from './meta';
 import { guideComponents } from './components';
 
-export default function JazzGuitarGuide() {
+export function Component() {
   return (
     <GuideShell
       guidesMeta={guidesMeta}
