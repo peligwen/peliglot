@@ -6,7 +6,7 @@ export const lightTheme = {
   textSecondary: '#999',
   textMuted: '#555',
   sidebarBg: '#fff',
-  sidebarActiveItemBg: '#252525',
+  sidebarActiveItemBg: '#f0eeeb',
   sidebarItemText: '#333',
   sidebarItemActiveText: null, // uses guide color
   sidebarSubText: '#999',
