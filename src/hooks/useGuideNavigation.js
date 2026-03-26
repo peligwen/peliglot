@@ -18,8 +18,8 @@ export function useGuideNavigation(total, storageKey) {
     setMenuOpen(false);
     if (contentRef.current) contentRef.current.scrollTop = 0;
   };
-  const prev = () => { if (page > 0) goTo(page - 1); };
-  const next = () => { if (page < total - 1) goTo(page + 1); };
+  const prev = () => setPage(p => p > 0 ? p - 1 : p);
+  const next = () => setPage(p => p < total - 1 ? p + 1 : p);
 
   useEffect(() => {
     const handler = (e) => {
@@ -29,7 +29,7 @@ export function useGuideNavigation(total, storageKey) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  });
+  }, [total]);
 
   useEffect(() => {
     history.replaceState(null, null, '#' + page);

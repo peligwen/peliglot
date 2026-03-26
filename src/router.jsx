@@ -4,13 +4,13 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 const guideSlugs = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
-  'french', 'japanese', 'portuguese',
-  'music', 'jazz-guitar', 'math', 'music2', 'statistics', 'programming',
+  'music', 'jazz-guitar', 'math',
 ];
 
 const guideRoutes = guideSlugs.map(slug => ({
   path: `/guides/${slug}`,
   lazy: () => import(`./guides/${slug}/index.jsx`),
+  errorElement: <ErrorBoundary><div style={{ padding: 40, textAlign: 'center' }}>Failed to load guide. <a href="/">Go home</a></div></ErrorBoundary>,
 }));
 
 export const router = createBrowserRouter([
