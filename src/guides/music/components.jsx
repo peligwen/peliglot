@@ -1,0 +1,754 @@
+import { useState, useCallback } from 'react';
+import { Card } from '../../components/Card';
+import { DarkBox } from '../../components/DarkBox';
+import { Insight as BaseInsight } from '../../components/Insight';
+import { SimpleGuide } from '../../components/SimpleGuide';
+import { ExpandSection } from '../../components/ExpandSection';
+import { playNote, playChord, playSequence } from '../../utils/audio';
+
+function Insight({text}){return <BaseInsight text={text} emoji={"\u{1F3B5}"} />;}
+
+// Music utilities
+const ALL_NOTES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const NOTE_NAMES={"C#":"Db","D#":"Eb","F#":"Gb","G#":"Ab","A#":"Bb"};
+const isBlack=n=>n.includes("#");
+function noteName(n){return NOTE_NAMES[n]?`${n}/${NOTE_NAMES[n]}`:n;}
+
+// Piano component
+function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62828",labels={},onPlay}){
+  const notes=[];
+  for(let o=startOctave;notes.length<keys;o++){
+    for(const n of ALL_NOTES){notes.push(n+o);if(notes.length>=keys)break;}
+  }
+  const whites=notes.filter(n=>!isBlack(n[0]+n.slice(1,-1)));
+  const wW=Math.min(36,Math.floor(580/whites.length));
+  return(
+    <div style={{position:"relative",height:120,marginBottom:16,display:"flex",justifyContent:"center"}}>
+      <div style={{position:"relative",display:"flex",height:"100%"}}>
+        {notes.map((n,i)=>{
+          const base=n.slice(0,-1);const isB=isBlack(base);
+          const hl=highlighted.includes(base)||highlighted.includes(n);
+          const label=labels[base]||labels[n]||"";
+          if(isB)return null;
+          const wIdx=notes.slice(0,i+1).filter(x=>!isBlack(x.slice(0,-1))).length-1;
+          return(<div key={n} onClick={()=>{playNote(n);onPlay&&onPlay(n,base);}} style={{width:wW,height:"100%",background:hl?highlightColor:"#fff",border:"1px solid #ccc",borderRadius:"0 0 5px 5px",cursor:"pointer",display:"flex",flexDirection:"column",justifyContent:"flex-end",alignItems:"center",paddingBottom:6,position:"relative",zIndex:1,transition:"background 0.1s"}}>
+            {label&&<div style={{fontSize:9,fontWeight:700,color:hl?"#fff":"#aaa"}}>{label}</div>}
+            <div style={{fontSize:8,color:hl?"rgba(255,255,255,0.7)":"#ccc"}}>{base}</div>
+          </div>);
+        })}
+        {(()=>{let wPos=0;return notes.map((n,i)=>{
+          const base=n.slice(0,-1);const isB=isBlack(base);
+          if(!isB){wPos++;return null;}
+          const hl=highlighted.includes(base)||highlighted.includes(n);
+          const label=labels[base]||labels[n]||"";
+          return(<div key={n} onClick={()=>{playNote(n);onPlay&&onPlay(n,base);}} style={{position:"absolute",left:(wPos-1)*wW+wW*0.65,width:wW*0.7,height:"62%",background:hl?highlightColor:"#333",borderRadius:"0 0 4px 4px",cursor:"pointer",zIndex:2,display:"flex",flexDirection:"column",justifyContent:"flex-end",alignItems:"center",paddingBottom:4,transition:"background 0.1s"}}>
+            {label&&<div style={{fontSize:8,fontWeight:700,color:hl?"#fff":"#888"}}>{label}</div>}
+          </div>);
+        });})()}
+      </div>
+    </div>
+  );
+}
+
+const MAJOR_STEPS=[2,2,1,2,2,2,1];
+const MINOR_STEPS=[2,1,2,2,1,2,2];
+function buildScale(root,steps){
+  let idx=ALL_NOTES.indexOf(root);const notes=[root];
+  for(const s of steps){idx=(idx+s)%12;notes.push(ALL_NOTES[idx]);}
+  return notes;
+}
+function buildChord(root,intervals){
+  let idx=ALL_NOTES.indexOf(root);const notes=[root];
+  for(const iv of intervals){idx=(idx+iv)%12;notes.push(ALL_NOTES[idx]);}
+  return notes;
+}
+
+// GUIDE 1: THE 12 NOTES
+// ═══════════════════════════════════════════════════════════════
+function Guide1(){
+  const [selNote,setSelNote]=useState(null);
+  return(<div>
+    <DarkBox title="The entire alphabet of Western music"><div style={{fontSize:14,lineHeight:1.6}}>
+      All of Western music — every genre, every song — uses just <strong style={{color:"#FFE77A"}}>12 notes</strong> that repeat in higher and lower octaves. That's it. The piano makes this visible: 12 keys (7 white + 5 black) repeating forever.
+    </div></DarkBox>
+    <Piano keys={13} highlighted={selNote?[selNote]:[]} highlightColor="#C62828" onPlay={(n,base)=>setSelNote(base)} labels={Object.fromEntries(ALL_NOTES.map(n=>[n,n]))} />
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:16}}>
+      {ALL_NOTES.map(n=>(<button key={n} onClick={()=>{setSelNote(n);playNote(n+"4");}} style={{width:42,height:42,borderRadius:8,background:selNote===n?"#C62828":isBlack(n)?"#333":"#fff",color:selNote===n?"#fff":isBlack(n)?"#fff":"#333",border:isBlack(n)?"2px solid #555":"1.5px solid #ddd",cursor:"pointer",fontSize:13,fontWeight:700}}>{n}</button>))}
+    </div>
+    {selNote&&<div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+      <div style={{fontSize:18,fontWeight:800,color:"#C62828"}}>{noteName(selNote)}</div>
+      <div style={{fontSize:12,color:"#888",marginTop:4}}>This note repeats at every octave. C2, C3, C4, C5 are all "C" — same letter, different pitch. The distance between them is always 12 half-steps.</div>
+    </div>}
+    <Insight text="There's no note between B and C, or between E and F — these are natural half-steps. Every other pair of natural notes has a sharp/flat between them. This is why the piano has gaps in the black keys." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 2: INTERVALS
+// ═══════════════════════════════════════════════════════════════
+const INTERVALS=[
+  {half:0,name:"Unison",short:"P1",mood:"Same note"},{half:1,name:"Minor 2nd",short:"m2",mood:"Tense, dissonant (Jaws theme)"},
+  {half:2,name:"Major 2nd",short:"M2",mood:"Stepping up (Happy Birthday start)"},
+  {half:3,name:"Minor 3rd",short:"m3",mood:"Sad, minor chord feel"},{half:4,name:"Major 3rd",short:"M3",mood:"Happy, major chord feel"},
+  {half:5,name:"Perfect 4th",short:"P4",mood:"Open, strong (Here Comes the Bride)"},
+  {half:6,name:"Tritone",short:"TT",mood:"Unstable, 'the devil's interval' (The Simpsons)"},
+  {half:7,name:"Perfect 5th",short:"P5",mood:"Powerful, open (Star Wars)"},
+  {half:8,name:"Minor 6th",short:"m6",mood:"Bittersweet"},{half:9,name:"Major 6th",short:"M6",mood:"Warm (My Bonnie)"},
+  {half:10,name:"Minor 7th",short:"m7",mood:"Bluesy tension"},{half:11,name:"Major 7th",short:"M7",mood:"Dreamy, almost home"},
+  {half:12,name:"Octave",short:"P8",mood:"Same note, higher"},
+];
+
+function Guide2(){
+  const [root]=useState("C");
+  const [selIv,setSelIv]=useState(null);
+  const iv=selIv!==null?INTERVALS[selIv]:null;
+  const hlNotes=iv?[root,ALL_NOTES[(ALL_NOTES.indexOf(root)+iv.half)%12]]:[];
+  return(<div>
+    <DarkBox title="The distance between any two notes"><div style={{fontSize:14}}>
+      An interval = the <strong style={{color:"#FFE77A"}}>distance</strong> between two notes, measured in half-steps. Intervals are the most fundamental concept — scales, chords, and melodies are all built from them. Tap any to hear it from C.
+    </div></DarkBox>
+    <Piano keys={14} highlighted={hlNotes} highlightColor="#C62828" labels={iv?{[root]:"Root",[ALL_NOTES[(ALL_NOTES.indexOf(root)+iv.half)%12]]:iv.short}:{}} />
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(70px,1fr))",gap:4,marginBottom:16}}>
+      {INTERVALS.map((intv,i)=>{const isSel=selIv===i;return(
+        <button key={i} onClick={()=>{setSelIv(i);const n2=ALL_NOTES[(ALL_NOTES.indexOf(root)+intv.half)%12];playSequence([root+"4",n2+"4"],300);}} style={{padding:"6px 4px",borderRadius:8,border:isSel?"2.5px solid #C62828":"1.5px solid #ddd",background:isSel?"#C62828":"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center"}}>
+          <div style={{fontSize:12,fontWeight:800}}>{intv.short}</div>
+          <div style={{fontSize:8,opacity:.7}}>{intv.half}h</div>
+        </button>
+      );})}
+    </div>
+    {iv&&<div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"2px solid #C62828",marginBottom:16}}>
+      <div style={{fontSize:16,fontWeight:800,color:"#C62828"}}>{iv.name} <span style={{fontSize:12,color:"#888"}}>({iv.half} half-steps)</span></div>
+      <div style={{fontSize:13,color:"#555",marginTop:4}}>{iv.mood}</div>
+    </div>}
+    <Insight text="The major third (4 half-steps) sounds happy. The minor third (3 half-steps) sounds sad. This single interval is what separates major from minor — the entire mood shift comes from ONE half-step difference." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 3: MAJOR SCALE
+// ═══════════════════════════════════════════════════════════════
+function Guide3(){
+  const [root,setRoot]=useState("C");
+  const scale=buildScale(root,MAJOR_STEPS);
+  const degreeNames=["1 (Root)","2","3","4","5","6","7","8 (Octave)"];
+  const labels=Object.fromEntries(scale.map((n,i)=>[n,degreeNames[i]||""]));
+  return(<div>
+    <DarkBox title="The 7-note pattern that defines Western music"><div style={{fontSize:14}}>
+      The major scale = <strong style={{color:"#FFE77A"}}>Whole-Whole-Half-Whole-Whole-Whole-Half</strong>. Pick any note, apply this pattern, and you get a major scale. They all sound "the same" — just shifted up or down.
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {ALL_NOTES.map(n=>(<button key={n} onClick={()=>{setRoot(n);playSequence(buildScale(n,MAJOR_STEPS).map(x=>x+"4"),200);}} style={{padding:"5px 10px",borderRadius:8,border:root===n?"2.5px solid #1565C0":"1.5px solid #ddd",background:root===n?"#1565C0":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700,fontSize:13}}>{n}</button>))}
+    </div>
+    <Piano keys={15} highlighted={scale} highlightColor="#1565C0" labels={labels} />
+    <div style={{display:"flex",gap:2,justifyContent:"center",marginBottom:16}}>
+      {["W","W","H","W","W","W","H"].map((s,i)=>(<div key={i} style={{width:40,height:32,borderRadius:6,background:s==="H"?"#C62828":"#1565C0",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800}}>{s}</div>))}
+    </div>
+    <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#1565C0",marginBottom:4}}>{root} major scale:</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+        {scale.slice(0,7).map((n,i)=>(<span key={i} style={{padding:"4px 12px",borderRadius:8,background:"#E3F2FD",color:"#1565C0",fontSize:14,fontWeight:700,border:"1px solid #BBDEFB"}}>{n}</span>))}
+      </div>
+    </div>
+    <Insight text="C major has no sharps or flats — all white keys. That's why it's the 'default' key for learning. But every major scale sounds the same mood-wise, just at different pitches." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 4: MINOR SCALE
+// ═══════════════════════════════════════════════════════════════
+function Guide4(){
+  const [root,setRoot]=useState("A");
+  const [mode,setMode]=useState("natural");
+  const steps={natural:MINOR_STEPS,harmonic:[2,1,2,2,1,3,1],melodic:[2,1,2,2,2,2,1]};
+  const scale=buildScale(root,steps[mode]);
+  const labels=Object.fromEntries(scale.map((n,i)=>[n,String(i+1)]));
+  return(<div>
+    <DarkBox title="The 'sad' scale"><div style={{fontSize:14}}>
+      The minor scale has a <strong style={{color:"#FFE77A"}}>lowered 3rd, 6th, and 7th</strong> compared to major. That lowered 3rd is what creates the "sad" or "dark" sound. A minor and C major share the exact same notes — just different starting points.
+    </div></DarkBox>
+    <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>
+      {[{k:"natural",l:"Natural Minor"},{k:"harmonic",l:"Harmonic Minor"},{k:"melodic",l:"Melodic Minor"}].map(m=>(<button key={m.k} onClick={()=>{setMode(m.k);playSequence(buildScale(root,steps[m.k]).map(x=>x+"4"),200);}} style={{padding:"6px 14px",borderRadius:8,border:mode===m.k?"2.5px solid #6A1B9A":"1.5px solid #ddd",background:mode===m.k?"#6A1B9A":"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{m.l}</button>))}
+    </div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {ALL_NOTES.map(n=>(<button key={n} onClick={()=>{setRoot(n);playSequence(buildScale(n,steps[mode]).map(x=>x+"4"),200);}} style={{width:36,height:28,borderRadius:6,border:root===n?"2px solid #6A1B9A":"1.5px solid #ddd",background:root===n?"#6A1B9A":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700,fontSize:11}}>{n}</button>))}
+    </div>
+    <Piano keys={15} highlighted={scale} highlightColor="#6A1B9A" labels={labels} />
+    <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>{root} {mode} minor:</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+        {scale.slice(0,7).map((n,i)=>(<span key={i} style={{padding:"4px 12px",borderRadius:8,background:"#EDE7F6",color:"#6A1B9A",fontSize:14,fontWeight:700,border:"1px solid #D1C4E9"}}>{n}</span>))}
+      </div>
+    </div>
+    <Insight text="The 'relative minor' of any major key is the 6th degree. C major's relative minor = A minor. Same notes, different home base, completely different mood." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 5: KEY SIGNATURES / CIRCLE OF FIFTHS
+// ═══════════════════════════════════════════════════════════════
+const circleOfFifths=[
+  {key:"C",sharps:0,flats:0,rel:"Am"},{key:"G",sharps:1,flats:0,rel:"Em"},{key:"D",sharps:2,flats:0,rel:"Bm"},
+  {key:"A",sharps:3,flats:0,rel:"F#m"},{key:"E",sharps:4,flats:0,rel:"C#m"},{key:"B",sharps:5,flats:0,rel:"G#m"},
+  {key:"F#",sharps:6,flats:0,rel:"D#m"},{key:"Db",sharps:0,flats:5,rel:"Bbm"},{key:"Ab",sharps:0,flats:4,rel:"Fm"},
+  {key:"Eb",sharps:0,flats:3,rel:"Cm"},{key:"Bb",sharps:0,flats:2,rel:"Gm"},{key:"F",sharps:0,flats:1,rel:"Dm"},
+];
+
+function Guide5(){
+  const [selKey,setSelKey]=useState(0);
+  const k=circleOfFifths[selKey];
+  return(<div>
+    <DarkBox title="Which sharps/flats belong to which key"><div style={{fontSize:14}}>
+      The <strong style={{color:"#FFE77A"}}>Circle of Fifths</strong> is your map. Each step clockwise adds a sharp. Each step counter-clockwise adds a flat. It's a reference tool, not something to memorize.
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:16}}>
+      {circleOfFifths.map((ck,i)=>(<button key={i} onClick={()=>setSelKey(i)} style={{width:42,height:42,borderRadius:"50%",border:selKey===i?"2.5px solid #2E7D32":"1.5px solid #ddd",background:selKey===i?"#2E7D32":"#fff",color:selKey===i?"#fff":"#333",cursor:"pointer",fontSize:12,fontWeight:800}}>{ck.key}</button>))}
+    </div>
+    <div style={{background:"#fff",borderRadius:14,padding:"14px 18px",border:"2px solid #2E7D32",marginBottom:16}}>
+      <div style={{fontSize:20,fontWeight:800,color:"#2E7D32"}}>{k.key} major / {k.rel}</div>
+      <div style={{fontSize:14,color:"#555",marginTop:4}}>
+        {k.sharps>0?`${k.sharps} sharp${k.sharps>1?"s":""}`:k.flats>0?`${k.flats} flat${k.flats>1?"s":""}`:("No sharps or flats")}
+      </div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:8}}>
+        {buildScale(k.key.replace("b","").replace("#",""),MAJOR_STEPS).slice(0,7).map((n,i)=>(<span key={i} style={{padding:"4px 10px",borderRadius:6,background:"#E8F5E9",color:"#2E7D32",fontSize:13,fontWeight:700,border:"1px solid #C8E6C9"}}>{n}</span>))}
+      </div>
+    </div>
+    <Insight text="To find the key of a song: look at the sharps/flats it uses, find that key on the circle. Or simpler — what chord does the song feel like it 'comes home' to? That's probably the key." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 6: HOW CHORDS ARE BUILT
+// ═══════════════════════════════════════════════════════════════
+function Guide6(){
+  const [root,setRoot]=useState("C");
+  const [type,setType]=useState("major");
+  const chord=buildChord(root,CHORD_TYPES[type]);
+  const labels=Object.fromEntries(chord.map((n,i)=>[n,i===0?"R":i===1?"3rd":"5th"]));
+  return(<div>
+    <DarkBox title="Stacking intervals of thirds"><div style={{fontSize:14}}>
+      A chord = 3+ notes played together. The most basic chord (a <strong style={{color:"#FFE77A"}}>triad</strong>) is built by stacking two thirds. Major third + minor third = major triad. Minor third + major third = minor triad. That's the whole difference.
+    </div></DarkBox>
+    <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>
+      {[{k:"major",l:"Major",c:"#C62828"},{k:"minor",l:"Minor",c:"#1565C0"},{k:"dim",l:"Diminished",c:"#E65100"},{k:"aug",l:"Augmented",c:"#6A1B9A"}].map(t=>(<button key={t.k} onClick={()=>{setType(t.k);playChord(buildChord(root,CHORD_TYPES[t.k]).map(n=>n+"4"));}} style={{padding:"6px 14px",borderRadius:8,border:type===t.k?`2.5px solid ${t.c}`:"1.5px solid #ddd",background:type===t.k?t.c:"#fff",color:type===t.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{t.l}</button>))}
+    </div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {ALL_NOTES.map(n=>(<button key={n} onClick={()=>{setRoot(n);playChord(buildChord(n,CHORD_TYPES[type]).map(x=>x+"4"));}} style={{width:36,height:28,borderRadius:6,border:root===n?"2px solid #C62828":"1.5px solid #ddd",background:root===n?"#C62828":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700,fontSize:11}}>{n}</button>))}
+    </div>
+    <Piano keys={13} highlighted={chord} highlightColor={type==="major"?"#C62828":type==="minor"?"#1565C0":"#E65100"} labels={labels} />
+    <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#C62828"}}>{root} {type}: {chord.join(" – ")}</div>
+      <div style={{fontSize:12,color:"#888",marginTop:4}}>
+        {type==="major"?"Root + Major 3rd (4h) + Minor 3rd (3h) = bright, happy":
+         type==="minor"?"Root + Minor 3rd (3h) + Major 3rd (4h) = dark, sad":
+         type==="dim"?"Root + Minor 3rd (3h) + Minor 3rd (3h) = tense, unstable":
+         "Root + Major 3rd (4h) + Major 3rd (4h) = dreamy, unresolved"}
+      </div>
+    </div>
+    <Insight text="The difference between a happy chord and a sad chord is ONE half-step in the middle note. C major = C-E-G. C minor = C-Eb-G. Just the E drops to Eb." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 7: THE 7 CHORDS IN A KEY
+// ═══════════════════════════════════════════════════════════════
+const romanNumerals=["I","ii","iii","IV","V","vi","vii°"];
+const chordQualities=["major","minor","minor","major","major","minor","dim"];
+const chordIntervals=[[4,3],[3,4],[3,4],[4,3],[4,3],[3,4],[3,3]];
+
+function Guide7(){
+  const [root,setRoot]=useState("C");
+  const scale=buildScale(root,MAJOR_STEPS);
+  const [selDeg,setSelDeg]=useState(null);
+  return(<div>
+    <DarkBox title="Every key has 7 built-in chords"><div style={{fontSize:14}}>
+      Stack thirds from each note of the major scale and you get: <strong style={{color:"#FFE77A"}}>I – ii – iii – IV – V – vi – vii°</strong>. Major, minor, minor, major, major, minor, diminished. This pattern is the same in every key.
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {["C","D","E","F","G","A","Bb"].map(n=>(<button key={n} onClick={()=>setRoot(n)} style={{padding:"5px 12px",borderRadius:8,border:root===n?"2.5px solid #1565C0":"1.5px solid #ddd",background:root===n?"#1565C0":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700}}>{n}</button>))}
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,marginBottom:16}}>
+      {romanNumerals.map((rn,i)=>{const chordRoot=scale[i];const chord=buildChord(chordRoot,chordIntervals[i]);const isSel=selDeg===i;const isMaj=chordQualities[i]==="major";
+        return(<button key={i} onClick={()=>{setSelDeg(i);playChord(chord.map(n=>n+"4"));}} style={{padding:"8px 2px",borderRadius:8,border:isSel?"2.5px solid #C62828":"1.5px solid #ddd",background:isSel?"#C62828":isMaj?"#fff":"#f5f3ef",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center"}}>
+          <div style={{fontSize:14,fontWeight:800}}>{rn}</div>
+          <div style={{fontSize:10,color:isSel?"rgba(255,255,255,0.7)":"#888"}}>{chordRoot}{chordQualities[i]==="minor"?"m":chordQualities[i]==="dim"?"°":""}</div>
+        </button>);
+      })}
+    </div>
+    {selDeg!==null&&(()=>{const chordRoot=scale[selDeg];const chord=buildChord(chordRoot,chordIntervals[selDeg]);return(
+      <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"2px solid #C62828",marginBottom:16}}>
+        <div style={{fontSize:18,fontWeight:800,color:"#C62828"}}>{romanNumerals[selDeg]} — {chordRoot}{chordQualities[selDeg]==="minor"?"m":chordQualities[selDeg]==="dim"?"°":""}</div>
+        <div style={{fontSize:13,color:"#555",marginTop:4}}>Quality: {chordQualities[selDeg]} · Notes: {chord.join(" – ")}</div>
+      </div>
+    );})()}
+    <Insight text="Uppercase Roman numerals = major chords. Lowercase = minor. The ° means diminished. In any key: I, IV, and V are always major. ii, iii, and vi are always minor. vii° is always diminished." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDE 8: SEVENTH CHORDS
+// ═══════════════════════════════════════════════════════════════
+function Guide8(){
+  const [root,setRoot]=useState("C");
+  const [type,setType]=useState("maj7");
+  const types=[{k:"maj7",l:"Maj7",desc:"Dreamy, lush",c:"#1565C0"},{k:"min7",l:"Min7",desc:"Mellow, jazzy",c:"#6A1B9A"},{k:"dom7",l:"Dom7",desc:"Bluesy, wants to resolve",c:"#C62828"},{k:"dim7",l:"Dim7",desc:"Tense, spooky",c:"#E65100"},{k:"hdim7",l:"m7b5",desc:"Dark, unstable",c:"#880E4F"}];
+  const chord=buildChord(root,CHORD_TYPES[type]);
+  const lbls=["R","3","5","7"];
+  return(<div>
+    <DarkBox title="Adding a 4th note"><div style={{fontSize:14}}>Triads have 3 notes. Add a <strong style={{color:"#FFE77A"}}>7th</strong> (the note a third above the 5th) and you get richer, more colorful chords. The <strong style={{color:"#EF9A9A"}}>dominant 7th</strong> (V7) is the most important — it creates tension that wants to resolve to I.</div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {types.map(t=>(<button key={t.k} onClick={()=>{setType(t.k);playChord(buildChord(root,CHORD_TYPES[t.k]).map(n=>n+"4"));}} style={{padding:"6px 12px",borderRadius:8,border:type===t.k?`2.5px solid ${t.c}`:"1.5px solid #ddd",background:type===t.k?t.c:"#fff",color:type===t.k?"#fff":"#555",cursor:"pointer",fontWeight:700,fontSize:12}}>{t.l}</button>))}
+    </div>
+    <Piano keys={13} highlighted={chord} highlightColor={types.find(t=>t.k===type).c} labels={Object.fromEntries(chord.map((n,i)=>[n,lbls[i]||""]))} />
+    <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:15,fontWeight:700,color:types.find(t=>t.k===type).c}}>{root}{type==="maj7"?"maj7":type==="min7"?"m7":type==="dom7"?"7":type==="dim7"?"dim7":"m7b5"}: {chord.join(" – ")}</div>
+      <div style={{fontSize:12,color:"#888",marginTop:4}}>{types.find(t=>t.k===type).desc}</div>
+    </div>
+    <Insight text="The dominant 7th (like G7 in the key of C) is the engine of Western harmony. It creates a strong pull back to the I chord. Blues is built almost entirely on dominant 7ths." />
+  </div>);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 9-11: CHORD SYMBOLS, POWER/SUS, EXTENSIONS
+// ═══════════════════════════════════════════════════════════════
+function Guide9(){
+  const symbols=[
+    {sym:"C",means:"C major triad",notes:"C E G"},{sym:"Cm",means:"C minor triad",notes:"C Eb G"},
+    {sym:"C7",means:"C dominant 7th",notes:"C E G Bb"},{sym:"Cmaj7",means:"C major 7th",notes:"C E G B"},
+    {sym:"Cm7",means:"C minor 7th",notes:"C Eb G Bb"},{sym:"Cdim",means:"C diminished",notes:"C Eb Gb"},
+    {sym:"Caug",means:"C augmented",notes:"C E G#"},{sym:"Csus2",means:"C suspended 2nd",notes:"C D G"},
+    {sym:"Csus4",means:"C suspended 4th",notes:"C F G"},{sym:"C/E",means:"C major, E in bass",notes:"E C G"},
+    {sym:"Cadd9",means:"C major + 9th (no 7th)",notes:"C E G D"},{sym:"C5",means:"C power chord",notes:"C G"},
+  ];
+  return(<div>
+    <DarkBox title="Decoding chord symbols"><div style={{fontSize:14}}>Chord symbols are shorthand. The letter = root note. Everything after tells you the <strong style={{color:"#FFE77A"}}>quality</strong> (what kind of chord). Tap any to hear it.</div></DarkBox>
+    <Card color="#6A1B9A" title="Chord Symbol Reference" subtitle="Tap to play">
+      {symbols.map((s,i)=>(<div key={i} onClick={()=>{const ns=s.notes.split(" ");playChord(ns.map(n=>n+"4"));}} style={{display:"grid",gridTemplateColumns:"70px 1fr 1fr",padding:"8px 14px",borderBottom:i<symbols.length-1?"1px solid #f0eeeb":"none",cursor:"pointer",alignItems:"center"}}>
+        <span style={{fontSize:15,fontWeight:800,color:"#6A1B9A"}}>{s.sym}</span>
+        <span style={{fontSize:12,color:"#555"}}>{s.means}</span>
+        <span style={{fontSize:11,color:"#888",textAlign:"right"}}>{s.notes}</span>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+function Guide10(){
+  const [root,setRoot]=useState("C");
+  const [type,setType]=useState("power");
+  const types=[{k:"power",l:"Power Chord (5)",desc:"Root + 5th only. No 3rd = neither major nor minor. Dominates rock, punk, metal.",iv:[7],c:"#2E7D32"},
+    {k:"sus2",l:"Sus2",desc:"3rd replaced by 2nd. Open, ambiguous. Common in pop/folk.",iv:[2,5],c:"#1565C0"},
+    {k:"sus4",l:"Sus4",desc:"3rd replaced by 4th. Tense, wants to resolve back to major/minor.",iv:[5,2],c:"#E65100"}];
+  const t=types.find(x=>x.k===type);
+  const chord=buildChord(root,t.iv);
+  return(<div>
+    <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+      {types.map(tp=>(<button key={tp.k} onClick={()=>{setType(tp.k);playChord(buildChord(root,tp.iv).map(n=>n+"4"));}} style={{flex:1,maxWidth:160,padding:"8px",borderRadius:10,border:type===tp.k?`2.5px solid ${tp.c}`:"1.5px solid #ddd",background:type===tp.k?tp.c:"#fff",color:type===tp.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:13}}>{tp.l}</button>))}
+    </div>
+    <Piano keys={13} highlighted={chord} highlightColor={t.c} />
+    <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:`2px solid ${t.c}`,marginBottom:16}}>
+      <div style={{fontSize:16,fontWeight:800,color:t.c}}>{root}{type==="power"?"5":type} — {chord.join(" – ")}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:4}}>{t.desc}</div>
+    </div>
+    <Insight text="Power chords work for rock because distortion adds extra harmonics that make full chords sound muddy. By removing the 3rd, you get a clean, powerful sound that distortion can't mess up." />
+  </div>);
+}
+
+function Guide11(){return(<div>
+  <DarkBox title="Beyond triads and 7ths"><div style={{fontSize:14}}>
+    Keep stacking thirds above the 7th: the <strong style={{color:"#FFE77A"}}>9th</strong> (= 2nd up an octave), <strong style={{color:"#FFE77A"}}>11th</strong> (= 4th), <strong style={{color:"#FFE77A"}}>13th</strong> (= 6th). These add color without changing the chord's fundamental character.
+  </div></DarkBox>
+  <Card color="#880E4F" title="Extensions & what they add">
+    {[{ext:"9th",interval:"2nd up an octave",feel:"Brightness, soul, R&B. Hendrix chord = 7#9.",ex:"Cmaj9, Dm9, G9"},
+      {ext:"11th",interval:"4th up an octave",feel:"Open, suspended quality. Common in funk.",ex:"Cm11, G11, Fmaj#11"},
+      {ext:"13th",interval:"6th up an octave",feel:"Full, rich, warm. The 'complete' jazz chord.",ex:"C13, Dm13, G13"},
+      {ext:"add9",interval:"Just add the 9th (no 7th)",feel:"Brighter than a triad, simpler than a 9th chord.",ex:"Cadd9, Gadd9, Eadd9"},
+      {ext:"Altered (7#9, 7b9, 7#11)",interval:"Sharped/flatted extensions on dominant",feel:"Dissonant, colorful. The 'outside' sound of jazz.",ex:"G7#9, G7b9, G7#11"},
+    ].map((e,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
+        <span style={{background:"#880E4F",color:"#fff",padding:"2px 8px",borderRadius:4,fontSize:12,fontWeight:800}}>{e.ext}</span>
+        <span style={{fontSize:11,color:"#888"}}>{e.interval}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555"}}>{e.feel}</div>
+      <div style={{fontSize:11,color:"#aaa",marginTop:2}}>{e.ex}</div>
+    </div>))}
+  </Card>
+  <Insight text="You don't need extensions to write great songs. Most pop uses triads and 7ths. Extensions are spices — a little goes a long way. Add a 9th when a triad sounds too plain." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 12-15: RHYTHM
+// ═══════════════════════════════════════════════════════════════
+function Guide12(){return(<div>
+  <DarkBox title="How music is organized in time"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Time signature</strong> = how beats are grouped. <strong style={{color:"#FFE77A"}}>Tempo</strong> = how fast. 4/4 at 120 BPM and 4/4 at 60 BPM have the same grouping at different speeds.
+  </div></DarkBox>
+  <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:16}}>
+    {[{ts:"4/4",name:"Common Time",desc:"4 beats per bar. Vast majority of pop, rock, hip-hop, R&B, country.",pct:"~90% of popular music",color:"#E65100"},
+      {ts:"3/4",name:"Waltz Time",desc:"3 beats per bar. Waltzes, some ballads, folk songs. ONE-two-three.",pct:"Waltzes, ballads",color:"#1565C0"},
+      {ts:"6/8",name:"Compound Time",desc:"2 groups of 3. Feels different from 3/4 — a swing/lilt. Many Irish/folk songs.",pct:"Folk, ballads, blues",color:"#2E7D32"},
+    ].map(ts=>(<div key={ts.ts} style={{background:"#fff",borderRadius:12,padding:"12px",border:`2px solid ${ts.color}30`,textAlign:"center"}}>
+      <div style={{fontSize:28,fontWeight:800,color:ts.color,fontFamily:"monospace"}}>{ts.ts}</div>
+      <div style={{fontSize:12,fontWeight:700,color:"#333"}}>{ts.name}</div>
+      <div style={{fontSize:11,color:"#555",marginTop:4}}>{ts.desc}</div>
+      <div style={{fontSize:10,color:"#aaa",marginTop:4}}>{ts.pct}</div>
+    </div>))}
+  </div>
+  <Insight text="If you can count '1-2-3-4' to a song, it's in 4/4. If it makes you want to waltz (1-2-3, 1-2-3), it's 3/4. If it lilts in groups of 3 but feels like 2 big beats, it's 6/8." />
+</div>);}
+
+function Guide13(){return(<div>
+  <Card color="#1565C0" title="Note values in 4/4 time" subtitle="Each is half the previous">
+    {[{name:"Whole note",beats:"4 beats",symbol:"𝅝",divisions:"= the entire bar"},{name:"Half note",beats:"2 beats",symbol:"𝅗𝅥",divisions:"= 2 per bar"},
+      {name:"Quarter note",beats:"1 beat",symbol:"♩",divisions:"= 4 per bar (the 'pulse')"},{name:"Eighth note",beats:"½ beat",symbol:"♪",divisions:"= 8 per bar"},
+      {name:"Sixteenth note",beats:"¼ beat",symbol:"𝅘𝅥𝅯",divisions:"= 16 per bar"},
+    ].map((n,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"40px 100px 60px 1fr",padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none",alignItems:"center"}}>
+      <span style={{fontSize:24,color:"#1565C0"}}>{n.symbol}</span>
+      <span style={{fontSize:13,fontWeight:700,color:"#333"}}>{n.name}</span>
+      <span style={{fontSize:12,fontWeight:700,color:"#1565C0"}}>{n.beats}</span>
+      <span style={{fontSize:11,color:"#888"}}>{n.divisions}</span>
+    </div>))}
+  </Card>
+  <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+    <div style={{fontSize:13,fontWeight:700,color:"#E65100",marginBottom:4}}>Special rhythms:</div>
+    <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>
+      <strong>Dotted note</strong> = note + half its value. Dotted half = 3 beats. Dotted quarter = 1.5 beats.<br/>
+      <strong>Triplet</strong> = 3 notes in the space of 2. Gives a "shuffle" feel.<br/>
+      <strong>Rest</strong> = silence for that duration. Just as important as the notes!
+    </div>
+  </div>
+</div>);}
+
+function Guide14(){return(<div>
+  <DarkBox title="Accenting the 'off' beats"><div style={{fontSize:14}}>
+    Regular rhythm: <strong style={{color:"#FFE77A"}}>1</strong>-2-<strong style={{color:"#FFE77A"}}>3</strong>-4. Syncopation: 1-<strong style={{color:"#EF9A9A"}}>2</strong>-3-<strong style={{color:"#EF9A9A"}}>4</strong> (or the 'ands'). This is what makes funk, reggae, hip-hop, and Latin music feel different from a march.
+  </div></DarkBox>
+  <Card color="#C62828" title="Where the groove lives">
+    {[{genre:"Funk",accent:"Heavy on beats 2 & 4 + the 'e' and 'a' (16th note subdivisions)",feel:"Makes you want to move. James Brown, Parliament."},{genre:"Reggae",accent:"Guitar/keys hit on beats 2 & 4 (the 'skank'), bass on 1",feel:"Laid-back, bouncy. Bob Marley."},{genre:"Hip-Hop",accent:"Snare on 2 & 4, hi-hat patterns create swing on 8ths/16ths",feel:"Head-nodding groove."},{genre:"Latin (Clave)",accent:"Specific 3-2 or 2-3 pattern across 2 bars",feel:"The rhythmic DNA of salsa, son, samba."},
+    ].map((g,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <span style={{background:"#C62828",color:"#fff",padding:"2px 8px",borderRadius:4,fontSize:12,fontWeight:800}}>{g.genre}</span>
+      <div style={{fontSize:12,color:"#555",marginTop:4}}>{g.accent}</div>
+      <div style={{fontSize:11,color:"#888",marginTop:2}}>{g.feel}</div>
+    </div>))}
+  </Card>
+  <Insight text="The difference between playing notes and making music is often about where you place the emphasis. Play the SAME notes with different accents and it becomes a completely different genre." />
+</div>);}
+
+function Guide15(){return(<div>
+  <DarkBox title="Multiple rhythmic layers"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Polyrhythm</strong> = two different rhythmic patterns at the same time (3 against 2, 4 against 3). <strong style={{color:"#FFE77A"}}>Odd meters</strong> = time signatures that don't divide evenly (5/4, 7/8).
+  </div></DarkBox>
+  <Card color="#6A1B9A" title="Common polyrhythms & odd meters">
+    {[{name:"3 against 2",desc:"One hand plays 3 even notes while the other plays 2. Found in Afro-Cuban music, West African drumming, jazz.",ex:"'Pass the god-damn but-ter' = 3 over 2"},
+      {name:"5/4 time",desc:"5 beats per bar. Feels like 3+2 or 2+3.",ex:"'Take Five' (Dave Brubeck), 'Mission Impossible' theme"},
+      {name:"7/8 time",desc:"7 eighth notes per bar. Often felt as 2+2+3 or 3+2+2.",ex:"'Money' (Pink Floyd), much Balkan folk music"},
+      {name:"Where they show up",desc:"Prog rock (Tool, Rush), jazz (Brubeck, Mehldau), world music (Afrobeat, Balkan), modern pop/R&B is increasingly using polyrhythmic feels.",ex:""},
+    ].map((p,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#6A1B9A"}}>{p.name}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{p.desc}</div>
+      {p.ex&&<div style={{fontSize:11,color:"#888",marginTop:2,fontStyle:"italic"}}>{p.ex}</div>}
+    </div>))}
+  </Card>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 16-21: PROGRESSIONS — WITH PLAYABLE AUDIO
+// ═══════════════════════════════════════════════════════════════
+function ProgressionPlayer({root,numerals,chordTypes,color}){
+  const scale=buildScale(root,MAJOR_STEPS);
+  const chords=numerals.map((num,i)=>{const idx=parseInt(num)-1;const r=scale[idx];return{root:r,type:chordTypes[i],notes:buildChord(r,CHORD_TYPES[chordTypes[i]]).map(n=>n+"4")};});
+  return(
+    <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:`2px solid ${color}`,marginBottom:16}}>
+      <div style={{display:"flex",gap:6,marginBottom:8,justifyContent:"center"}}>
+        {chords.map((c,i)=>(<button key={i} onClick={()=>playChord(c.notes)} style={{flex:1,maxWidth:90,padding:"8px 4px",borderRadius:8,background:color,color:"#fff",cursor:"pointer",textAlign:"center",border:"none"}}>
+          <div style={{fontSize:16,fontWeight:800}}>{c.root}{c.type==="minor"?"m":c.type==="dim"?"°":""}</div>
+        </button>))}
+      </div>
+      <button onClick={()=>playSequence(chords.map(c=>c.notes),600)} style={{width:"100%",padding:"8px",borderRadius:8,background:"#1a1a1a",color:"#FFE77A",border:"none",cursor:"pointer",fontSize:13,fontWeight:700}}>▶ Play full progression</button>
+    </div>
+  );
+}
+
+function Guide16(){
+  const [root,setRoot]=useState("C");
+  return(<div>
+    <DarkBox title="The foundation of Western music"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>I – IV – V</strong> is the most common chord progression in history. Blues, rock, country, folk, gospel — they all live here. It's the musical equivalent of "subject – verb – object."
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {["C","D","E","F","G","A"].map(n=>(<button key={n} onClick={()=>setRoot(n)} style={{padding:"5px 12px",borderRadius:8,border:root===n?"2.5px solid #C62828":"1.5px solid #ddd",background:root===n?"#C62828":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700}}>{n}</button>))}
+    </div>
+    <ProgressionPlayer root={root} numerals={["1","4","5","1"]} chordTypes={["major","major","major","major"]} color="#C62828" />
+    <Insight text="Why it works: I = home/stability. IV = departure/movement. V = tension/wanting to resolve. V → I is the strongest resolution in music. The whole cycle is: rest → movement → tension → rest." />
+  </div>);
+}
+
+function Guide17(){
+  const [root,setRoot]=useState("C");
+  return(<div>
+    <DarkBox title="The pop progression"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>I – V – vi – IV</strong> (and its rotations) appears in hundreds of hits. The vi chord (the relative minor) is the emotional pivot — it introduces just enough sadness to make the return to IV and I feel satisfying.
+    </div></DarkBox>
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:12}}>
+      {["C","D","E","F","G","A"].map(n=>(<button key={n} onClick={()=>setRoot(n)} style={{padding:"5px 12px",borderRadius:8,border:root===n?"2.5px solid #1565C0":"1.5px solid #ddd",background:root===n?"#1565C0":"#fff",color:root===n?"#fff":"#555",cursor:"pointer",fontWeight:700}}>{n}</button>))}
+    </div>
+    <ProgressionPlayer root={root} numerals={["1","5","6","4"]} chordTypes={["major","major","minor","major"]} color="#1565C0" />
+    <Insight text="This progression is so common it has its own comedy video ('4 Chords' by Axis of Awesome). Don't see that as a limitation — it shows that the emotional arc of this progression is deeply satisfying to human ears." />
+  </div>);
+}
+
+function Guide18(){
+  const [root,setRoot]=useState("A");
+  const [prog,setProg]=useState(0);
+  const progs=[
+    {name:"i – iv – v",nums:["1","4","5"],types:["minor","minor","minor"],desc:"Natural minor feel. Dark but not dramatic."},
+    {name:"i – VI – III – VII",nums:["1","6","3","7"],types:["minor","major","major","major"],desc:"Epic minor progression. Common in rock ballads and film scores."},
+    {name:"i – iv – VII – III",nums:["1","4","7","3"],types:["minor","minor","major","major"],desc:"Andalusian cadence feel. Flamenco, goth, Middle Eastern influenced."},
+  ];
+  const p=progs[prog];
+  return(<div>
+    <DarkBox title="When songs go dark"><div style={{fontSize:14}}>Minor key progressions use the <strong style={{color:"#FFE77A"}}>natural minor scale</strong> chords. The i (minor tonic) is "home" — everything orbits around that darker center.</div></DarkBox>
+    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center"}}>
+      {progs.map((pr,i)=>(<button key={i} onClick={()=>setProg(i)} style={{padding:"6px 12px",borderRadius:8,border:prog===i?"2.5px solid #6A1B9A":"1.5px solid #ddd",background:prog===i?"#6A1B9A":"#fff",color:prog===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{pr.name}</button>))}
+    </div>
+    <ProgressionPlayer root={root} numerals={p.nums} chordTypes={p.types} color="#6A1B9A" />
+    <div style={{fontSize:12,color:"#555",textAlign:"center",marginBottom:12}}>{p.desc}</div>
+  </div>);
+}
+
+function Guide19(){
+  const [root,setRoot]=useState("C");
+  return(<div>
+    <DarkBox title="The backbone of jazz harmony"><div style={{fontSize:14}}>
+      <strong style={{color:"#FFE77A"}}>ii – V – I</strong> is to jazz what I – IV – V is to blues. It works because each chord is a fifth away from the next — the strongest resolution in music, chained together.
+    </div></DarkBox>
+    <ProgressionPlayer root={root} numerals={["2","5","1"]} chordTypes={["minor","major","major"]} color="#E65100" />
+    <Card color="#E65100" title="Why ii – V – I works">
+      {[{step:"ii (minor)",role:"Preparation — creates mild tension and forward motion.",ex:"Dm7 in the key of C"},
+        {step:"V (dominant)",role:"Maximum tension — the dominant 7th NEEDS to resolve.",ex:"G7 in the key of C"},
+        {step:"I (tonic)",role:"Resolution — home. The tension dissolves.",ex:"Cmaj7 in the key of C"},
+      ].map((s,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontWeight:700,color:"#E65100"}}>{s.step}</span> — <span style={{color:"#555"}}>{s.role}</span><br/>
+        <span style={{fontSize:11,color:"#888"}}>{s.ex}</span>
+      </div>))}
+    </Card>
+  </div>);
+}
+
+function Guide20(){return(<div>
+  <DarkBox title="How phrases end (or fake you out)"><div style={{fontSize:14}}>
+    A <strong style={{color:"#FFE77A"}}>cadence</strong> is the chord progression at the end of a musical phrase. It's like punctuation — a period, a comma, or a question mark.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="The four main cadences">
+    {[{name:"Authentic (V → I)",feel:"Period. Full stop. 'The End.' The strongest resolution.",ex:"G → C in C major. The most final-sounding cadence."},
+      {name:"Plagal (IV → I)",feel:"'Amen cadence.' Gentle, warm resolution. Used in hymns.",ex:"F → C in C major."},
+      {name:"Half cadence (→ V)",feel:"Comma. Pause but not finished. 'To be continued...'",ex:"Ending a phrase on G in C major. Feels incomplete."},
+      {name:"Deceptive (V → vi)",feel:"Plot twist! You expect I but get vi instead. Surprise/emotion.",ex:"G → Am in C major. The surprise minor chord."},
+    ].map((c,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#2E7D32"}}>{c.name}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{c.feel}</div>
+      <div style={{fontSize:11,color:"#888",marginTop:2}}>{c.ex}</div>
+    </div>))}
+  </Card>
+</div>);}
+
+function Guide21(){return(<div>
+  <DarkBox title="Changing key mid-song"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Modulation</strong> = moving to a different key. It creates a sense of lift, surprise, or emotional shift. Every key has its own "color" — modulating changes that color.
+  </div></DarkBox>
+  <Card color="#880E4F" title="Common modulation techniques">
+    {[{name:"Up a half-step (truck driver's modulation)",desc:"The final chorus goes up a half-step for extra energy. The cheapest trick in pop — but it works.",ex:"Beyoncé 'Love on Top', Bon Jovi 'Livin' on a Prayer'"},
+      {name:"To the relative minor/major",desc:"Shift between parallel emotional worlds. C major ↔ A minor. Same notes, different home.",ex:"Verse in minor, chorus in relative major — very common."},
+      {name:"Pivot chord modulation",desc:"A chord that exists in BOTH keys serves as a bridge. Smooth and sophisticated.",ex:"Am is vi in C major and ii in G major — pivot through it."},
+      {name:"Direct modulation",desc:"Just jump. No preparation. Shocking but effective when intentional.",ex:"Abrupt key change between song sections."},
+    ].map((m,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#880E4F"}}>{m.name}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{m.desc}</div>
+      <div style={{fontSize:11,color:"#888",marginTop:2,fontStyle:"italic"}}>{m.ex}</div>
+    </div>))}
+  </Card>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 22-25: MELODY
+// ═══════════════════════════════════════════════════════════════
+function Guide22(){return(<div>
+  <DarkBox title="Tension, resolution & home"><div style={{fontSize:14}}>
+    In any key, the <strong style={{color:"#FFE77A"}}>1st degree (tonic)</strong> is "home." The <strong style={{color:"#EF9A9A"}}>7th</strong> is one half-step below — maximum tension, desperately wants to resolve up to 1. Melody is the art of creating and releasing tension against this framework.
+  </div></DarkBox>
+  <Card color="#C62828" title="Scale degree feelings">
+    {[{deg:"1 (Root)",feel:"Home. Resolution. Rest. Landing here = phrase feels complete.",color:"#2E7D32"},
+      {deg:"2",feel:"Slight tension. Wants to step to 1 or 3. 'Passing through.'",color:"#1565C0"},
+      {deg:"3",feel:"Defines major (happy) or minor (sad). The emotional core.",color:"#C62828"},
+      {deg:"4",feel:"Gentle pull toward 3 or 5. Suspension, expectation.",color:"#1565C0"},
+      {deg:"5",feel:"Stability, but not home. A resting point mid-phrase.",color:"#2E7D32"},
+      {deg:"6",feel:"Warm in major, bittersweet. Can lean toward 5 or 7.",color:"#6A1B9A"},
+      {deg:"7",feel:"Maximum tension. A half-step from home. NEEDS to resolve to 1.",color:"#C62828"},
+    ].map((d,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<6?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${d.color}`}}>
+      <span style={{fontWeight:700,color:d.color}}>{d.deg}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{d.feel}</span>
+    </div>))}
+  </Card>
+  <Insight text="Great melodies balance steps (moving to adjacent notes = smooth) with leaps (jumping intervals = dramatic). Too many steps = boring. Too many leaps = chaotic. The magic is in the mix." />
+</div>);}
+
+function Guide23(){return(<div>
+  <Card color="#1565C0" title="Common song structures">
+    {[{form:"Verse – Chorus (most pop/rock)",desc:"Verse sets up the story. Chorus delivers the emotional/lyrical hook. Repeat with variation. Often: Intro – V – V – C – V – C – Bridge – C – Outro."},
+      {form:"AABA (standard/jazz)",desc:"A = main theme (repeated). B = contrasting bridge. Classic Tin Pan Alley form. 'Somewhere Over the Rainbow.'"},
+      {form:"Verse – Pre-Chorus – Chorus",desc:"Pre-chorus builds tension between verse and chorus. Creates anticipation. Most modern pop."},
+      {form:"Through-composed",desc:"No repeating sections. Each part is new. Rare in pop, common in art music and some progressive rock."},
+    ].map((f,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#1565C0"}}>{f.form}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{f.desc}</div>
+    </div>))}
+  </Card>
+  <Insight text="Structure creates expectation. Listeners unconsciously predict 'the chorus should come back here.' Fulfilling or subverting that expectation is how you keep people engaged." />
+</div>);}
+
+function Guide24(){return(<div>
+  <DarkBox title="What makes a melody memorable"><div style={{fontSize:14}}>
+    A <strong style={{color:"#FFE77A"}}>hook</strong> is the part that sticks in your head. A <strong style={{color:"#FFE77A"}}>motif</strong> is a short melodic idea that recurs throughout a piece. The best hooks ARE simple motifs — short, rhythmically distinctive, and repeated with variation.
+  </div></DarkBox>
+  <Card color="#E65100" title="Hook principles">
+    {[{principle:"Repetition with variation",desc:"State an idea, then repeat it slightly changed. The brain loves patterns it can almost predict."},
+      {principle:"Rhythmic identity",desc:"The RHYTHM of a hook is often more memorable than the pitches. Try clapping 'We Will Rock You' — recognizable without any notes."},
+      {principle:"Call and response",desc:"A phrase that 'asks' followed by one that 'answers.' Creates conversational flow."},
+      {principle:"Range constraint",desc:"Most great hooks span less than an octave. Singability = memorability."},
+      {principle:"Tension placement",desc:"Place the hook's highest note or most dissonant interval on an emotionally important word or beat."},
+    ].map((p,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+      <span style={{fontWeight:700,color:"#E65100"}}>{p.principle}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{p.desc}</span>
+    </div>))}
+  </Card>
+</div>);}
+
+function Guide25(){return(<div>
+  <DarkBox title="Where words meet melody"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Prosody</strong> = the natural rhythm and stress of language. Good lyrics match their stressed syllables to strong beats. When prosody is wrong, lyrics feel forced even if the words are great.
+  </div></DarkBox>
+  <Card color="#6A1B9A" title="Lyric principles">
+    {[{p:"Stress alignment",d:"Put stressed syllables on strong beats. 'a-MONG the FIELDS of BAR-ley' not 'A-mong the fields OF bar-ley.'"},
+      {p:"Vowel sounds carry emotion",d:"Open vowels (ah, oh) sustain well and feel expansive. Closed vowels (ee, oo) feel intimate. Long notes need open vowels."},
+      {p:"Rhyme schemes",d:"AABB (couplets) = punchy, conclusive. ABAB = flowing, narrative. ABCB = loose, conversational. Internal rhyme = sophistication."},
+      {p:"The singable word",d:"Avoid consonant clusters on held notes. 'Strengths' is hard to sing on a long note. 'Love' is easy."},
+    ].map((x,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <span style={{fontWeight:700,color:"#6A1B9A"}}>{x.p}</span><br/>
+      <span style={{fontSize:12,color:"#555"}}>{x.d}</span>
+    </div>))}
+  </Card>
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 26-28: SOUND
+// ═══════════════════════════════════════════════════════════════
+function Guide26(){return(<div>
+  <DarkBox title="Why instruments sound different"><div style={{fontSize:14}}>
+    A piano and guitar playing the same C4 produce different <strong style={{color:"#FFE77A"}}>timbres</strong> — the "color" of sound. Same pitch, different character. Timbre comes from <strong style={{color:"#FFE77A"}}>overtones</strong>: extra frequencies vibrating above the fundamental note.
+  </div></DarkBox>
+  <Card color="#1565C0" title="The vocabulary of describing sound">
+    {[{term:"Bright",desc:"Strong high frequencies. Cymbals, electric guitar with treble up, synth leads.",opp:"Dark"},{term:"Warm",desc:"Rich mid-low frequencies, gentle highs. Acoustic guitar, analog synth, tube amp.",opp:"Cold/thin"},
+      {term:"Full/thick",desc:"Wide frequency range, multiple layers or harmonics.",opp:"Thin/hollow"},{term:"Dirty/gritty",desc:"Distortion, saturation, intentional 'imperfection.'",opp:"Clean"},
+      {term:"Dry",desc:"No reverb or effects. Close, intimate, direct.",opp:"Wet (with reverb/effects)"},
+    ].map((t,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+      <div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontWeight:700,color:"#1565C0"}}>{t.term}</span><span style={{fontSize:11,color:"#aaa"}}>opposite: {t.opp}</span></div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{t.desc}</div>
+    </div>))}
+  </Card>
+</div>);}
+
+function Guide27(){return(<div>
+  <DarkBox title="The difference between playing notes and making music"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Dynamics</strong> = how soft or loud you play. The space between whisper and scream is where expression lives. A song at one volume is a lecture. A song with dynamics is a conversation.
+  </div></DarkBox>
+  <Card color="#C62828" title="Dynamic markings (quietest → loudest)">
+    <div style={{display:"flex",flexWrap:"wrap",gap:4,padding:"10px 14px"}}>
+      {[{m:"pp",n:"Pianissimo",d:"Very soft"},{m:"p",n:"Piano",d:"Soft"},{m:"mp",n:"Mezzo-piano",d:"Medium soft"},{m:"mf",n:"Mezzo-forte",d:"Medium loud"},{m:"f",n:"Forte",d:"Loud"},{m:"ff",n:"Fortissimo",d:"Very loud"}].map((d,i,a)=>(<div key={i} style={{flex:1,minWidth:80,textAlign:"center",padding:"8px",borderRadius:8,background:`rgba(198,40,40,${0.1+i*0.15})`,color:i>3?"#fff":"#333"}}>
+        <div style={{fontSize:18,fontWeight:800,fontStyle:"italic"}}>{d.m}</div>
+        <div style={{fontSize:10}}>{d.n}</div>
+      </div>))}
+    </div>
+  </Card>
+  <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
+    <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>
+      <strong style={{color:"#C62828"}}>Crescendo</strong> = gradually louder. <strong style={{color:"#1565C0"}}>Diminuendo</strong> = gradually softer. These are the most powerful tools for building and releasing tension over time.
+    </div>
+  </div>
+</div>);}
+
+function Guide28(){return(<div>
+  <DarkBox title="How many layers, and how they interact"><div style={{fontSize:14}}>
+    <strong style={{color:"#FFE77A"}}>Texture</strong> = what happens when multiple parts play simultaneously. Adding and removing layers is one of the most effective arrangement tools.
+  </div></DarkBox>
+  <Card color="#2E7D32" title="Types of musical texture">
+    {[{type:"Monophony",desc:"A single melodic line, unaccompanied. Gregorian chant, a solo voice, a whistle.",feel:"Exposed, pure, intimate."},
+      {type:"Homophony",desc:"A melody with chord accompaniment. A singer with guitar. This is most popular music.",feel:"Clear focus, supportive."},
+      {type:"Polyphony",desc:"Multiple independent melodic lines simultaneously. Fugues, vocal harmonies, counterpoint.",feel:"Rich, complex, woven."},
+      {type:"Arrangement as texture",desc:"Thin in the verse (just voice + guitar). Full in the chorus (drums + bass + keys + backing vocals + strings). The contrast IS the arrangement.",feel:""},
+    ].map((t,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:14,fontWeight:700,color:"#2E7D32"}}>{t.type}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:2}}>{t.desc}</div>
+      {t.feel&&<div style={{fontSize:11,color:"#888",marginTop:2}}>{t.feel}</div>}
+    </div>))}
+  </Card>
+  <Insight text="The most powerful moment in many songs is when everything drops out except the vocal. That silence IS the arrangement. Texture is as much about what you remove as what you add." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// GUIDES 29-30: CONTEXT
+// ═══════════════════════════════════════════════════════════════
+function Guide29(){
+  const scales=[
+    {name:"Major Pentatonic",steps:[2,2,3,2,3],feel:"Happy, open, folk. Remove the 4th and 7th from major.",color:"#C62828"},
+    {name:"Minor Pentatonic",steps:[3,2,2,3,2],feel:"Bluesy, rock. The foundation of improvisation for guitarists.",color:"#1565C0"},
+    {name:"Blues Scale",steps:[3,2,1,1,3,2],feel:"Minor pentatonic + the 'blue note' (b5). Gritty, soulful.",color:"#6A1B9A"},
+    {name:"Dorian Mode",steps:[2,1,2,2,2,1,2],feel:"Minor but with a bright 6th. Jazz, funk, Santana.",color:"#2E7D32"},
+    {name:"Mixolydian Mode",steps:[2,2,1,2,2,1,2],feel:"Major but with a flat 7th. Bluesy-major, classic rock, folk.",color:"#E65100"},
+  ];
+  const [selScale,setSelScale]=useState(0);
+  const [root,setRoot]=useState("A");
+  const sc=scales[selScale];
+  const notes=buildScale(root,sc.steps);
+  return(<div>
+    <DarkBox title="Different palettes for different moods"><div style={{fontSize:14}}>
+      Major and minor are just two of many possible <strong style={{color:"#FFE77A"}}>scales/modes</strong>. Each creates a different emotional palette. These are the ones you'll encounter most.
+    </div></DarkBox>
+    <div style={{display:"flex",gap:4,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
+      {scales.map((s,i)=>(<button key={i} onClick={()=>{setSelScale(i);playSequence(buildScale(root,s.steps).map(n=>n+"4"),180);}} style={{padding:"5px 10px",borderRadius:8,border:selScale===i?`2.5px solid ${s.color}`:"1.5px solid #ddd",background:selScale===i?s.color:"#fff",color:selScale===i?"#fff":"#555",cursor:"pointer",fontWeight:700,fontSize:11}}>{s.name}</button>))}
+    </div>
+    <Piano keys={15} highlighted={notes} highlightColor={sc.color} labels={Object.fromEntries(notes.map((n,i)=>[n,String(i+1)]))} />
+    <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",border:`2px solid ${sc.color}`,marginBottom:12}}>
+      <div style={{fontSize:15,fontWeight:800,color:sc.color}}>{root} {sc.name}</div>
+      <div style={{fontSize:12,color:"#555",marginTop:4}}>{sc.feel}</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginTop:6}}>{notes.slice(0,-1).map((n,i)=>(<span key={i} style={{padding:"3px 10px",borderRadius:6,background:`${sc.color}15`,color:sc.color,fontSize:13,fontWeight:700,border:`1px solid ${sc.color}25`}}>{n}</span>))}</div>
+    </div>
+  </div>);
+}
+
+function Guide30(){return(<div>
+  <DarkBox title="Same 12 notes, different grammar"><div style={{fontSize:14}}>
+    Every genre uses the same 12 notes but with different <strong style={{color:"#FFE77A"}}>conventions</strong> — preferred scales, chord types, rhythmic patterns, timbres, and structures. Learning these conventions is like learning a dialect.
+  </div></DarkBox>
+  <Card color="#1a1a1a" title="Genre fingerprints">
+    {[{genre:"Blues",chords:"Dominant 7ths everywhere (I7, IV7, V7)",scale:"Minor pentatonic + blue note",rhythm:"Shuffle feel, 12-bar form",sig:"The 'bent' note. Raw expression."},
+      {genre:"Jazz",chords:"7ths, 9ths, 13ths. ii-V-I. Complex harmony.",scale:"All modes, altered scales, chromaticism",rhythm:"Swing, complex syncopation",sig:"Improvisation over changes."},
+      {genre:"Rock",chords:"Power chords, I-IV-V, barre chords",scale:"Pentatonic, blues scale",rhythm:"Driving 4/4, heavy on 2 & 4",sig:"Distorted guitar, backbeat."},
+      {genre:"Hip-Hop",chords:"Sampled loops, minor keys, simple progressions",scale:"Minor pentatonic, chromatic bass lines",rhythm:"Boom-bap, trap hi-hats, syncopated flows",sig:"The beat IS the instrument. Vocal rhythm = melodic."},
+      {genre:"EDM",chords:"Simple triads, suspended chords, long pads",scale:"Minor scales, modal shifts",rhythm:"Four-on-the-floor kick, build-drop structure",sig:"The 'drop.' Texture and energy over harmony."},
+      {genre:"Country",chords:"I-IV-V, I-vi-IV-V, simple triads",scale:"Major pentatonic, mixolydian",rhythm:"Train beat, two-step, shuffle",sig:"Steel guitar, fiddle. Storytelling lyrics."},
+    ].map((g,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none"}}>
+      <div style={{fontSize:15,fontWeight:800,color:"#1a1a1a"}}>{g.genre}</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginTop:4,fontSize:11}}>
+        <div><span style={{color:"#C62828",fontWeight:600}}>Chords:</span> <span style={{color:"#555"}}>{g.chords}</span></div>
+        <div><span style={{color:"#1565C0",fontWeight:600}}>Scales:</span> <span style={{color:"#555"}}>{g.scale}</span></div>
+        <div><span style={{color:"#2E7D32",fontWeight:600}}>Rhythm:</span> <span style={{color:"#555"}}>{g.rhythm}</span></div>
+        <div><span style={{color:"#6A1B9A",fontWeight:600}}>Signature:</span> <span style={{color:"#555"}}>{g.sig}</span></div>
+      </div>
+    </div>))}
+  </Card>
+  <Insight text="Genre boundaries are increasingly blurry — and that's a good thing. Understanding the 'grammar' of multiple genres lets you blend them intentionally. Most interesting modern music lives at the intersections." />
+</div>);}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPONENT ARRAY & MAIN APP
+// ═══════════════════════════════════════════════════════════════
+
+export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];
