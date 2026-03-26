@@ -1,112 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jazz Guitar — Peliglot</title>
-  <meta name="description" content="30 interactive guides to jazz guitar for experienced musicians">
-  <meta property="og:title" content="Jazz Guitar — Peliglot">
-  <meta property="og:description" content="30 interactive guides to jazz guitar for experienced musicians">
-  <meta property="og:type" content="website">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { -webkit-font-smoothing: antialiased; background: #121010; }
-  </style>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha384-c6Uo4N9c3SOEigMVzP6IshUG1wQ5uMp3xeoQFiHWAQ86joWdgyajkvopySyKy/Z6"></script>
-  <script>
-    if(typeof React==='undefined'){document.write('<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"><\/script>')}
-    if(typeof ReactDOM==='undefined'){document.write('<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"><\/script>')}
-    if(typeof Babel==='undefined'){document.write('<script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"><\/script>')}
-    if(typeof Tone==='undefined'){document.write('<script src="https://unpkg.com/tone@14.8.49/build/Tone.js"><\/script>')}
-  </script>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-const { useState, useEffect, useRef } = React;
+import { useState } from 'react';
+import { Card } from '../../components/Card';
+import { DarkBox } from '../../components/DarkBox';
+import { Insight as BaseInsight } from '../../components/Insight';
+import { SimpleGuide } from '../../components/SimpleGuide';
+import { ExpandSection } from '../../components/ExpandSection';
+import { playNote, playChord, playSequence } from '../../utils/audio';
 
-class ErrorBoundary extends React.Component{
-  constructor(props){super(props);this.state={hasError:false,error:null};}
-  static getDerivedStateFromError(error){return{hasError:true,error};}
-  render(){
-    if(this.state.hasError){
-      return React.createElement('div',{style:{padding:'40px',textAlign:'center',fontFamily:'sans-serif'}},
-        React.createElement('h2',null,'Something went wrong'),
-        React.createElement('p',{style:{color:'#666',margin:'12px 0'}},this.state.error?.message||'An unexpected error occurred'),
-        React.createElement('button',{onClick:()=>this.setState({hasError:false,error:null}),style:{padding:'8px 24px',borderRadius:8,border:'1px solid #ccc',background:'#fff',cursor:'pointer',fontSize:14}},'Try Again')
-      );
-    }
-    return this.props.children;
-  }
-}
+// Jazz-specific Insight with warm styling
+function Insight({text}){return <BaseInsight text={text} emoji={"\u{1F3B8}"} bg="#2a2218" border="#3a3025" color="#c4a87a" />;}
 
-
-// ═══════════════════════════════════════════════════════════════
-// METADATA
-// ═══════════════════════════════════════════════════════════════
-const guidesMeta=[
-  {id:1,title:"Voice Leading",subtitle:"Minimum motion, maximum harmony",cat:"Harmony",color:"#8D6E63",icon:"🎵"},
-  {id:2,title:"Drop 2 & Drop 3",subtitle:"The bread & butter voicings",cat:"Harmony",color:"#5D4037",icon:"🎸"},
-  {id:3,title:"Shell Voicings",subtitle:"Root, 3rd, 7th — less is more",cat:"Harmony",color:"#795548",icon:"🦴"},
-  {id:4,title:"Tensions & Extensions",subtitle:"9, 11, 13 and their alterations",cat:"Harmony",color:"#4E342E",icon:"🎨"},
-  {id:5,title:"Quartal Voicings",subtitle:"4ths, clusters & ambiguity",cat:"Harmony",color:"#6D4C41",icon:"🔲"},
-  {id:6,title:"Chord Substitution",subtitle:"Tritone subs, diminished, reharmonization",cat:"Harmony",color:"#3E2723",icon:"🔄"},
-  {id:7,title:"Bebop Scales",subtitle:"Chord tones on downbeats",cat:"Melody",color:"#C62828",icon:"🏃"},
-  {id:8,title:"Arpeggios as Skeleton",subtitle:"Through the changes, not over them",cat:"Melody",color:"#D84315",icon:"🦴"},
-  {id:9,title:"Enclosures & Approaches",subtitle:"Surrounding target notes",cat:"Melody",color:"#BF360C",icon:"🎯"},
-  {id:10,title:"The Blues Language",subtitle:"The vocabulary inside all jazz",cat:"Melody",color:"#1565C0",icon:"😢"},
-  {id:11,title:"Chromaticism",subtitle:"Outside playing & tension-resolution",cat:"Melody",color:"#AD1457",icon:"🌀"},
-  {id:12,title:"Pentatonic Superimposition",subtitle:"Color filters over harmony",cat:"Melody",color:"#6A1B9A",icon:"🔮"},
-  {id:13,title:"Motivic Development",subtitle:"Narrative over noodling",cat:"Melody",color:"#4527A0",icon:"📖"},
-  {id:14,title:"Swing Eighths",subtitle:"The feel spectrum",cat:"Rhythm",color:"#E65100",icon:"🕺"},
-  {id:15,title:"Comping Rhythms",subtitle:"Charleston, catches & space",cat:"Rhythm",color:"#EF6C00",icon:"🥁"},
-  {id:16,title:"Rhythmic Displacement",subtitle:"3 over 4 and shifted licks",cat:"Rhythm",color:"#F57C00",icon:"↗"},
-  {id:17,title:"Rubato & Ballad Time",subtitle:"Stretching and compressing time",cat:"Rhythm",color:"#FF8F00",icon:"🌊"},
-  {id:18,title:"Major ii-V-I",subtitle:"The essential progression",cat:"ii-V-I",color:"#2E7D32",icon:"🔑"},
-  {id:19,title:"Minor ii-V-i",subtitle:"The altered dominant palette",cat:"ii-V-I",color:"#1B5E20",icon:"🌑"},
-  {id:20,title:"Turnarounds & Cycles",subtitle:"Bird changes, Coltrane changes",cat:"ii-V-I",color:"#33691E",icon:"🔁"},
-  {id:21,title:"Playing Over Standards",subtitle:"Form, melody & storytelling",cat:"ii-V-I",color:"#388E3C",icon:"📜"},
-  {id:22,title:"Right Hand Technique",subtitle:"Pick, fingers, hybrid & dynamics",cat:"Tone",color:"#37474F",icon:"✋"},
-  {id:23,title:"The Jazz Guitar Sound",subtitle:"Tone knob, amp, hollow-body",cat:"Tone",color:"#455A64",icon:"🔊"},
-  {id:24,title:"Effects in Modern Jazz",subtitle:"Frisell, Scofield, Lage",cat:"Tone",color:"#546E7A",icon:"🎛"},
-  {id:25,title:"Recording Jazz Guitar",subtitle:"Mic placement, DI & the room",cat:"Tone",color:"#607D8B",icon:"🎙"},
-  {id:26,title:"Reading Charts",subtitle:"Lead sheets, slashes & hits",cat:"Navigation",color:"#1a1a1a",icon:"📋"},
-  {id:27,title:"Comping Behind a Soloist",subtitle:"Listening, responding, supporting",cat:"Navigation",color:"#212121",icon:"🗣"},
-  {id:28,title:"Soloing Over Form",subtitle:"Keeping your place in 32 bars",cat:"Navigation",color:"#424242",icon:"🗺"},
-  {id:29,title:"Transcription",subtitle:"The single best practice method",cat:"Navigation",color:"#616161",icon:"👂"},
-  {id:30,title:"Practice to Bandstand",subtitle:"Structuring practice, finding your voice",cat:"Navigation",color:"#757575",icon:"🎤"},
-];
-const categories=["Harmony","Melody","Rhythm","ii-V-I","Tone","Navigation"];
-const catColors={Harmony:"#5D4037",Melody:"#C62828",Rhythm:"#E65100","ii-V-I":"#2E7D32",Tone:"#455A64",Navigation:"#1a1a1a"};
-
-// ═══════════════════════════════════════════════════════════════
-// SHARED COMPONENTS
-// ═══════════════════════════════════════════════════════════════
-// COMPONENT VARIATIONS: Dark warm-brown theme (intentional jazz aesthetic)
-// Card: bg #1e1e1e, border #333, subtitle opacity 0.5
-// DarkBox: warm brown gradient, cream text #e8dcc8, brown border #3a3025
-// Insight: 🎸 emoji, dark brown bg, warm tan text #c4a87a
-function Card({color, title, subtitle, children}) {
-  return(<div style={{background:"#1e1e1e",borderRadius:14,overflow:"hidden",border:"1px solid #333",marginBottom:16}}>
-    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
-      {subtitle&&<span style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>{subtitle}</span>}
-    </div>{children}
-  </div>);
-}
-function DarkBox({title, children}) {
-  return(<div style={{background:"linear-gradient(135deg,#2a2218,#1a1510)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#e8dcc8",textAlign:"center",border:"1px solid #3a3025"}}>
-    {title&&<div style={{fontSize:10,color:"#7a6e5e",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
-  </div>);
-}
-function Insight({text}){return(<div style={{background:"#2a2218",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #3a3025",fontSize:12,color:"#c4a87a",lineHeight:1.5}}>🎸 {text}</div>);}
 function Ref({name, text}) {
   return(<div style={{background:"#1a1a1a",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #333",fontSize:12,color:"#999",lineHeight:1.5}}>
     🎧 <strong style={{color:"#aaa"}}>{name}:</strong> {text}
@@ -140,35 +42,11 @@ function Fretboard({frets=5,startFret=0,dots=[],labels={},highlightColor="#c4a87
   </div>);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// AUDIO ENGINE
-// ═══════════════════════════════════════════════════════════════
-const synth = {current: null};
-function getSynth() {
-  if (!synth.current) {
-    synth.current = new Tone.PolySynth(Tone.Synth, {
-      oscillator: {type: "triangle"},
-      envelope: {attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8},
-      volume: -12
-    }).toDestination();
-  }
-  return synth.current;
-}
-async function playNote(note, dur="8n") { await Tone.start(); getSynth().triggerAttackRelease(note, dur); }
-async function playChord(notes, dur="2n") { await Tone.start(); getSynth().triggerAttackRelease(notes, dur); }
-async function playSequence(notes, tempo=400) {
-  await Tone.start(); const s = getSynth();
-  for (let i = 0; i < notes.length; i++) {
-    if (Array.isArray(notes[i])) s.triggerAttackRelease(notes[i], "4n");
-    else s.triggerAttackRelease(notes[i], "8n");
-    await new Promise(r => setTimeout(r, tempo));
-  }
-}
+// Audio functions imported from ../../utils/audio
 const playBtnStyle = {padding:"6px 12px",borderRadius:8,background:"#3a3025",color:"#c4a87a",border:"1px solid #4a4035",cursor:"pointer",fontSize:12,fontWeight:700};
 
 // ═══════════════════════════════════════════════════════════════
 // GUIDE 1: VOICE LEADING
-// ═══════════════════════════════════════════════════════════════
 function Guide1(){
   const [pair,setPair]=useState(0);
   const pairs=[
@@ -811,82 +689,5 @@ function Guide30(){return(<div>
 // ═══════════════════════════════════════════════════════════════
 // COMPONENT ARRAY & MAIN APP
 // ═══════════════════════════════════════════════════════════════
-const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];
 
-const App = function JazzGuide(){
-  const[page,setPage]=useState(()=>{const h=parseInt(location.hash.slice(1),10);if(h>=0&&h<guidesMeta.length)return h;try{const s=parseInt(localStorage.getItem('peliglot-jazz-guitar'),10);if(s>=0&&s<guidesMeta.length)return s;}catch(e){}return 0;});
-  const[menuOpen,setMenuOpen]=useState(false);
-  const contentRef=useRef(null);
-  const meta=guidesMeta[page];
-  const GuideComp=guideComponents[page];
-  const total=guidesMeta.length;
-
-  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
-  const prev=()=>{if(page>0)goTo(page-1);};
-  const next=()=>{if(page<total-1)goTo(page+1);};
-
-  useEffect(()=>{
-    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();if(e.key==="Escape")setMenuOpen(false);};
-    window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);
-  });
-  useEffect(()=>{history.replaceState(null,null,'#'+page);},[page]);
-  useEffect(()=>{try{localStorage.setItem('peliglot-jazz-guitar',page);}catch(e){}},[page]);
-
-  return(
-    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#121010",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative",color:"#ddd"}}>
-      <a href="#main-content" className="skip-link">Skip to content</a>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#3a3025;border-radius:4px}*:focus-visible{outline:2px solid #8D6E63;outline-offset:2px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#8D6E63;color:#fff;padding:8px 16px;z-index:100;font-size:14px;text-decoration:none;border-radius:0 0 8px 0}.skip-link:focus{top:0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}`}</style>
-
-      <header role="banner" style={{background:"#1a1510",borderBottom:"1px solid #2a2218",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
-        <button onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"} aria-expanded={menuOpen} aria-controls="sidebar-menu" style={{width:36,height:36,borderRadius:10,border:"1.5px solid #3a3025",background:"#1e1e1e",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#888",flexShrink:0}}>☰</button>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:14,fontWeight:800,color:"#e8dcc8",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
-          <div style={{fontSize:11,color:"#7a6e5e"}}>{meta.subtitle}</div>
-        </div>
-        <div aria-label={"Guide "+(page+1)+" of 30"} style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
-      </header>
-
-      <main id="main-content" role="main" ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
-        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
-      </main>
-
-      <nav role="navigation" aria-label="Guide navigation" style={{background:"#1a1510",borderTop:"1px solid #2a2218",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <button onClick={prev} aria-label="Previous guide" disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #3a3025",background:page===0?"#151010":"#1e1e1e",color:page===0?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
-        <div role="tablist" aria-label="Guide pages" style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} role="tab" aria-selected={i===page} aria-label={"Guide "+(i+1)+": "+guidesMeta[i].title} tabIndex={i===page?0:-1} onClick={()=>goTo(i)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")goTo(i);}} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?"#c4a87a":"#3a3025",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
-        <button onClick={next} aria-label="Next guide" disabled={page===29} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #3a3025",background:page===total-1?"#151010":"#1e1e1e",color:page===total-1?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
-      </nav>
-
-      {menuOpen&&<div aria-hidden="true" onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:20}}/>}
-      <aside id="sidebar-menu" role="navigation" aria-label="Guide list" onKeyDown={e=>{if(e.key==="Escape")setMenuOpen(false);}} style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#1a1510",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.4)":"none",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #2a2218",flexShrink:0}}>
-          <div style={{fontSize:18,fontWeight:800,color:"#e8dcc8"}}>Jazz Guitar</div>
-          <div style={{fontSize:12,color:"#7a6e5e"}}>30 Guides for Working Musicians</div>
-        </div>
-        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
-          {categories.map(cat=>{
-            const items=guidesMeta.filter(g=>g.cat===cat);
-            return(<div key={cat}>
-              <div role="heading" aria-level="2" style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat]==="@1a1a1a"?"#888":catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4,color:"#7a6e5e"}}>{cat}</div>
-              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
-                <button key={g.id} onClick={()=>goTo(idx)} aria-current={isActive?"page":undefined} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?"#2a2218":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?"3px solid #c4a87a":"3px solid transparent",color:"#ccc"}}>
-                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?"#e8dcc8":"#999",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
-                    <div style={{fontSize:10,color:"#5a5040"}}>{g.subtitle}</div>
-                  </div>
-                  <span style={{fontSize:10,color:"#3a3025",fontWeight:600}}>{g.id}</span>
-                </button>
-              );})}
-            </div>);
-          })}
-        </div>
-      </aside>
-    </div>
-  );
-}
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(ErrorBoundary,null,React.createElement(App)));
-  </script>
-</body>
-</html>
+export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];

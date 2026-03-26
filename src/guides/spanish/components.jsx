@@ -1,90 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spanish — Peliglot</title>
-  <meta name="description" content="27 interactive guides to Spanish grammar">
-  <meta property="og:title" content="Spanish — Peliglot">
-  <meta property="og:description" content="27 interactive guides to Spanish grammar">
-  <meta property="og:type" content="website">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  </style>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0"></script>
-  <script>
-    if(typeof React==='undefined'){document.write('<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"><\/script>')}
-    if(typeof ReactDOM==='undefined'){document.write('<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"><\/script>')}
-    if(typeof Babel==='undefined'){document.write('<script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"><\/script>')}
-  </script>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-const { useState, useEffect, useRef } = React;
+import { useState } from 'react';
+import { Card } from '../../components/Card';
+import { DarkBox } from '../../components/DarkBox';
+import { Insight } from '../../components/Insight';
+import { SimpleGuide } from '../../components/SimpleGuide';
+import { ExpandSection } from '../../components/ExpandSection';
+import { speakSpanish } from '../../utils/speech';
 
-class ErrorBoundary extends React.Component{
-  constructor(props){super(props);this.state={hasError:false,error:null};}
-  static getDerivedStateFromError(error){return{hasError:true,error};}
-  render(){
-    if(this.state.hasError){
-      return React.createElement('div',{style:{padding:'40px',textAlign:'center',fontFamily:'sans-serif'}},
-        React.createElement('h2',null,'Something went wrong'),
-        React.createElement('p',{style:{color:'#666',margin:'12px 0'}},this.state.error?.message||'An unexpected error occurred'),
-        React.createElement('button',{onClick:()=>this.setState({hasError:false,error:null}),style:{padding:'8px 24px',borderRadius:8,border:'1px solid #ccc',background:'#fff',cursor:'pointer',fontSize:14}},'Try Again')
-      );
-    }
-    return this.props.children;
-  }
-}
-
-
-// ═══════════════════════════════════════════════════════════════
-// DATA FOR ALL 27 GUIDES
-// ═══════════════════════════════════════════════════════════════
-
-const guidesMeta = [
-  { id: 1, title: "El Alfabeto", subtitle: "Alphabet & Sounds", cat: "Pronunciation", color: "#2C5F2D", icon: "🔤" },
-  { id: 2, title: "Acentos", subtitle: "Accent Marks & Stress", cat: "Pronunciation", color: "#E63946", icon: "´" },
-  { id: 3, title: "Cambios Ortográficos", subtitle: "Spelling Changes", cat: "Pronunciation", color: "#C2185B", icon: "✂️" },
-  { id: 4, title: "Presente Indicativo", subtitle: "Present Tense", cat: "Verbs", color: "#D84315", icon: "▶" },
-  { id: 5, title: "Pretérito vs Imperfecto", subtitle: "Two Past Tenses", cat: "Verbs", color: "#B71C1C", icon: "⏪" },
-  { id: 6, title: "Futuro y Condicional", subtitle: "Future & Conditional", cat: "Verbs", color: "#00897B", icon: "⏩" },
-  { id: 7, title: "Progresivo", subtitle: "Estar + Gerund", cat: "Verbs", color: "#E65100", icon: "🔄" },
-  { id: 8, title: "Tiempos Perfectos", subtitle: "Haber + Participle", cat: "Verbs", color: "#1B5E20", icon: "✓" },
-  { id: 9, title: "Cambios de Raíz", subtitle: "Boot Verbs", cat: "Verbs", color: "#C62828", icon: "👢" },
-  { id: 10, title: "Irregulares", subtitle: "Irregular Verb Dashboard", cat: "Verbs", color: "#1a1a1a", icon: "⚡" },
-  { id: 11, title: "Género", subtitle: "Masculine & Feminine", cat: "Nouns", color: "#1565C0", icon: "♂♀" },
-  { id: 12, title: "Pluralización", subtitle: "Making Plurals", cat: "Nouns", color: "#2E7D32", icon: "➕" },
-  { id: 13, title: "Adjetivos", subtitle: "Agreement & Placement", cat: "Nouns", color: "#AD1457", icon: "📐" },
-  { id: 14, title: "Pronombres", subtitle: "All Pronoun Types", cat: "Pronouns", color: "#1565C0", icon: "👤" },
-  { id: 15, title: "Posición de Objetos", subtitle: "DO/IO Placement", cat: "Pronouns", color: "#E65100", icon: "↔" },
-  { id: 16, title: "Gustar", subtitle: "Verbs Like Gustar", cat: "Pronouns", color: "#D84315", icon: "❤️" },
-  { id: 17, title: "Ser vs Estar", subtitle: "Two Verbs for 'To Be'", cat: "Core", color: "#0D47A1", icon: "⚖️" },
-  { id: 18, title: "Por vs Para", subtitle: "Two 'For' Words", cat: "Prepositions", color: "#00695C", icon: "🔀" },
-  { id: 19, title: "Verbos + Preposiciones", subtitle: "Verb-Preposition Pairs", cat: "Prepositions", color: "#4527A0", icon: "🔗" },
-  { id: 20, title: "Preguntas", subtitle: "Question Formation", cat: "Sentences", color: "#0277BD", icon: "❓" },
-  { id: 21, title: "Negación", subtitle: "Negation Patterns", cat: "Sentences", color: "#C62828", icon: "✗" },
-  { id: 22, title: "Comparativos", subtitle: "Comparatives & Superlatives", cat: "Sentences", color: "#C62828", icon: "⬆⬇" },
-  { id: 23, title: "Números y Fechas", subtitle: "Numbers, Dates & Time", cat: "Practical", color: "#0277BD", icon: "🔢" },
-  { id: 24, title: "Tú vs Usted", subtitle: "Formal vs Informal", cat: "Practical", color: "#37474F", icon: "🎩" },
-  { id: 25, title: "Falsos Cognados", subtitle: "False Cognates", cat: "Practical", color: "#C62828", icon: "⚠️" },
-  { id: 26, title: "Calor", subtitle: "Estar Caliente vs Tener Calor", cat: "Core", color: "#E65100", icon: "🌡️" },
-  { id: 27, title: "El Tiempo", subtitle: "Weather Expressions", cat: "Practical", color: "#0277BD", icon: "🌤️" },
-];
-
-const categories = ["Pronunciation", "Verbs", "Nouns", "Pronouns", "Core", "Prepositions", "Sentences", "Practical"];
-const catColors = { Pronunciation: "#2C5F2D", Verbs: "#B71C1C", Nouns: "#1565C0", Pronouns: "#E65100", Core: "#0D47A1", Prepositions: "#4527A0", Sentences: "#C62828", Practical: "#37474F" };
-
-// ═══════════════════════════════════════════════════════════════
 // GUIDE 1: ALPHABET
 // ═══════════════════════════════════════════════════════════════
 const letters = [
@@ -118,17 +39,6 @@ const letters = [
   { letter: "Y", name: "ye", ipa: "/ʝ/, /i/", approx: "Like 'y'; alone = 'ee'", tricky: false, tip: "The word 'y' = 'ee'." },
   { letter: "Z", name: "zeta", ipa: "/s/", approx: "Like 's' in Latin America", tricky: true, tip: "In Mexico: always 's'. Spain: 'th'." },
 ];
-
-function speakSpanish(text, onEnd) {
-  if (!window.speechSynthesis) { if (onEnd) onEnd(); return; }
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "es";
-  utter.rate = 0.85;
-  if (onEnd) utter.onend = onEnd;
-  utter.onerror = () => { if (onEnd) onEnd(); };
-  window.speechSynthesis.speak(utter);
-}
 
 function Guide1() {
   const [sel, setSel] = useState(null);
@@ -1084,30 +994,7 @@ function Guide27(){
   </div>);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// SHARED COMPONENTS
-// ═══════════════════════════════════════════════════════════════
-function Card({color,title,subtitle,children}){
-  return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #eee",marginBottom:16}}>
-    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
-      {subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}
-    </div>
-    {children}
-  </div>);
-}
-
-function DarkBox({title,children}){
-  return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>
-    {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}
-    {children}
-  </div>);
-}
-
-function Insight({text}){
-  return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);
-}
-
+// Spanish-specific components
 function VerbTypeSelector({vt,setVt,cols={ar:"#D84315",er:"#00695C",ir:"#4527A0"}}){
   return(<div style={{display:"flex",gap:8,marginBottom:14,justifyContent:"center"}}>
     {["ar","er","ir"].map(t=>(<button key={t} onClick={()=>setVt(t)} style={{padding:"8px 20px",borderRadius:10,border:vt===t?"2px solid #1a1a1a":"1.5px solid #ddd",background:vt===t?(cols[t]||"#1a1a1a"):"#fff",color:vt===t?"#fff":"#666",fontSize:15,fontWeight:700,cursor:"pointer"}}>-{t.toUpperCase()}</button>))}
@@ -1133,107 +1020,8 @@ function TriggerChips({label,color,words}){
   </div>);
 }
 
-function SimpleGuide({title,items}){
-  return(<div>
-    {items.map((item,i)=>(<div key={i} style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #eee",marginBottom:6}}>
-      <div style={{fontSize:13,fontWeight:700,color:"#1a1a1a",marginBottom:4}}>{item.h}</div>
-      <div style={{fontSize:12,color:"#666",lineHeight:1.5,whiteSpace:"pre-line"}}>{item.b}</div>
-    </div>))}
-  </div>);
-}
-
 // ═══════════════════════════════════════════════════════════════
 // GUIDE COMPONENTS ARRAY
 // ═══════════════════════════════════════════════════════════════
-const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27];
 
-// ═══════════════════════════════════════════════════════════════
-// MAIN APP
-// ═══════════════════════════════════════════════════════════════
-const App = function SpanishGuide(){
-  const[page,setPage]=useState(()=>{const h=parseInt(location.hash.slice(1),10);if(h>=0&&h<guidesMeta.length)return h;try{const s=parseInt(localStorage.getItem('peliglot-spanish'),10);if(s>=0&&s<guidesMeta.length)return s;}catch(e){}return 0;});
-  const [menuOpen,setMenuOpen]=useState(false);
-  const contentRef=useRef(null);
-  const meta=guidesMeta[page];
-  const GuideComp=guideComponents[page];
-
-  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
-  const prev=()=>{if(page>0)goTo(page-1);};
-  const next=()=>{if(page<26)goTo(page+1);};
-
-  useEffect(()=>{
-    const handler=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();if(e.key==="Escape")setMenuOpen(false);};
-    window.addEventListener("keydown",handler);return()=>window.removeEventListener("keydown",handler);
-  });
-  useEffect(()=>{history.replaceState(null,null,'#'+page);},[page]);
-  useEffect(()=>{try{localStorage.setItem('peliglot-spanish',page);}catch(e){}},[page]);
-
-  return(
-    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}*:focus-visible{outline:2px solid #2E7D32;outline-offset:2px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#1a1a1a;color:#fff;padding:8px 16px;z-index:100;font-size:14px;text-decoration:none;border-radius:0 0 8px 0}.skip-link:focus{top:0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}@media(prefers-color-scheme:dark){body{background:#1a1a1a!important;color:#e0e0e0!important}}`}</style>
-
-      <a href="#main-content" className="skip-link">Skip to content</a>
-
-      {/* TOP BAR */}
-      <header role="banner" style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
-        <button aria-label={menuOpen?"Close menu":"Open menu"} aria-expanded={menuOpen} aria-controls="sidebar-menu" onClick={()=>setMenuOpen(!menuOpen)} style={{width:36,height:36,borderRadius:10,border:"1.5px solid #e0ddd8",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#555",flexShrink:0}}>☰</button>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
-          <div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div>
-        </div>
-        <div aria-label={`Guide ${page+1} of 27`} style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>
-          {page+1}/27
-        </div>
-      </header>
-
-      {/* CONTENT */}
-      <main id="main-content" role="main" ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
-        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}>
-          <GuideComp/>
-        </div>
-      </main>
-
-      {/* BOTTOM NAV */}
-      <nav role="navigation" aria-label="Guide navigation" style={{background:"#fff",borderTop:"1px solid #eee",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <button aria-label="Previous guide" onClick={prev} disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd8",background:page===0?"#f5f5f5":"#fff",color:page===0?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
-        <div role="tablist" aria-label="Guide pages" style={{display:"flex",gap:3}}>
-          {guidesMeta.map((g,i)=>(<div key={i} role="tab" aria-selected={i===page} aria-label={`Guide ${i+1}: ${g.title}`} tabIndex={i===page?0:-1} onClick={()=>goTo(i)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")goTo(i);}} style={{width:i===page?16:6,height:6,borderRadius:3,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}
-        </div>
-        <button aria-label="Next guide" onClick={next} disabled={page===26} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd8",background:page===26?"#f5f5f5":"#fff",color:page===26?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===26?"default":"pointer"}}>Next →</button>
-      </nav>
-
-      {/* SIDE MENU OVERLAY */}
-      {menuOpen&&<div aria-hidden="true" onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:20}}/>}
-      <aside id="sidebar-menu" role="navigation" aria-label="Guide list" onKeyDown={e=>{if(e.key==="Escape")setMenuOpen(false);}} style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#fff",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.15)":"none",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}>
-          <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>Guía de Español</div>
-          <div style={{fontSize:12,color:"#999"}}>27 Interactive Guides</div>
-        </div>
-        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
-          {categories.map(cat=>{
-            const items=guidesMeta.filter(g=>g.cat===cat);
-            return(<div key={cat}>
-              <div role="heading" aria-level="2" style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
-              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
-                <button key={g.id} aria-current={isActive?"page":undefined} onClick={()=>goTo(idx)} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?`${g.color}12`:"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent"}}>
-                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
-                    <div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div>
-                  </div>
-                  <span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span>
-                </button>
-              );})}
-            </div>);
-          })}
-        </div>
-      </aside>
-    </div>
-  );
-}
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(ErrorBoundary,null,React.createElement(App)));
-  </script>
-</body>
-</html>
+export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27];

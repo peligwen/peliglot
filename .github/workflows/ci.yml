@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  checks:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,151 +15,60 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
-      # ── HTML Validation ──────────────────────────────────────
-      - name: Install html-validate
-        run: npm install -g html-validate
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Create html-validate config
-        run: |
-          cat > .htmlvalidate.json << 'EOF'
-          {
-            "extends": ["html-validate:recommended"],
-            "rules": {
-              "no-inline-style": "off",
-              "no-trailing-whitespace": "off",
-              "long-title": "off",
-              "script-type": "off",
-              "no-raw-characters": "off",
-              "attribute-boolean-style": "off",
-              "tel-non-breaking": "off",
-              "valid-id": "off",
-              "wcag/h30": "off",
-              "wcag/h32": "off",
-              "wcag/h36": "off",
-              "wcag/h37": "off",
-              "wcag/h67": "off",
-              "wcag/h71": "off",
-              "prefer-native-element": "off",
-              "element-permitted-content": "off",
-              "element-permitted-parent": "off",
-              "no-unknown-elements": "off",
-              "void-content": "off",
-              "element-required-attributes": "off",
-              "attribute-allowed-values": "off",
-              "deprecated-rule": "off",
-              "deprecated": "off",
-              "no-deprecated-attr": "off",
-              "require-sri": "off",
-              "svg-focusable": "off",
-              "no-implicit-close": "off",
-              "close-order": "off",
-              "heading-level": "off",
-              "unique-landmark": "off",
-              "meta-refresh": "off",
-              "close-attr": "off",
-              "attr-delimiter": "off"
-            }
-          }
-          EOF
+      - name: Build
+        run: npm run build
 
-      - name: Validate HTML
-        run: |
-          echo "::group::Validating index.html"
-          html-validate index.html || true
-          echo "::endgroup::"
-          for f in guides/*.html; do
-            echo "::group::Validating $f"
-            html-validate "$f" || true
-            echo "::endgroup::"
-          done
-          echo "HTML validation complete (warnings only, non-blocking for inline React/Babel files)"
-
-      # ── Link Checking ────────────────────────────────────────
-      - name: Check internal links
-        run: |
-          status=0
-          echo "Checking links in index.html..."
-          grep -oP 'href="\K[^"#]+' index.html | sort -u | while read -r link; do
-            if [[ "$link" == http* ]]; then
-              continue
-            fi
-            if [[ ! -f "$link" ]]; then
-              echo "::error file=index.html::Broken link: $link"
-              exit 1
-            fi
-          done || status=1
-
-          for f in guides/*.html; do
-            echo "Checking links in $f..."
-            grep -oP 'href="\K[^"#]+' "$f" | sort -u | while read -r link; do
-              if [[ "$link" == http* ]]; then
-                continue
-              fi
-              # Resolve relative to the guide's directory
-              target="guides/$link"
-              if [[ "$link" == ../* ]]; then
-                target="${link#../}"
-              fi
-              if [[ ! -f "$target" ]]; then
-                echo "::error file=$f::Broken link: $link (resolved to $target)"
-                exit 1
-              fi
-            done || status=1
-          done
-
-          if [[ $status -ne 0 ]]; then
-            echo "::error::Broken links detected"
-            exit 1
-          fi
-          echo "All internal links are valid."
-
-      # ── File Size Monitoring ─────────────────────────────────
-      - name: Check file sizes
+      # ── Bundle Size Check ──────────────────────────────────────
+      - name: Check bundle sizes
         run: |
           status=0
           max_kb=500
           echo "| File | Size |"
           echo "|------|------|"
-          for f in index.html guides/*.html; do
+          for f in dist/assets/*.js; do
             size=$(stat --format=%s "$f")
             size_kb=$((size / 1024))
-            echo "| $f | ${size_kb}KB |"
+            name=$(basename "$f")
+            echo "| $name | ${size_kb}KB |"
             if [[ $size_kb -gt $max_kb ]]; then
-              echo "::error file=$f::File exceeds ${max_kb}KB limit (${size_kb}KB)"
+              echo "::error file=$f::Bundle exceeds ${max_kb}KB limit (${size_kb}KB)"
               status=1
             fi
           done
           if [[ $status -ne 0 ]]; then
             exit 1
           fi
-          echo "All files within size limits."
+          echo "All bundles within size limits."
 
-      # ── Guide Count Verification ─────────────────────────────
+      # ── Guide Count Verification ───────────────────────────────
       - name: Verify guide counts
         run: |
           status=0
-          while IFS= read -r line; do
-            file=$(echo "$line" | grep -oP 'guides/\S+\.html')
-            documented=$(echo "$line" | grep -oP '— \K\d+')
-            if [[ -z "$file" || -z "$documented" ]]; then
+          for dir in src/guides/*/; do
+            guide=$(basename "$dir")
+            meta="$dir/meta.js"
+            if [[ ! -f "$meta" ]]; then
+              echo "::warning::No meta.js in $dir"
               continue
             fi
-
-            # Count entries in the guidesMeta array
-            actual=$(sed -n '/const guidesMeta/,/^[[:space:]]*\];/p' "$file" \
-              | grep -c '{ *id:')
-
-            if [[ "$actual" -ne "$documented" ]]; then
-              echo "::error file=$file::Count mismatch: index.html says $documented but $file has $actual entries in guidesMeta"
+            count=$(grep -c '{ *id:' "$meta" || true)
+            echo "$guide: $count guides in meta.js"
+            if [[ $count -eq 0 ]]; then
+              echo "::error file=$meta::No guide entries found in meta.js"
               status=1
-            else
-              echo "$file: $documented documented, $actual actual — OK"
             fi
-          done < <(grep -P 'guides/\S+\.html.*— \d+' index.html)
-
+          done
           if [[ $status -ne 0 ]]; then
-            echo "::error::Guide count mismatches detected"
             exit 1
           fi
-          echo "All guide counts match."
+          echo "All guide counts verified."
+
+      - name: Verify build output
+        run: |
+          test -f dist/index.html || { echo "::error::dist/index.html missing"; exit 1; }
+          echo "Build output verified."

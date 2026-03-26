@@ -1,135 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Theory — Peliglot</title>
-  <meta name="description" content="30 interactive guides to music theory with playable audio">
-  <meta property="og:title" content="Music Theory — Peliglot">
-  <meta property="og:description" content="30 interactive guides to music theory with playable audio">
-  <meta property="og:type" content="website">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎹</text></svg>">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { -webkit-font-smoothing: antialiased; background: #0D0D0D; }
-  </style>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha384-c6Uo4N9c3SOEigMVzP6IshUG1wQ5uMp3xeoQFiHWAQ86joWdgyajkvopySyKy/Z6"></script>
-  <script>
-    if(typeof React==='undefined'){document.write('<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"><\/script>')}
-    if(typeof ReactDOM==='undefined'){document.write('<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"><\/script>')}
-    if(typeof Babel==='undefined'){document.write('<script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"><\/script>')}
-    if(typeof Tone==='undefined'){document.write('<script src="https://unpkg.com/tone@14.8.49/build/Tone.js"><\/script>')}
-  </script>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-const { useState, useEffect, useRef, useCallback } = React;
+import { useState, useCallback } from 'react';
+import { Card } from '../../components/Card';
+import { DarkBox } from '../../components/DarkBox';
+import { Insight as BaseInsight } from '../../components/Insight';
+import { SimpleGuide } from '../../components/SimpleGuide';
+import { ExpandSection } from '../../components/ExpandSection';
+import { playNote, playChord, playSequence } from '../../utils/audio';
 
-class ErrorBoundary extends React.Component{
-  constructor(props){super(props);this.state={hasError:false,error:null};}
-  static getDerivedStateFromError(error){return{hasError:true,error};}
-  render(){
-    if(this.state.hasError){
-      return React.createElement('div',{style:{padding:'40px',textAlign:'center',fontFamily:'sans-serif'}},
-        React.createElement('h2',null,'Something went wrong'),
-        React.createElement('p',{style:{color:'#666',margin:'12px 0'}},this.state.error?.message||'An unexpected error occurred'),
-        React.createElement('button',{onClick:()=>this.setState({hasError:false,error:null}),style:{padding:'8px 24px',borderRadius:8,border:'1px solid #ccc',background:'#fff',cursor:'pointer',fontSize:14}},'Try Again')
-      );
-    }
-    return this.props.children;
-  }
-}
+function Insight({text}){return <BaseInsight text={text} emoji={"\u{1F3B5}"} />;}
 
-
-
-// ═══════════════════════════════════════════════════════════════
-// METADATA
-// ═══════════════════════════════════════════════════════════════
-const guidesMeta=[
-  {id:1,title:"The 12 Notes",subtitle:"The chromatic alphabet",cat:"Building Blocks",color:"#1a1a1a",icon:"🎹"},
-  {id:2,title:"Intervals",subtitle:"Distance between notes",cat:"Building Blocks",color:"#C62828",icon:"↔"},
-  {id:3,title:"The Major Scale",subtitle:"The WWhWWWh formula",cat:"Building Blocks",color:"#1565C0",icon:"🎵"},
-  {id:4,title:"The Minor Scale",subtitle:"Why it sounds 'sad'",cat:"Building Blocks",color:"#6A1B9A",icon:"🌙"},
-  {id:5,title:"Key Signatures",subtitle:"The Circle of Fifths",cat:"Building Blocks",color:"#2E7D32",icon:"🔑"},
-  {id:6,title:"How Chords Are Built",subtitle:"Stacking thirds",cat:"Chords",color:"#C62828",icon:"🧱"},
-  {id:7,title:"The 7 Chords in a Key",subtitle:"I ii iii IV V vi vii°",cat:"Chords",color:"#1565C0",icon:"7️⃣"},
-  {id:8,title:"Seventh Chords",subtitle:"Adding color & tension",cat:"Chords",color:"#E65100",icon:"🎨"},
-  {id:9,title:"Chord Symbols",subtitle:"Reading Cmaj7, Dm7, G7",cat:"Chords",color:"#6A1B9A",icon:"📖"},
-  {id:10,title:"Power & Sus Chords",subtitle:"No third, suspended third",cat:"Chords",color:"#2E7D32",icon:"⚡"},
-  {id:11,title:"Extensions & Alterations",subtitle:"9ths, 11ths, 13ths",cat:"Chords",color:"#880E4F",icon:"🔧"},
-  {id:12,title:"Beat & Time Signatures",subtitle:"4/4, 3/4, 6/8 & tempo",cat:"Rhythm",color:"#E65100",icon:"🥁"},
-  {id:13,title:"Note Values & Rests",subtitle:"Whole, half, quarter, eighth",cat:"Rhythm",color:"#1565C0",icon:"♩"},
-  {id:14,title:"Syncopation & Groove",subtitle:"The off-beat magic",cat:"Rhythm",color:"#C62828",icon:"🕺"},
-  {id:15,title:"Polyrhythm & Odd Meters",subtitle:"3 against 2, 5/4, 7/8",cat:"Rhythm",color:"#6A1B9A",icon:"🔀"},
-  {id:16,title:"The I–IV–V",subtitle:"The foundation of Western music",cat:"Progressions",color:"#C62828",icon:"🏛"},
-  {id:17,title:"The I–V–vi–IV",subtitle:"The pop progression",cat:"Progressions",color:"#1565C0",icon:"🎤"},
-  {id:18,title:"Minor Progressions",subtitle:"i–iv–v & beyond",cat:"Progressions",color:"#6A1B9A",icon:"🌑"},
-  {id:19,title:"The ii–V–I",subtitle:"The jazz backbone",cat:"Progressions",color:"#E65100",icon:"🎷"},
-  {id:20,title:"Cadences",subtitle:"How phrases end (or fake you out)",cat:"Progressions",color:"#2E7D32",icon:"🏁"},
-  {id:21,title:"Modulation",subtitle:"Changing key mid-song",cat:"Progressions",color:"#880E4F",icon:"🔄"},
-  {id:22,title:"Melody & Scale Degrees",subtitle:"Tension, resolution & home",cat:"Melody",color:"#C62828",icon:"🎶"},
-  {id:23,title:"Song Structure",subtitle:"Verse, chorus, bridge",cat:"Melody",color:"#1565C0",icon:"🏗"},
-  {id:24,title:"Hooks & Motifs",subtitle:"What makes melody memorable",cat:"Melody",color:"#E65100",icon:"🪝"},
-  {id:25,title:"Lyrics & Prosody",subtitle:"Where words meet melody",cat:"Melody",color:"#6A1B9A",icon:"✍"},
-  {id:26,title:"Timbre & Tone",subtitle:"Why instruments sound different",cat:"Sound",color:"#1565C0",icon:"🎸"},
-  {id:27,title:"Dynamics & Expression",subtitle:"Soft, loud & everything between",cat:"Sound",color:"#C62828",icon:"📢"},
-  {id:28,title:"Texture",subtitle:"Thin, thick & layered",cat:"Sound",color:"#2E7D32",icon:"🧶"},
-  {id:29,title:"Beyond Major & Minor",subtitle:"Pentatonic, blues, modes",cat:"Context",color:"#E65100",icon:"🗺"},
-  {id:30,title:"Genre as Dialect",subtitle:"Same notes, different grammar",cat:"Context",color:"#1a1a1a",icon:"🌍"},
-];
-const categories=["Building Blocks","Chords","Rhythm","Progressions","Melody","Sound","Context"];
-const catColors={"Building Blocks":"#1a1a1a",Chords:"#C62828",Rhythm:"#E65100",Progressions:"#C62828",Melody:"#1565C0",Sound:"#1565C0",Context:"#1a1a1a"};
-
-// ═══════════════════════════════════════════════════════════════
-// AUDIO ENGINE
-// ═══════════════════════════════════════════════════════════════
-const synth = {current: null};
-function getSynth() {
-  if (!synth.current) {
-    synth.current = new Tone.PolySynth(Tone.Synth, {
-      oscillator: {type: "triangle"},
-      envelope: {attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8},
-      volume: -12
-    }).toDestination();
-  }
-  return synth.current;
-}
-async function playNote(note,dur="8n"){await Tone.start();getSynth().triggerAttackRelease(note,dur);}
-async function playChord(notes,dur="2n"){await Tone.start();getSynth().triggerAttackRelease(notes,dur);}
-async function playSequence(notes,tempo=400){await Tone.start();const s=getSynth();for(let i=0;i<notes.length;i++){if(Array.isArray(notes[i]))s.triggerAttackRelease(notes[i],"4n");else s.triggerAttackRelease(notes[i],"8n");await new Promise(r=>setTimeout(r,tempo));}}
-
+// Music utilities
 const ALL_NOTES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const NOTE_NAMES={"C#":"Db","D#":"Eb","F#":"Gb","G#":"Ab","A#":"Bb"};
 const isBlack=n=>n.includes("#");
 function noteName(n){return NOTE_NAMES[n]?`${n}/${NOTE_NAMES[n]}`:n;}
 
-// ═══════════════════════════════════════════════════════════════
-// SHARED COMPONENTS
-// ═══════════════════════════════════════════════════════════════
-// COMPONENT VARIATIONS: Insight uses 🎵 emoji (music context)
-function Card({color, title, subtitle, children}) {
-  return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
-    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
-      {subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}
-    </div>{children}
-  </div>);
-}
-function DarkBox({title, children}) {
-  return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>
-    {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
-  </div>);
-}
-function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>🎵 {text}</div>);}
-
-// MINI PIANO — reusable interactive keyboard
+// Piano component
 function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62828",labels={},onPlay}){
   const notes=[];
   for(let o=startOctave;notes.length<keys;o++){
@@ -151,7 +36,6 @@ function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62828",la
             <div style={{fontSize:8,color:hl?"rgba(255,255,255,0.7)":"#ccc"}}>{base}</div>
           </div>);
         })}
-        {/* Black keys overlaid */}
         {(()=>{let wPos=0;return notes.map((n,i)=>{
           const base=n.slice(0,-1);const isB=isBlack(base);
           if(!isB){wPos++;return null;}
@@ -166,9 +50,6 @@ function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62828",la
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// SCALE & CHORD UTILITIES
-// ═══════════════════════════════════════════════════════════════
 const MAJOR_STEPS=[2,2,1,2,2,2,1];
 const MINOR_STEPS=[2,1,2,2,1,2,2];
 function buildScale(root,steps){
@@ -181,9 +62,7 @@ function buildChord(root,intervals){
   for(const iv of intervals){idx=(idx+iv)%12;notes.push(ALL_NOTES[idx]);}
   return notes;
 }
-const CHORD_TYPES={major:[4,3],minor:[3,4],dim:[3,3],aug:[4,4],maj7:[4,3,4],min7:[3,4,3],dom7:[4,3,3],dim7:[3,3,3],hdim7:[3,3,4],sus2:[2,5],sus4:[5,2],power:[7]};
 
-// ═══════════════════════════════════════════════════════════════
 // GUIDE 1: THE 12 NOTES
 // ═══════════════════════════════════════════════════════════════
 function Guide1(){
@@ -871,82 +750,5 @@ function Guide30(){return(<div>
 // ═══════════════════════════════════════════════════════════════
 // COMPONENT ARRAY & MAIN APP
 // ═══════════════════════════════════════════════════════════════
-const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];
 
-const App = function MusicGuide(){
-  const[page,setPage]=useState(()=>{const h=parseInt(location.hash.slice(1),10);if(h>=0&&h<guidesMeta.length)return h;try{const s=parseInt(localStorage.getItem('peliglot-music'),10);if(s>=0&&s<guidesMeta.length)return s;}catch(e){}return 0;});
-  const[menuOpen,setMenuOpen]=useState(false);
-  const contentRef=useRef(null);
-  const meta=guidesMeta[page];
-  const GuideComp=guideComponents[page];
-  const total=guidesMeta.length;
-
-  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
-  const prev=()=>{if(page>0)goTo(page-1);};
-  const next=()=>{if(page<total-1)goTo(page+1);};
-
-  useEffect(()=>{
-    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();if(e.key==="Escape")setMenuOpen(false);};
-    window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);
-  });
-  useEffect(()=>{history.replaceState(null,null,'#'+page);},[page]);
-  useEffect(()=>{try{localStorage.setItem('peliglot-music',page);}catch(e){}},[page]);
-
-  return(
-    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#0D0D0D",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative",color:"#eee"}}>
-      <a href="#main-content" className="skip-link">Skip to content</a>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}*:focus-visible{outline:2px solid #C62828;outline-offset:2px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#C62828;color:#fff;padding:8px 16px;z-index:100;font-size:14px;text-decoration:none;border-radius:0 0 8px 0}.skip-link:focus{top:0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}`}</style>
-
-      <header role="banner" style={{background:"#151515",borderBottom:"1px solid #2a2a2a",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
-        <button onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"} aria-expanded={menuOpen} aria-controls="sidebar-menu" style={{width:36,height:36,borderRadius:10,border:"1.5px solid #333",background:"#1a1a1a",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#888",flexShrink:0}}>☰</button>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:14,fontWeight:800,color:"#eee",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
-          <div style={{fontSize:11,color:"#666"}}>{meta.subtitle}</div>
-        </div>
-        <div aria-label={"Guide "+(page+1)+" of 30"} style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
-      </header>
-
-      <main id="main-content" role="main" ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
-        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
-      </main>
-
-      <nav role="navigation" aria-label="Guide navigation" style={{background:"#151515",borderTop:"1px solid #2a2a2a",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <button onClick={prev} aria-label="Previous guide" disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===0?"#111":"#1a1a1a",color:page===0?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
-        <div role="tablist" aria-label="Guide pages" style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} role="tab" aria-selected={i===page} aria-label={"Guide "+(i+1)+": "+guidesMeta[i].title} tabIndex={i===page?0:-1} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")goTo(i);}} onClick={()=>goTo(i)} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#333",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
-        <button onClick={next} aria-label="Next guide" disabled={page===29} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #333",background:page===total-1?"#111":"#1a1a1a",color:page===total-1?"#444":"#aaa",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
-      </nav>
-
-      {menuOpen&&<div aria-hidden="true" onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.6)",zIndex:20}}/>}
-      <aside id="sidebar-menu" role="navigation" aria-label="Guide list" onKeyDown={e=>{if(e.key==="Escape")setMenuOpen(false);}} style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#151515",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.4)":"none",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #2a2a2a",flexShrink:0}}>
-          <div style={{fontSize:18,fontWeight:800,color:"#eee"}}>Music Theory</div>
-          <div style={{fontSize:12,color:"#666"}}>30 Interactive Guides</div>
-        </div>
-        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
-          {categories.map(cat=>{
-            const items=guidesMeta.filter(g=>g.cat===cat);
-            return(<div key={cat}>
-              <div role="heading" aria-level="2" style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat]==="@1a1a1a"?"#888":catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{cat}</div>
-              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
-                <button key={g.id} onClick={()=>goTo(idx)} aria-current={isActive?"page":undefined} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?"#252525":"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent",color:"#ccc"}}>
-                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?"#fff":"#aaa",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
-                    <div style={{fontSize:10,color:"#555"}}>{g.subtitle}</div>
-                  </div>
-                  <span style={{fontSize:10,color:"#444",fontWeight:600}}>{g.id}</span>
-                </button>
-              );})}
-            </div>);
-          })}
-        </div>
-      </aside>
-    </div>
-  );
-}
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(ErrorBoundary,null,React.createElement(App)));
-  </script>
-</body>
-</html>
+export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];

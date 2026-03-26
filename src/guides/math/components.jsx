@@ -1,129 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Math as a Language — Peliglot</title>
-  <meta name="description" content="32 interactive guides to practical math — from number sense to personal finance">
-  <meta property="og:title" content="Math as a Language — Peliglot">
-  <meta property="og:description" content="32 interactive guides to practical math — from number sense to personal finance">
-  <meta property="og:type" content="website">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
-    body { -webkit-font-smoothing: antialiased; }
-  </style>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"></script>
-  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js" integrity="sha384-ku9eM40vVDsFUiERorrdlHlF0LIhdfn716M7TntM72Uo98T7LWiogD3hNenPx8Q0"></script>
-  <script>
-    if(typeof React==='undefined'){document.write('<script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"><\/script>')}
-    if(typeof ReactDOM==='undefined'){document.write('<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"><\/script>')}
-    if(typeof Babel==='undefined'){document.write('<script src="https://unpkg.com/@babel/standalone@7.23.9/babel.min.js"><\/script>')}
-  </script>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-const { useState, useEffect, useRef } = React;
+import { useState } from 'react';
+import { Card } from '../../components/Card';
+import { DarkBox } from '../../components/DarkBox';
+import { Insight } from '../../components/Insight';
+import { SimpleGuide } from '../../components/SimpleGuide';
+import { ExpandSection } from '../../components/ExpandSection';
 
-class ErrorBoundary extends React.Component{
-  constructor(props){super(props);this.state={hasError:false,error:null};}
-  static getDerivedStateFromError(error){return{hasError:true,error};}
-  render(){
-    if(this.state.hasError){
-      return React.createElement('div',{style:{padding:'40px',textAlign:'center',fontFamily:'sans-serif'}},
-        React.createElement('h2',null,'Something went wrong'),
-        React.createElement('p',{style:{color:'#666',margin:'12px 0'}},this.state.error?.message||'An unexpected error occurred'),
-        React.createElement('button',{onClick:()=>this.setState({hasError:false,error:null}),style:{padding:'8px 24px',borderRadius:8,border:'1px solid #ccc',background:'#fff',cursor:'pointer',fontSize:14}},'Try Again')
-      );
-    }
-    return this.props.children;
-  }
-}
-
-
-// ═══════════════════════════════════════════════════════════════
-// METADATA
-// ═══════════════════════════════════════════════════════════════
-const guidesMeta=[
-  {id:1,title:"How Numbers Work",subtitle:"Place value & the number line",cat:"Numbers",color:"#1565C0",icon:"🔢"},
-  {id:2,title:"Negative Numbers",subtitle:"Debt, temperature & direction",cat:"Numbers",color:"#C62828",icon:"➖"},
-  {id:3,title:"Fractions, Decimals & %",subtitle:"Three ways to say the same thing",cat:"Numbers",color:"#2E7D32",icon:"🍕"},
-  {id:4,title:"Ratios & Proportions",subtitle:"Recipes, maps & exchange rates",cat:"Numbers",color:"#E65100",icon:"⚖"},
-  {id:5,title:"Order of Operations",subtitle:"Why PEMDAS exists",cat:"Numbers",color:"#6A1B9A",icon:"📐"},
-  {id:6,title:"Variables & Expressions",subtitle:"The blank in a sentence",cat:"Unknowns",color:"#1565C0",icon:"❌"},
-  {id:7,title:"Solving Equations",subtitle:"The balance scale",cat:"Unknowns",color:"#C62828",icon:"⚖"},
-  {id:8,title:"Inequalities",subtitle:"Ranges, not single answers",cat:"Unknowns",color:"#2E7D32",icon:"↔"},
-  {id:9,title:"Formulas You Use",subtitle:"Distance, area, temperature",cat:"Unknowns",color:"#E65100",icon:"🧮"},
-  {id:10,title:"Functions",subtitle:"Input → rule → output",cat:"Unknowns",color:"#6A1B9A",icon:"⚙"},
-  {id:11,title:"Area & Perimeter",subtitle:"How much space, how much fence",cat:"Shapes",color:"#C62828",icon:"📏"},
-  {id:12,title:"Volume & Surface Area",subtitle:"How much it holds",cat:"Shapes",color:"#1565C0",icon:"📦"},
-  {id:13,title:"Angles & Triangles",subtitle:"180° and Pythagoras",cat:"Shapes",color:"#2E7D32",icon:"📐"},
-  {id:14,title:"Circles",subtitle:"π and the universal ratio",cat:"Shapes",color:"#E65100",icon:"⭕"},
-  {id:15,title:"Coordinate Geometry",subtitle:"The x-y grid as a map",cat:"Shapes",color:"#6A1B9A",icon:"📍"},
-  {id:16,title:"Linear Growth",subtitle:"y = mx + b in real life",cat:"Growth",color:"#1565C0",icon:"📈"},
-  {id:17,title:"Exponential Growth",subtitle:"Doubling, compound interest",cat:"Growth",color:"#C62828",icon:"🚀"},
-  {id:18,title:"Logarithms",subtitle:"The inverse of exponentials",cat:"Growth",color:"#2E7D32",icon:"🔍"},
-  {id:19,title:"Sequences & Series",subtitle:"Patterns that repeat",cat:"Growth",color:"#E65100",icon:"🔗"},
-  {id:20,title:"Probability Basics",subtitle:"How likely is it?",cat:"Growth",color:"#6A1B9A",icon:"🎲"},
-  {id:21,title:"Mean, Median, Mode",subtitle:"Finding the center",cat:"Data",color:"#C62828",icon:"📊"},
-  {id:22,title:"Spread & Distribution",subtitle:"Bell curves & standard deviation",cat:"Data",color:"#1565C0",icon:"🔔"},
-  {id:23,title:"Reading Graphs",subtitle:"How charts tell (and lie about) stories",cat:"Data",color:"#2E7D32",icon:"📉"},
-  {id:24,title:"Correlation vs Causation",subtitle:"The most important distinction",cat:"Data",color:"#E65100",icon:"🔀"},
-  {id:25,title:"Probability in Practice",subtitle:"Why 99% accurate doesn't mean what you think",cat:"Data",color:"#6A1B9A",icon:"🏥"},
-  {id:26,title:"Sampling & Bias",subtitle:"Why polls get it wrong",cat:"Data",color:"#880E4F",icon:"🎯"},
-  {id:27,title:"Compound Interest",subtitle:"Time × money × patience",cat:"Money",color:"#1565C0",icon:"💰"},
-  {id:28,title:"Loans & Debt",subtitle:"How amortization really works",cat:"Money",color:"#C62828",icon:"🏦"},
-  {id:29,title:"Taxes & Brackets",subtitle:"Marginal vs effective rates",cat:"Money",color:"#2E7D32",icon:"📋"},
-  {id:30,title:"Risk & Expected Value",subtitle:"Should I take the deal?",cat:"Money",color:"#E65100",icon:"🎰"},
-  {id:31,title:"Estimation",subtitle:"Back-of-envelope math",cat:"Wild",color:"#1565C0",icon:"🤔"},
-  {id:32,title:"Math You Already Do",subtitle:"Cooking, tipping, driving, shopping",cat:"Wild",color:"#2E7D32",icon:"🛒"},
-];
-const categories=["Numbers","Unknowns","Shapes","Growth","Data","Money","Wild"];
-const catLabels={Numbers:"Numbers & Number Sense",Unknowns:"The Language of Unknowns",Shapes:"Shapes & Space",Growth:"Patterns & Growth",Data:"Data & Decisions",Money:"Money Math",Wild:"Math in the Wild"};
-const catColors={Numbers:"#1565C0",Unknowns:"#C62828",Shapes:"#2E7D32",Growth:"#1565C0",Data:"#C62828",Money:"#2E7D32",Wild:"#1565C0"};
-
-// ═══════════════════════════════════════════════════════════════
-// SHARED COMPONENTS
-// ═══════════════════════════════════════════════════════════════
-function Card({color, title, subtitle, children}) {
-  return(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16}}>
-    <div style={{background:color,padding:"12px 16px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <span style={{color:"#fff",fontSize:15,fontWeight:800}}>{title}</span>
-      {subtitle&&<span style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>{subtitle}</span>}
-    </div>{children}
-  </div>);
-}
-function DarkBox({title, children}) {
-  return(<div style={{background:"linear-gradient(135deg,#1a1a1a,#252525)",borderRadius:14,padding:"16px 20px",marginBottom:16,color:"#fff",textAlign:"center"}}>
-    {title&&<div style={{fontSize:10,color:"#666",letterSpacing:2,textTransform:"uppercase",marginBottom:8,fontWeight:600}}>{title}</div>}{children}
-  </div>);
-}
-function Insight({text}){return(<div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginBottom:12,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.5}}>💡 {text}</div>);}
+// Math-specific components
 function Slider({label, min, max, step, value, onChange, unit, color}) {
   return(<div style={{marginBottom:12}}>
-    <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
-      <span style={{color:"#888"}}>{label}</span>
-      <span style={{fontWeight:700,color:color||"#1565C0"}}>{typeof value==="number"?value.toLocaleString():value}{unit||""}</span>
+    <div style={{display:"flex",justifyContent:"space-between",fontSize:12,color:"#888",marginBottom:4}}>
+      <span>{label}</span><span style={{fontWeight:700,color:color||"#1565C0"}}>{value}{unit||""}</span>
     </div>
     <input type="range" min={min} max={max} step={step||1} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:"100%",accentColor:color||"#1565C0"}}/>
   </div>);
 }
 function NumInput({label, value, onChange, unit, color}) {
   return(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-    <span style={{fontSize:12,color:"#888",minWidth:80}}>{label}</span>
-    <input type="number" value={value} onChange={e=>onChange(Number(e.target.value))} style={{flex:1,padding:"6px 10px",borderRadius:8,border:"1.5px solid #ddd",fontSize:14,fontWeight:700,color:color||"#1565C0",outline:"none",maxWidth:120}}/>
-    {unit&&<span style={{fontSize:12,color:"#888"}}>{unit}</span>}
+    <span style={{fontSize:12,color:"#888",minWidth:60}}>{label}</span>
+    <input type="number" value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:80,padding:"4px 8px",borderRadius:6,border:"1.5px solid #ddd",fontSize:13,textAlign:"center"}}/>
+    {unit&&<span style={{fontSize:12,color:color||"#1565C0",fontWeight:600}}>{unit}</span>}
   </div>);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// GUIDE 1: HOW NUMBERS WORK
-// ═══════════════════════════════════════════════════════════════
 function Guide1(){
   const [zoom,setZoom]=useState(0);
   const ranges=[[0,10,1],[0,1,0.1],[0,0.1,0.01],[0,0.01,0.001]];
@@ -875,82 +773,5 @@ function Guide32(){return(<div>
 // ═══════════════════════════════════════════════════════════════
 // COMPONENT ARRAY & MAIN APP
 // ═══════════════════════════════════════════════════════════════
-const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32];
 
-const App = function MathGuide(){
-  const[page,setPage]=useState(()=>{const h=parseInt(location.hash.slice(1),10);if(h>=0&&h<guidesMeta.length)return h;try{const s=parseInt(localStorage.getItem('peliglot-math'),10);if(s>=0&&s<guidesMeta.length)return s;}catch(e){}return 0;});
-  const[menuOpen,setMenuOpen]=useState(false);
-  const contentRef=useRef(null);
-  const meta=guidesMeta[page];
-  const GuideComp=guideComponents[page];
-  const total=guidesMeta.length;
-
-  const goTo=(i)=>{setPage(i);setMenuOpen(false);if(contentRef.current)contentRef.current.scrollTop=0;};
-  const prev=()=>{if(page>0)goTo(page-1);};
-  const next=()=>{if(page<total-1)goTo(page+1);};
-
-  useEffect(()=>{
-    const h=(e)=>{if(e.key==="ArrowLeft")prev();if(e.key==="ArrowRight")next();if(e.key==="Escape")setMenuOpen(false);};
-    window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);
-  });
-  useEffect(()=>{history.replaceState(null,null,'#'+page);},[page]);
-  useEffect(()=>{try{localStorage.setItem('peliglot-math',page);}catch(e){}},[page]);
-
-  return(
-    <div style={{height:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF6",fontFamily:"'Segoe UI','Helvetica Neue',sans-serif",overflow:"hidden",position:"relative"}}>
-      <a href="#main-content" className="skip-link">Skip to content</a>
-      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}input[type=range]{height:6px;border-radius:3px;}*:focus-visible{outline:2px solid #1565C0;outline-offset:2px;border-radius:4px}.skip-link{position:absolute;top:-40px;left:0;background:#1a1a1a;color:#fff;padding:8px 16px;z-index:100;font-size:14px;text-decoration:none;border-radius:0 0 8px 0}.skip-link:focus{top:0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}@media(prefers-color-scheme:dark){body{background:#1a1a1a!important;color:#e0e0e0!important}}`}</style>
-
-      <header role="banner" style={{background:"#fff",borderBottom:"1px solid #eee",padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexShrink:0,zIndex:10}}>
-        <button onClick={()=>setMenuOpen(!menuOpen)} aria-label={menuOpen?"Close menu":"Open menu"} aria-expanded={menuOpen} aria-controls="sidebar-menu" style={{width:36,height:36,borderRadius:10,border:"1.5px solid #e0ddd5",background:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,color:"#555",flexShrink:0}}>☰</button>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:14,fontWeight:800,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{meta.icon} {meta.title}</div>
-          <div style={{fontSize:11,color:"#999"}}>{meta.subtitle}</div>
-        </div>
-        <div aria-label={"Guide "+(page+1)+" of 32"} style={{background:meta.color,color:"#fff",padding:"3px 10px",borderRadius:6,fontSize:10,fontWeight:700,flexShrink:0}}>{page+1}/{total}</div>
-      </header>
-
-      <main id="main-content" role="main" ref={contentRef} style={{flex:1,overflow:"auto",padding:"16px",position:"relative"}}>
-        <div key={page} style={{animation:"fadeIn 0.2s ease",maxWidth:700,margin:"0 auto"}}><GuideComp/></div>
-      </main>
-
-      <nav role="navigation" aria-label="Guide navigation" style={{background:"#fff",borderTop:"1px solid #eee",padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-        <button onClick={prev} aria-label="Previous guide" disabled={page===0} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===0?"#f5f5f5":"#fff",color:page===0?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===0?"default":"pointer"}}>← Prev</button>
-        <div role="tablist" aria-label="Guide pages" style={{display:"flex",gap:2}}>{guidesMeta.map((_,i)=>(<div key={i} role="tab" aria-selected={i===page} aria-label={"Guide "+(i+1)+": "+guidesMeta[i].title} tabIndex={i===page?0:-1} onClick={()=>goTo(i)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" ")goTo(i);}} style={{width:i===page?12:3,height:3,borderRadius:2,background:i===page?meta.color:"#ddd",cursor:"pointer",transition:"all 0.2s"}}/>))}</div>
-        <button onClick={next} aria-label="Next guide" disabled={page===31} style={{padding:"8px 20px",borderRadius:10,border:"1.5px solid #e0ddd5",background:page===total-1?"#f5f5f5":"#fff",color:page===total-1?"#ccc":"#555",fontSize:13,fontWeight:700,cursor:page===total-1?"default":"pointer"}}>Next →</button>
-      </nav>
-
-      {menuOpen&&<div aria-hidden="true" onClick={()=>setMenuOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.4)",zIndex:20}}/>}
-      <aside id="sidebar-menu" role="navigation" aria-label="Guide list" onKeyDown={e=>{if(e.key==="Escape")setMenuOpen(false);}} style={{position:"fixed",top:0,left:0,bottom:0,width:280,background:"#fff",zIndex:30,transform:menuOpen?"translateX(0)":"translateX(-100%)",transition:"transform 0.25s ease",boxShadow:menuOpen?"4px 0 24px rgba(0,0,0,0.15)":"none",display:"flex",flexDirection:"column"}}>
-        <div style={{padding:"16px 20px",borderBottom:"1px solid #eee",flexShrink:0}}>
-          <div style={{fontSize:18,fontWeight:800,color:"#1a1a1a"}}>Math as a Language</div>
-          <div style={{fontSize:12,color:"#999"}}>32 Interactive Guides</div>
-        </div>
-        <div style={{flex:1,overflow:"auto",padding:"8px 0"}}>
-          {categories.map(cat=>{
-            const items=guidesMeta.filter(g=>g.cat===cat);
-            return(<div key={cat}>
-              <div role="heading" aria-level="2" style={{padding:"6px 20px",fontSize:10,fontWeight:700,color:catColors[cat],textTransform:"uppercase",letterSpacing:1.5,marginTop:4}}>{catLabels[cat]}</div>
-              {items.map(g=>{const idx=g.id-1;const isActive=idx===page;return(
-                <button key={g.id} onClick={()=>goTo(idx)} aria-current={isActive?"page":undefined} style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"8px 20px",border:"none",background:isActive?`${g.color}12`:"transparent",cursor:"pointer",textAlign:"left",borderLeft:isActive?`3px solid ${g.color}`:"3px solid transparent"}}>
-                  <span style={{fontSize:14,width:22,textAlign:"center"}}>{g.icon}</span>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:isActive?800:600,color:isActive?g.color:"#333",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{g.title}</div>
-                    <div style={{fontSize:10,color:"#999"}}>{g.subtitle}</div>
-                  </div>
-                  <span style={{fontSize:10,color:"#ccc",fontWeight:600}}>{g.id}</span>
-                </button>
-              );})}
-            </div>);
-          })}
-        </div>
-      </aside>
-    </div>
-  );
-}
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(ErrorBoundary,null,React.createElement(App)));
-  </script>
-</body>
-</html>
+export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32];
