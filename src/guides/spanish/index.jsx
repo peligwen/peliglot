@@ -13,7 +13,7 @@ export function Component() {
       theme={lightTheme}
       storageKey="peliglot-spanish"
       sidebarTitle="Guía de Español"
-      sidebarSubtitle="27 Interactive Guides"
+      sidebarSubtitle="34 Interactive Guides"
     />
   );
 }
