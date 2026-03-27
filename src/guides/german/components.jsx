@@ -4,6 +4,7 @@ import { DarkBox } from '../../components/DarkBox';
 import { Insight } from '../../components/Insight';
 import { SimpleGuide } from '../../components/SimpleGuide';
 import { ExpandSection } from '../../components/ExpandSection';
+import { AlphabetGrid } from '../../components/templates/AlphabetGrid';
 import { speakGerman } from '../../utils/speech';
 
 // GUIDE 1: ALPHABET — INTERACTIVE GRID
@@ -27,36 +28,38 @@ const germanLetters=[
 ];
 
 function Guide1(){
-  const [sel,setSel]=useState(null);
-  const [filter,setFilter]=useState("all");
-  const filters=[{id:"all",l:"All"},{id:"umlaut",l:"Umlauts"},{id:"special",l:"Special"},{id:"swap",l:"W/V/Z/S Swaps"},{id:"digraph",l:"CH/SCH"},{id:"diphthong",l:"Diphthongs"}];
-  const filtered=filter==="all"?germanLetters:germanLetters.filter(l=>l.type===filter);
-  return(<div>
-    <DarkBox title="26 letters + 4 special characters"><div style={{fontSize:14,lineHeight:1.6}}>
-      German uses the English alphabet plus <strong style={{color:"#FFE77A"}}>ä, ö, ü</strong> (umlauts) and <strong style={{color:"#FFE77A"}}>ß</strong> (Eszett). Several consonants also sound different than English. Tap any to explore.
-    </div></DarkBox>
-    <div style={{display:"flex",gap:4,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
-      {filters.map(f=>(<button key={f.id} onClick={()=>{setFilter(f.id);setSel(null)}} style={{padding:"5px 10px",borderRadius:16,border:filter===f.id?"2px solid #1a1a1a":"1.5px solid #ddd",background:filter===f.id?"#1a1a1a":"#fff",color:filter===f.id?"#FFE77A":"#666",fontSize:10,fontWeight:600,cursor:"pointer"}}>{f.l}</button>))}
-    </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(64px, 1fr))",gap:5,marginBottom:14}}>
-      {filtered.map((lt,i)=>{const isSel=sel===i;return(
-        <button key={i} onClick={()=>{setSel(isSel?null:i);speakGerman(lt.l);}} style={{padding:"10px 4px",border:isSel?`2.5px solid ${lt.color}`:"1.5px solid #e0dcd5",borderRadius:10,background:isSel?lt.color:"#fff",color:isSel?"#fff":"#1a1a1a",cursor:"pointer",textAlign:"center",transition:"all 0.15s",transform:isSel?"scale(1.05)":"scale(1)"}}>
-          <div style={{fontSize:lt.l.length>2?14:18,fontWeight:800,lineHeight:1.2}}>{lt.l}</div>
-          <div style={{fontSize:8,color:isSel?"rgba(255,255,255,0.6)":"#aaa",marginTop:2}}>{lt.n}</div>
-        </button>
-      );})}
-    </div>
-    {sel!==null&&(()=>{const lt=filtered[sel];return(
-      <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${lt.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
-        <div style={{background:lt.color,padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
-          <div style={{fontSize:36,fontWeight:800,color:"#FFE77A"}}>{lt.l}</div>
-          <div><div style={{color:"#FFE77A",fontSize:15,fontFamily:"monospace"}}>{lt.ipa}</div><div style={{color:"rgba(255,255,255,0.7)",fontSize:12}}>{lt.approx}</div></div>
+  return(
+    <AlphabetGrid
+      letters={germanLetters}
+      letterKey="l"
+      nameKey="n"
+      filterGroups={[
+        {id:"all",label:"All",filterFn:()=>true},
+        {id:"umlaut",label:"Umlauts",filterFn:l=>l.type==="umlaut"},
+        {id:"special",label:"Special",filterFn:l=>l.type==="special"},
+        {id:"swap",label:"W/V/Z/S Swaps",filterFn:l=>l.type==="swap"},
+        {id:"digraph",label:"CH/SCH",filterFn:l=>l.type==="digraph"},
+        {id:"diphthong",label:"Diphthongs",filterFn:l=>l.type==="diphthong"},
+      ]}
+      primaryColor="#1a1a1a"
+      speakFn={speakGerman}
+      gridMin="64px"
+      introTitle="26 letters + 4 special characters"
+      introContent={<div style={{fontSize:14,lineHeight:1.6}}>
+        German uses the English alphabet plus <strong style={{color:"#FFE77A"}}>ä, ö, ü</strong> (umlauts) and <strong style={{color:"#FFE77A"}}>ß</strong> (Eszett). Several consonants also sound different than English. Tap any to explore.
+      </div>}
+      renderDetail={(lt)=>(
+        <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${lt.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+          <div style={{background:lt.color,padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
+            <div style={{fontSize:36,fontWeight:800,color:"#FFE77A"}}>{lt.l}</div>
+            <div><div style={{color:"#FFE77A",fontSize:15,fontFamily:"monospace"}}>{lt.ipa}</div><div style={{color:"rgba(255,255,255,0.7)",fontSize:12}}>{lt.approx}</div></div>
+          </div>
+          <div style={{padding:"12px 16px",fontSize:13,color:"#555",lineHeight:1.6}}>{lt.tip}</div>
         </div>
-        <div style={{padding:"12px 16px",fontSize:13,color:"#555",lineHeight:1.6}}>{lt.tip}</div>
-      </div>
-    );})()}
-    <Insight text="EI = 'eye' sound (mein, Wein). IE = 'ee' sound (Bier, Liebe). The SECOND letter tells you the sound. This is the #1 German spelling trap." />
-  </div>);
+      )}
+      footerContent={<Insight text="EI = 'eye' sound (mein, Wein). IE = 'ee' sound (Bier, Liebe). The SECOND letter tells you the sound. This is the #1 German spelling trap." />}
+    />
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════

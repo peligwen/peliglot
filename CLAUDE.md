@@ -137,9 +137,74 @@ export function Guide1() {
       speakFn={speakLanguage}
       introTitle="Section Title"
       introContent={<div>Intro text</div>}
+      // Advanced props for custom guides:
+      // renderDetail={(letter, {primaryColor, highlightColor}) => <JSX/>}  — fully custom detail panel
+      // borderFn={l => l.tricky ? "2px solid #E65100" : null}             — per-letter border
+      // badgeFn={l => l.tricky ? {color: "#E65100"} : null}               — dot indicator
+      // gridProps={{direction: "rtl"}}                                      — extra grid styles (e.g. Arabic RTL)
     />
   );
 }
+```
+
+### VerbConjugation
+
+Pronoun-based verb conjugation table. Supports full Card mode and compact mini-table mode.
+
+```jsx
+import { VerbConjugation } from '../../../components/templates/VerbConjugation';
+
+// Full mode — Card with title/subtitle
+<VerbConjugation
+  pronouns={["yo","tú","él/ella","nosotros","vosotros","ellos"]}
+  stem="habl"
+  endings={["o","as","a","amos","áis","an"]}
+  verb="hablar"
+  meaning="to speak"
+  color="#D84315"
+/>
+
+// Compact mode — smaller rows, no Card wrapper
+<VerbConjugation
+  pronouns={["yo","tú","él","nos.","vos.","ellos"]}
+  stem="habl"
+  endings={["é","aste","ó","amos","asteis","aron"]}
+  title="Pretérito"
+  color="#B71C1C"
+  compact
+/>
+```
+
+### QuizSection
+
+Multiple-choice quiz with scoring, visual feedback, and results screen.
+
+```jsx
+import { QuizSection } from '../../../components/templates/QuizSection';
+
+const items = [
+  { question: "It's hot", answer: "Hace calor", icon: "🌡️" },
+  { question: "It's raining", answer: "Está lloviendo", icon: "🌧️" },
+  // ...
+];
+
+<QuizSection
+  items={items}
+  answerKey="answer"         // field name for correct answer (default: "answer")
+  renderQuestion={(q) => (   // custom question display
+    <div>
+      <div style={{fontSize:56}}>{q.icon}</div>
+      <div style={{fontSize:17,fontWeight:700}}>{q.question}</div>
+    </div>
+  )}
+  optionCount={4}            // number of choices (default: 4)
+  color="#0277BD"            // accent color
+  resultMessages={{          // optional custom result messages
+    high: "¡Excelente!",
+    mid: "¡Bien! Keep practicing.",
+    low: "Review and try again."
+  }}
+/>
 ```
 
 ## Shared UI Components

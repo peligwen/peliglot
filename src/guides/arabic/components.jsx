@@ -4,6 +4,7 @@ import { DarkBox } from '../../components/DarkBox';
 import { Insight } from '../../components/Insight';
 import { SimpleGuide } from '../../components/SimpleGuide';
 import { ExpandSection } from '../../components/ExpandSection';
+import { AlphabetGrid } from '../../components/templates/AlphabetGrid';
 import { speakArabic } from '../../utils/speech';
 
 // Arabic-specific components
@@ -48,46 +49,53 @@ const catLabels={normal:"Standard",throat:"Throat",emphatic:"Emphatic"};
 const catFilterColors={normal:"#1B5E20",throat:"#880E4F",emphatic:"#E65100",all:"#333"};
 
 function Guide1(){
-  const [sel,setSel]=useState(null);
-  const [filter,setFilter]=useState("all");
-  const filtered=alphabet.filter(a=>filter==="all"||a.cat===filter);
-  return(<div>
-    <div style={{display:"flex",gap:5,marginBottom:14,justifyContent:"center",flexWrap:"wrap"}}>
-      {["all","normal","throat","emphatic"].map(f=>(<button key={f} onClick={()=>{setFilter(f);setSel(null)}} style={{padding:"5px 12px",borderRadius:16,border:filter===f?`2px solid ${catFilterColors[f]}`:"1.5px solid #ddd",background:filter===f?catFilterColors[f]:"#fff",color:filter===f?"#fff":"#666",fontSize:11,fontWeight:600,cursor:"pointer"}}>{f==="all"?"All":catLabels[f]}</button>))}
-    </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(52px, 1fr))",gap:5,marginBottom:14,direction:"rtl"}}>
-      {filtered.map(a=>{const isSel=sel?.l===a.l;return(
-        <button key={a.l} onClick={()=>{setSel(isSel?null:a);speakArabic(a.l);}} style={{aspectRatio:"1",border:isSel?`2.5px solid #1B5E20`:a.cat==="emphatic"?"2px solid #E65100":a.cat==="throat"?"2px solid #880E4F":"1.5px solid #e0ddd8",borderRadius:10,background:isSel?"#1B5E20":a.connect?"#fff":"#FFF8E7",color:isSel?"#FFE77A":"#1a1a1a",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",transform:isSel?"scale(1.08)":"scale(1)",transition:"all 0.15s",fontFamily:"'Noto Sans Arabic','Amiri',serif"}}>
-          <span style={{fontSize:22,fontWeight:700,lineHeight:1}}>{a.l}</span>
-          <span style={{fontSize:7,color:isSel?"rgba(255,231,122,0.7)":"#aaa",marginTop:1,fontFamily:"system-ui,sans-serif"}}>{a.n}</span>
-          {!a.connect&&!isSel&&<div style={{position:"absolute",top:3,right:4,width:5,height:5,borderRadius:"50%",background:"#D4A843"}}/>}
-        </button>
-      );})}
-    </div>
-    {sel&&(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e8e5e0",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
-      <div style={{background:"#1B5E20",padding:"16px 20px",display:"flex",alignItems:"center",gap:16}}>
-        <div onClick={()=>speakArabic(sel.l)} style={{fontSize:48,fontWeight:700,color:"#FFE77A",fontFamily:"'Noto Sans Arabic','Amiri',serif",lineHeight:1,minWidth:50,textAlign:"center",cursor:"pointer"}} title="Click to hear">{sel.l}</div>
-        <div><div style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>Name: <strong style={{color:"#fff"}}>{sel.n}</strong> · Transliteration: <strong style={{color:"#FFE77A"}}>{sel.tr}</strong></div>
-          <div style={{color:"#FFE77A",fontSize:13,fontFamily:"monospace",marginTop:2}}>{sel.ipa}</div></div>
-      </div>
-      <div style={{padding:"14px 18px"}}>
-        {/* 4 positional forms */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:12}}>
-          {[{label:"Isolated",form:sel.iso},{label:"Initial",form:sel.ini},{label:"Medial",form:sel.med},{label:"Final",form:sel.fin}].map(f=>(<div key={f.label} style={{textAlign:"center",padding:"10px 4px",background:"#FAFAF5",borderRadius:8,border:"1px solid #eee"}}>
-            <div style={{fontSize:28,fontFamily:"'Noto Sans Arabic','Amiri',serif",color:"#1B5E20",lineHeight:1.3}}>{f.form}</div>
-            <div style={{fontSize:9,color:"#999",marginTop:4}}>{f.label}</div>
-          </div>))}
+  return(
+    <AlphabetGrid
+      letters={alphabet}
+      letterKey="l"
+      nameKey="n"
+      filterGroups={[
+        {id:"all",label:"All",filterFn:()=>true},
+        {id:"normal",label:"Standard",filterFn:a=>a.cat==="normal"},
+        {id:"throat",label:"Throat",filterFn:a=>a.cat==="throat"},
+        {id:"emphatic",label:"Emphatic",filterFn:a=>a.cat==="emphatic"},
+      ]}
+      primaryColor="#1B5E20"
+      accentBg="#FFF8E7"
+      accentFn={a=>!a.connect}
+      borderFn={a=>a.cat==="emphatic"?"2px solid #E65100":a.cat==="throat"?"2px solid #880E4F":null}
+      badgeFn={a=>!a.connect?{color:"#D4A843"}:null}
+      speakFn={speakArabic}
+      gridMin="52px"
+      gridProps={{direction:"rtl"}}
+      renderDetail={(lt)=>(
+        <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e8e5e0",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+          <div style={{background:"#1B5E20",padding:"16px 20px",display:"flex",alignItems:"center",gap:16}}>
+            <div onClick={()=>speakArabic(lt.l)} style={{fontSize:48,fontWeight:700,color:"#FFE77A",fontFamily:"'Noto Sans Arabic','Amiri',serif",lineHeight:1,minWidth:50,textAlign:"center",cursor:"pointer"}} title="Click to hear">{lt.l}</div>
+            <div><div style={{color:"rgba(255,255,255,0.6)",fontSize:11}}>Name: <strong style={{color:"#fff"}}>{lt.n}</strong> · Transliteration: <strong style={{color:"#FFE77A"}}>{lt.tr}</strong></div>
+              <div style={{color:"#FFE77A",fontSize:13,fontFamily:"monospace",marginTop:2}}>{lt.ipa}</div></div>
+          </div>
+          <div style={{padding:"14px 18px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,marginBottom:12}}>
+              {[{label:"Isolated",form:lt.iso},{label:"Initial",form:lt.ini},{label:"Medial",form:lt.med},{label:"Final",form:lt.fin}].map(f=>(<div key={f.label} style={{textAlign:"center",padding:"10px 4px",background:"#FAFAF5",borderRadius:8,border:"1px solid #eee"}}>
+                <div style={{fontSize:28,fontFamily:"'Noto Sans Arabic','Amiri',serif",color:"#1B5E20",lineHeight:1.3}}>{f.form}</div>
+                <div style={{fontSize:9,color:"#999",marginTop:4}}>{f.label}</div>
+              </div>))}
+            </div>
+            {!lt.connect&&<div style={{background:"#FFF8E7",borderRadius:8,padding:"8px 12px",border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",marginBottom:8}}>⚠ This letter does NOT connect to the following letter</div>}
+            {lt.pal&&<div style={{background:"#E8F5E9",borderRadius:8,padding:"8px 12px",border:"1px solid #C8E6C9",fontSize:12,color:"#2E7D32"}}>🇵🇸 {lt.pal}</div>}
+          </div>
         </div>
-        {!sel.connect&&<div style={{background:"#FFF8E7",borderRadius:8,padding:"8px 12px",border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",marginBottom:8}}>⚠ This letter does NOT connect to the following letter</div>}
-        {sel.pal&&<div style={{background:"#E8F5E9",borderRadius:8,padding:"8px 12px",border:"1px solid #C8E6C9",fontSize:12,color:"#2E7D32"}}>🇵🇸 {sel.pal}</div>}
-      </div>
-    </div>)}
-    <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
-      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFF8E7",border:"1px solid #F0E4C4"}}/>Non-connecting</span>
-      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#880E4F"}}/>Throat sound</span>
-      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#E65100"}}/>Emphatic</span>
-    </div>
-  </div>);
+      )}
+      footerContent={
+        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
+          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFF8E7",border:"1px solid #F0E4C4"}}/>Non-connecting</span>
+          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#880E4F"}}/>Throat sound</span>
+          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#E65100"}}/>Emphatic</span>
+        </div>
+      }
+    />
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════

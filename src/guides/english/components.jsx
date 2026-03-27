@@ -4,6 +4,7 @@ import { DarkBox } from '../../components/DarkBox';
 import { Insight as Nota } from '../../components/Insight';
 import { SimpleGuide } from '../../components/SimpleGuide';
 import { ExpandSection } from '../../components/ExpandSection';
+import { AlphabetGrid } from '../../components/templates/AlphabetGrid';
 import { speakEnglish } from '../../utils/speech';
 
 // English-specific components (guide is written in Spanish for Spanish speakers)
@@ -40,45 +41,51 @@ const engLetters=[
 ];
 
 function Guide1(){
-  const [sel,setSel]=useState(null);
-  const [filter,setFilter]=useState("all");
-  const filtered=engLetters.filter(l=>filter==="all"?true:filter==="vowel"?l.type==="vowel":filter==="tricky"?l.tricky:l.type==="consonant");
-  return(<div>
-    <DarkBox title="El problema fundamental"><div style={{fontSize:14,lineHeight:1.6}}>
-      En español, una letra = un sonido. En inglés, la letra <strong style={{color:"#EF9A9A"}}>"A"</strong> sola hace <strong style={{color:"#FFE77A"}}>5+ sonidos diferentes</strong>. Toca cualquier letra para ver todos sus sonidos.
-    </div></DarkBox>
-    <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
-      {[{id:"all",l:"Todas (26)"},{id:"vowel",l:"Vocales (5)"},{id:"consonant",l:"Consonantes (21)"},{id:"tricky",l:"⚠ Problemáticas"}].map(f=>(
-        <button key={f.id} onClick={()=>{setFilter(f.id);setSel(null)}} style={{padding:"5px 12px",borderRadius:16,border:filter===f.id?"2px solid #1565C0":"1.5px solid #ddd",background:filter===f.id?"#1565C0":"#fff",color:filter===f.id?"#fff":"#666",fontSize:11,fontWeight:600,cursor:"pointer"}}>{f.l}</button>
-      ))}
-    </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(48px, 1fr))",gap:5,marginBottom:14}}>
-      {filtered.map(lt=>{const isSel=sel?.l===lt.l;const isV=lt.type==="vowel";return(
-        <button key={lt.l} onClick={()=>{setSel(isSel?null:lt);if(!isSel)speakEnglish(lt.l)}} style={{aspectRatio:"1",border:isSel?"2.5px solid #1565C0":lt.tricky?"2px solid #E65100":"1.5px solid #e0dcd5",borderRadius:10,background:isSel?"#1565C0":isV?"#FFEBEE":"#fff",color:isSel?"#fff":"#1a1a1a",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",transform:isSel?"scale(1.08)":"scale(1)",transition:"all 0.15s"}}>
-          <span style={{fontSize:20,fontWeight:700,lineHeight:1}}>{lt.l}</span>
-          <span style={{fontSize:7,color:isSel?"rgba(255,255,255,0.6)":"#bbb",marginTop:1}}>{lt.type==="vowel"?"vocal":"cons."}</span>
-          {lt.tricky&&!isSel&&<div style={{position:"absolute",top:3,right:4,width:5,height:5,borderRadius:"50%",background:"#E65100"}}/>}
-        </button>
-      );})}
-    </div>
-    {sel&&(<div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
-      <div style={{background:"#1565C0",padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
-        <div style={{fontSize:42,fontWeight:800,color:"#FFE77A",lineHeight:1}}>{sel.l}</div>
-        <div><div style={{color:"rgba(255,255,255,0.7)",fontSize:11}}>{sel.sounds.length} sonido{sel.sounds.length>1?"s":""} posible{sel.sounds.length>1?"s":""}</div></div>
-      </div>
-      <div style={{padding:"12px 16px"}}>
-        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>
-          {sel.sounds.map((s,i)=>{const word=s.replace(/^\/[^/]*\/\s*/,"");return(<span key={i} onClick={(e)=>{e.stopPropagation();speakEnglish(word)}} style={{padding:"5px 12px",borderRadius:8,background:"#E3F2FD",color:"#1565C0",fontSize:13,fontWeight:700,border:"1px solid #BBDEFB",cursor:"pointer"}}>🔊 {s}</span>);})}
+  return(
+    <AlphabetGrid
+      letters={engLetters}
+      letterKey="l"
+      nameKey="type"
+      filterGroups={[
+        {id:"all",label:"Todas (26)",filterFn:()=>true},
+        {id:"vowel",label:"Vocales (5)",filterFn:l=>l.type==="vowel"},
+        {id:"consonant",label:"Consonantes (21)",filterFn:l=>l.type==="consonant"},
+        {id:"tricky",label:"⚠ Problemáticas",filterFn:l=>l.tricky},
+      ]}
+      primaryColor="#1565C0"
+      accentBg="#FFEBEE"
+      accentFn={l=>l.type==="vowel"}
+      badgeFn={l=>l.tricky?{color:"#E65100"}:null}
+      borderFn={l=>l.tricky?"2px solid #E65100":null}
+      speakFn={speakEnglish}
+      gridMin="48px"
+      introTitle="El problema fundamental"
+      introContent={<div style={{fontSize:14,lineHeight:1.6}}>
+        En español, una letra = un sonido. En inglés, la letra <strong style={{color:"#EF9A9A"}}>"A"</strong> sola hace <strong style={{color:"#FFE77A"}}>5+ sonidos diferentes</strong>. Toca cualquier letra para ver todos sus sonidos.
+      </div>}
+      renderDetail={(lt)=>(
+        <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:"1px solid #e0dcd5",marginBottom:16,animation:"fadeIn 0.2s ease"}}>
+          <div style={{background:"#1565C0",padding:"14px 18px",display:"flex",alignItems:"center",gap:14}}>
+            <div style={{fontSize:42,fontWeight:800,color:"#FFE77A",lineHeight:1}}>{lt.l}</div>
+            <div><div style={{color:"rgba(255,255,255,0.7)",fontSize:11}}>{lt.sounds.length} sonido{lt.sounds.length>1?"s":""} posible{lt.sounds.length>1?"s":""}</div></div>
+          </div>
+          <div style={{padding:"12px 16px"}}>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:10}}>
+              {lt.sounds.map((s,i)=>{const word=s.replace(/^\/[^/]*\/\s*/,"");return(<span key={i} onClick={(e)=>{e.stopPropagation();speakEnglish(word)}} style={{padding:"5px 12px",borderRadius:8,background:"#E3F2FD",color:"#1565C0",fontSize:13,fontWeight:700,border:"1px solid #BBDEFB",cursor:"pointer"}}>🔊 {s}</span>);})}
+            </div>
+            <div style={{background:"#FFF8E7",borderRadius:8,padding:"8px 12px",border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914"}}>{lt.tip}</div>
+          </div>
         </div>
-        <div style={{background:"#FFF8E7",borderRadius:8,padding:"8px 12px",border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914"}}>{sel.tip}</div>
-      </div>
-    </div>)}
-    <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
-      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFEBEE",border:"1px solid #FFCDD2"}}/>Vocal</span>
-      <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:5,height:5,borderRadius:"50%",background:"#E65100"}}/>Problemática</span>
-      <span>Toca cualquier letra para ver detalles</span>
-    </div>
-  </div>);
+      )}
+      footerContent={
+        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
+          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFEBEE",border:"1px solid #FFCDD2"}}/>Vocal</span>
+          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:5,height:5,borderRadius:"50%",background:"#E65100"}}/>Problemática</span>
+          <span>Toca cualquier letra para ver detalles</span>
+        </div>
+      }
+    />
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════

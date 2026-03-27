@@ -10,15 +10,19 @@ import { DarkBox } from '../DarkBox';
  *   nameKey       — field name for letter name shown below character (default: "name")
  *   filterGroups  — [{id, label, filterFn}] for filter buttons
  *   detailFields  — [{key, label, bgColor, borderColor, textColor}] rendered in detail panel
+ *   renderDetail  — optional (letter, {primaryColor, highlightColor}) => JSX for fully custom detail
  *   primaryColor  — main accent color (header bg, selected state)
  *   highlightColor— text color on primary bg (default: "#FFE77A")
  *   accentBg      — background for "special" items like vowels (default: transparent)
  *   accentFn      — optional (letter) => bool, items matching get accentBg
+ *   borderFn      — optional (letter) => string, custom border for unselected items
+ *   badgeFn       — optional (letter) => {color} | null, shows a small dot indicator
  *   speakFn       — optional (text) => void, called on letter tap
  *   introTitle    — optional DarkBox title string
  *   introContent  — optional JSX inside DarkBox
  *   footerContent — optional JSX below the grid
  *   gridMin       — minmax first value for grid columns (default: "58px")
+ *   gridProps     — extra style props merged into the grid container (e.g. {direction:"rtl"})
  */
 export function AlphabetGrid({
   letters,
@@ -26,15 +30,19 @@ export function AlphabetGrid({
   nameKey = "name",
   filterGroups,
   detailFields = [],
+  renderDetail,
   primaryColor = "#1B5E20",
   highlightColor = "#FFE77A",
   accentBg,
   accentFn,
+  borderFn,
+  badgeFn,
   speakFn,
   introTitle,
   introContent,
   footerContent,
   gridMin = "58px",
+  gridProps,
 }) {
   const [sel, setSel] = useState(null);
   const [filter, setFilter] = useState(filterGroups?.[0]?.id ?? "all");
@@ -63,12 +71,14 @@ export function AlphabetGrid({
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${gridMin}, 1fr))`, gap: 6, marginBottom: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${gridMin}, 1fr))`, gap: 6, marginBottom: 16, ...gridProps }}>
         {filtered.map((lt, i) => {
           const ch = lt[letterKey];
           const nm = lt[nameKey];
           const isSel = sel === i;
           const isAccent = accentFn ? accentFn(lt) : false;
+          const customBorder = !isSel && borderFn ? borderFn(lt) : null;
+          const badge = badgeFn ? badgeFn(lt) : null;
 
           return (
             <button key={ch ?? i} onClick={() => {
@@ -76,12 +86,13 @@ export function AlphabetGrid({
               if (!isSel && speakFn) speakFn(ch);
             }} style={{
               aspectRatio: "1",
-              border: isSel ? `2.5px solid ${primaryColor}` : "1.5px solid #e0dcd5",
+              border: isSel ? `2.5px solid ${primaryColor}` : customBorder || "1.5px solid #e0dcd5",
               borderRadius: 12,
               background: isSel ? primaryColor : isAccent && accentBg ? accentBg : "#fff",
               color: isSel ? highlightColor : "#1a1a1a",
               cursor: "pointer",
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              position: "relative",
               transform: isSel ? "scale(1.08)" : "scale(1)",
               transition: "all 0.15s",
               fontSize: (ch?.length ?? 0) > 2 ? 14 : ch?.length > 1 ? 18 : 24,
@@ -89,6 +100,7 @@ export function AlphabetGrid({
             }}>
               {ch}
               {nm && <span style={{ fontSize: 8, color: isSel ? `${highlightColor}99` : "#aaa", marginTop: 2, fontFamily: "system-ui,sans-serif", fontWeight: 400 }}>{nm}</span>}
+              {badge && !isSel && <div style={{ position: "absolute", top: 3, right: 4, width: 5, height: 5, borderRadius: "50%", background: badge.color }} />}
             </button>
           );
         })}
@@ -97,6 +109,11 @@ export function AlphabetGrid({
       {sel !== null && (() => {
         const lt = filtered[sel];
         const ch = lt[letterKey];
+
+        if (renderDetail) {
+          return renderDetail(lt, { primaryColor, highlightColor });
+        }
+
         return (
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", border: "1px solid #e0dcd5", marginBottom: 16, animation: "fadeIn 0.2s ease" }}>
             <div style={{ background: primaryColor, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
