@@ -23,7 +23,7 @@ export const guidesMeta = [
   { id: 22, title: "Comparativos", subtitle: "Comparatives & Superlatives", cat: "Sentences", color: "#C62828", icon: "⬆⬇" },
   { id: 23, title: "Números y Fechas", subtitle: "Numbers, Dates & Time", cat: "Practical", color: "#0277BD", icon: "🔢" },
   { id: 24, title: "Tú vs Usted", subtitle: "Formal vs Informal", cat: "Practical", color: "#37474F", icon: "🎩" },
-  { id: 25, title: "Falsos Cognados", subtitle: "False Cognates", cat: "Practical", color: "#C62828", icon: "⚠️" },
+  { id: 25, title: "Trampas", subtitle: "False Cognates & Common Traps", cat: "Practical", color: "#C62828", icon: "⚠️" },
   { id: 26, title: "Calor", subtitle: "Estar Caliente vs Tener Calor", cat: "Core", color: "#E65100", icon: "🌡️" },
   { id: 27, title: "El Tiempo", subtitle: "Weather Expressions", cat: "Practical", color: "#0277BD", icon: "🌤️" },
   { id: 28, title: "Subjuntivo Presente", subtitle: "Present Subjunctive", cat: "Verbs", color: "#6A1B9A", icon: "🌀" },
@@ -31,8 +31,7 @@ export const guidesMeta = [
   { id: 30, title: "Imperativo", subtitle: "Commands", cat: "Verbs", color: "#E65100", icon: "📢" },
   { id: 31, title: "Reflexivos", subtitle: "Reflexive Verbs", cat: "Verbs", color: "#283593", icon: "🪞" },
   { id: 32, title: "Expresiones", subtitle: "Tener / Dar / Hacer Idioms", cat: "Practical", color: "#C62828", icon: "💬" },
-  { id: 33, title: "Errores Comunes", subtitle: "Common Mistakes", cat: "Practical", color: "#B71C1C", icon: "🚫" },
-  { id: 34, title: "Español Regional", subtitle: "Dialects & Variations", cat: "Practical", color: "#00695C", icon: "🌎" },
+  { id: 33, title: "Español Regional", subtitle: "Dialects & Variations", cat: "Practical", color: "#00695C", icon: "🌎" },
 ];
 
 export const categories = ["Pronunciation", "Verbs", "Nouns", "Pronouns", "Core", "Prepositions", "Sentences", "Practical"];

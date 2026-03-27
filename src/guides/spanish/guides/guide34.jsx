@@ -31,7 +31,7 @@ const regions=[
   ]},
 ];
 
-export function Guide34(){
+export function Guide33(){
   const [reg,setReg]=useState("voseo");const r=regions.find(x=>x.id===reg);
   return(<div>
     <DarkBox title="Regional Spanish"><div style={{fontSize:13,lineHeight:1.7}}>
