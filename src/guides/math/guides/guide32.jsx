@@ -22,9 +22,3 @@ export function Guide32(){return(<div>
   </Card>
   <Insight text="Math anxiety comes from notation and abstraction — not from the concepts. You already understand ratios (recipes), percentages (tips), rates (driving), and compound growth (savings). You speak math. The guide just gave you the vocabulary." />
 </div>);}
-
-// ═══════════════════════════════════════════════════════════════
-// COMPONENT ARRAY & MAIN APP
-// ═══════════════════════════════════════════════════════════════
-
-export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32];
