@@ -18,6 +18,7 @@ const falseCogs=[
   {s:"ropa",l:"rope",a:"clothing",d:3,ex:"Necesito ropa nueva. = I need new clothes. (Use cuerda for rope.)"},
   {s:"carpeta",l:"carpet",a:"folder",d:3,ex:"Pon los papeles en la carpeta. = Put the papers in the folder. (Use alfombra for carpet.)"},
   {s:"recordar",l:"to record",a:"to remember",d:3,ex:"No recuerdo su nombre. = I don't remember his name. (Use grabar for to record.)"},
+  {s:"preocupado",l:"preoccupied",a:"worried / concerned",d:3,ex:"Estoy preocupado por ti. = I'm worried about you. (Use distraído for preoccupied.)"},
 ];
 
 const grammarTraps=[
