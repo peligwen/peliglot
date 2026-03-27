@@ -22,10 +22,3 @@ export function Guide35(){
     <Nota text="El inglés de Chattanooga NO es 'mal inglés'. Es un dialecto distinto con sus propias reglas e historia. Entenderlo te ayuda a conectar con la comunidad y comprender lo que la gente realmente dice." />
   </div>);
 }
-
-
-// ═══════════════════════════════════════════════════════════════
-// ARRAY DE COMPONENTES
-// ═══════════════════════════════════════════════════════════════
-
-export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30,Guide31,Guide32,Guide33,Guide34,Guide35];

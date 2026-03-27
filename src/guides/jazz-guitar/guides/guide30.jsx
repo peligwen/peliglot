@@ -20,9 +20,3 @@ export function Guide30(){return(<div>
   <Insight text="The practice room develops your vocabulary. The bandstand develops your voice. You need both. Playing with real humans — even if they're better than you, ESPECIALLY if they're better — is where growth actually happens." />
   <Ref name="Final thought" text="'The problem with jazz guitar is that you spend years learning to play, and then you have to spend years learning to not play.' — Jim Hall" />
 </div>);}
-
-// ═══════════════════════════════════════════════════════════════
-// COMPONENT ARRAY & MAIN APP
-// ═══════════════════════════════════════════════════════════════
-
-export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];

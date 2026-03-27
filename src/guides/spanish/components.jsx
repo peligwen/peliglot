@@ -30,7 +30,7 @@ import { Guide29 } from './guides/guide29';
 import { Guide30 } from './guides/guide30';
 import { Guide31 } from './guides/guide31';
 import { Guide32 } from './guides/guide32';
-import { Guide33 } from './guides/guide34';
+import { Guide33 } from './guides/guide33';
 
 export const guideComponents = [
   Guide1, Guide2, Guide3, Guide4, Guide5, Guide6, Guide7, Guide8, Guide9, Guide10,

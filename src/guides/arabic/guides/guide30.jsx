@@ -30,9 +30,3 @@ export function Guide30(){
     <Insight text="This is why Arabic vocabulary builds exponentially. Learn the root ك-ت-ب and you instantly have hooks for book, writer, office, library, letter, writing..."/>
   </div>);
 }
-
-// ═══════════════════════════════════════════════════════════════
-// GUIDE COMPONENTS ARRAY
-// ═══════════════════════════════════════════════════════════════
-
-export const guideComponents=[Guide1,Guide2,Guide3,Guide4,Guide5,Guide6,Guide7,Guide8,Guide9,Guide10,Guide11,Guide12,Guide13,Guide14,Guide15,Guide16,Guide17,Guide18,Guide19,Guide20,Guide21,Guide22,Guide23,Guide24,Guide25,Guide26,Guide27,Guide28,Guide29,Guide30];
