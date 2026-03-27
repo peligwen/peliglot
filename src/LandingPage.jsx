@@ -3,7 +3,7 @@ import './styles/landing.css';
 
 const guides = [
   { section: 'Languages', items: [
-    { slug: 'spanish', accent: '#C62828', icon: '\u{1F1EA}\u{1F1F8}', title: 'Espa\u00f1ol', sub: 'Spanish grammar from pronunciation to false cognates. Mexican/US Spanish when applicable.', count: '27 guides' },
+    { slug: 'spanish', accent: '#C62828', icon: '\u{1F1EA}\u{1F1F8}', title: 'Espa\u00f1ol', sub: 'Spanish grammar from pronunciation to false cognates. Mexican/US Spanish when applicable.', count: '33 guides' },
     { slug: 'arabic', accent: '#1B5E20', icon: '\u{1F1F5}\u{1F1F8}', title: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629', sub: 'Arabic writing system, grammar, and verb forms. Palestinian dialect notes throughout.', count: '30 guides' },
     { slug: 'english', accent: '#1565C0', icon: '\u{1F1FA}\u{1F1F8}', title: 'American English', sub: 'Ingl\u00e9s americano para hispanohablantes. Sonidos, verbos, art\u00edculos, phrasal verbs. Notas de Chattanooga.', count: '35 gu\u00edas' },
     { slug: 'german', accent: '#1a1a1a', icon: '\u{1F1E9}\u{1F1EA}', title: 'Deutsch', sub: 'Cases, gender, word order, verb brackets, compound nouns, adjective endings, and modal particles.', count: '33 guides' },
