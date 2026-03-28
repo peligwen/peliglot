@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const sources = [
@@ -52,13 +52,13 @@ export function Guide20() {
         </div>
       </Card>
 
-      <ExpandSection label="Stereotypes in language models" color="#C62828">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#C62828" title="Stereotypes in language models">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>Language models can reflect and amplify stereotypes because they learned from text that contains them.</div>
           <div style={{ marginBottom: 8 }}><strong>Example:</strong> "The doctor... he" vs "The nurse... she" — models may default to gendered associations that reflect historical patterns, not current reality.</div>
           <div>Model providers work to reduce these biases, but no model is fully bias-free. Critical awareness is the best defense.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="Bias isn't always obvious. A model can seem fair on simple tests but fail on edge cases. Think about who might be affected by the model's outputs in your specific use case." />
 

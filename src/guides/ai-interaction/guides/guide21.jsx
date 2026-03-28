@@ -2,7 +2,7 @@ import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { SimpleGuide } from '../../../components/SimpleGuide';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 export function Guide21() {
@@ -42,13 +42,13 @@ export function Guide21() {
         ]} />
       </Card>
 
-      <ExpandSection label="The training data debate" color="#C62828">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#C62828" title="The training data debate">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}><strong>For AI companies:</strong> Training is transformative use — the model doesn't store or reproduce specific works, it learns patterns.</div>
           <div style={{ marginBottom: 8 }}><strong>For content creators:</strong> Their work was used without permission or compensation to build commercial products.</div>
           <div>Courts in the US, EU, and elsewhere are actively deciding these questions. The legal landscape will likely look very different in a few years.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="When in doubt, treat AI output as a starting point, not a finished product. Your edits, judgment, and creative decisions are what make the final result truly yours." />
 

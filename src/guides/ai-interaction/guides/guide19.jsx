@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const patterns = [
@@ -63,8 +63,8 @@ export function Guide19() {
         </div>
       </Card>
 
-      <ExpandSection label="Real-world orchestration example" color="#00695C">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#00695C" title="Real-world orchestration example">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ fontWeight: 700, marginBottom: 8 }}>Customer Support Triage System:</div>
           <div style={{ padding: "0 0 0 16px" }}>
             <div style={{ marginBottom: 6 }}>1. <strong>Router:</strong> Classify incoming message (billing, technical, feedback).</div>
@@ -74,7 +74,7 @@ export function Guide19() {
             <div>5. <strong>Human review:</strong> Flag low-confidence responses for agent review.</div>
           </div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="Start with a simple sequential chain. Only add complexity (parallel, routing, evaluation loops) when you have evidence that the simpler approach isn't working." />
 

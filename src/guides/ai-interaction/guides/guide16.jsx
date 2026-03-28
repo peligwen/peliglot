@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 export function Guide16() {
@@ -64,8 +64,8 @@ export function Guide16() {
         </div>
       </Card>
 
-      <ExpandSection label="Example MCP servers" color="#00695C">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#00695C" title="Example MCP servers">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           {[
             { name: "GitHub", what: "Read/write issues, PRs, code. Create branches, review changes." },
             { name: "Filesystem", what: "Read, write, search files on your local machine." },
@@ -78,7 +78,7 @@ export function Guide16() {
             </div>
           ))}
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="MCP is open source and growing fast. You can write your own MCP server to connect any AI model to any tool or data source you have." />
 

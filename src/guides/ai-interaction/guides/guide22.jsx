@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const costs = [
@@ -52,14 +52,14 @@ export function Guide22() {
         </div>
       </Card>
 
-      <ExpandSection label="Putting it in perspective" color="#C62828">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#C62828" title="Putting it in perspective">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>AI's energy use is real but should be compared to alternatives:</div>
           <div style={{ marginBottom: 8 }}>• Video streaming, cryptocurrency mining, and air travel each have larger total carbon footprints globally.</div>
           <div style={{ marginBottom: 8 }}>• AI can also <em>reduce</em> emissions by optimizing energy grids, logistics, and building systems.</div>
           <div>The question isn't whether to use AI, but whether its benefits justify its costs in each application.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="Good prompt engineering isn't just about better results — it's about efficiency. Fewer retries means less compute, less energy, and lower costs." />
 

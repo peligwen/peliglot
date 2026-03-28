@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const models = [
@@ -73,13 +73,13 @@ export function Guide24() {
         </div>
       </Card>
 
-      <ExpandSection label="The model landscape moves fast" color="#E65100">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#E65100" title="The model landscape moves fast">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>Today's frontier model is next year's mid-tier. Specific model names go out of date quickly, but the categories and trade-offs remain stable.</div>
           <div style={{ marginBottom: 8 }}><strong>Key trend:</strong> Models are getting better AND cheaper simultaneously. What costs $10 today may cost $0.10 in two years.</div>
           <div>Don't over-optimize for today's pricing. Build systems that can swap models easily.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="A common pattern: prototype with a frontier model to validate the approach, then optimize down to the cheapest model that maintains acceptable quality." />
 

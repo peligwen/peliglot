@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 export function Guide23() {
@@ -53,25 +53,25 @@ export function Guide23() {
         </div>
       </Card>
 
-      <ExpandSection label="The access divide" color="#C62828">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#C62828" title="The access divide">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>AI benefits aren't distributed equally:</div>
           <div style={{ marginBottom: 8 }}>• <strong>Language gap:</strong> Most AI tools work best in English. Non-English speakers get worse performance.</div>
           <div style={{ marginBottom: 8 }}>• <strong>Cost gap:</strong> The best models cost money. Free tiers are limited.</div>
           <div style={{ marginBottom: 8 }}>• <strong>Skill gap:</strong> Knowing how to prompt effectively is itself a learned skill that creates advantage.</div>
           <div>• <strong>Infrastructure gap:</strong> Running AI locally requires expensive hardware. Cloud access requires reliable internet.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
-      <ExpandSection label="What history teaches us" color="#C62828">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#C62828" title="What history teaches us">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>Past technology shifts (printing press, electricity, internet) show a pattern:</div>
           <div style={{ marginBottom: 8 }}>1. <strong>Disruption</strong> — Existing jobs and industries are destabilized.</div>
           <div style={{ marginBottom: 8 }}>2. <strong>Adaptation</strong> — New roles, skills, and industries emerge.</div>
           <div style={{ marginBottom: 8 }}>3. <strong>Net benefit</strong> — Overall productivity and capability increase, but the transition is painful for some.</div>
           <div>The speed of AI adoption is faster than previous revolutions, which means the transition window is shorter.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="The most future-proof skill isn't any specific AI tool — it's the ability to learn quickly, think critically, and adapt. AI tools will keep changing; adaptability won't go out of style." />
 
