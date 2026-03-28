@@ -41,6 +41,7 @@ export function GuideShell({
 
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef(null);
+  const focusSearchRef = useRef(false);
 
   const searchResults = useMemo(() => {
     const q = searchTerm.trim();
@@ -52,9 +53,17 @@ export function GuideShell({
   }, [searchTerm, guidesMeta]);
 
   useEffect(() => {
-    if (menuOpen && searchRef.current) searchRef.current.focus();
+    if (menuOpen && focusSearchRef.current && searchRef.current) {
+      searchRef.current.focus();
+      focusSearchRef.current = false;
+    }
     if (!menuOpen) setSearchTerm('');
   }, [menuOpen]);
+
+  const openSearch = () => {
+    focusSearchRef.current = true;
+    setMenuOpen(true);
+  };
 
   return (
     <div style={{
@@ -132,22 +141,18 @@ export function GuideShell({
         >
           {'\u2190'} Prev
         </button>
-        <div role="tablist" aria-label="Guide pages" style={{ display: 'flex', gap: 2 }}>
-          {guidesMeta.map((g, i) => (
-            <div
-              key={i} role="tab" aria-selected={i === page}
-              aria-label={`Guide ${i + 1}: ${g.subtitle}`}
-              tabIndex={i === page ? 0 : -1}
-              onClick={() => goTo(i)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goTo(i); }}
-              style={{
-                width: i === page ? 14 : 4, height: 4, borderRadius: 2,
-                background: i === page ? meta.color : theme.dotInactive,
-                cursor: 'pointer', transition: 'all 0.2s',
-              }}
-            />
-          ))}
-        </div>
+        <button
+          onClick={openSearch}
+          aria-label="Search guides"
+          style={{
+            width: 36, height: 36, borderRadius: 10, border: `1.5px solid ${theme.borderColor}`,
+            background: theme.buttonBg, cursor: 'pointer', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', fontSize: 16,
+            color: theme.textMuted, flexShrink: 0,
+          }}
+        >
+          {'\u2315'}
+        </button>
         <button
           onClick={next} disabled={page === total - 1} aria-label="Next guide"
           style={{
@@ -194,7 +199,7 @@ export function GuideShell({
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
-              width: '100%', padding: '7px 28px 7px 10px', fontSize: 13,
+              width: '100%', padding: '7px 28px 7px 10px', fontSize: 16,
               border: `1.5px solid ${theme.borderColor}`, borderRadius: 8,
               background: theme.buttonBg, color: theme.textPrimary,
               outline: 'none', fontFamily: theme.shellFont,
