@@ -4,7 +4,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 const guideSlugs = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
-  'music', 'jazz-guitar', 'math',
+  'music', 'jazz-guitar', 'math', 'ai-interaction',
 ];
 
 const guideRoutes = guideSlugs.map(slug => ({
