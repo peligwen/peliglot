@@ -67,7 +67,7 @@ export function GuideShell({
 
   return (
     <div style={{
-      height: '100vh', display: 'flex', flexDirection: 'column',
+      height: '100dvh', display: 'flex', flexDirection: 'column',
       background: theme.bg, fontFamily: theme.outerFont,
       overflow: 'hidden', position: 'relative', color: theme.textPrimary,
     }}>
@@ -119,7 +119,7 @@ export function GuideShell({
 
       {/* CONTENT */}
       <main id="main-content" role="main" ref={contentRef} style={{ flex: 1, overflow: 'auto', padding: '16px', position: 'relative' }}>
-        <div key={page} style={{ animation: 'fadeIn 0.2s ease', maxWidth: 700, margin: '0 auto', paddingBottom: 40, fontFamily: theme.contentFont }}>
+        <div key={page} style={{ animation: 'fadeIn 0.2s ease', maxWidth: 700, margin: '0 auto', fontFamily: theme.contentFont }}>
           <GuideComp />
         </div>
       </main>
