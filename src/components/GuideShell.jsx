@@ -118,7 +118,7 @@ export function GuideShell({
       </header>
 
       {/* CONTENT */}
-      <main id="main-content" role="main" ref={contentRef} style={{ flex: 1, overflow: 'auto', padding: '16px 16px 24px', position: 'relative' }}>
+      <main id="main-content" role="main" ref={contentRef} style={{ flex: 1, overflow: 'auto', padding: '16px 16px 40px', position: 'relative' }}>
         <div key={page} style={{ animation: 'fadeIn 0.2s ease', maxWidth: 700, margin: '0 auto', fontFamily: theme.contentFont }}>
           <GuideComp />
         </div>
