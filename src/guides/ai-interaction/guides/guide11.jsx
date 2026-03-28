@@ -1,6 +1,6 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Insight } from '../../../components/Insight';
 import { PromptBox, Tip } from './_helpers';
 
@@ -50,8 +50,8 @@ export function Guide11() {
         </Card>
       ))}
 
-      <ExpandSection label="Combining patterns" color="#6A1B9A">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#6A1B9A" title="Combining patterns">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>Patterns are most powerful when combined. For example:</div>
           <PromptBox
             label="Persona + Template + CoT"
@@ -59,7 +59,7 @@ export function Guide11() {
             color="#6A1B9A"
           />
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="Build a personal prompt library. Save patterns that work well for your common tasks — emails, code reviews, data analysis, writing — and refine them over time." />
 

@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const workflows = [
@@ -53,14 +53,14 @@ export function Guide18() {
         </div>
       </Card>
 
-      <ExpandSection label="What AI coding can't do (yet)" color="#00695C">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#00695C" title="What AI coding can't do (yet)">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>• <strong>Understand your business domain</strong> deeply — it needs you to explain what matters and why.</div>
           <div style={{ marginBottom: 8 }}>• <strong>Make architectural decisions</strong> with full confidence — it can propose, but you should decide.</div>
           <div style={{ marginBottom: 8 }}>• <strong>Guarantee correctness</strong> — generated code needs testing and review, just like human code.</div>
           <div>• <strong>Replace understanding</strong> — using AI to write code you don't understand creates a maintenance problem.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="The most productive developers use AI for the tedious parts (boilerplate, tests, docs) and focus their own attention on design, architecture, and edge cases." />
 

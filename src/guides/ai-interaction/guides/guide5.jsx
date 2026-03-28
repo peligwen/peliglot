@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { SimpleGuide } from '../../../components/SimpleGuide';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const layers = [
@@ -53,13 +53,15 @@ export function Guide5() {
         </div>
       </Card>
 
-      <ExpandSection label="Emergent abilities" color="#1565C0">
-        <SimpleGuide items={[
-          { h: "In-context learning", b: "Given a few examples in the prompt, models can perform new tasks they weren't explicitly trained for." },
-          { h: "Chain-of-thought", b: "When asked to 'think step by step', models produce better answers — as if reasoning emerges from structured output." },
-          { h: "Scale surprises", b: "Some abilities only appear at certain model sizes. A model with 10B parameters might fail where a 100B model succeeds." },
-        ]} />
-      </ExpandSection>
+      <Card color="#1565C0" title="Emergent abilities">
+        <div style={{ padding: 16 }}>
+          <SimpleGuide items={[
+            { h: "In-context learning", b: "Given a few examples in the prompt, models can perform new tasks they weren't explicitly trained for." },
+            { h: "Chain-of-thought", b: "When asked to 'think step by step', models produce better answers — as if reasoning emerges from structured output." },
+            { h: "Scale surprises", b: "Some abilities only appear at certain model sizes. A model with 10B parameters might fail where a 100B model succeeds." },
+          ]} />
+        </div>
+      </Card>
 
       <Tip text="Models don't have hidden thoughts. Everything happens in the token sequence. If you want the model to reason, you need to make it 'show its work' in the output." />
     </div>

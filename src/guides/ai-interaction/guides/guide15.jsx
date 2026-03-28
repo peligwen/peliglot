@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const strategies = [
@@ -38,14 +38,14 @@ export function Guide15() {
         </div>
       </Card>
 
-      <ExpandSection label="Why models struggle with big tasks" color="#00695C">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#00695C" title="Why models struggle with big tasks">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}><strong>Attention limits.</strong> As context grows, the model's ability to track all relevant details degrades.</div>
           <div style={{ marginBottom: 8 }}><strong>Error accumulation.</strong> Small errors in early steps compound into big errors later.</div>
           <div style={{ marginBottom: 8 }}><strong>No working memory.</strong> The model can't "hold a thought" outside the token sequence. Intermediate results need to be written down.</div>
           <div><strong>Ambiguity snowball.</strong> An ambiguous early decision can make everything downstream wrong.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Card color="#00695C" title="Your Role as the Human">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>

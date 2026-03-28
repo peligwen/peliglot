@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip } from './_helpers';
 
 const spectrum = [
@@ -57,14 +57,14 @@ export function Guide17() {
         </div>
       </Card>
 
-      <ExpandSection label="Trust calibration" color="#00695C">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#00695C" title="Trust calibration">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}><strong>Start supervised.</strong> Run the AI with full human review. Learn its strengths and weaknesses.</div>
           <div style={{ marginBottom: 8 }}><strong>Gradually loosen.</strong> As you build trust, allow more autonomy for low-risk tasks.</div>
           <div style={{ marginBottom: 8 }}><strong>Keep guardrails.</strong> Even trusted agents should have limits on destructive actions.</div>
           <div><strong>Monitor continuously.</strong> AI behavior can drift. Periodic reviews catch issues early.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="The goal isn't to remove humans from the loop — it's to put them at the right point in the loop. Review the decisions that matter most." />
 

@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { Tip, Term } from './_helpers';
 
 const concepts = [
@@ -45,13 +45,13 @@ export function Guide1() {
         </div>
       </Card>
 
-      <ExpandSection label="What an LLM is NOT" color="#1565C0">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#1565C0" title="What an LLM is NOT">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div><strong>Not a database.</strong> It doesn't look up stored facts — it reconstructs plausible answers from patterns.</div>
           <div style={{ marginTop: 8 }}><strong>Not a search engine.</strong> It doesn't browse the web in real time (unless given tools to do so).</div>
           <div style={{ marginTop: 8 }}><strong>Not conscious.</strong> It has no beliefs, desires, or experiences. It's a very sophisticated pattern matcher.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="When an LLM says something confidently wrong, it's because the pattern of confident-sounding text was more probable than hedging. Understanding this helps you know when to verify." />
 

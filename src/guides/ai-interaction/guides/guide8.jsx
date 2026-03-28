@@ -1,7 +1,7 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { ExpandSection } from '../../../components/ExpandSection';
+
 import { PromptBox, Tip } from './_helpers';
 
 export function Guide8() {
@@ -46,22 +46,22 @@ export function Guide8() {
         </div>
       </Card>
 
-      <ExpandSection label="System vs User prompt" color="#6A1B9A">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#6A1B9A" title="System vs User prompt">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}><strong>System prompt</strong> = persistent instructions. Set once, applies to every turn. Higher priority for most models.</div>
           <div style={{ marginBottom: 8 }}><strong>User prompt</strong> = per-turn input. Changes with each message.</div>
           <div>Think of the system prompt as the job description and the user prompt as today's task.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
-      <ExpandSection label="Real-world system prompt tips" color="#6A1B9A">
-        <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
+      <Card color="#6A1B9A" title="Real-world system prompt tips">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>• Put the most important rules first — models pay more attention to the beginning.</div>
           <div style={{ marginBottom: 8 }}>• Use clear headers and numbered lists for complex instructions.</div>
           <div style={{ marginBottom: 8 }}>• Test with adversarial inputs to see if rules hold up.</div>
           <div>• Keep it as short as possible — every token in the system prompt is sent with every request.</div>
         </div>
-      </ExpandSection>
+      </Card>
 
       <Tip text="System prompts aren't truly 'secret'. Determined users can sometimes get models to reveal them. Never put passwords or API keys in a system prompt." />
 
