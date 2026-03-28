@@ -6,10 +6,10 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const patterns = [
-  { name: "Sequential Chain", icon: "\u27A1\uFE0F", desc: "Output of step A feeds into step B. Simple, predictable.", example: "Summarize article \u2192 Translate summary \u2192 Format as email", color: "#1565C0" },
-  { name: "Parallel Fan-out", icon: "\u{1F500}", desc: "Same input processed by multiple models/prompts simultaneously.", example: "Send code to: security reviewer, style checker, and test generator in parallel", color: "#6A1B9A" },
-  { name: "Router", icon: "\u{1F6A6}", desc: "A classifier decides which specialized prompt or model handles each request.", example: "Is this a code question, a math question, or a creative writing request?", color: "#00695C" },
-  { name: "Evaluator-Optimizer", icon: "\u{1F504}", desc: "One model generates, another evaluates, loop until quality threshold is met.", example: "Write essay \u2192 Grade essay \u2192 Rewrite if score < 8 \u2192 Repeat", color: "#E65100" },
+  { name: "Sequential Chain", icon: "➡️", desc: "Output of step A feeds into step B. Simple, predictable.", example: "Summarize article → Translate summary → Format as email", color: "#1565C0" },
+  { name: "Parallel Fan-out", icon: "🔀", desc: "Same input processed by multiple models/prompts simultaneously.", example: "Send code to: security reviewer, style checker, and test generator in parallel", color: "#6A1B9A" },
+  { name: "Router", icon: "🚦", desc: "A classifier decides which specialized prompt or model handles each request.", example: "Is this a code question, a math question, or a creative writing request?", color: "#00695C" },
+  { name: "Evaluator-Optimizer", icon: "🔄", desc: "One model generates, another evaluates, loop until quality threshold is met.", example: "Write essay → Grade essay → Rewrite if score < 8 → Repeat", color: "#E65100" },
 ];
 
 export function Guide19() {

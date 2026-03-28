@@ -8,7 +8,7 @@ export function Guide10() {
     <div>
       <DarkBox title="THE BIG IDEA">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
-          LLMs can output data in any format you ask for \u2014 JSON, CSV, Markdown tables, XML, YAML.
+          LLMs can output data in any format you ask for — JSON, CSV, Markdown tables, XML, YAML.
           <strong> Structured output</strong> makes AI responses machine-readable and predictable.
         </div>
       </DarkBox>

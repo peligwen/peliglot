@@ -5,7 +5,7 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip, Term } from './_helpers';
 
 const concepts = [
-  { label: "Training Data", desc: "Billions of pages of text \u2014 books, articles, code, conversations \u2014 that the model learned patterns from." },
+  { label: "Training Data", desc: "Billions of pages of text — books, articles, code, conversations — that the model learned patterns from." },
   { label: "Parameters", desc: "Numerical weights (billions of them) that encode learned patterns. More parameters generally means more capability, but also more cost." },
   { label: "Inference", desc: "The process of generating a response. The model predicts one token at a time, each choice influenced by everything before it." },
   { label: "Pre-training vs Fine-tuning", desc: "Pre-training learns general language from massive data. Fine-tuning adjusts behavior for specific tasks like following instructions or being helpful." },
@@ -47,7 +47,7 @@ export function Guide1() {
 
       <ExpandSection label="What an LLM is NOT" color="#1565C0">
         <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
-          <div><strong>Not a database.</strong> It doesn't look up stored facts \u2014 it reconstructs plausible answers from patterns.</div>
+          <div><strong>Not a database.</strong> It doesn't look up stored facts — it reconstructs plausible answers from patterns.</div>
           <div style={{ marginTop: 8 }}><strong>Not a search engine.</strong> It doesn't browse the web in real time (unless given tools to do so).</div>
           <div style={{ marginTop: 8 }}><strong>Not conscious.</strong> It has no beliefs, desires, or experiences. It's a very sophisticated pattern matcher.</div>
         </div>

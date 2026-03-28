@@ -74,7 +74,7 @@ export function Guide12() {
       resultMessages={{
         high: "Prompt engineering pro! You've mastered the core techniques.",
         mid: "Good foundation! Review the guides on the topics you missed.",
-        low: "Review the Prompt Craft guides and try again \u2014 these skills are worth mastering.",
+        low: "Review the Prompt Craft guides and try again — these skills are worth mastering.",
       }}
     />
   );
