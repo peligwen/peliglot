@@ -30,10 +30,10 @@ export function Guide8() {
       <Card color="#6A1B9A" title="What Goes in a System Prompt?">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           {[
-            { emoji: "\u{1F3AD}", label: "Role", desc: "Who the model should be: 'You are a senior tax accountant' or 'You are a patient tutor for 8th graders'." },
-            { emoji: "\u{1F4CF}", label: "Rules", desc: "Hard constraints: 'Never give medical advice', 'Always respond in JSON', 'Keep answers under 200 words'." },
-            { emoji: "\u{1F3A8}", label: "Style", desc: "Tone and format: 'Be concise', 'Use Markdown', 'Explain like I'm five'." },
-            { emoji: "\u{1F4DA}", label: "Context", desc: "Background knowledge: 'The user is building a React app', 'We use PostgreSQL in production'." },
+            { emoji: "🎭", label: "Role", desc: "Who the model should be: 'You are a senior tax accountant' or 'You are a patient tutor for 8th graders'." },
+            { emoji: "📏", label: "Rules", desc: "Hard constraints: 'Never give medical advice', 'Always respond in JSON', 'Keep answers under 200 words'." },
+            { emoji: "🎨", label: "Style", desc: "Tone and format: 'Be concise', 'Use Markdown', 'Explain like I'm five'." },
+            { emoji: "📚", label: "Context", desc: "Background knowledge: 'The user is building a React app', 'We use PostgreSQL in production'." },
           ].map((item, i) => (
             <div key={i} style={{ display: "flex", gap: 10, marginBottom: 12 }}>
               <div style={{ fontSize: 22, flexShrink: 0 }}>{item.emoji}</div>
@@ -56,10 +56,10 @@ export function Guide8() {
 
       <ExpandSection label="Real-world system prompt tips" color="#6A1B9A">
         <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
-          <div style={{ marginBottom: 8 }}>\u2022 Put the most important rules first \u2014 models pay more attention to the beginning.</div>
-          <div style={{ marginBottom: 8 }}>\u2022 Use clear headers and numbered lists for complex instructions.</div>
-          <div style={{ marginBottom: 8 }}>\u2022 Test with adversarial inputs to see if rules hold up.</div>
-          <div>\u2022 Keep it as short as possible \u2014 every token in the system prompt is sent with every request.</div>
+          <div style={{ marginBottom: 8 }}>• Put the most important rules first — models pay more attention to the beginning.</div>
+          <div style={{ marginBottom: 8 }}>• Use clear headers and numbered lists for complex instructions.</div>
+          <div style={{ marginBottom: 8 }}>• Test with adversarial inputs to see if rules hold up.</div>
+          <div>• Keep it as short as possible — every token in the system prompt is sent with every request.</div>
         </div>
       </ExpandSection>
 

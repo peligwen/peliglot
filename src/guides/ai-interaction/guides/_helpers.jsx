@@ -24,7 +24,7 @@ export function PromptBox({ prompt, response, label, color = "#6A1B9A" }) {
 
 /* Tip — AI-themed Insight wrapper */
 export function Tip({ text }) {
-  return <BaseInsight text={text} emoji="\u{1F916}" bg="#E3F2FD" border="#90CAF9" color="#1565C0" />;
+  return <BaseInsight text={text} emoji="🤖" bg="#E3F2FD" border="#90CAF9" color="#1565C0" />;
 }
 
 /* Term — inline highlighted AI term */

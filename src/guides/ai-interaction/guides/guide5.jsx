@@ -6,7 +6,7 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const layers = [
-  { name: "Embedding", desc: "Each token becomes a vector \u2014 a list of numbers representing its meaning in context.", color: "#1565C0" },
+  { name: "Embedding", desc: "Each token becomes a vector — a list of numbers representing its meaning in context.", color: "#1565C0" },
   { name: "Attention", desc: "The model asks 'which other tokens matter for understanding this one?' and weighs connections between all token pairs.", color: "#6A1B9A" },
   { name: "Feed-Forward", desc: "Each position is processed through learned transformations that encode knowledge and patterns.", color: "#00695C" },
   { name: "Repeat", desc: "Attention + feed-forward layers repeat dozens or hundreds of times, building deeper understanding at each layer.", color: "#E65100" },
@@ -49,14 +49,14 @@ export function Guide5() {
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 10 }}>In the sentence <em>"The bank by the river was steep"</em>, the word "bank" could mean a financial institution or a riverbank.</div>
           <div style={{ marginBottom: 10 }}><strong>Attention</strong> lets the model weigh "river" heavily when processing "bank", resolving the ambiguity.</div>
-          <div>This happens across all tokens simultaneously \u2014 that's what makes transformers so powerful and parallelizable.</div>
+          <div>This happens across all tokens simultaneously — that's what makes transformers so powerful and parallelizable.</div>
         </div>
       </Card>
 
       <ExpandSection label="Emergent abilities" color="#1565C0">
         <SimpleGuide items={[
           { h: "In-context learning", b: "Given a few examples in the prompt, models can perform new tasks they weren't explicitly trained for." },
-          { h: "Chain-of-thought", b: "When asked to 'think step by step', models produce better answers \u2014 as if reasoning emerges from structured output." },
+          { h: "Chain-of-thought", b: "When asked to 'think step by step', models produce better answers — as if reasoning emerges from structured output." },
           { h: "Scale surprises", b: "Some abilities only appear at certain model sizes. A model with 10B parameters might fail where a 100B model succeeds." },
         ]} />
       </ExpandSection>

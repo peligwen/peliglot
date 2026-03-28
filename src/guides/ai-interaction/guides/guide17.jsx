@@ -16,7 +16,7 @@ export function Guide17() {
     <div>
       <DarkBox title="THE BIG IDEA">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
-          The most effective AI systems keep <strong>humans in the loop</strong> \u2014 not because AI can't act alone,
+          The most effective AI systems keep <strong>humans in the loop</strong> — not because AI can't act alone,
           but because the cost of AI mistakes varies widely, and humans add judgment AI lacks.
         </div>
       </DarkBox>
@@ -36,7 +36,7 @@ export function Guide17() {
             </div>
           ))}
           <div style={{ fontSize: 11, color: "#888", textAlign: "center" }}>
-            \u2190 More human control {"  \u2014  "} More AI autonomy \u2192
+            ← More human control {"  —  "} More AI autonomy →
           </div>
         </div>
       </Card>
@@ -44,8 +44,8 @@ export function Guide17() {
       <Card color="#00695C" title="When to Add Human Checks">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           {[
-            { risk: "High stakes", check: "Medical, legal, financial decisions \u2014 always require human review." },
-            { risk: "Irreversible actions", check: "Deleting data, sending emails, deploying to production \u2014 confirm first." },
+            { risk: "High stakes", check: "Medical, legal, financial decisions — always require human review." },
+            { risk: "Irreversible actions", check: "Deleting data, sending emails, deploying to production — confirm first." },
             { risk: "Ambiguous tasks", check: "When the 'right answer' depends on context the AI may not have." },
             { risk: "Novel situations", check: "Edge cases the AI hasn't encountered in training." },
           ].map((item, i) => (
@@ -66,7 +66,7 @@ export function Guide17() {
         </div>
       </ExpandSection>
 
-      <Tip text="The goal isn't to remove humans from the loop \u2014 it's to put them at the right point in the loop. Review the decisions that matter most." />
+      <Tip text="The goal isn't to remove humans from the loop — it's to put them at the right point in the loop. Review the decisions that matter most." />
 
       <Insight text="Permission systems (like 'allow this tool? yes/no') are the simplest and most effective form of human-in-the-loop. They add seconds of friction but prevent costly mistakes." />
     </div>

@@ -19,7 +19,7 @@ export function Guide3() {
       <DarkBox title="THE BIG IDEA">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           The <strong>context window</strong> is the model's working memory.
-          Everything it can "see" \u2014 your prompt, the conversation history, any documents \u2014 must fit inside this window, measured in tokens.
+          Everything it can "see" — your prompt, the conversation history, any documents — must fit inside this window, measured in tokens.
         </div>
       </DarkBox>
 
@@ -70,17 +70,17 @@ export function Guide3() {
         <div style={{ background: "#FFF8E1", border: "1px solid #FFE082", borderRadius: 10, padding: 16, fontSize: 13, lineHeight: 1.7, marginBottom: 12 }}>
           <strong>Overflow strategies:</strong>
           <ul style={{ margin: "8px 0 0 16px", padding: 0 }}>
-            <li><strong>Truncation</strong> \u2014 Older messages get dropped from the beginning of the conversation.</li>
-            <li><strong>Summarization</strong> \u2014 Some systems compress earlier context into a summary.</li>
-            <li><strong>Sliding window</strong> \u2014 Only the most recent N tokens are kept.</li>
-            <li><strong>RAG</strong> \u2014 Retrieve only the relevant chunks instead of stuffing everything in.</li>
+            <li><strong>Truncation</strong> — Older messages get dropped from the beginning of the conversation.</li>
+            <li><strong>Summarization</strong> — Some systems compress earlier context into a summary.</li>
+            <li><strong>Sliding window</strong> — Only the most recent N tokens are kept.</li>
+            <li><strong>RAG</strong> — Retrieve only the relevant chunks instead of stuffing everything in.</li>
           </ul>
         </div>
       )}
 
-      <Tip text="Long conversations slowly eat your context window. If a model starts 'forgetting' earlier instructions, that's often why \u2014 the old tokens were pushed out." />
+      <Tip text="Long conversations slowly eat your context window. If a model starts 'forgetting' earlier instructions, that's often why — the old tokens were pushed out." />
 
-      <Insight text="200K tokens \u2248 roughly 500 pages of text. That's a full novel's worth of context in a single prompt." />
+      <Insight text="200K tokens ≈ roughly 500 pages of text. That's a full novel's worth of context in a single prompt." />
     </div>
   );
 }

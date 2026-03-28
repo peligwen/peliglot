@@ -5,10 +5,10 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const sources = [
-  { stage: "Training Data", icon: "\u{1F4DA}", desc: "If the data over-represents some groups or perspectives, the model inherits those imbalances.", example: "A model trained mostly on English text may perform poorly on other languages or cultures." },
-  { stage: "Labeling & Feedback", icon: "\u{1F3F7}\uFE0F", desc: "Human raters who fine-tune models bring their own cultural assumptions and biases.", example: "What counts as 'helpful' or 'harmful' varies across cultures and contexts." },
-  { stage: "Prompt Design", icon: "\u{1F4DD}", desc: "How questions are framed can trigger biased patterns in the model.", example: "Asking 'Why is X bad?' presupposes X is bad and steers the response." },
-  { stage: "Deployment Context", icon: "\u{1F3E2}", desc: "Using a model in contexts it wasn't designed for amplifies errors and biases.", example: "A general chat model used for hiring decisions without careful guardrails." },
+  { stage: "Training Data", icon: "📚", desc: "If the data over-represents some groups or perspectives, the model inherits those imbalances.", example: "A model trained mostly on English text may perform poorly on other languages or cultures." },
+  { stage: "Labeling & Feedback", icon: "🏷️", desc: "Human raters who fine-tune models bring their own cultural assumptions and biases.", example: "What counts as 'helpful' or 'harmful' varies across cultures and contexts." },
+  { stage: "Prompt Design", icon: "📝", desc: "How questions are framed can trigger biased patterns in the model.", example: "Asking 'Why is X bad?' presupposes X is bad and steers the response." },
+  { stage: "Deployment Context", icon: "🏢", desc: "Using a model in contexts it wasn't designed for amplifies errors and biases.", example: "A general chat model used for hiring decisions without careful guardrails." },
 ];
 
 export function Guide20() {
@@ -55,7 +55,7 @@ export function Guide20() {
       <ExpandSection label="Stereotypes in language models" color="#C62828">
         <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
           <div style={{ marginBottom: 8 }}>Language models can reflect and amplify stereotypes because they learned from text that contains them.</div>
-          <div style={{ marginBottom: 8 }}><strong>Example:</strong> "The doctor... he" vs "The nurse... she" \u2014 models may default to gendered associations that reflect historical patterns, not current reality.</div>
+          <div style={{ marginBottom: 8 }}><strong>Example:</strong> "The doctor... he" vs "The nurse... she" — models may default to gendered associations that reflect historical patterns, not current reality.</div>
           <div>Model providers work to reduce these biases, but no model is fully bias-free. Critical awareness is the best defense.</div>
         </div>
       </ExpandSection>

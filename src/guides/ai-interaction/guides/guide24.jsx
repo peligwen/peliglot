@@ -6,10 +6,10 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const models = [
-  { name: "Large Frontier", examples: "GPT-4o, Claude Opus, Gemini Ultra", icon: "\u{1F680}", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
-  { name: "Mid-tier", examples: "Claude Sonnet, GPT-4o-mini, Gemini Flash", icon: "\u26A1", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
-  { name: "Small / Local", examples: "Llama 3, Mistral, Phi-3", icon: "\u{1F4F1}", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
-  { name: "Specialized", examples: "Codex, Med-PaLM, domain fine-tunes", icon: "\u{1F3AF}", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
+  { name: "Large Frontier", examples: "GPT-4o, Claude Opus, Gemini Ultra", icon: "🚀", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
+  { name: "Mid-tier", examples: "Claude Sonnet, GPT-4o-mini, Gemini Flash", icon: "⚡", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
+  { name: "Small / Local", examples: "Llama 3, Mistral, Phi-3", icon: "📱", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
+  { name: "Specialized", examples: "Codex, Med-PaLM, domain fine-tunes", icon: "🎯", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
 ];
 
 export function Guide24() {
@@ -59,9 +59,9 @@ export function Guide24() {
       <Card color="#E65100" title="Decision Framework">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           {[
-            { q: "How complex is the task?", guide: "Simple classification \u2192 small model. Novel reasoning \u2192 frontier model." },
-            { q: "How much does quality matter?", guide: "Internal draft \u2192 mid-tier is fine. Customer-facing \u2192 use the best you can afford." },
-            { q: "What's your budget?", guide: "Frontier models cost 10\u201350x more per token than small ones. Volume matters." },
+            { q: "How complex is the task?", guide: "Simple classification → small model. Novel reasoning → frontier model." },
+            { q: "How much does quality matter?", guide: "Internal draft → mid-tier is fine. Customer-facing → use the best you can afford." },
+            { q: "What's your budget?", guide: "Frontier models cost 10–50x more per token than small ones. Volume matters." },
             { q: "Do you need speed?", guide: "Real-time chat needs fast responses. Batch processing can wait." },
             { q: "Is data privacy critical?", guide: "Run a local model for sensitive data. Cloud APIs send data to providers." },
           ].map((item, i) => (

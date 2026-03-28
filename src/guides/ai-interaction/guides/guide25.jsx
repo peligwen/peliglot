@@ -38,10 +38,10 @@ const items = [
   },
   {
     question: "In the agentic loop, what comes after 'Act'?",
-    answer: "Observe \u2014 check the result of the action",
-    alt1: "Plan \u2014 make a new plan from scratch",
-    alt2: "Done \u2014 the task is always complete after acting",
-    alt3: "Train \u2014 update the model's weights",
+    answer: "Observe — check the result of the action",
+    alt1: "Plan — make a new plan from scratch",
+    alt2: "Done — the task is always complete after acting",
+    alt3: "Train — update the model's weights",
   },
   {
     question: "Why can LLMs exhibit biased behavior?",
@@ -88,7 +88,7 @@ export function Guide25() {
       resultMessages={{
         high: "Excellent! You've got a solid understanding of AI interaction.",
         mid: "Good foundation! Review the guides on topics you missed.",
-        low: "Worth another pass through the guides \u2014 these concepts will serve you well.",
+        low: "Worth another pass through the guides — these concepts will serve you well.",
       }}
     />
   );

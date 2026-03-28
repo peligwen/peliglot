@@ -6,11 +6,11 @@ import { SimpleGuide } from '../../../components/SimpleGuide';
 import { Tip } from './_helpers';
 
 const tools = [
-  { name: "Web Search", icon: "\u{1F50D}", desc: "Look up current information the model wasn't trained on.", example: "What's the weather in Austin right now?" },
-  { name: "Code Execution", icon: "\u{1F4BB}", desc: "Run code and return results. Essential for math and data tasks.", example: "Calculate the standard deviation of [4, 8, 15, 16, 23, 42]." },
-  { name: "File System", icon: "\u{1F4C1}", desc: "Read, write, and search files on your machine.", example: "Find all TODO comments in the src/ directory." },
-  { name: "API Calls", icon: "\u{1F310}", desc: "Interact with external services \u2014 databases, APIs, cloud.", example: "Create a new GitHub issue for this bug." },
-  { name: "Image Generation", icon: "\u{1F3A8}", desc: "Create images from text descriptions.", example: "Draw a diagram of a microservices architecture." },
+  { name: "Web Search", icon: "🔍", desc: "Look up current information the model wasn't trained on.", example: "What's the weather in Austin right now?" },
+  { name: "Code Execution", icon: "💻", desc: "Run code and return results. Essential for math and data tasks.", example: "Calculate the standard deviation of [4, 8, 15, 16, 23, 42]." },
+  { name: "File System", icon: "📁", desc: "Read, write, and search files on your machine.", example: "Find all TODO comments in the src/ directory." },
+  { name: "API Calls", icon: "🌐", desc: "Interact with external services — databases, APIs, cloud.", example: "Create a new GitHub issue for this bug." },
+  { name: "Image Generation", icon: "🎨", desc: "Create images from text descriptions.", example: "Draw a diagram of a microservices architecture." },
 ];
 
 export function Guide13() {

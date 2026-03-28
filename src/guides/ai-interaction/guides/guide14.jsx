@@ -5,12 +5,12 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const steps = [
-  { phase: "Think", icon: "\u{1F9E0}", desc: "Analyze the task. What needs to happen? What information is missing?", color: "#1565C0" },
-  { phase: "Plan", icon: "\u{1F4DD}", desc: "Break the task into steps. Decide which tools to use and in what order.", color: "#6A1B9A" },
-  { phase: "Act", icon: "\u26A1", desc: "Execute the next step \u2014 call a tool, write code, make an API request.", color: "#00695C" },
-  { phase: "Observe", icon: "\u{1F441}\uFE0F", desc: "Read the result. Did it work? Did it return what was expected?", color: "#E65100" },
-  { phase: "Reflect", icon: "\u{1F50D}", desc: "Update the plan based on what was learned. Adjust if needed.", color: "#C62828" },
-  { phase: "Repeat", icon: "\u{1F504}", desc: "Go back to Act with the updated plan. Continue until the task is complete.", color: "#00695C" },
+  { phase: "Think", icon: "🧠", desc: "Analyze the task. What needs to happen? What information is missing?", color: "#1565C0" },
+  { phase: "Plan", icon: "📝", desc: "Break the task into steps. Decide which tools to use and in what order.", color: "#6A1B9A" },
+  { phase: "Act", icon: "⚡", desc: "Execute the next step — call a tool, write code, make an API request.", color: "#00695C" },
+  { phase: "Observe", icon: "👁️", desc: "Read the result. Did it work? Did it return what was expected?", color: "#E65100" },
+  { phase: "Reflect", icon: "🔍", desc: "Update the plan based on what was learned. Adjust if needed.", color: "#C62828" },
+  { phase: "Repeat", icon: "🔄", desc: "Go back to Act with the updated plan. Continue until the task is complete.", color: "#00695C" },
 ];
 
 export function Guide14() {
@@ -39,7 +39,7 @@ export function Guide14() {
                   {active === i && <div style={{ fontSize: 12, marginTop: 4, lineHeight: 1.6, opacity: 0.95 }}>{s.desc}</div>}
                 </div>
                 {i < steps.length - 1 && active !== i && (
-                  <span style={{ marginLeft: "auto", opacity: 0.3, fontSize: 16 }}>\u2193</span>
+                  <span style={{ marginLeft: "auto", opacity: 0.3, fontSize: 16 }}>↓</span>
                 )}
               </button>
             ))}
@@ -57,7 +57,7 @@ export function Guide14() {
             { step: "Act", text: "Read the auth middleware code." },
             { step: "Observe", text: "Found the bug: missing early return after sending 401." },
             { step: "Act", text: "Add the missing return statement." },
-            { step: "Observe", text: "Re-run test \u2014 passes." },
+            { step: "Observe", text: "Re-run test — passes." },
             { step: "Done", text: "Report the fix to the user." },
           ].map((s, i) => (
             <div key={i} style={{ display: "flex", gap: 8, marginBottom: 6 }}>
@@ -70,7 +70,7 @@ export function Guide14() {
 
       <Tip text="The quality of an agent is mostly about the quality of its loop: how well it plans, how it handles errors, and when it decides to ask for help vs. push forward." />
 
-      <Insight text="Unlike a chatbot (1 prompt \u2192 1 response), an agent might make dozens of tool calls to complete a single task. Each call feeds back into the next decision." />
+      <Insight text="Unlike a chatbot (1 prompt → 1 response), an agent might make dozens of tool calls to complete a single task. Each call feeds back into the next decision." />
     </div>
   );
 }

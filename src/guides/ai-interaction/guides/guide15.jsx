@@ -5,10 +5,10 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const strategies = [
-  { name: "Decomposition", icon: "\u{1F9E9}", desc: "Break a complex task into smaller, manageable sub-tasks that the model can handle one at a time.", example: "Instead of 'Build me a website', break into: plan pages \u2192 design layout \u2192 write HTML \u2192 add styles \u2192 test." },
-  { name: "Sequential Chaining", icon: "\u{1F517}", desc: "Feed the output of one step as input to the next. Each step focuses on one thing.", example: "Step 1: Extract key points from the article. Step 2: Organize into an outline. Step 3: Write each section." },
-  { name: "Verification", icon: "\u2705", desc: "After each step, check the result before proceeding. Catch errors early.", example: "After writing code, run the tests. If they fail, debug before moving to the next feature." },
-  { name: "Backtracking", icon: "\u21A9\uFE0F", desc: "If a step fails or produces poor results, go back and try a different approach.", example: "If the regex approach doesn't handle edge cases, switch to a parser instead of patching the regex." },
+  { name: "Decomposition", icon: "🧩", desc: "Break a complex task into smaller, manageable sub-tasks that the model can handle one at a time.", example: "Instead of 'Build me a website', break into: plan pages → design layout → write HTML → add styles → test." },
+  { name: "Sequential Chaining", icon: "🔗", desc: "Feed the output of one step as input to the next. Each step focuses on one thing.", example: "Step 1: Extract key points from the article. Step 2: Organize into an outline. Step 3: Write each section." },
+  { name: "Verification", icon: "✅", desc: "After each step, check the result before proceeding. Catch errors early.", example: "After writing code, run the tests. If they fail, debug before moving to the next feature." },
+  { name: "Backtracking", icon: "↩️", desc: "If a step fails or produces poor results, go back and try a different approach.", example: "If the regex approach doesn't handle edge cases, switch to a parser instead of patching the regex." },
 ];
 
 export function Guide15() {
@@ -16,7 +16,7 @@ export function Guide15() {
     <div>
       <DarkBox title="THE BIG IDEA">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
-          Complex tasks require <strong>multi-step reasoning</strong> \u2014 the ability to break problems into smaller pieces,
+          Complex tasks require <strong>multi-step reasoning</strong> — the ability to break problems into smaller pieces,
           solve each piece, and combine the results. This is where AI agents really shine.
         </div>
       </DarkBox>

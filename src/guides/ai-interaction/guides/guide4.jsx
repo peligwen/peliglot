@@ -83,7 +83,7 @@ export function Guide4() {
         </div>
       </Card>
 
-      <Tip text="For most tasks, you don't need to touch temperature. The default (usually 0.7\u20131.0) works well. Only lower it when you need exact, repeatable answers." />
+      <Tip text="For most tasks, you don't need to touch temperature. The default (usually 0.7–1.0) works well. Only lower it when you need exact, repeatable answers." />
 
       <Insight text="'Top-p' (nucleus sampling) is another knob that limits which tokens are considered. Temperature and top-p together control the randomness-creativity spectrum." />
     </div>

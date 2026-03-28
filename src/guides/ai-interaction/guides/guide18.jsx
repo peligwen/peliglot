@@ -5,10 +5,10 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const workflows = [
-  { name: "Code Completion", icon: "\u270D\uFE0F", desc: "Inline suggestions as you type. Predicts the next line or block.", tools: "Copilot, Codeium, Supermaven", best: "Boilerplate, repetitive patterns, test scaffolding." },
-  { name: "Chat Assistants", icon: "\u{1F4AC}", desc: "Conversational coding help. Explain, debug, refactor through dialogue.", tools: "Claude, ChatGPT, Gemini", best: "Design decisions, debugging, learning new APIs." },
-  { name: "Agentic Coding", icon: "\u{1F916}", desc: "AI reads your codebase, edits files, runs tests, and iterates autonomously.", tools: "Claude Code, Cursor, Windsurf", best: "Multi-file changes, refactoring, implementing features." },
-  { name: "Code Review", icon: "\u{1F50D}", desc: "AI reviews diffs for bugs, style issues, and security vulnerabilities.", tools: "PR review bots, inline analysis", best: "Catching bugs before merge, enforcing standards." },
+  { name: "Code Completion", icon: "✍️", desc: "Inline suggestions as you type. Predicts the next line or block.", tools: "Copilot, Codeium, Supermaven", best: "Boilerplate, repetitive patterns, test scaffolding." },
+  { name: "Chat Assistants", icon: "💬", desc: "Conversational coding help. Explain, debug, refactor through dialogue.", tools: "Claude, ChatGPT, Gemini", best: "Design decisions, debugging, learning new APIs." },
+  { name: "Agentic Coding", icon: "🤖", desc: "AI reads your codebase, edits files, runs tests, and iterates autonomously.", tools: "Claude Code, Cursor, Windsurf", best: "Multi-file changes, refactoring, implementing features." },
+  { name: "Code Review", icon: "🔍", desc: "AI reviews diffs for bugs, style issues, and security vulnerabilities.", tools: "PR review bots, inline analysis", best: "Catching bugs before merge, enforcing standards." },
 ];
 
 export function Guide18() {
@@ -55,10 +55,10 @@ export function Guide18() {
 
       <ExpandSection label="What AI coding can't do (yet)" color="#00695C">
         <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
-          <div style={{ marginBottom: 8 }}>\u2022 <strong>Understand your business domain</strong> deeply \u2014 it needs you to explain what matters and why.</div>
-          <div style={{ marginBottom: 8 }}>\u2022 <strong>Make architectural decisions</strong> with full confidence \u2014 it can propose, but you should decide.</div>
-          <div style={{ marginBottom: 8 }}>\u2022 <strong>Guarantee correctness</strong> \u2014 generated code needs testing and review, just like human code.</div>
-          <div>\u2022 <strong>Replace understanding</strong> \u2014 using AI to write code you don't understand creates a maintenance problem.</div>
+          <div style={{ marginBottom: 8 }}>• <strong>Understand your business domain</strong> deeply — it needs you to explain what matters and why.</div>
+          <div style={{ marginBottom: 8 }}>• <strong>Make architectural decisions</strong> with full confidence — it can propose, but you should decide.</div>
+          <div style={{ marginBottom: 8 }}>• <strong>Guarantee correctness</strong> — generated code needs testing and review, just like human code.</div>
+          <div>• <strong>Replace understanding</strong> — using AI to write code you don't understand creates a maintenance problem.</div>
         </div>
       </ExpandSection>
 

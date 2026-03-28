@@ -5,9 +5,9 @@ import { ExpandSection } from '../../../components/ExpandSection';
 import { Tip } from './_helpers';
 
 const costs = [
-  { phase: "Training", icon: "\u{1F3CB}\uFE0F", energy: "High", desc: "Training a large model once can use as much energy as hundreds of homes use in a year.", note: "GPT-4-scale training: estimated 50+ GWh" },
-  { phase: "Inference", icon: "\u{1F4AC}", energy: "Low per query", desc: "Each query uses a small amount of energy, but billions of queries add up.", note: "One query \u2248 10x a Google search in energy" },
-  { phase: "Hardware", icon: "\u{1F5A5}\uFE0F", energy: "Embodied", desc: "Manufacturing GPUs and building data centers has its own carbon footprint.", note: "Rare earth mining, water cooling, chip fabrication" },
+  { phase: "Training", icon: "🏋️", energy: "High", desc: "Training a large model once can use as much energy as hundreds of homes use in a year.", note: "GPT-4-scale training: estimated 50+ GWh" },
+  { phase: "Inference", icon: "💬", energy: "Low per query", desc: "Each query uses a small amount of energy, but billions of queries add up.", note: "One query ≈ 10x a Google search in energy" },
+  { phase: "Hardware", icon: "🖥️", energy: "Embodied", desc: "Manufacturing GPUs and building data centers has its own carbon footprint.", note: "Rare earth mining, water cooling, chip fabrication" },
 ];
 
 export function Guide22() {
@@ -55,13 +55,13 @@ export function Guide22() {
       <ExpandSection label="Putting it in perspective" color="#C62828">
         <div style={{ fontSize: 13, lineHeight: 1.7, padding: "8px 0" }}>
           <div style={{ marginBottom: 8 }}>AI's energy use is real but should be compared to alternatives:</div>
-          <div style={{ marginBottom: 8 }}>\u2022 Video streaming, cryptocurrency mining, and air travel each have larger total carbon footprints globally.</div>
-          <div style={{ marginBottom: 8 }}>\u2022 AI can also <em>reduce</em> emissions by optimizing energy grids, logistics, and building systems.</div>
+          <div style={{ marginBottom: 8 }}>• Video streaming, cryptocurrency mining, and air travel each have larger total carbon footprints globally.</div>
+          <div style={{ marginBottom: 8 }}>• AI can also <em>reduce</em> emissions by optimizing energy grids, logistics, and building systems.</div>
           <div>The question isn't whether to use AI, but whether its benefits justify its costs in each application.</div>
         </div>
       </ExpandSection>
 
-      <Tip text="Good prompt engineering isn't just about better results \u2014 it's about efficiency. Fewer retries means less compute, less energy, and lower costs." />
+      <Tip text="Good prompt engineering isn't just about better results — it's about efficiency. Fewer retries means less compute, less energy, and lower costs." />
 
       <Insight text="Data centers also use massive amounts of water for cooling. A single large data center can use millions of gallons per day, impacting local water resources." />
     </div>

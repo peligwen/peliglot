@@ -24,7 +24,7 @@ export function Guide9() {
           <PromptBox
             label="With Chain of Thought"
             prompt={"A store has 23 apples. They buy 6 boxes of 8.\nThen sell 15. How many apples remain?\n\nLet's think step by step."}
-            response={"Start with 23 apples.\nBought 6 \u00D7 8 = 48 apples.\nTotal: 23 + 48 = 71.\nSold 15.\nRemaining: 71 \u2212 15 = 56. \u2705"}
+            response={"Start with 23 apples.\nBought 6 × 8 = 48 apples.\nTotal: 23 + 48 = 71.\nSold 15.\nRemaining: 71 − 15 = 56. ✅"}
             color="#6A1B9A"
           />
           <div style={{ fontSize: 12, color: "#666", marginTop: 6, lineHeight: 1.5 }}>
