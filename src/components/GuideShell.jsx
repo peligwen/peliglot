@@ -1,5 +1,28 @@
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useGuideNavigation } from '../hooks/useGuideNavigation';
 import { lightTheme } from '../styles/themes';
+
+function fuzzyScore(query, text) {
+  const q = query.toLowerCase();
+  const t = text.toLowerCase();
+  if (t.includes(q)) return 100 - t.indexOf(q);
+  let qi = 0, score = 0;
+  for (let ti = 0; ti < t.length && qi < q.length; ti++) {
+    if (t[ti] === q[qi]) {
+      score += (ti === 0 || t[ti - 1] === ' ') ? 10 : 1;
+      qi++;
+    }
+  }
+  return qi === q.length ? score : 0;
+}
+
+function guideScore(g, query) {
+  return Math.max(
+    fuzzyScore(query, g.title) * 1.2,
+    fuzzyScore(query, g.subtitle),
+    fuzzyScore(query, g.cat) * 0.8
+  );
+}
 
 export function GuideShell({
   guidesMeta,
@@ -15,6 +38,23 @@ export function GuideShell({
   const { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next } = useGuideNavigation(total, storageKey);
   const meta = guidesMeta[page];
   const GuideComp = guideComponents[page];
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const searchRef = useRef(null);
+
+  const searchResults = useMemo(() => {
+    const q = searchTerm.trim();
+    if (!q) return null;
+    return guidesMeta
+      .map(g => ({ ...g, score: guideScore(g, q) }))
+      .filter(r => r.score > 0)
+      .sort((a, b) => b.score - a.score);
+  }, [searchTerm, guidesMeta]);
+
+  useEffect(() => {
+    if (menuOpen && searchRef.current) searchRef.current.focus();
+    if (!menuOpen) setSearchTerm('');
+  }, [menuOpen]);
 
   return (
     <div style={{
@@ -127,7 +167,12 @@ export function GuideShell({
       {/* SIDE MENU */}
       <aside
         id="sidebar-menu" role="navigation" aria-label="Guide list"
-        onKeyDown={e => { if (e.key === 'Escape') setMenuOpen(false); }}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            if (searchTerm) { setSearchTerm(''); searchRef.current?.focus(); }
+            else setMenuOpen(false);
+          }
+        }}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
           background: theme.sidebarBg, zIndex: 30,
@@ -141,51 +186,121 @@ export function GuideShell({
           <div style={{ fontSize: 18, fontWeight: 800, color: theme.textPrimary }}>{sidebarTitle}</div>
           <div style={{ fontSize: 12, color: theme.textSecondary }}>{sidebarSubtitle}</div>
         </div>
+        <div style={{ padding: '8px 12px', flexShrink: 0, borderBottom: `1px solid ${theme.borderColor}`, position: 'relative' }}>
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder="Search guides..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%', padding: '7px 28px 7px 10px', fontSize: 13,
+              border: `1.5px solid ${theme.borderColor}`, borderRadius: 8,
+              background: theme.buttonBg, color: theme.textPrimary,
+              outline: 'none', fontFamily: theme.shellFont,
+            }}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => { setSearchTerm(''); searchRef.current?.focus(); }}
+              aria-label="Clear search"
+              style={{
+                position: 'absolute', right: 18, top: '50%', transform: 'translateY(-50%)',
+                border: 'none', background: 'none', cursor: 'pointer',
+                fontSize: 14, color: theme.textSecondary, padding: 2, lineHeight: 1,
+              }}
+            >{'\u00d7'}</button>
+          )}
+        </div>
         <div style={{ flex: 1, overflow: 'auto', padding: '8px 0' }}>
-          {categories.map(cat => {
-            const items = guidesMeta.filter(g => g.cat === cat);
-            return (
-              <div key={cat}>
-                <div
-                  role="heading" aria-level="2"
-                  style={{ padding: '6px 20px', fontSize: 10, fontWeight: 700, color: catColors[cat], textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4 }}
-                >
-                  {cat}
-                </div>
-                {items.map(g => {
-                  const idx = g.id - 1;
-                  const isActive = idx === page;
-                  return (
-                    <button
-                      key={g.id} onClick={() => goTo(idx)}
-                      aria-current={isActive ? 'page' : undefined}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-                        padding: '8px 20px', border: 'none',
-                        background: isActive ? theme.sidebarActiveItemBg : 'transparent',
-                        cursor: 'pointer', textAlign: 'left',
-                        borderLeft: isActive ? `3px solid ${g.color}` : '3px solid transparent',
-                        color: theme.sidebarItemText,
-                      }}
-                    >
-                      <span style={{ fontSize: 14, width: 22, textAlign: 'center' }}>{g.icon}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: 13, fontWeight: isActive ? 800 : 600,
-                          color: isActive ? (theme.sidebarItemActiveText || g.color) : theme.sidebarItemText,
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                        }}>
-                          {g.subtitle}
-                        </div>
-                        <div style={{ fontSize: 10, color: theme.sidebarSubText, fontStyle: 'italic' }}>{g.title}</div>
-                      </div>
-                      <span style={{ fontSize: 10, color: theme.buttonDisabledText, fontWeight: 600 }}>{g.id}</span>
-                    </button>
-                  );
-                })}
+          {searchResults !== null ? (
+            searchResults.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: theme.textSecondary, fontSize: 13 }}>
+                No guides found
               </div>
-            );
-          })}
+            ) : (
+              searchResults.map(g => {
+                const idx = g.id - 1;
+                const isActive = idx === page;
+                return (
+                  <button
+                    key={g.id} onClick={() => goTo(idx)}
+                    aria-current={isActive ? 'page' : undefined}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                      padding: '8px 20px', border: 'none',
+                      background: isActive ? theme.sidebarActiveItemBg : 'transparent',
+                      cursor: 'pointer', textAlign: 'left',
+                      borderLeft: isActive ? `3px solid ${g.color}` : '3px solid transparent',
+                      color: theme.sidebarItemText,
+                    }}
+                  >
+                    <span style={{ fontSize: 14, width: 22, textAlign: 'center' }}>{g.icon}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: 13, fontWeight: isActive ? 800 : 600,
+                        color: isActive ? (theme.sidebarItemActiveText || g.color) : theme.sidebarItemText,
+                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                      }}>
+                        {g.subtitle}
+                      </div>
+                      <div style={{ fontSize: 10, color: theme.sidebarSubText, fontStyle: 'italic' }}>{g.title}</div>
+                    </div>
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, color: catColors[g.cat],
+                      background: catColors[g.cat] + '18', padding: '1px 6px',
+                      borderRadius: 4, whiteSpace: 'nowrap',
+                    }}>{g.cat}</span>
+                  </button>
+                );
+              })
+            )
+          ) : (
+            categories.map(cat => {
+              const items = guidesMeta.filter(g => g.cat === cat);
+              return (
+                <div key={cat}>
+                  <div
+                    role="heading" aria-level="2"
+                    style={{ padding: '6px 20px', fontSize: 10, fontWeight: 700, color: catColors[cat], textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4 }}
+                  >
+                    {cat}
+                  </div>
+                  {items.map(g => {
+                    const idx = g.id - 1;
+                    const isActive = idx === page;
+                    return (
+                      <button
+                        key={g.id} onClick={() => goTo(idx)}
+                        aria-current={isActive ? 'page' : undefined}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                          padding: '8px 20px', border: 'none',
+                          background: isActive ? theme.sidebarActiveItemBg : 'transparent',
+                          cursor: 'pointer', textAlign: 'left',
+                          borderLeft: isActive ? `3px solid ${g.color}` : '3px solid transparent',
+                          color: theme.sidebarItemText,
+                        }}
+                      >
+                        <span style={{ fontSize: 14, width: 22, textAlign: 'center' }}>{g.icon}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            fontSize: 13, fontWeight: isActive ? 800 : 600,
+                            color: isActive ? (theme.sidebarItemActiveText || g.color) : theme.sidebarItemText,
+                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          }}>
+                            {g.subtitle}
+                          </div>
+                          <div style={{ fontSize: 10, color: theme.sidebarSubText, fontStyle: 'italic' }}>{g.title}</div>
+                        </div>
+                        <span style={{ fontSize: 10, color: theme.buttonDisabledText, fontWeight: 600 }}>{g.id}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })
+          )}
         </div>
       </aside>
     </div>
