@@ -34,28 +34,6 @@ export function LandingPage() {
           No accounts, no ads, no tracking. Just open and learn.
         </p>
         <span className="tag">Free & Open Source</span>
-        <div style={{ marginTop: 20, maxWidth: 400, marginLeft: 'auto', marginRight: 'auto' }}>
-          <input
-            type="search" id="guide-search" placeholder="Search guides..."
-            aria-label="Search guides"
-            className="search-input"
-            onChange={(e) => {
-              const q = e.target.value.toLowerCase().trim();
-              document.querySelectorAll('.guide-card').forEach(card => {
-                card.style.display = card.textContent.toLowerCase().includes(q) || q === '' ? '' : 'none';
-              });
-              document.querySelectorAll('.section-label').forEach(label => {
-                let next = label.nextElementSibling;
-                let hasVisible = false;
-                while (next && !next.classList.contains('section-label')) {
-                  if (next.classList.contains('guide-card') && next.style.display !== 'none') hasVisible = true;
-                  next = next.nextElementSibling;
-                }
-                label.style.display = hasVisible || q === '' ? '' : 'none';
-              });
-            }}
-          />
-        </div>
       </header>
 
       <main id="guides" role="main" className="guides">
