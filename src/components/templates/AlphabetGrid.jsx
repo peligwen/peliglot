@@ -18,6 +18,7 @@ import { DarkBox } from '../DarkBox';
  *   borderFn      — optional (letter) => string, custom border for unselected items
  *   badgeFn       — optional (letter) => {color} | null, shows a small dot indicator
  *   speakFn       — optional (text) => void, called on letter tap
+ *   speakKey      — field name for text passed to speakFn (default: letterKey)
  *   introTitle    — optional DarkBox title string
  *   introContent  — optional JSX inside DarkBox
  *   footerContent — optional JSX below the grid
@@ -38,6 +39,7 @@ export function AlphabetGrid({
   borderFn,
   badgeFn,
   speakFn,
+  speakKey,
   introTitle,
   introContent,
   footerContent,
@@ -83,7 +85,7 @@ export function AlphabetGrid({
           return (
             <button key={ch ?? i} onClick={() => {
               setSel(isSel ? null : i);
-              if (!isSel && speakFn) speakFn(ch);
+              if (!isSel && speakFn) speakFn(speakKey ? lt[speakKey] : ch);
             }} style={{
               aspectRatio: "1",
               border: isSel ? `2.5px solid ${primaryColor}` : customBorder || "1.5px solid #e0dcd5",

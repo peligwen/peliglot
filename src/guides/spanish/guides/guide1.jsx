@@ -58,6 +58,7 @@ export function Guide1() {
       accentFn={l=>vowels.includes(l.letter)}
       badgeFn={l=>l.tricky?{color:"#D4A843"}:null}
       speakFn={speakSpanish}
+      speakKey="name"
       gridMin="56px"
       footerContent={<VowelBar/>}
     />
