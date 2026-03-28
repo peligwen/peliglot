@@ -35,13 +35,30 @@ export function useGuideNavigation(total, storageKey) {
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
-    let startX = 0;
+    let startX = null;
     let startY = 0;
+    const isInteractive = (node) => {
+      while (node && node !== el) {
+        const tag = node.tagName;
+        if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return true;
+        if (node.getAttribute('role') === 'button' || node.isContentEditable) return true;
+        if (node.dataset && node.dataset.noSwipe !== undefined) return true;
+        const style = window.getComputedStyle(node);
+        if (style.overflowX === 'auto' || style.overflowX === 'scroll') return true;
+        node = node.parentElement;
+      }
+      return false;
+    };
     const onTouchStart = (e) => {
+      if (isInteractive(e.target)) {
+        startX = null;
+        return;
+      }
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
     };
     const onTouchEnd = (e) => {
+      if (startX === null) return;
       const dx = e.changedTouches[0].clientX - startX;
       const dy = e.changedTouches[0].clientY - startY;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
