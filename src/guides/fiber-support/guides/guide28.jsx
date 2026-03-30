@@ -31,9 +31,9 @@ export function Guide28() {
       <Card color="#1565C0" title="Customer Search Methods" subtitle="Multiple ways to find an account">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {searchMethods.map((s, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#4FC3F7" }}>{s.method}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 4 }}>{s.tip}</div>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#0277BD" }}>{s.method}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.tip}</div>
             </div>
           ))}
         </div>

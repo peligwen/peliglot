@@ -12,24 +12,24 @@ export function Guide37() {
 
       <Card color="#2E7D32" title="Nokia ONT LEDs" subtitle="Common LED meanings">
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#81C784", marginBottom: 8 }}>Power</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>Power</div>
           <LEDIndicator label="Green solid = Power OK" color="#4CAF50" status="solid" />
           <LEDIndicator label="Off = No power to ONT" color="#555" status="solid" />
         </div>
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#81C784", marginBottom: 8 }}>PON</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>PON</div>
           <LEDIndicator label="Green solid = Registered on OLT" color="#4CAF50" status="solid" />
           <LEDIndicator label="Green blink = Trying to register" color="#4CAF50" status="blink" />
           <LEDIndicator label="Off = No optical signal" color="#555" status="solid" />
         </div>
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#81C784", marginBottom: 8 }}>LAN</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>LAN</div>
           <LEDIndicator label="Green solid = Ethernet link up" color="#4CAF50" status="solid" />
           <LEDIndicator label="Green blink = Active traffic" color="#4CAF50" status="blink" />
           <LEDIndicator label="Off = No device connected" color="#555" status="solid" />
         </div>
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#81C784", marginBottom: 8 }}>Phone</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>Phone</div>
           <LEDIndicator label="Green solid = Voice registered" color="#4CAF50" status="solid" />
           <LEDIndicator label="Off = No voice service" color="#555" status="solid" />
         </div>

@@ -36,22 +36,22 @@ export function Guide9() {
       </DarkBox>
 
       <Card color="#1565C0" title="Chassis Layout" subtitle="FX-4 Example — tap a slot">
-        <div style={{ display: "flex", gap: 4, padding: 12, background: "#0D1F33", borderRadius: 10, overflowX: "auto" }}>
+        <div style={{ display: "flex", gap: 4, padding: 12, background: "#D6EAF8", borderRadius: 10, overflowX: "auto" }}>
           {slots.map(s => (
             <div key={s.id} onClick={() => setSelectedSlot(selectedSlot === s.id ? null : s.id)}
               style={{
                 flex: 1, minWidth: 56, padding: "14px 6px", borderRadius: 8, cursor: "pointer",
                 textAlign: "center", fontSize: 11, fontWeight: 700, transition: "all 0.2s",
-                background: selectedSlot === s.id ? s.color : "#132D4A",
-                color: selectedSlot === s.id ? "#fff" : "#8BACC8",
-                border: `2px solid ${selectedSlot === s.id ? s.color : "#1A3A5C"}`,
+                background: selectedSlot === s.id ? s.color : "#fff",
+                color: selectedSlot === s.id ? "#fff" : "#2C3E50",
+                border: `2px solid ${selectedSlot === s.id ? s.color : "#AED6F1"}`,
               }}>
               {s.label}
             </div>
           ))}
         </div>
         {sel && (
-          <div style={{ marginTop: 10, padding: 12, borderRadius: 8, background: "#132D4A", border: `1px solid ${sel.color}`, fontSize: 13, color: "#B0BEC5", lineHeight: 1.6 }}>
+          <div style={{ marginTop: 10, padding: 12, borderRadius: 8, background: "#fff", border: `1px solid ${sel.color}`, fontSize: 13, color: "#333", lineHeight: 1.6 }}>
             <strong style={{ color: sel.color }}>{sel.label}:</strong> {sel.detail}
           </div>
         )}
@@ -62,7 +62,7 @@ export function Guide9() {
       </Card>
 
       <Card color="#2E7D32" title="High Availability" subtitle="Redundancy features">
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#E0E0E0" }}>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#333" }}>
           <div style={{ marginBottom: 8 }}><Term>Redundant NT cards</Term> — NT-A (active) and NT-B (standby) provide hitless switchover. Control plane state is synchronized continuously.</div>
           <div style={{ marginBottom: 8 }}><Term>1+1 Power</Term> — Dual -48VDC feeds ensure operation if one supply fails. Monitor via AMS power alarms.</div>
           <div><Term>Card Protection</Term> — If a line card fails, AMS raises an equipment alarm. The card can be hot-swapped without chassis reboot.</div>
@@ -71,7 +71,7 @@ export function Guide9() {
       </Card>
 
       <Card color="#6A1B9A" title="Support Agent Checklist" subtitle="What to verify in AMS for OLT issues">
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#E0E0E0" }}>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#333" }}>
           <div>1. Confirm which <Term>shelf/rack</Term> the OLT belongs to in the device tree</div>
           <div>2. Check NT card status — both should show <span style={{ color: "#4CAF50" }}>In-Service</span></div>
           <div>3. Review active alarms filtered to that shelf for equipment or environment faults</div>

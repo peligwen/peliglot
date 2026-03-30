@@ -43,19 +43,19 @@ export function Guide35() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8, marginTop: 14 }}>
           {systems.map(s => (
             <button key={s.id} onClick={() => setSelected(s.id === selected ? null : s.id)} style={{
-              background: selected === s.id ? "#1A3A5C" : "#132D4A", border: selected === s.id ? "2px solid #4FC3F7" : "1px solid #1A3A5C",
+              background: selected === s.id ? "#AED6F1" : "#fff", border: selected === s.id ? "2px solid #0277BD" : "1px solid #AED6F1",
               borderRadius: 10, padding: 10, cursor: "pointer", textAlign: "center",
             }}>
               <div style={{ fontSize: 24 }}>{s.icon}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#4FC3F7", marginTop: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 10, color: "#8BACC8" }}>{s.sub}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#0277BD", marginTop: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: "#2C3E50" }}>{s.sub}</div>
             </button>
           ))}
         </div>
         {sel && (
-          <div style={{ background: "#1A3A5C", borderRadius: 10, padding: 14, marginTop: 12, border: "1px solid #4FC3F7" }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#4FC3F7", marginBottom: 6 }}>{sel.icon} {sel.label}</div>
-            <div style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>{sel.detail}</div>
+          <div style={{ background: "#AED6F1", borderRadius: 10, padding: 14, marginTop: 12, border: "1px solid #0277BD" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#0277BD", marginBottom: 6 }}>{sel.icon} {sel.label}</div>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>{sel.detail}</div>
           </div>
         )}
       </Card>
@@ -63,9 +63,9 @@ export function Guide35() {
       <Card color="#2E7D32" title="Common Scenarios" subtitle="Which systems are involved in each workflow">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {scenarios.map((s, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#81C784" }}>{s.name}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 4 }}>{s.flow}</div>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32" }}>{s.name}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.flow}</div>
             </div>
           ))}
         </div>

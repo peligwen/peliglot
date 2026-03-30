@@ -11,12 +11,12 @@ export function Guide43() {
       </DarkBox>
 
       <Card color="#C62828" title="When to Escalate" subtitle="Recognize the signals">
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#E0F7FA" }}>Exhausted standard troubleshooting</strong> — you have followed the decision trees and still cannot resolve</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Hardware failure</strong> — ONT, OLT card, or other equipment needs replacement</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Plant / fiber issue</strong> — bad optical levels, fiber cut, or physical damage</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Provisioning system error</strong> — system won't accept configuration or order is stuck</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Repeated issue</strong> — same customer calling for the same problem multiple times</li>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
+          <li><strong style={{ color: "#1a1a1a" }}>Exhausted standard troubleshooting</strong> — you have followed the decision trees and still cannot resolve</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Hardware failure</strong> — ONT, OLT card, or other equipment needs replacement</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Plant / fiber issue</strong> — bad optical levels, fiber cut, or physical damage</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Provisioning system error</strong> — system won't accept configuration or order is stuck</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Repeated issue</strong> — same customer calling for the same problem multiple times</li>
         </ul>
         <Warning text="Do not escalate without documenting what you have already tried. An escalation without troubleshooting details just bounces back to you." />
       </Card>
@@ -56,7 +56,7 @@ export function Guide43() {
           "System checks: MSAP/service config status, iVue order status, any errors found",
           "Your assessment: what you believe the issue is based on your investigation",
         ]} />
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginTop: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginTop: 12 }}>
           A complete escalation should answer: <Term>What is happening?</Term> <Term>What did you check?</Term> <Term>What do you think is wrong?</Term>
         </p>
       </Card>

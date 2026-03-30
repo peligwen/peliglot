@@ -37,14 +37,14 @@ export function Guide2() {
       </Card>
 
       <Card color="#00838F" title="Traffic Flow" subtitle="How data moves in PON">
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#4FC3F7", marginBottom: 6 }}>⬇ Downstream (OLT → ONTs)</div>
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#0277BD", marginBottom: 6 }}>⬇ Downstream (OLT → ONTs)</div>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 16 }}>
           The OLT <Term>broadcasts</Term> all downstream data to every ONT on the PON. Each frame is
           tagged with an identifier — ONTs only process packets addressed to them and discard the rest.
           This is similar to how a radio station broadcasts but each receiver tunes to its channel.
         </p>
         <div style={{ fontSize: 14, fontWeight: 700, color: "#FFB74D", marginBottom: 6 }}>⬆ Upstream (ONTs → OLT)</div>
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 16 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 16 }}>
           Multiple ONTs share the same fiber back to the OLT, so they use <Term>TDMA</Term> (Time Division
           Multiple Access). The OLT assigns precise time slots to each ONT — each one transmits only during
           its window, preventing collisions.
@@ -64,16 +64,16 @@ export function Guide2() {
             <div key={s.ratio} onClick={() => setRatioIdx(ratioIdx === i ? null : i)}
               style={{
                 padding: "12px 16px", borderRadius: 10, cursor: "pointer",
-                background: ratioIdx === i ? "#6A1B9A33" : "#0D1F33",
-                border: `1px solid ${ratioIdx === i ? "#CE93D8" : "#1A3A5C"}`,
+                background: ratioIdx === i ? "#6A1B9A33" : "#D6EAF8",
+                border: `1px solid ${ratioIdx === i ? "#CE93D8" : "#AED6F1"}`,
                 transition: "all 0.2s",
               }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: "#E0F7FA" }}>{s.ratio}</span>
-                <span style={{ fontSize: 12, color: "#4FC3F7" }}>{s.customers} customers</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>{s.ratio}</span>
+                <span style={{ fontSize: 12, color: "#0277BD" }}>{s.customers} customers</span>
               </div>
               {ratioIdx === i && (
-                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#B0BEC5" }}>
+                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#333" }}>
                   <div><strong style={{ color: "#CE93D8" }}>Bandwidth per user:</strong> {s.bw}</div>
                   <div><strong style={{ color: "#CE93D8" }}>Typical use:</strong> {s.use}</div>
                 </div>
@@ -85,7 +85,7 @@ export function Guide2() {
       </Card>
 
       <Card color="#37474F" title="PON vs Active Ethernet" subtitle="Quick comparison">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid #1A3A5C" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid #AED6F1" }}>
           {[
             ["PON (Passive)", "Active Ethernet"],
             ["Shared fiber via splitters", "Dedicated fiber per customer"],
@@ -96,8 +96,8 @@ export function Guide2() {
           ].map((row, i) => row.map((cell, j) => (
             <div key={`${i}-${j}`} style={{
               padding: "8px 12px", fontSize: 12, lineHeight: 1.5,
-              background: i === 0 ? (j === 0 ? "#1565C033" : "#00838F33") : "#0D1F33",
-              color: i === 0 ? (j === 0 ? "#64B5F6" : "#4DD0E1") : "#B0BEC5",
+              background: i === 0 ? (j === 0 ? "#1565C033" : "#00838F33") : "#D6EAF8",
+              color: i === 0 ? (j === 0 ? "#64B5F6" : "#4DD0E1") : "#333",
               fontWeight: i === 0 ? 700 : 400,
             }}>{cell}</div>
           )))}

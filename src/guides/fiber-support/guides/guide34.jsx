@@ -41,7 +41,7 @@ export function Guide34() {
             ["Full Desktop", "Complete Windows desktop in Citrix", "Using multiple apps simultaneously"],
           ]}
         />
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc", marginTop: 10 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginTop: 10 }}>
           Most agents use the <Term>Full Desktop</Term> mode since support work typically requires
           switching between iVue, AMS/SMx, and other tools throughout the day.
         </p>
@@ -50,9 +50,9 @@ export function Guide34() {
       <Card color="#D84315" title="Common Citrix Issues" subtitle="Troubleshooting your own connection">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {commonIssues.map((c, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#FF8A65" }}>{c.issue}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 4 }}>{c.fix}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{c.fix}</div>
             </div>
           ))}
         </div>

@@ -12,15 +12,15 @@ export function Guide36() {
       </DarkBox>
 
       <Card color="#1565C0" title="Reading Optical Levels" subtitle="AMS (Nokia) & Calix Cloud">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           In <Term>AMS</Term>, navigate to the ONT and check the <Term>Optics</Term> tab.
           In <Term>Calix Cloud</Term>, open the subscriber device and look under Diagnostics → Optical.
           Key values to check:
         </p>
-        <ul style={{ fontSize: 13, lineHeight: 1.8, color: "#B0BEC5", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#4FC3F7" }}>ONT Rx Power:</strong> Signal received by the ONT from the OLT. Normal range: <Term>-8 to -25 dBm</Term></li>
-          <li><strong style={{ color: "#4FC3F7" }}>ONT Tx Power:</strong> Signal transmitted by the ONT. Normal range: <Term>+0.5 to +5 dBm</Term></li>
-          <li><strong style={{ color: "#4FC3F7" }}>OLT Rx Power:</strong> Signal the OLT receives from the ONT — useful for isolating direction of loss</li>
+        <ul style={{ fontSize: 13, lineHeight: 1.8, color: "#333", paddingLeft: 20 }}>
+          <li><strong style={{ color: "#0277BD" }}>ONT Rx Power:</strong> Signal received by the ONT from the OLT. Normal range: <Term>-8 to -25 dBm</Term></li>
+          <li><strong style={{ color: "#0277BD" }}>ONT Tx Power:</strong> Signal transmitted by the ONT. Normal range: <Term>+0.5 to +5 dBm</Term></li>
+          <li><strong style={{ color: "#0277BD" }}>OLT Rx Power:</strong> Signal the OLT receives from the ONT — useful for isolating direction of loss</li>
         </ul>
       </Card>
 
@@ -38,12 +38,12 @@ export function Guide36() {
       </Card>
 
       <Card color="#00838F" title="Common Loss Sources" subtitle="What degrades optical signal">
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#E0F7FA" }}>Dirty connectors</strong> — most common cause of unexpected loss; cleaning often restores signal</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Bad splices</strong> — a splice with high loss from poor fusion or mechanical splice</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Macrobends</strong> — fiber bent too tightly (around corners, staples, tight coils)</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Damaged fiber</strong> — crushed, cut, or rodent-chewed cable</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Excessive splitter loss</strong> — too many splits or a faulty splitter</li>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
+          <li><strong style={{ color: "#1a1a1a" }}>Dirty connectors</strong> — most common cause of unexpected loss; cleaning often restores signal</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Bad splices</strong> — a splice with high loss from poor fusion or mechanical splice</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Macrobends</strong> — fiber bent too tightly (around corners, staples, tight coils)</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Damaged fiber</strong> — crushed, cut, or rodent-chewed cable</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Excessive splitter loss</strong> — too many splits or a faulty splitter</li>
         </ul>
       </Card>
 

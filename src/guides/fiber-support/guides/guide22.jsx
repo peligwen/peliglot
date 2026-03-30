@@ -22,7 +22,7 @@ export function Guide22() {
       </DarkBox>
 
       <Card color="#1565C0" title="What Metaswitch Does" subtitle="Core role in FTTH voice">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           In a fiber-to-the-home network, Metaswitch acts as the central voice platform. When a
           subscriber picks up their phone, the analog signal travels from the handset through the
           ONT's <Term>FXS port</Term>, gets converted to <Term>SIP</Term> (Session Initiation Protocol),
@@ -46,17 +46,17 @@ export function Guide22() {
             { icon: "👥", name: "3-Way Calling", desc: "Conference bridge for three parties" },
             { icon: "↪️", name: "Call Forwarding", desc: "Forward to any number on busy/no-answer" },
           ].map((f, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{f.icon}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#E0F7FA" }}>{f.name}</div>
-              <div style={{ fontSize: 11, color: "#4A7A9B", marginTop: 4 }}>{f.desc}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a" }}>{f.name}</div>
+              <div style={{ fontSize: 11, color: "#5D6D7E", marginTop: 4 }}>{f.desc}</div>
             </div>
           ))}
         </div>
       </Card>
 
       <Card color="#2E7D32" title="SIP-Based Call Control" subtitle="How calls are established">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           Metaswitch uses the <Term>SIP protocol</Term> for call setup, modification, and teardown.
           When a subscriber dials a number, the ONT sends a SIP INVITE to Metaswitch, which
           authenticates the subscriber, applies dial plan rules, and routes the call to the destination

@@ -35,7 +35,7 @@ export function Guide11() {
           headers={["Model", "Type", "GE", "FXS", "RF", "Wi-Fi"]}
           rows={ontModels.map(m => [m.model, m.type, String(m.ge), String(m.fxs), String(m.rf), m.wifi])}
         />
-        <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 8, lineHeight: 1.7 }}>
+        <div style={{ fontSize: 12, color: "#333", marginTop: 8, lineHeight: 1.7 }}>
           {ontModels.map((m, i) => (
             <div key={i}><Term>{m.model}</Term> — {m.note}</div>
           ))}
@@ -47,15 +47,15 @@ export function Guide11() {
           {["good", "bad"].map(mode => (
             <button key={mode} onClick={() => setLedMode(mode)} style={{
               padding: "6px 16px", borderRadius: 16, fontSize: 12, fontWeight: 600, cursor: "pointer",
-              background: ledMode === mode ? (mode === "good" ? "#2E7D32" : "#C62828") : "#132D4A",
-              color: "#fff", border: "1px solid " + (ledMode === mode ? (mode === "good" ? "#4CAF50" : "#F44336") : "#1A3A5C"),
+              background: ledMode === mode ? (mode === "good" ? "#2E7D32" : "#C62828") : "#fff",
+              color: "#fff", border: "1px solid " + (ledMode === mode ? (mode === "good" ? "#4CAF50" : "#F44336") : "#AED6F1"),
             }}>{mode === "good" ? "Healthy" : "Fault"}</button>
           ))}
         </div>
         {ledStates.map((led, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "6px 0" }}>
             <LEDIndicator label={led.label} color={led[ledMode].color} status={led[ledMode].status} />
-            <span style={{ fontSize: 12, color: "#B0BEC5" }}>
+            <span style={{ fontSize: 12, color: "#333" }}>
               {ledMode === "good" ? led.goodTxt : led.badTxt}
             </span>
           </div>
@@ -63,7 +63,7 @@ export function Guide11() {
       </Card>
 
       <Card color="#E65100" title="Serial Number & Factory Reset" subtitle="Field reference">
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#E0E0E0", marginBottom: 12 }}>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#333", marginBottom: 12 }}>
           <div><Term>Serial format</Term>: ALCL + 8 hex characters (e.g., ALCLA1B2C3D4). Found on the bottom label and in AMS under ONT details.</div>
           <div style={{ marginTop: 6 }}><Term>SLID</Term>: Subscriber Line ID — sometimes required for ONT authentication alongside the serial.</div>
         </div>
@@ -78,7 +78,7 @@ export function Guide11() {
       </Card>
 
       <Card color="#6A1B9A" title="Common Issues by Model" subtitle="When to swap the ONT">
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#E0E0E0" }}>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#333" }}>
           <div><Term>G-2425G-A / G-2426G-A</Term> — Wi-Fi drops: check 2.4/5 GHz band config. Frequent reboots: likely power supply issue, swap PSU first.</div>
           <div style={{ marginTop: 6 }}><Term>G-240W-F</Term> — No phone service: verify FXS port provisioning in AMS SIP profile. LED phone off = SIP registration failure.</div>
           <div style={{ marginTop: 6 }}><Term>G-010G-Q (outdoor)</Term> — PON LED off after storm: check fiber connector for water ingress. Outdoor enclosure seal may be compromised.</div>

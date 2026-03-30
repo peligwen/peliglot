@@ -32,11 +32,11 @@ export function Guide30() {
       <Card color="#C62828" title="Ticket Categories" subtitle="Classify the issue correctly">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {ticketCategories.map((t, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C", display: "flex", gap: 10, alignItems: "center" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1", display: "flex", gap: 10, alignItems: "center" }}>
               <span style={{ fontSize: 22 }}>{t.icon}</span>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#EF9A9A" }}>{t.cat}</div>
-                <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 2 }}>{t.desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#C62828" }}>{t.cat}</div>
+                <div style={{ fontSize: 12, color: "#333", marginTop: 2 }}>{t.desc}</div>
               </div>
             </div>
           ))}
@@ -63,7 +63,7 @@ export function Guide30() {
       </Card>
 
       <Card color="#6A1B9A" title="Escalation" subtitle="When and how to escalate">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           Escalate a ticket when: the issue persists after all Tier 1 steps, multiple customers at the
           same location are affected (possible network issue), or the problem requires NOC-level access.
           Use the <Term>Escalate</Term> button on the ticket and select the appropriate team (Tier 2,

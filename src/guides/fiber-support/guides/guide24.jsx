@@ -39,17 +39,17 @@ export function Guide24() {
       <Card color="#00838F" title="Key Features" subtitle="What Alianza offers">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
           {features.map((f, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{f.icon}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#E0F7FA" }}>{f.name}</div>
-              <div style={{ fontSize: 11, color: "#4A7A9B", marginTop: 4 }}>{f.desc}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a" }}>{f.name}</div>
+              <div style={{ fontSize: 11, color: "#5D6D7E", marginTop: 4 }}>{f.desc}</div>
             </div>
           ))}
         </div>
       </Card>
 
       <Card color="#6A1B9A" title="Provisioning & iVue Integration" subtitle="How subscribers get activated">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           When a voice order is placed in <Term>iVue</Term>, the system sends provisioning data to
           the Alianza cloud platform. Alianza automatically creates the subscriber account, assigns
           the <Term>DN</Term>, and configures default features. The ONT's FXS port is then activated

@@ -35,7 +35,7 @@ export function Guide33() {
             ["Customer Portal", "Self-service account access for subscribers"],
           ]}
         />
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc", marginTop: 10 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginTop: 10 }}>
           BSS systems handle everything the <em>business</em> sees: who the customer is, what they
           ordered, and what they owe. <Term>iVue</Term> is the primary BSS tool for support agents.
         </p>
@@ -50,7 +50,7 @@ export function Guide33() {
             ["Calix Cloud", "Cloud analytics, subscriber insights, remote diagnostics"],
           ]}
         />
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc", marginTop: 10 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginTop: 10 }}>
           OSS systems manage the <em>network</em> itself: equipment configuration, alarms,
           performance data, and firmware. These are the tools that make the fiber network work.
         </p>
@@ -62,7 +62,7 @@ export function Guide33() {
       </Card>
 
       <Card color="#00838F" title="Inventory Management" subtitle="Tracking fiber, equipment, and ports">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           Inventory spans both OSS and BSS. <Term>iVue</Term> tracks equipment assignments to customer
           accounts. <Term>AMS/SMx</Term> tracks what is actually configured on the network. Mismatches
           between these two are a common source of provisioning issues.

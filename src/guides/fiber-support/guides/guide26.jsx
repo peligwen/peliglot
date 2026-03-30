@@ -34,7 +34,7 @@ export function Guide26() {
       </Card>
 
       <Card color="#00838F" title="Voice VLAN Setup" subtitle="Network configuration for phone service">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           The ONT's <Term>FXS port</Term> must be mapped to the correct voice VLAN. This is
           configured in the OLT (Optical Line Terminal) provisioning and ensures voice traffic
           is tagged and prioritized separately from data traffic. Without the correct VLAN
@@ -44,7 +44,7 @@ export function Guide26() {
       </Card>
 
       <Card color="#6A1B9A" title="Number Porting (LNP)" subtitle="Local Number Portability process">
-        <p style={{ fontSize: 13, lineHeight: 1.6, color: "#ccc", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: "#333", marginBottom: 12 }}>
           <Term>LNP (Local Number Portability)</Term> allows customers to keep their existing phone
           number when switching providers. The process involves coordination between the winning
           and losing carriers.
@@ -54,7 +54,7 @@ export function Guide26() {
       </Card>
 
       <Card color="#C62828" title="E911 Registration" subtitle="Critical safety requirement">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           Every voice line must have a verified <Term>E911 address</Term> registered in the ALI
           (Automatic Location Identification) database. When a subscriber dials 911, this address
           is sent to the dispatcher so emergency services can locate the caller.

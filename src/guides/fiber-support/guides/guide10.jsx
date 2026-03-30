@@ -39,7 +39,7 @@ export function Guide10() {
       </Card>
 
       <Card color="#00838F" title="SFP+ Optics" subtitle="Pluggable transceiver modules">
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#E0E0E0" }}>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: "#333" }}>
           <div style={{ marginBottom: 8 }}><Term>Class C+</Term> — Standard GPON optics, supports up to 20 km with a 1:64 split. Most common in residential deployments.</div>
           <div style={{ marginBottom: 8 }}><Term>Class N2</Term> — Extended-reach XGS-PON optics, supports up to 40 km. Used for rural or long-distance FTTH with higher power budget (31 dB).</div>
           <div><Term>Combo SFP</Term> — Dual-wavelength module supporting GPON + XGS-PON overlay on a single fiber for migration scenarios.</div>
@@ -54,7 +54,7 @@ export function Guide10() {
           <LEDIndicator label="ALM (Alarm)" color="#F44336" status="solid" />
           <LEDIndicator label="ALM (No fault)" color="#888" status="solid" />
         </div>
-        <div style={{ fontSize: 12, color: "#B0BEC5", lineHeight: 1.7, marginTop: 8 }}>
+        <div style={{ fontSize: 12, color: "#333", lineHeight: 1.7, marginTop: 8 }}>
           <strong style={{ color: "#4CAF50" }}>PWR solid green</strong> = powered on.{" "}
           <strong style={{ color: "#4CAF50" }}>ACT blinking</strong> = traffic flowing.{" "}
           <strong style={{ color: "#F44336" }}>ALM red</strong> = hardware fault.{" "}
@@ -63,15 +63,15 @@ export function Guide10() {
       </Card>
 
       <Card color="#E65100" title="Card States" subtitle="Tap to expand">
-        <div onClick={() => setShowStates(!showStates)} style={{ cursor: "pointer", fontSize: 13, color: "#4FC3F7", marginBottom: showStates ? 10 : 0 }}>
+        <div onClick={() => setShowStates(!showStates)} style={{ cursor: "pointer", fontSize: 13, color: "#0277BD", marginBottom: showStates ? 10 : 0 }}>
           {showStates ? "▾ Hide states" : "▸ Show card states"}
         </div>
         {showStates && cardStates.map((cs, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < cardStates.length - 1 ? "1px solid #1A3A5C" : "none" }}>
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < cardStates.length - 1 ? "1px solid #AED6F1" : "none" }}>
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: cs.color, flexShrink: 0 }} />
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, color: cs.color }}>{cs.state}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5" }}>{cs.desc}</div>
+              <div style={{ fontSize: 12, color: "#333" }}>{cs.desc}</div>
             </div>
           </div>
         ))}

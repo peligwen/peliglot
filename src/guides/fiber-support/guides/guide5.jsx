@@ -37,24 +37,24 @@ export function Guide5() {
           {components.map((c, i) => (
             <div key={c.name} onClick={() => setSelected(i)} style={{
               padding: "12px 10px", borderRadius: 10, cursor: "pointer", textAlign: "center",
-              background: selected === i ? c.color + "33" : "#132D4A",
-              border: `2px solid ${selected === i ? c.color : "#1A3A5C"}`,
+              background: selected === i ? c.color + "33" : "#fff",
+              border: `2px solid ${selected === i ? c.color : "#AED6F1"}`,
               transition: "all 0.2s",
             }}>
               <div style={{ fontSize: 24, marginBottom: 4 }}>{c.icon}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: selected === i ? c.color : "#B0BEC5" }}>{c.name}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: selected === i ? c.color : "#333" }}>{c.name}</div>
             </div>
           ))}
         </div>
         <div style={{
-          padding: 16, borderRadius: 12, background: "#0D1F33",
+          padding: 16, borderRadius: 12, background: "#D6EAF8",
           border: `2px solid ${item.color}`, transition: "all 0.3s",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             <span style={{ fontSize: 28 }}>{item.icon}</span>
             <span style={{ fontSize: 16, fontWeight: 700, color: item.color }}>{item.name}</span>
           </div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5" }}>{item.desc}</div>
+          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>{item.desc}</div>
         </div>
       </Card>
 
@@ -63,13 +63,13 @@ export function Guide5() {
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 40 }}>🟢</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#4CAF50" }}>SC/APC</div>
-            <div style={{ fontSize: 11, color: "#B0BEC5" }}>Angled 8°</div>
+            <div style={{ fontSize: 11, color: "#333" }}>Angled 8°</div>
           </div>
           <div style={{ fontSize: 32, color: "#EF5350", alignSelf: "center" }}>≠</div>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 40 }}>🔵</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#42A5F5" }}>SC/UPC</div>
-            <div style={{ fontSize: 11, color: "#B0BEC5" }}>Flat polish</div>
+            <div style={{ fontSize: 11, color: "#333" }}>Flat polish</div>
           </div>
         </div>
         <Warning text="Mating an APC connector to a UPC port (or vice versa) damages both ferrules and causes 10+ dB of loss. Always match green-to-green and blue-to-blue." />

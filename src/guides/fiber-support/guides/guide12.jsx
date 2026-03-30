@@ -47,7 +47,7 @@ export function Guide12() {
               style={{ padding: "6px 14px", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 700,
                 background: selSev === s.level ? s.color + "22" : "#f5f5f5",
                 color: selSev === s.level ? s.color : "#666",
-                border: `1px solid ${selSev === s.level ? s.color : "#ddd"}` }}>
+                border: `1px solid ${selSev === s.level ? s.color : "#AED6F1"}` }}>
               {s.icon} {s.level}
             </button>
           ))}

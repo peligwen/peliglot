@@ -29,7 +29,7 @@ export function Guide1() {
       </DarkBox>
 
       <Card color="#00796B" title="Total Internal Reflection" subtitle="The physics behind fiber">
-        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 14, lineHeight: 1.7, color: "#333" }}>
           Light travels through the fiber <Term>core</Term> at a slight angle. Because the core has a
           higher refractive index than the surrounding <Term>cladding</Term>, light that hits the boundary
           bounces back inward — this is <Term>total internal reflection</Term>. The light zigzags down the
@@ -54,17 +54,17 @@ export function Guide1() {
             <div key={layer.name} onClick={() => setLayerIdx(layerIdx === i ? null : i)}
               style={{
                 padding: 14, borderRadius: 10, cursor: "pointer", textAlign: "center",
-                background: layerIdx === i ? "#00796B" : "#132D4A",
-                border: `1px solid ${layerIdx === i ? "#00BCD4" : "#1A3A5C"}`,
+                background: layerIdx === i ? "#00796B" : "#fff",
+                border: `1px solid ${layerIdx === i ? "#00BCD4" : "#AED6F1"}`,
                 transition: "all 0.2s",
               }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#E0F7FA" }}>{layer.name}</div>
-              <div style={{ fontSize: 11, color: "#4FC3F7", marginTop: 4 }}>{layer.size}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a" }}>{layer.name}</div>
+              <div style={{ fontSize: 11, color: "#0277BD", marginTop: 4 }}>{layer.size}</div>
             </div>
           ))}
         </div>
         {layerIdx !== null && (
-          <div style={{ marginTop: 10, padding: 14, borderRadius: 10, background: "#0D1F33", border: "1px solid #00BCD4", fontSize: 13, lineHeight: 1.7, color: "#B0BEC5" }}>
+          <div style={{ marginTop: 10, padding: 14, borderRadius: 10, background: "#D6EAF8", border: "1px solid #00BCD4", fontSize: 13, lineHeight: 1.7, color: "#333" }}>
             <strong style={{ color: "#00BCD4" }}>{fiberLayers[layerIdx].name}:</strong> {fiberLayers[layerIdx].material} — {fiberLayers[layerIdx].role}
           </div>
         )}
@@ -73,14 +73,14 @@ export function Guide1() {
       <Card color="#1565C0" title="Wavelength Plan" subtitle="Colors of light in FTTH">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {wavelengths.map(w => (
-            <div key={w.band} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, background: "#0D1F33", border: "1px solid #1A3A5C" }}>
+            <div key={w.band} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, background: "#D6EAF8", border: "1px solid #AED6F1" }}>
               <div>
-                <span style={{ fontWeight: 700, color: "#E0F7FA", fontSize: 14 }}>{w.band}</span>
-                <span style={{ color: "#4FC3F7", fontSize: 12, marginLeft: 8 }}>{w.dir}</span>
+                <span style={{ fontWeight: 700, color: "#1a1a1a", fontSize: 14 }}>{w.band}</span>
+                <span style={{ color: "#0277BD", fontSize: 12, marginLeft: 8 }}>{w.dir}</span>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#B0BEC5" }}>{w.tech}</div>
-                <div style={{ fontSize: 11, color: "#4A7A9B" }}>{w.note}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#333" }}>{w.tech}</div>
+                <div style={{ fontSize: 11, color: "#5D6D7E" }}>{w.note}</div>
               </div>
             </div>
           ))}

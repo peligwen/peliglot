@@ -34,23 +34,23 @@ export function Guide31() {
       </Card>
 
       <Card color="#1565C0" title="Navigation" subtitle="Finding your way around CMS">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           CMS uses a traditional menu-driven interface. The <Term>Main Menu</Term> bar across the top
           provides access to all modules. Use keyboard shortcuts (shown next to each menu item) for
           faster navigation. The <Term>Quick Search</Term> bar at the top right works across all record types.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {keyScreens.map((s, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#BCAAA4" }}>{s.screen}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 4 }}>{s.use}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.use}</div>
             </div>
           ))}
         </div>
       </Card>
 
       <Card color="#2E7D32" title="CMS vs Newer Tools" subtitle="Know which system to use when">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           As a general rule: use <Term>iVue</Term> for day-to-day customer lookups, orders, and
           billing. Use <Term>CMS</Term> when you need advanced configuration, batch operations,
           historical records, or custom reports not yet available in iVue. When in doubt, start in iVue

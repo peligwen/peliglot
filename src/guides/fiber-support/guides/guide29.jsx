@@ -32,9 +32,9 @@ export function Guide29() {
       <Card color="#D84315" title="Order Types" subtitle="Different service changes you can initiate">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {orderTypes.map((o, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 12, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#FF8A65" }}>{o.type}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", marginTop: 4 }}>{o.desc}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{o.desc}</div>
             </div>
           ))}
         </div>

@@ -53,16 +53,16 @@ export function Guide4() {
             <div key={s.name} onClick={() => setSegIdx(segIdx === i ? null : i)}
               style={{
                 padding: "10px 14px", borderRadius: 10, cursor: "pointer",
-                background: segIdx === i ? "#00838F22" : "#0D1F33",
-                border: `1px solid ${segIdx === i ? "#4DD0E1" : "#1A3A5C"}`,
+                background: segIdx === i ? "#00838F22" : "#D6EAF8",
+                border: `1px solid ${segIdx === i ? "#4DD0E1" : "#AED6F1"}`,
                 transition: "all 0.2s",
               }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#E0F7FA" }}>{s.name}</span>
-                {s.dist !== "—" && <span style={{ fontSize: 11, color: "#4FC3F7", background: "#132D4A", padding: "2px 8px", borderRadius: 6 }}>{s.dist}</span>}
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a" }}>{s.name}</span>
+                {s.dist !== "—" && <span style={{ fontSize: 11, color: "#0277BD", background: "#fff", padding: "2px 8px", borderRadius: 6 }}>{s.dist}</span>}
               </div>
               {segIdx === i && (
-                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#B0BEC5" }}>{s.detail}</div>
+                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#333" }}>{s.detail}</div>
               )}
             </div>
           ))}
@@ -76,16 +76,16 @@ export function Guide4() {
             <div key={r.type} onClick={() => setRouteIdx(routeIdx === i ? null : i)}
               style={{
                 padding: "12px 16px", borderRadius: 10, cursor: "pointer",
-                background: routeIdx === i ? "#E6510022" : "#0D1F33",
-                border: `1px solid ${routeIdx === i ? "#FFB74D" : "#1A3A5C"}`,
+                background: routeIdx === i ? "#E6510022" : "#D6EAF8",
+                border: `1px solid ${routeIdx === i ? "#FFB74D" : "#AED6F1"}`,
                 transition: "all 0.2s",
               }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#E0F7FA" }}>{r.icon} {r.type}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a" }}>{r.icon} {r.type}</div>
               {routeIdx === i && (
-                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.7, color: "#B0BEC5" }}>
-                  <div><strong style={{ color: "#81C784" }}>Pros:</strong> {r.pros}</div>
-                  <div><strong style={{ color: "#EF9A9A" }}>Cons:</strong> {r.cons}</div>
-                  <div><strong style={{ color: "#4FC3F7" }}>Used for:</strong> {r.use}</div>
+                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.7, color: "#333" }}>
+                  <div><strong style={{ color: "#2E7D32" }}>Pros:</strong> {r.pros}</div>
+                  <div><strong style={{ color: "#C62828" }}>Cons:</strong> {r.cons}</div>
+                  <div><strong style={{ color: "#0277BD" }}>Used for:</strong> {r.use}</div>
                 </div>
               )}
             </div>
@@ -95,7 +95,7 @@ export function Guide4() {
       </Card>
 
       <Card color="#37474F" title="Fiber Maps & Documentation" subtitle="Why records matter for support">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           Every fiber strand from the CO to the ONT is documented in the provider's <Term>fiber management
           system</Term>. Accurate records are critical for support and maintenance.
         </p>

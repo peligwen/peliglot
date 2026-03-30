@@ -36,12 +36,12 @@ export function Guide41() {
       </Card>
 
       <Card color="#00838F" title="Serial Number Verification" subtitle="The most common provisioning mistake">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           A wrong <Term>serial number</Term> is the single most common provisioning failure. The system
           cannot match the physical ONT to its configuration if the serial is wrong.
         </p>
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
-          <li>Always verify against the <strong style={{ color: "#E0F7FA" }}>physical label</strong> on the ONT — not a work order printout</li>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
+          <li>Always verify against the <strong style={{ color: "#1a1a1a" }}>physical label</strong> on the ONT — not a work order printout</li>
           <li>Watch for common typos: <Term>O</Term> vs <Term>0</Term>, <Term>I</Term> vs <Term>1</Term> vs <Term>l</Term></li>
           <li>Nokia serials are typically <Term>ALCL</Term> + 8 hex characters</li>
           <li>Calix serials vary by model — check the barcode label</li>

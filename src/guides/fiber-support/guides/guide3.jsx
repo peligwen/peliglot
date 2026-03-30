@@ -35,13 +35,13 @@ export function Guide3() {
 
       <Card color="#C62828" title="GPON vs XGS-PON" subtitle="Side-by-side comparison">
         <div style={{ overflowX: "auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid #1A3A5C", minWidth: 400 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, borderRadius: 10, overflow: "hidden", border: "1px solid #AED6F1", minWidth: 400 }}>
             {[["", "GPON", "XGS-PON"], ...compRows.map(r => [r.label, r.gpon, r.xgs])].map((row, i) => (
               row.map((cell, j) => (
                 <div key={`${i}-${j}`} style={{
                   padding: "8px 12px", fontSize: 12, lineHeight: 1.5,
-                  background: i === 0 ? (j === 1 ? "#1565C033" : j === 2 ? "#C6282833" : "#132D4A") : "#0D1F33",
-                  color: i === 0 ? (j === 1 ? "#64B5F6" : j === 2 ? "#EF9A9A" : "#8BACC8") : (j === 0 ? "#E0F7FA" : "#B0BEC5"),
+                  background: i === 0 ? (j === 1 ? "#1565C033" : j === 2 ? "#C6282833" : "#fff") : "#D6EAF8",
+                  color: i === 0 ? (j === 1 ? "#64B5F6" : j === 2 ? "#EF9A9A" : "#2C3E50") : (j === 0 ? "#1a1a1a" : "#333"),
                   fontWeight: (i === 0 || j === 0) ? 700 : 400,
                 }}>{cell}</div>
               ))
@@ -66,7 +66,7 @@ export function Guide3() {
       </Card>
 
       <Card color="#4527A0" title="TC Layer Concepts" subtitle="How traffic is organized">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 14 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 14 }}>
           The <Term>Transmission Convergence (TC) layer</Term> manages how data is framed, encrypted,
           and scheduled on the PON. Understanding these building blocks helps when reading ONT diagnostics
           or troubleshooting service provisioning issues.
@@ -76,13 +76,13 @@ export function Guide3() {
             <div key={t.term} onClick={() => setTermIdx(termIdx === i ? null : i)}
               style={{
                 padding: "10px 14px", borderRadius: 10, cursor: "pointer",
-                background: termIdx === i ? "#4527A033" : "#0D1F33",
-                border: `1px solid ${termIdx === i ? "#B39DDB" : "#1A3A5C"}`,
+                background: termIdx === i ? "#4527A033" : "#D6EAF8",
+                border: `1px solid ${termIdx === i ? "#B39DDB" : "#AED6F1"}`,
                 transition: "all 0.2s",
               }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#E0F7FA" }}>{t.term}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a" }}>{t.term}</div>
               {termIdx === i && (
-                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#B0BEC5" }}>{t.desc}</div>
+                <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.6, color: "#333" }}>{t.desc}</div>
               )}
             </div>
           ))}

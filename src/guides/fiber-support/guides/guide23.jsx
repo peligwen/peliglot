@@ -28,7 +28,7 @@ export function Guide23() {
       </DarkBox>
 
       <Card color="#1565C0" title="Subscriber Management" subtitle="Creating and modifying phone lines">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           Each phone line in MetaView is identified by its <Term>DN (Directory Number)</Term> — the
           subscriber's phone number. MetaView allows you to view and modify line settings including
           assigned features, call forwarding rules, voicemail configuration, and SIP registration status.
@@ -44,16 +44,16 @@ export function Guide23() {
       <Card color="#6A1B9A" title="Common MetaView Tasks" subtitle="Quick reference for support agents">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {commonTasks.map((t, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 14, border: "1px solid #1A3A5C" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #AED6F1" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#CE93D8", marginBottom: 6 }}>{t.task}</div>
-              <div style={{ fontSize: 12, lineHeight: 1.6, color: "#B0BEC5" }}>{t.steps}</div>
+              <div style={{ fontSize: 12, lineHeight: 1.6, color: "#333" }}>{t.steps}</div>
             </div>
           ))}
         </div>
       </Card>
 
       <Card color="#2E7D32" title="Feature Configuration" subtitle="Per-subscriber feature management">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           MetaView lets you enable or disable individual calling features on a per-subscriber basis.
           Features are grouped under the subscriber's profile and include call waiting, caller ID,
           three-way calling, call forwarding (busy, no answer, unconditional), do-not-disturb, and

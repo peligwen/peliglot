@@ -20,7 +20,7 @@ export function Guide7() {
       </DarkBox>
 
       <Card color="#1565C0" title="What is a VLAN?" subtitle="Virtual LAN — logical separation">
-        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 14 }}>
+        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 14 }}>
           A <Term>VLAN</Term> (Virtual LAN) creates isolated broadcast domains on shared physical
           infrastructure. Using <Term>802.1Q tagging</Term>, a VLAN ID (1-4094) is inserted into
           each Ethernet frame so switches and routers know which logical network the traffic belongs to.
@@ -28,13 +28,13 @@ export function Guide7() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 }}>
           {vlanTable.map(v => (
             <div key={v.service} style={{
-              padding: 14, borderRadius: 10, background: "#0D1F33",
+              padding: 14, borderRadius: 10, background: "#D6EAF8",
               border: `2px solid ${v.color}`, textAlign: "center",
             }}>
               <div style={{ fontSize: 28, marginBottom: 6 }}>{v.icon}</div>
               <div style={{ fontSize: 14, fontWeight: 700, color: v.color }}>{v.service}</div>
-              <div style={{ fontSize: 20, fontWeight: 800, color: "#E0F7FA", margin: "4px 0" }}>VLAN {v.vlan}</div>
-              <div style={{ fontSize: 11, color: "#8BACC8" }}>ONT Port: {v.port}</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: "#1a1a1a", margin: "4px 0" }}>VLAN {v.vlan}</div>
+              <div style={{ fontSize: 11, color: "#2C3E50" }}>ONT Port: {v.port}</div>
             </div>
           ))}
         </div>
@@ -62,7 +62,7 @@ export function Guide7() {
       </Card>
 
       <Card color="#6A1B9A" title="QoS — Quality of Service" subtitle="Why voice gets priority">
-        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 14 }}>
+        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 14 }}>
           Not all traffic is equal. <Term>QoS</Term> uses priority queuing to ensure
           latency-sensitive services (voice, video) are processed before bulk data (downloads, browsing).
         </div>
@@ -76,7 +76,7 @@ export function Guide7() {
       </Card>
 
       <Card color="#E65100" title="MSAP — The Glue" subtitle="Multi-Service Access Platform mapping">
-        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           The <Term>MSAP</Term> ties everything together. It is the provisioning construct that maps
           a customer service profile (VLANs, bandwidth, QoS) through the PON path from
           the ONT all the way to the core network. When you provision a new customer, the MSAP

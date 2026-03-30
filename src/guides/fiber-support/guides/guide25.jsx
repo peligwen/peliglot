@@ -35,7 +35,7 @@ export function Guide25() {
       </Card>
 
       <Card color="#00838F" title="Hosted PBX & SIP Trunking" subtitle="Core Momentum services">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
           <Term>Hosted PBX</Term> provides a full business phone system in the cloud — extensions,
           auto-attendant, ring groups, conferencing, and voicemail — without on-site PBX hardware.
           <Term> SIP Trunking</Term> connects a customer's existing on-premise PBX to the network
@@ -47,11 +47,11 @@ export function Guide25() {
       <Card color="#6A1B9A" title="Common Support Tasks" subtitle="What agents do in the Momentum portal">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {supportTasks.map((t, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, background: "#132D4A", borderRadius: 10, padding: 14, border: "1px solid #1A3A5C", alignItems: "flex-start" }}>
+            <div key={i} style={{ display: "flex", gap: 12, background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #AED6F1", alignItems: "flex-start" }}>
               <div style={{ fontSize: 24, flexShrink: 0 }}>{t.icon}</div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#CE93D8", marginBottom: 4 }}>{t.task}</div>
-                <div style={{ fontSize: 12, lineHeight: 1.6, color: "#B0BEC5" }}>{t.desc}</div>
+                <div style={{ fontSize: 12, lineHeight: 1.6, color: "#333" }}>{t.desc}</div>
               </div>
             </div>
           ))}

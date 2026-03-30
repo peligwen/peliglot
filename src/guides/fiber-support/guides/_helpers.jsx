@@ -17,7 +17,7 @@ export function SupportTip({ text }) {
 
 /* ── Term — inline highlighted technical term ── */
 
-export function Term({ children, color = "#00BCD4" }) {
+export function Term({ children, color = "#0277BD" }) {
   return <span style={{ fontWeight: 700, color }}>{children}</span>;
 }
 
@@ -48,9 +48,9 @@ export function GlossaryCard({ terms, filterCategories }) {
         {cats.map(c => (
           <button key={c} onClick={() => setFilter(c)} style={{
             padding: "5px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
-            background: filter === c ? "#00BCD4" : "#132D4A",
-            color: filter === c ? "#fff" : "#8BACC8",
-            border: `1px solid ${filter === c ? "#00BCD4" : "#1A3A5C"}`,
+            background: filter === c ? "#0277BD" : "#fff",
+            color: filter === c ? "#fff" : "#2C3E50",
+            border: `1px solid ${filter === c ? "#0277BD" : "#AED6F1"}`,
           }}>{c}</button>
         ))}
       </div>
@@ -62,21 +62,21 @@ export function GlossaryCard({ terms, filterCategories }) {
             <div key={key} onClick={() => setFlipped(prev => ({ ...prev, [key]: !prev[key] }))}
               style={{
                 minHeight: 100, borderRadius: 12, cursor: "pointer", padding: 16,
-                background: isFlipped ? "#0D1F33" : "#132D4A",
-                border: `1px solid ${isFlipped ? "#00BCD4" : "#1A3A5C"}`,
+                background: isFlipped ? "#E1F5FE" : "#fff",
+                border: `1px solid ${isFlipped ? "#0277BD" : "#AED6F1"}`,
                 display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center",
                 textAlign: "center", transition: "all 0.2s",
               }}>
               {!isFlipped ? (
                 <>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#E0F7FA" }}>{t.term}</div>
-                  {t.abbr && <div style={{ fontSize: 11, color: "#4FC3F7", marginTop: 4 }}>{t.abbr}</div>}
-                  <div style={{ fontSize: 10, color: "#4A7A9B", marginTop: 6 }}>tap to reveal</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>{t.term}</div>
+                  {t.abbr && <div style={{ fontSize: 11, color: "#0277BD", marginTop: 4 }}>{t.abbr}</div>}
+                  <div style={{ fontSize: 10, color: "#5D6D7E", marginTop: 6 }}>tap to reveal</div>
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#00BCD4", marginBottom: 6 }}>{t.term}</div>
-                  <div style={{ fontSize: 12, lineHeight: 1.5, color: "#B0BEC5" }}>{t.def}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#0277BD", marginBottom: 6 }}>{t.term}</div>
+                  <div style={{ fontSize: 12, lineHeight: 1.5, color: "#333" }}>{t.def}</div>
                 </>
               )}
             </div>
@@ -87,32 +87,32 @@ export function GlossaryCard({ terms, filterCategories }) {
   );
 }
 
-/* ── NetworkDiagram — interactive clickable topology ── */
+/* ── NetworkDiagram — interactive clickable topology (vertical layout) ── */
 
 export function NetworkDiagram({ nodes, connections, title }) {
   const [selected, setSelected] = useState(null);
 
   return (
     <div style={{ margin: "12px 0" }}>
-      {title && <div style={{ fontSize: 13, fontWeight: 700, color: "#B0BEC5", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>{title}</div>}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexWrap: "wrap", gap: 0, padding: 16, background: "#0D1F33", borderRadius: 12, border: "1px solid #1A3A5C" }}>
+      {title && <div style={{ fontSize: 13, fontWeight: 700, color: "#5D6D7E", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 }}>{title}</div>}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, padding: 16, background: "#D6EAF8", borderRadius: 12, border: "1px solid #AED6F1" }}>
         {nodes.map((node, i) => (
-          <div key={node.id} style={{ display: "flex", alignItems: "center" }}>
+          <div key={node.id} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <div onClick={() => setSelected(selected === node.id ? null : node.id)}
               style={{
                 padding: "12px 18px", borderRadius: 10, cursor: "pointer", textAlign: "center",
-                background: selected === node.id ? "#00BCD4" : "#132D4A",
-                border: `2px solid ${selected === node.id ? "#00BCD4" : "#1A3A5C"}`,
-                color: selected === node.id ? "#fff" : "#E0F7FA",
-                transition: "all 0.2s", minWidth: 80,
+                background: selected === node.id ? "#0277BD" : "#fff",
+                border: `2px solid ${selected === node.id ? "#0277BD" : "#AED6F1"}`,
+                color: selected === node.id ? "#fff" : "#1a1a1a",
+                transition: "all 0.2s", minWidth: 120,
               }}>
               <div style={{ fontSize: 22, marginBottom: 4 }}>{node.icon}</div>
               <div style={{ fontSize: 12, fontWeight: 700 }}>{node.label}</div>
-              {node.sub && <div style={{ fontSize: 10, color: selected === node.id ? "#E0F7FA" : "#4A7A9B", marginTop: 2 }}>{node.sub}</div>}
+              {node.sub && <div style={{ fontSize: 10, color: selected === node.id ? "#E1F5FE" : "#5D6D7E", marginTop: 2 }}>{node.sub}</div>}
             </div>
-            {i < nodes.length - 1 && connections && (
-              <div style={{ padding: "0 6px", color: "#4A7A9B", fontSize: 18, fontWeight: 700 }}>
-                {connections[i] || "→"}
+            {i < nodes.length - 1 && (
+              <div style={{ padding: "6px 0", color: "#5D6D7E", fontSize: 16, fontWeight: 700 }}>
+                {connections?.[i] ? "↓" : "↓"}
               </div>
             )}
           </div>
@@ -123,10 +123,10 @@ export function NetworkDiagram({ nodes, connections, title }) {
         return node?.detail ? (
           <div style={{
             marginTop: 8, padding: 14, borderRadius: 10,
-            background: "#132D4A", border: "1px solid #00BCD4",
-            fontSize: 13, lineHeight: 1.7, color: "#B0BEC5",
+            background: "#fff", border: "1px solid #0277BD",
+            fontSize: 13, lineHeight: 1.7, color: "#333",
           }}>
-            <span style={{ fontWeight: 700, color: "#00BCD4" }}>{node.label}: </span>
+            <span style={{ fontWeight: 700, color: "#0277BD" }}>{node.label}: </span>
             {node.detail}
           </div>
         ) : null;
@@ -163,21 +163,21 @@ export function TroubleshootingSim({ title, scenario, steps }) {
   };
 
   return (
-    <div style={{ margin: "12px 0", borderRadius: 12, overflow: "hidden", border: "1px solid #1A3A5C" }}>
+    <div style={{ margin: "12px 0", borderRadius: 12, overflow: "hidden", border: "1px solid #AED6F1" }}>
       <div style={{ background: "#C62828", color: "#fff", padding: "10px 16px", fontSize: 13, fontWeight: 700 }}>
         🔍 {title}
       </div>
       {scenario && current === "start" && (
-        <div style={{ background: "#1A1A2E", padding: "12px 16px", fontSize: 13, color: "#B0BEC5", borderBottom: "1px solid #1A3A5C", lineHeight: 1.6 }}>
-          <strong style={{ color: "#FFB74D" }}>Scenario:</strong> {scenario}
+        <div style={{ background: "#E8F0FE", padding: "12px 16px", fontSize: 13, color: "#333", borderBottom: "1px solid #AED6F1", lineHeight: 1.6 }}>
+          <strong style={{ color: "#E65100" }}>Scenario:</strong> {scenario}
         </div>
       )}
-      <div style={{ background: "#0D1F33", padding: 16 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: "#E0F7FA", marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ background: "#D6EAF8", padding: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a", marginBottom: 14, lineHeight: 1.5 }}>
           {step.question}
         </div>
         {step.info && (
-          <div style={{ fontSize: 12, color: "#4FC3F7", marginBottom: 12, padding: "8px 12px", background: "#132D4A", borderRadius: 8, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: "#0277BD", marginBottom: 12, padding: "8px 12px", background: "#fff", borderRadius: 8, lineHeight: 1.5 }}>
             {step.info}
           </div>
         )}
@@ -186,7 +186,7 @@ export function TroubleshootingSim({ title, scenario, steps }) {
             {step.choices.map((choice, i) => (
               <button key={i} onClick={() => handleChoice(choice.next)} style={{
                 padding: "10px 14px", borderRadius: 8, cursor: "pointer", textAlign: "left",
-                background: "#132D4A", border: "1px solid #1A3A5C", color: "#E0F7FA",
+                background: "#fff", border: "1px solid #AED6F1", color: "#1a1a1a",
                 fontSize: 13, lineHeight: 1.4, transition: "all 0.15s",
               }}>
                 {choice.label}
@@ -196,9 +196,9 @@ export function TroubleshootingSim({ title, scenario, steps }) {
         ) : (
           <div style={{
             padding: "14px 16px", borderRadius: 10, fontSize: 13, lineHeight: 1.6,
-            background: step.success ? "#1B5E2022" : "#C6282822",
+            background: step.success ? "#E8F5E9" : "#FFEBEE",
             border: `1px solid ${step.success ? "#4CAF50" : "#EF5350"}`,
-            color: step.success ? "#81C784" : "#EF9A9A",
+            color: step.success ? "#2E7D32" : "#C62828",
           }}>
             <strong>{step.success ? "✅ Resolution:" : "⚠️ Result:"}</strong> {step.result}
           </div>
@@ -207,13 +207,13 @@ export function TroubleshootingSim({ title, scenario, steps }) {
           {path.length > 0 && (
             <button onClick={handleBack} style={{
               padding: "6px 14px", borderRadius: 6, cursor: "pointer", fontSize: 12,
-              background: "transparent", border: "1px solid #1A3A5C", color: "#4A7A9B",
+              background: "transparent", border: "1px solid #AED6F1", color: "#5D6D7E",
             }}>← Back</button>
           )}
           {(path.length > 0 || !step.choices) && (
             <button onClick={handleRestart} style={{
               padding: "6px 14px", borderRadius: 6, cursor: "pointer", fontSize: 12,
-              background: "transparent", border: "1px solid #1A3A5C", color: "#4A7A9B",
+              background: "transparent", border: "1px solid #AED6F1", color: "#5D6D7E",
             }}>↺ Restart</button>
           )}
         </div>
@@ -234,9 +234,9 @@ export function CompareTable({ headers, rows, colors }) {
             {headers.map((h, i) => (
               <th key={i} style={{
                 padding: "10px 14px", textAlign: "left", fontWeight: 700,
-                background: i === 0 ? "#132D4A" : c[(i - 1) % c.length] + "33",
-                color: i === 0 ? "#8BACC8" : c[(i - 1) % c.length],
-                borderBottom: "2px solid #1A3A5C",
+                background: i === 0 ? "#D6EAF8" : c[(i - 1) % c.length] + "22",
+                color: i === 0 ? "#2C3E50" : c[(i - 1) % c.length],
+                borderBottom: "2px solid #AED6F1",
               }}>{h}</th>
             ))}
           </tr>
@@ -246,10 +246,10 @@ export function CompareTable({ headers, rows, colors }) {
             <tr key={i}>
               {row.map((cell, j) => (
                 <td key={j} style={{
-                  padding: "8px 14px", borderBottom: "1px solid #1A3A5C",
-                  color: j === 0 ? "#E0F7FA" : "#B0BEC5",
+                  padding: "8px 14px", borderBottom: "1px solid #AED6F1",
+                  color: j === 0 ? "#1a1a1a" : "#333",
                   fontWeight: j === 0 ? 600 : 400,
-                  background: j === 0 ? "#0D1F3380" : "transparent",
+                  background: j === 0 ? "#EBF5FB" : "transparent",
                 }}>{cell}</td>
               ))}
             </tr>
@@ -271,14 +271,14 @@ export function LEDIndicator({ label, color = "#4CAF50", status = "solid" }) {
         width: 12, height: 12, borderRadius: "50%", background: color,
         boxShadow: `0 0 6px ${color}88`, animation,
       }} />
-      <span style={{ fontSize: 12, color: "#B0BEC5" }}>{label}</span>
+      <span style={{ fontSize: 12, color: "#333" }}>{label}</span>
     </div>
   );
 }
 
 /* ── StepFlow — numbered step-by-step process ── */
 
-export function StepFlow({ steps, color = "#00BCD4" }) {
+export function StepFlow({ steps, color = "#0277BD" }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "4px 0" }}>
       {steps.map((step, i) => (
@@ -288,7 +288,7 @@ export function StepFlow({ steps, color = "#00BCD4" }) {
             width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 13, fontWeight: 700, flexShrink: 0,
           }}>{i + 1}</div>
-          <div style={{ fontSize: 13, lineHeight: 1.6, color: "#E0E0E0", paddingTop: 4 }}>{step}</div>
+          <div style={{ fontSize: 13, lineHeight: 1.6, color: "#333", paddingTop: 4 }}>{step}</div>
         </div>
       ))}
     </div>

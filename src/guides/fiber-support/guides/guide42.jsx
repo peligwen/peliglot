@@ -11,7 +11,7 @@ export function Guide42() {
       </DarkBox>
 
       <Card color="#C62828" title="Signs of a Fiber Cut" subtitle="How to recognize one">
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
           <li><strong style={{ color: "#EF5350" }}>Multiple LOSi/LOS alarms</strong> from the same geographic area or OLT port simultaneously</li>
           <li><strong style={{ color: "#EF5350" }}>Sudden loss</strong> across many customers — not gradual degradation</li>
           <li><strong style={{ color: "#EF5350" }}>Alarm storm</strong> — a burst of alarms within seconds or minutes</li>
@@ -21,7 +21,7 @@ export function Guide42() {
       </Card>
 
       <Card color="#1565C0" title="Identifying the Scope" subtitle="How big is this outage?">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           Quickly determine how many customers are affected and where the break likely is:
         </p>
         <CompareTable
@@ -48,10 +48,10 @@ export function Guide42() {
       </Card>
 
       <Card color="#00838F" title="Customer Communication" subtitle="What to tell affected customers">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           When customers call during a fiber cut:
         </p>
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
           <li>Acknowledge the outage — <Term>do not troubleshoot individual ONTs</Term> during a known cut</li>
           <li>Provide an estimated restoration time if available (or say "our team is working on it")</li>
           <li>Offer a callback or note the customer wants follow-up when service is restored</li>

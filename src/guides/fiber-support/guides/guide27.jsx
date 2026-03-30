@@ -101,9 +101,9 @@ export function Guide27() {
       <Card color="#1565C0" title="Common Phone Issues" subtitle="Quick reference guide">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {quickRef.map((item, i) => (
-            <div key={i} style={{ background: "#132D4A", borderRadius: 10, padding: 14, border: "1px solid #1A3A5C" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#EF9A9A", marginBottom: 6 }}>{item.issue}</div>
-              <div style={{ fontSize: 12, color: "#B0BEC5", lineHeight: 1.5, marginBottom: 4 }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #AED6F1" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#C62828", marginBottom: 6 }}>{item.issue}</div>
+              <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5, marginBottom: 4 }}>
                 <Term>Cause:</Term> {item.cause}
               </div>
               <div style={{ fontSize: 12, color: "#A5D6A7", lineHeight: 1.5 }}>

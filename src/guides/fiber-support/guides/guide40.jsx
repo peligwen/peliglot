@@ -37,15 +37,15 @@ export function Guide40() {
       </Card>
 
       <Card color="#00838F" title="Alarm Correlation" subtitle="Seeing the bigger picture">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#B0BEC5", marginBottom: 12 }}>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
           Individual alarms tell you about one device. But <Term>correlating</Term> multiple alarms
           reveals larger problems:
         </p>
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#B0BEC5", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#E0F7FA" }}>Multiple Dying Gasps from same area</strong> — likely a power outage, not individual ONT issues</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Multiple LOSi on same PON port</strong> — upstream fiber cut or splitter failure</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Alarm storm (many alarms at once)</strong> — usually indicates a feeder fiber cut or OLT card failure</li>
-          <li><strong style={{ color: "#E0F7FA" }}>Recurring alarms on one ONT</strong> — intermittent fiber issue (loose connector, marginal splice)</li>
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
+          <li><strong style={{ color: "#1a1a1a" }}>Multiple Dying Gasps from same area</strong> — likely a power outage, not individual ONT issues</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Multiple LOSi on same PON port</strong> — upstream fiber cut or splitter failure</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Alarm storm (many alarms at once)</strong> — usually indicates a feeder fiber cut or OLT card failure</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Recurring alarms on one ONT</strong> — intermittent fiber issue (loose connector, marginal splice)</li>
         </ul>
         <Warning text="During an alarm storm, resist the urge to work individual tickets. First identify the common upstream cause — fixing it resolves all downstream alarms." />
       </Card>
