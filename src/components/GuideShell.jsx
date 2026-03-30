@@ -1,6 +1,20 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useGuideNavigation } from '../hooks/useGuideNavigation';
 import { lightTheme } from '../styles/themes';
+
+// Update this map when adding new guide collections
+const relatedCollections = {
+  spanish: { slug: 'english', title: 'American English', icon: '\u{1F1FA}\u{1F1F8}' },
+  english: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
+  arabic: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
+  german: { slug: 'english', title: 'American English', icon: '\u{1F1FA}\u{1F1F8}' },
+  hawaiian: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
+  music: { slug: 'jazz-guitar', title: 'Jazz Guitar', icon: '\u{1F3B8}' },
+  'jazz-guitar': { slug: 'music', title: 'Music Theory', icon: '\u{1F3B9}' },
+  math: { slug: 'ai-interaction', title: 'AI Interaction', icon: '\u{1F916}' },
+  'ai-interaction': { slug: 'math', title: 'Math', icon: '\u{1F9EE}' },
+};
 
 function fuzzyScore(query, text) {
   const q = query.toLowerCase();
@@ -35,13 +49,18 @@ export function GuideShell({
   sidebarSubtitle,
 }) {
   const total = guidesMeta.length;
-  const { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next } = useGuideNavigation(total, storageKey);
+  const { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next, visitedSet } = useGuideNavigation(total, storageKey, guidesMeta);
   const meta = guidesMeta[page];
   const GuideComp = guideComponents[page];
 
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef(null);
   const focusSearchRef = useRef(false);
+
+  const crossLinks = useMemo(() => {
+    const sameCat = guidesMeta.filter(g => g.cat === meta.cat && g.id !== meta.id);
+    return sameCat.length > 0 ? sameCat.slice(0, 2) : guidesMeta.filter(g => g.id !== meta.id).slice(0, 2);
+  }, [guidesMeta, meta.cat, meta.id]);
 
   const searchResults = useMemo(() => {
     const q = searchTerm.trim();
@@ -121,6 +140,63 @@ export function GuideShell({
       <main id="main-content" role="main" ref={contentRef} style={{ flex: 1, overflow: 'auto', padding: '16px', position: 'relative' }}>
         <div key={page} style={{ animation: 'fadeIn 0.2s ease', maxWidth: 700, margin: '0 auto', fontFamily: theme.contentFont }}>
           <GuideComp />
+
+          {/* Cross-links: related guides in same category */}
+          {crossLinks.length > 0 && (
+            <div style={{ marginTop: 24, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {crossLinks.map(g => (
+                <button key={g.id} onClick={() => goTo(g.id - 1)} style={{
+                  padding: '6px 14px', borderRadius: 20, border: `1px solid ${theme.borderColor}`,
+                  background: theme.buttonBg, cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  color: theme.textSecondary, display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <span>{g.icon}</span> {g.subtitle}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* End-of-collection panel */}
+          {page === total - 1 && (() => {
+            const slug = storageKey.replace('peliglot-', '');
+            const related = relatedCollections[slug];
+            return (
+              <div style={{
+                marginTop: 32, padding: 24, borderRadius: 16,
+                border: `1px solid ${theme.borderColor}`, background: theme.buttonBg,
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>{'\u{1F389}'}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: theme.textPrimary, marginBottom: 4 }}>
+                  You{"'"}ve reached the end!
+                </div>
+                <div style={{ fontSize: 13, color: theme.textSecondary, marginBottom: 16 }}>
+                  {visitedSet.size}/{total} guides visited in this collection.
+                </div>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button onClick={() => goTo(0)} style={{
+                    padding: '8px 18px', borderRadius: 10, border: `1.5px solid ${theme.borderColor}`,
+                    background: theme.buttonBg, cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                    color: theme.textSecondary,
+                  }}>Start Over</button>
+                  {related && (
+                    <Link to={`/guides/${related.slug}`} style={{
+                      padding: '8px 18px', borderRadius: 10, border: `1.5px solid ${meta.color}`,
+                      background: meta.color, color: '#fff', fontSize: 13, fontWeight: 700,
+                      textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
+                    }}>
+                      {related.icon} Explore {related.title}
+                    </Link>
+                  )}
+                  <Link to="/" style={{
+                    padding: '8px 18px', borderRadius: 10, border: `1.5px solid ${theme.borderColor}`,
+                    background: theme.buttonBg, color: theme.textSecondary, fontSize: 13, fontWeight: 600,
+                    textDecoration: 'none',
+                  }}>All Guides</Link>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </main>
 
@@ -263,17 +339,24 @@ export function GuideShell({
           ) : (
             categories.map(cat => {
               const items = guidesMeta.filter(g => g.cat === cat);
+              const catVisited = items.filter(g => visitedSet.has(g.id - 1)).length;
               return (
                 <div key={cat}>
                   <div
                     role="heading" aria-level="2"
-                    style={{ padding: '6px 20px', fontSize: 10, fontWeight: 700, color: catColors[cat], textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4 }}
+                    style={{ padding: '6px 20px', fontSize: 10, fontWeight: 700, color: catColors[cat], textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                   >
-                    {cat}
+                    <span>{cat}</span>
+                    {catVisited > 0 && (
+                      <span style={{ fontSize: 9, fontWeight: 600, color: theme.textSecondary, textTransform: 'none', letterSpacing: 0 }}>
+                        {catVisited}/{items.length}
+                      </span>
+                    )}
                   </div>
                   {items.map(g => {
                     const idx = g.id - 1;
                     const isActive = idx === page;
+                    const isVisited = visitedSet.has(idx);
                     return (
                       <button
                         key={g.id} onClick={() => goTo(idx)}
@@ -298,7 +381,11 @@ export function GuideShell({
                           </div>
                           <div style={{ fontSize: 10, color: theme.sidebarSubText, fontStyle: 'italic' }}>{g.title}</div>
                         </div>
-                        <span style={{ fontSize: 10, color: theme.buttonDisabledText, fontWeight: 600 }}>{g.id}</span>
+                        {isVisited && !isActive ? (
+                          <span style={{ fontSize: 11, color: '#4CAF50', fontWeight: 700 }}>{'\u2713'}</span>
+                        ) : (
+                          <span style={{ fontSize: 10, color: theme.buttonDisabledText, fontWeight: 600 }}>{g.id}</span>
+                        )}
                       </button>
                     );
                   })}

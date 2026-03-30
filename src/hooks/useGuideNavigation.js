@@ -1,17 +1,50 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
-export function useGuideNavigation(total, storageKey) {
-  const [page, setPage] = useState(() => {
-    const h = parseInt(location.hash.slice(1), 10);
-    if (h >= 0 && h < total) return h;
-    try {
-      const s = parseInt(localStorage.getItem(storageKey), 10);
-      if (s >= 0 && s < total) return s;
-    } catch { /* ignore */ }
-    return 0;
-  });
+function readPage(storageKey, total) {
+  const h = parseInt(location.hash.slice(1), 10);
+  if (h >= 0 && h < total) return h;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw !== null) {
+      // Support both old format (plain number) and new format (JSON)
+      const parsed = Number(raw);
+      if (!Number.isNaN(parsed) && parsed >= 0 && parsed < total) return parsed;
+    }
+  } catch { /* ignore */ }
+  return 0;
+}
+
+function trackVisited(storageKey, pageIndex) {
+  try {
+    const key = storageKey + '-visited';
+    const raw = localStorage.getItem(key);
+    const visited = raw ? JSON.parse(raw) : [];
+    if (!visited.includes(pageIndex)) {
+      visited.push(pageIndex);
+      localStorage.setItem(key, JSON.stringify(visited));
+    }
+  } catch { /* ignore */ }
+}
+
+function trackRecent(storageKey, pageIndex, guidesMeta) {
+  try {
+    const meta = guidesMeta?.[pageIndex];
+    const slug = storageKey.replace('peliglot-', '');
+    localStorage.setItem('peliglot-recent', JSON.stringify({
+      slug,
+      page: pageIndex,
+      title: meta?.subtitle || meta?.title || '',
+      icon: meta?.icon || '',
+      lastVisited: Date.now(),
+    }));
+  } catch { /* ignore */ }
+}
+
+export function useGuideNavigation(total, storageKey, guidesMeta) {
+  const [page, setPage] = useState(() => readPage(storageKey, total));
   const [menuOpen, setMenuOpen] = useState(false);
   const contentRef = useRef(null);
+  const [visitedVersion, setVisitedVersion] = useState(0);
 
   const goTo = (i) => {
     setPage(i);
@@ -80,7 +113,18 @@ export function useGuideNavigation(total, storageKey) {
 
   useEffect(() => {
     try { localStorage.setItem(storageKey, page); } catch { /* ignore */ }
-  }, [page, storageKey]);
+    trackVisited(storageKey, page);
+    trackRecent(storageKey, page, guidesMeta);
+    setVisitedVersion(v => v + 1);
+  }, [page, storageKey, guidesMeta]);
 
-  return { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next };
+  const visitedSet = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(storageKey + '-visited');
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey, visitedVersion]);
+
+  return { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next, visitedSet };
 }
