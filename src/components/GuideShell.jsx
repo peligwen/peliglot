@@ -48,7 +48,7 @@ export function GuideShell({
   sidebarSubtitle,
 }) {
   const total = guidesMeta.length;
-  const { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next } = useGuideNavigation(total, storageKey, guidesMeta);
+  const { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next, visitedSet } = useGuideNavigation(total, storageKey, guidesMeta);
   const meta = guidesMeta[page];
   const GuideComp = guideComponents[page];
 
@@ -56,13 +56,10 @@ export function GuideShell({
   const searchRef = useRef(null);
   const focusSearchRef = useRef(false);
 
-  const visitedSet = useMemo(() => {
-    try {
-      const raw = localStorage.getItem(storageKey + '-visited');
-      return raw ? new Set(JSON.parse(raw)) : new Set();
-    } catch { return new Set(); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageKey, page]);
+  const crossLinks = useMemo(() => {
+    const sameCat = guidesMeta.filter(g => g.cat === meta.cat && g.id !== meta.id);
+    return sameCat.length > 0 ? sameCat.slice(0, 2) : guidesMeta.filter(g => g.id !== meta.id).slice(0, 2);
+  }, [guidesMeta, meta.cat, meta.id]);
 
   const searchResults = useMemo(() => {
     const q = searchTerm.trim();
@@ -144,23 +141,19 @@ export function GuideShell({
           <GuideComp />
 
           {/* Cross-links: related guides in same category */}
-          {(() => {
-            const sameCat = guidesMeta.filter(g => g.cat === meta.cat && g.id !== meta.id);
-            const related = sameCat.length > 0 ? sameCat.slice(0, 2) : guidesMeta.filter(g => g.id !== meta.id).slice(0, 2);
-            return related.length > 0 && (
-              <div style={{ marginTop: 24, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {related.map(g => (
-                  <button key={g.id} onClick={() => goTo(g.id - 1)} style={{
-                    padding: '6px 14px', borderRadius: 20, border: `1px solid ${theme.borderColor}`,
-                    background: theme.buttonBg, cursor: 'pointer', fontSize: 12, fontWeight: 600,
-                    color: theme.textSecondary, display: 'flex', alignItems: 'center', gap: 6,
-                  }}>
-                    <span>{g.icon}</span> {g.subtitle}
-                  </button>
-                ))}
-              </div>
-            );
-          })()}
+          {crossLinks.length > 0 && (
+            <div style={{ marginTop: 24, display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {crossLinks.map(g => (
+                <button key={g.id} onClick={() => goTo(g.id - 1)} style={{
+                  padding: '6px 14px', borderRadius: 20, border: `1px solid ${theme.borderColor}`,
+                  background: theme.buttonBg, cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  color: theme.textSecondary, display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <span>{g.icon}</span> {g.subtitle}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* End-of-collection panel */}
           {page === total - 1 && (() => {

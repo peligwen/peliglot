@@ -59,7 +59,7 @@ export function FlashcardDeck({ items, color = '#1565C0', title, speakFn, speakK
       <div style={{ textAlign: 'center', padding: '32px 16px' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>{emoji}</div>
         <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, color }}>
-          {gotCount}/{total} on first try
+          {gotCount}/{total} cleared
         </div>
         <div style={{ fontSize: 14, color: '#888', marginBottom: 20 }}>
           {pct >= 80 ? 'Excellent!' : pct >= 50 ? 'Good progress! Keep practicing.' : 'Review and try again.'}
@@ -71,6 +71,8 @@ export function FlashcardDeck({ items, color = '#1565C0', title, speakFn, speakK
       </div>
     );
   }
+
+  if (!current) return null;
 
   return (
     <div style={{ padding: '8px 0' }}>

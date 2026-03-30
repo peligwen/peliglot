@@ -30,9 +30,9 @@ function searchAllGuides(query) {
   const results = [];
   for (const collection of allGuideIndex) {
     for (const guide of collection.meta) {
-      const titleMatch = guide.title.toLowerCase().includes(q);
-      const subMatch = guide.subtitle.toLowerCase().includes(q);
-      const catMatch = guide.cat.toLowerCase().includes(q);
+      const titleMatch = (guide.title || '').toLowerCase().includes(q);
+      const subMatch = (guide.subtitle || '').toLowerCase().includes(q);
+      const catMatch = (guide.cat || '').toLowerCase().includes(q);
       if (titleMatch || subMatch || catMatch) {
         results.push({
           ...guide,
@@ -91,7 +91,9 @@ function ResumeToast() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    setRecent(getRecentActivity());
+    const activity = getRecentActivity();
+    setRecent(activity);
+    if (!activity) return;
     const timer = setTimeout(() => setDismissed(true), 8000);
     return () => clearTimeout(timer);
   }, []);
@@ -101,6 +103,7 @@ function ResumeToast() {
   return (
     <Link
       to={`/guides/${recent.slug}#${recent.page}`}
+      className="resume-toast"
       onClick={() => setDismissed(true)}
       style={{
         position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
@@ -147,6 +150,10 @@ function GlobalSearch() {
         value={query}
         onChange={e => setQuery(e.target.value)}
         onFocus={() => setFocused(true)}
+        onKeyDown={e => { if (e.key === 'Escape') { setQuery(''); setFocused(false); } }}
+        aria-label="Search all guides"
+        role="combobox"
+        aria-expanded={showResults}
         style={{
           width: '100%', padding: '10px 16px', fontSize: 15, borderRadius: 12,
           border: '1.5px solid #e0dcd5', background: '#fff', color: '#1a1a1a',
@@ -154,7 +161,7 @@ function GlobalSearch() {
         }}
       />
       {showResults && (
-        <div style={{
+        <div role="listbox" aria-label="Search results" style={{
           position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
           background: '#fff', borderRadius: 12, border: '1px solid #e0dcd5',
           boxShadow: '0 8px 32px rgba(0,0,0,0.1)', overflow: 'hidden', zIndex: 10,
@@ -166,6 +173,7 @@ function GlobalSearch() {
               <Link
                 key={`${r.slug}-${r.id}`}
                 to={`/guides/${r.slug}#${r.id - 1}`}
+                role="option"
                 onClick={() => { setQuery(''); setFocused(false); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px',
@@ -187,7 +195,20 @@ function GlobalSearch() {
   );
 }
 
+function useVisitedCounts() {
+  return useMemo(() => {
+    const counts = {};
+    for (const section of guides) {
+      for (const g of section.items) {
+        if (g.total) counts[g.slug] = getVisitedCount(g.slug);
+      }
+    }
+    return counts;
+  }, []);
+}
+
 export function LandingPage() {
+  const visitedCounts = useVisitedCounts();
   return (
     <>
       <style>{`@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@media(prefers-reduced-motion:reduce){.resume-toast{animation:none!important}}`}</style>
@@ -208,7 +229,7 @@ export function LandingPage() {
           <div key={section.section}>
             <h2 className="section-label">{section.section}</h2>
             {section.items.map(g => {
-              const visited = g.total ? getVisitedCount(g.slug) : 0;
+              const visited = g.total ? (visitedCounts[g.slug] || 0) : 0;
               const progress = g.total ? visited / g.total : 0;
               const accentColor = g.accent.startsWith('linear') ? '#1565C0' : g.accent;
               return g.soon ? (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 function readPage(storageKey, total) {
   const h = parseInt(location.hash.slice(1), 10);
@@ -44,6 +44,7 @@ export function useGuideNavigation(total, storageKey, guidesMeta) {
   const [page, setPage] = useState(() => readPage(storageKey, total));
   const [menuOpen, setMenuOpen] = useState(false);
   const contentRef = useRef(null);
+  const [visitedVersion, setVisitedVersion] = useState(0);
 
   const goTo = (i) => {
     setPage(i);
@@ -114,7 +115,16 @@ export function useGuideNavigation(total, storageKey, guidesMeta) {
     try { localStorage.setItem(storageKey, page); } catch { /* ignore */ }
     trackVisited(storageKey, page);
     trackRecent(storageKey, page, guidesMeta);
+    setVisitedVersion(v => v + 1);
   }, [page, storageKey, guidesMeta]);
 
-  return { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next };
+  const visitedSet = useMemo(() => {
+    try {
+      const raw = localStorage.getItem(storageKey + '-visited');
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey, visitedVersion]);
+
+  return { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next, visitedSet };
 }
