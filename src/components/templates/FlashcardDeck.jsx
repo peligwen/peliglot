@@ -107,13 +107,18 @@ export function FlashcardDeck({ items, color = '#1565C0', title, speakFn, speakK
           transition: 'transform 0.4s ease',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0)',
         }}>
+          {/* Invisible sizer to establish natural height for long content */}
+          <div aria-hidden="true" style={{ visibility: 'hidden', padding: 24, minHeight: 200 }}>
+            <div style={{ fontSize: 22, lineHeight: 1.3 }}>{current.front}</div>
+          </div>
+
           {/* Front */}
           <div style={{
             position: 'absolute', inset: 0,
             backfaceVisibility: 'hidden',
             background: '#fff', border: `2px solid ${color}20`, borderRadius: 16,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            padding: 24, minHeight: 200,
+            padding: 24,
           }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: '#bbb', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Tap to flip</div>
             <div style={{ fontSize: 22, fontWeight: 800, color: '#1a1a1a', textAlign: 'center', lineHeight: 1.3 }}>
@@ -128,7 +133,7 @@ export function FlashcardDeck({ items, color = '#1565C0', title, speakFn, speakK
             transform: 'rotateY(180deg)',
             background: `${color}08`, border: `2px solid ${color}30`, borderRadius: 16,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            padding: 24, minHeight: 200,
+            padding: 24,
           }}>
             <div style={{ fontSize: 20, fontWeight: 800, color, textAlign: 'center', lineHeight: 1.3, marginBottom: 20 }}>
               {current.back}

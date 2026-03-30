@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useGuideNavigation } from '../hooks/useGuideNavigation';
 import { lightTheme } from '../styles/themes';
 
+// Update this map when adding new guide collections
 const relatedCollections = {
   spanish: { slug: 'english', title: 'American English', icon: '\u{1F1FA}\u{1F1F8}' },
   english: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
