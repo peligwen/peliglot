@@ -1,72 +1,64 @@
 # Contributing to Peliglot
 
-## Project Overview
-
-Peliglot is a static HTML interactive learning platform. It consists of 8 self-contained guide files and a landing page. There is no build step -- just open any HTML file in a browser.
-
-## File Structure
-
-```
-index.html              Landing page
-guides/
-  spanish.html
-  arabic.html
-  english.html
-  german.html
-  hawaiian.html
-  music.html
-  jazz-guitar.html
-  math.html
-  french.html
-  japanese.html
-  portuguese.html
-  music2.html
-  statistics.html
-  programming.html
-```
-
-Each guide is a standalone HTML file. There are no shared bundles or generated assets.
-
 ## Tech Stack
 
-- **React 18.2** via CDN (with unpkg fallback)
-- **Babel standalone** for in-browser JSX transformation (see note below)
-- **Tone.js** for audio synthesis (used in `music.html` and `jazz-guitar.html`)
-- **Web Speech API** for text-to-speech (used in language guides)
+- **React 18** + **Vite** — SPA with fast HMR
+- **React Router v7** — lazy-loaded guide collections
+- **Tone.js** — audio synthesis (music guides)
+- **Web Speech API** — text-to-speech (language guides)
+- **Cloudflare Workers** — deployment target
 
-> **Note on Babel standalone (~2 MB):** Babel is needed to transform JSX at runtime. Removing it would require precompiling JSX to `React.createElement` calls at authoring time. While this would reduce page weight significantly, it conflicts with the project's "no build step" ethos — contributors can edit JSX directly and see changes by refreshing the browser. We accept the tradeoff for now.
+## Getting Started
 
-## Component Conventions
+```bash
+npm install
+npm run dev      # Start dev server with hot reload
+```
 
-Every guide uses a small set of reusable component functions defined inside the same file:
+## Project Structure
 
-| Component | Purpose |
-|-----------|---------|
-| **Card** | White rounded card with a title. Primary content container. |
-| **DarkBox** | Dark gradient box for highlighting key concepts. |
-| **Insight** | Highlighted tip with an icon. Default icon is a lightbulb; Hawaiian guide uses a hibiscus. |
+```
+src/
+  guides/{slug}/         # One directory per guide collection
+    meta.js              # Guide metadata (titles, categories, colors)
+    index.jsx            # Entry point (GuideShell wrapper)
+    components.jsx       # Barrel file exporting all guide components
+    guides/
+      _helpers.jsx       # Shared helper components for this collection
+      guide1.jsx         # Individual guide files
+      guide2.jsx
+      ...
+  components/            # Shared UI components (Card, DarkBox, Insight, etc.)
+  components/templates/  # Reusable guide templates (AlphabetGrid, QuizSection, etc.)
+  utils/                 # Speech and audio utilities
+  hooks/                 # Custom React hooks
+  styles/                # Global CSS and theme definitions
+```
 
-## Adding a New Guide
+## Adding a New Guide Collection
 
-1. Copy an existing guide HTML file as a template (pick one closest to your topic).
-2. Update the `guidesMeta` array in the new file with the guide's metadata.
-3. Add your `Guide` functions with the relevant content.
-4. Add a link to the new guide in `index.html`.
-5. Add an entry in `README.md`.
+See `CLAUDE.md` for the full step-by-step workflow. In brief:
 
-## Formatting Rules
+1. Create `src/guides/{slug}/` with `meta.js`, `index.jsx`, `components.jsx`, and `guides/` subdirectory
+2. Generate individual guide files one at a time
+3. Register the slug in `src/router.jsx` and `src/LandingPage.jsx`
 
-- Write readable JSX -- do not minify.
-- Use consistent indentation (2 spaces).
-- Keep each guide fully self-contained; do not extract shared modules.
+## Validation
 
-## Accessibility
+```bash
+npm run lint       # ESLint — catches real errors (unused vars, broken imports)
+npm run build      # Vite production build
+npm run validate   # Guide structure consistency checks
+npm run check      # All three in sequence
+```
 
-All guides must include:
+## Conventions
 
-- Semantic HTML landmarks (`<header>`, `<main>`, `<nav>`, `<aside>`)
-- ARIA labels on interactive elements
-- A skip-to-content link
-- Full keyboard navigation support
-- `prefers-reduced-motion` media query support
-- `prefers-color-scheme: dark` media query support
+- All styles are inline (no CSS modules, no Tailwind)
+- Guide functions are named `Guide1`, `Guide2`, etc.
+- `guideComponents` array order must match `guidesMeta` order
+- Hawaiian guide (`src/guides/hawaiian/`) is the reference implementation
+
+## CI Checks
+
+PRs to `main` run: build verification, bundle size check (< 500KB per JS asset), and guide count validation.

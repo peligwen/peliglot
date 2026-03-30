@@ -7,7 +7,7 @@ export function useGuideNavigation(total, storageKey) {
     try {
       const s = parseInt(localStorage.getItem(storageKey), 10);
       if (s >= 0 && s < total) return s;
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
     return 0;
   });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,7 +79,7 @@ export function useGuideNavigation(total, storageKey) {
   }, [page]);
 
   useEffect(() => {
-    try { localStorage.setItem(storageKey, page); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(storageKey, page); } catch { /* ignore */ }
   }, [page, storageKey]);
 
   return { page, menuOpen, setMenuOpen, contentRef, goTo, prev, next };

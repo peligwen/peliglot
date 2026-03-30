@@ -12,7 +12,7 @@ export function Guide29(){
     {name:"Mixolydian Mode",steps:[2,2,1,2,2,1,2],feel:"Major but with a flat 7th. Bluesy-major, classic rock, folk.",color:"#E65100"},
   ];
   const [selScale,setSelScale]=useState(0);
-  const [root,setRoot]=useState("A");
+  const [root,_setRoot]=useState("A");
   const sc=scales[selScale];
   const notes=buildScale(root,sc.steps);
   return(<div>

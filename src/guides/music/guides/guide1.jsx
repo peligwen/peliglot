@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { playNote } from '../../../utils/audio';
-import { Insight, noteName, Piano, ALL_NOTES, isBlack, INTERVALS } from './_helpers';
+import { Insight, noteName, Piano, ALL_NOTES, isBlack } from './_helpers';
 
 export function Guide1(){
   const [selNote,setSelNote]=useState(null);

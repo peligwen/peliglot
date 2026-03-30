@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "validate": "node scripts/validate-guides.cjs",
+    "check": "npm run lint && npm run build && npm run validate"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -16,7 +20,12 @@
     "tone": "^14.8.49"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@vitejs/plugin-react": "^4.3.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.5.0",
     "vite": "^6.0.0",
     "wrangler": "^3.99.0"
   }

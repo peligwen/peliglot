@@ -69,7 +69,7 @@ export function Guide16(){
       <Insight text="Formula: IO pronoun (me/te/le/nos/les) + verb (singular or plural) + the thing. The THING determines singular vs plural, not the person!"/>
     </div>}
     {tab==="verbs"&&<div>
-      {verbs.map((v,i)=>(<div key={v.v} style={{background:"#fff",borderRadius:10,padding:"10px 14px",marginBottom:6,border:"1px solid #eee"}}>
+      {verbs.map((v,_i)=>(<div key={v.v} style={{background:"#fff",borderRadius:10,padding:"10px 14px",marginBottom:6,border:"1px solid #eee"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:4}}>
           <span style={{fontSize:15,fontWeight:800,color:"#D84315"}}>{v.v}</span>
           <span style={{fontSize:12,color:"#999"}}>{v.m}</span>

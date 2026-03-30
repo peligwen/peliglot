@@ -3,7 +3,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 
 export function Guide21(){
-  const [data,setData]=useState([30,35,40,42,45,50,55,250]);
+  const [data,_setData]=useState([30,35,40,42,45,50,55,250]);
   const sorted=[...data].sort((a,b)=>a-b);
   const mean=data.reduce((a,b)=>a+b,0)/data.length;
   const mid=Math.floor(sorted.length/2);

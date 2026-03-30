@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { playChord } from '../../../utils/audio';
-import { Insight, Piano, buildChord } from './_helpers';
+import { Insight, Piano, buildChord, CHORD_TYPES } from './_helpers';
 
 export function Guide8(){
-  const [root,setRoot]=useState("C");
+  const [root,_setRoot]=useState("C");
   const [type,setType]=useState("maj7");
   const types=[{k:"maj7",l:"Maj7",desc:"Dreamy, lush",c:"#1565C0"},{k:"min7",l:"Min7",desc:"Mellow, jazzy",c:"#6A1B9A"},{k:"dom7",l:"Dom7",desc:"Bluesy, wants to resolve",c:"#C62828"},{k:"dim7",l:"Dim7",desc:"Tense, spooky",c:"#E65100"},{k:"hdim7",l:"m7b5",desc:"Dark, unstable",c:"#880E4F"}];
   const chord=buildChord(root,CHORD_TYPES[type]);

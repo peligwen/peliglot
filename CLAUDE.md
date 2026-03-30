@@ -234,3 +234,35 @@ All in `src/components/`:
 - Bundle size: each JS asset must be < 500KB
 - Guide count: `meta.js` must have entries matching `{ *id:` pattern
 - Build must produce `dist/index.html`
+
+## Quick Validation Commands
+
+| Command | What it does |
+|---------|-------------|
+| `npm run lint` | ESLint check — catches unused vars, missing imports, hooks violations |
+| `npm run build` | Production build — verifies all imports resolve and produces `dist/` |
+| `npm run validate` | Guide structure check — meta entries match file counts, all slugs registered |
+| `npm run check` | Runs lint + build + validate in sequence |
+
+## Bundle Size Debugging
+
+- After build, check sizes: `ls -lh dist/assets/*.js`
+- Each JS asset must be < 500KB (enforced by CI)
+- Each guide collection lazy-loads independently via React Router, so adding guides to one collection doesn't affect other chunks
+- `react-vendor` chunk is split out in `vite.config.js` via `manualChunks`
+- If a chunk is too large, check for oversized inline data arrays or unnecessary imports in that guide's files
+
+## Common Pitfalls
+
+- `guideComponents` array in `components.jsx` must match `guidesMeta` order in `meta.js` (indexed by page number)
+- After adding a new guide file, update **both** `components.jsx` (barrel import) and `meta.js` (metadata entry)
+- New guide collections need entries in three places: `src/router.jsx` (`guideSlugs`), `src/LandingPage.jsx`, and optionally `src/utils/speech.js`
+- All styles are inline — no CSS files, no Tailwind, no CSS modules
+- Speech functions use the Web Speech API; available voices vary by platform
+
+## Verifying Changes
+
+Run `npm run check` before considering any change complete. This catches:
+- Syntax errors and broken imports (via build)
+- Unused variables and hooks violations (via lint)
+- Missing guide files or registration gaps (via validate)

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-import { SimpleGuide } from '../../../components/SimpleGuide';
 import { Tip } from './_helpers';
 
 const tools = [
