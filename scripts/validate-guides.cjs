@@ -12,7 +12,7 @@ const SRC = path.join(ROOT, 'src');
 let errors = 0;
 const results = [];
 
-// Extract guideSlugs from router.jsx
+// Extract guideSlugs from router.jsx (supports single and double quotes)
 const routerContent = fs.readFileSync(path.join(SRC, 'router.jsx'), 'utf-8');
 const slugMatch = routerContent.match(/const guideSlugs\s*=\s*\[([\s\S]*?)\]/);
 if (!slugMatch) {
@@ -20,14 +20,24 @@ if (!slugMatch) {
   process.exit(1);
 }
 
-const slugs = slugMatch[1].match(/'([^']+)'/g).map(s => s.replace(/'/g, ''));
+const slugs = [];
+const quoteRegex = /['"]([^'"]+)['"]/g;
+let m;
+while ((m = quoteRegex.exec(slugMatch[1])) !== null) {
+  slugs.push(m[1]);
+}
+
+if (slugs.length === 0) {
+  console.error('ERROR: No slugs found in guideSlugs array');
+  process.exit(1);
+}
 
 // Check LandingPage references
 const landingContent = fs.readFileSync(path.join(SRC, 'LandingPage.jsx'), 'utf-8');
 
 for (const slug of slugs) {
   const dir = path.join(SRC, 'guides', slug);
-  const row = { slug, dir: '✓', meta: '-', index: '-', barrel: '-', metaCount: 0, fileCount: 0, landing: '-', ok: true };
+  const row = { slug, dir: '✓', meta: '-', index: '-', barrel: '-', metaCount: 0, fileCount: 0, barrelCount: 0, landing: '-', ok: true };
 
   // Check directory
   if (!fs.existsSync(dir)) {
@@ -38,11 +48,11 @@ for (const slug of slugs) {
     continue;
   }
 
-  // Check meta.js
+  // Check meta.js — use same regex pattern as CI: { *id:
   const metaPath = path.join(dir, 'meta.js');
   if (fs.existsSync(metaPath)) {
     const metaContent = fs.readFileSync(metaPath, 'utf-8');
-    const matches = metaContent.match(/\{\s*id:/g);
+    const matches = metaContent.match(/\{ *id:/g);
     row.metaCount = matches ? matches.length : 0;
     row.meta = row.metaCount > 0 ? '✓' : '✗';
     if (row.metaCount === 0) { row.ok = false; errors++; }
@@ -56,9 +66,18 @@ for (const slug of slugs) {
   row.index = fs.existsSync(path.join(dir, 'index.jsx')) ? '✓' : '✗';
   if (row.index === '✗') { row.ok = false; errors++; }
 
-  // Check components.jsx (barrel)
-  row.barrel = fs.existsSync(path.join(dir, 'components.jsx')) ? '✓' : '✗';
-  if (row.barrel === '✗') { row.ok = false; errors++; }
+  // Check components.jsx (barrel) and count its imports
+  const barrelPath = path.join(dir, 'components.jsx');
+  if (fs.existsSync(barrelPath)) {
+    row.barrel = '✓';
+    const barrelContent = fs.readFileSync(barrelPath, 'utf-8');
+    const importMatches = barrelContent.match(/from\s+['"]\.\/guides\/guide\d+['"]/g);
+    row.barrelCount = importMatches ? importMatches.length : 0;
+  } else {
+    row.barrel = '✗';
+    row.ok = false;
+    errors++;
+  }
 
   // Count guide files in guides/ subdirectory
   const guidesDir = path.join(dir, 'guides');
@@ -69,6 +88,14 @@ for (const slug of slugs) {
 
   // Check meta count vs file count
   if (row.metaCount > 0 && row.fileCount > 0 && row.metaCount !== row.fileCount) {
+    console.error(`  ERROR: ${slug} meta entries (${row.metaCount}) != guide files (${row.fileCount})`);
+    row.ok = false;
+    errors++;
+  }
+
+  // Check barrel count vs meta count
+  if (row.barrelCount > 0 && row.metaCount > 0 && row.barrelCount !== row.metaCount) {
+    console.error(`  ERROR: ${slug} barrel imports (${row.barrelCount}) != meta entries (${row.metaCount})`);
     row.ok = false;
     errors++;
   }
@@ -87,15 +114,15 @@ console.log('========================');
 console.log('');
 console.log(
   'Slug'.padEnd(16) +
-  'Dir  Meta Index Barrel Landing  Meta# Files#  Status'
+  'Dir  Meta Index Barrel Landing  Meta# Files# Barrel#  Status'
 );
-console.log('-'.repeat(72));
+console.log('-'.repeat(78));
 
 for (const r of results) {
   const status = r.ok ? 'OK' : 'FAIL';
   console.log(
     r.slug.padEnd(16) +
-    `${r.dir}    ${r.meta}    ${r.index}     ${r.barrel}      ${r.landing}        ${String(r.metaCount).padStart(3)}   ${String(r.fileCount).padStart(3)}   ${status}`
+    `${r.dir}    ${r.meta}    ${r.index}     ${r.barrel}      ${r.landing}        ${String(r.metaCount).padStart(3)}   ${String(r.fileCount).padStart(3)}     ${String(r.barrelCount).padStart(3)}   ${status}`
   );
 }
 

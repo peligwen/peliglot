@@ -8,7 +8,7 @@
     ],
     "SessionStart": [
       {
-        "command": "test -d node_modules || npm install; npm run build --silent 2>/dev/null && echo 'Build OK' || echo 'WARNING: build is broken'",
+        "command": "test -d node_modules || npm install; npm run build -s 2>/dev/null && echo 'Build OK' || echo 'WARNING: build is broken'",
         "description": "Verify environment ready"
       }
     ]
@@ -18,7 +18,8 @@
       "Bash(npm run *)",
       "Bash(node scripts/*)",
       "Bash(npx vite *)",
-      "Bash(ls *)"
+      "Bash(ls dist/*)",
+      "Bash(ls src/*)"
     ]
   }
 }

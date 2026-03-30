@@ -4,9 +4,9 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 
 export default [
-  js.configs.recommended,
   {
     files: ['src/**/*.{js,jsx}'],
+    ...js.configs.recommended,
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -25,6 +25,8 @@ export default [
       react: { version: 'detect' },
     },
     rules: {
+      ...js.configs.recommended.rules,
+
       // Error-only: catch real bugs, not style
       'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-undef': 'error',

@@ -59,6 +59,15 @@ npm run check      # All three in sequence
 - `guideComponents` array order must match `guidesMeta` order
 - Hawaiian guide (`src/guides/hawaiian/`) is the reference implementation
 
+## Accessibility
+
+Guides should include where practical:
+
+- Semantic HTML landmarks
+- ARIA labels on interactive elements
+- Keyboard navigation support
+- Respect for `prefers-reduced-motion` and `prefers-color-scheme` media queries
+
 ## CI Checks
 
-PRs to `main` run: build verification, bundle size check (< 500KB per JS asset), and guide count validation.
+PRs to `main` run: lint, build verification, bundle size check (< 500KB per JS asset), and guide count validation.
