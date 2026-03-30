@@ -59,3 +59,24 @@ export const jazzTheme = {
   focusColor: '#8D6E63',
   scrollbarThumb: '#3a3025',
 };
+
+export const networkTheme = {
+  ...darkTheme,
+  bg: '#0B1929',
+  headerBg: '#0D1F33',
+  borderColor: '#1A3A5C',
+  sidebarBg: '#0D1F33',
+  sidebarActiveItemBg: '#132D4A',
+  sidebarItemText: '#8BACC8',
+  sidebarItemActiveText: '#E0F7FA',
+  sidebarSubText: '#4A7A9B',
+  focusColor: '#00BCD4',
+  dotInactive: '#1A3A5C',
+  buttonBg: '#0D1F33',
+  buttonBorder: '#1A3A5C',
+  buttonText: '#8BACC8',
+  buttonDisabledBg: '#091520',
+  buttonDisabledText: '#2A4A6C',
+  overlayBg: 'rgba(0,0,0,0.7)',
+  scrollbarThumb: '#1A3A5C',
+};

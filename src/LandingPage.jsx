@@ -10,6 +10,7 @@ import { guidesMeta as musicMeta } from './guides/music/meta';
 import { guidesMeta as jazzGuitarMeta } from './guides/jazz-guitar/meta';
 import { guidesMeta as mathMeta } from './guides/math/meta';
 import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
+import { guidesMeta as fiberMeta } from './guides/fiber-support/meta';
 import './styles/landing.css';
 
 const allGuideIndex = [
@@ -22,6 +23,7 @@ const allGuideIndex = [
   { slug: 'jazz-guitar', label: 'Jazz Guitar', icon: '\u{1F3B8}', meta: jazzGuitarMeta },
   { slug: 'math', label: 'Math', icon: '\u{1F9EE}', meta: mathMeta },
   { slug: 'ai-interaction', label: 'AI Interaction', icon: '\u{1F916}', meta: aiMeta },
+  { slug: 'fiber-support', label: 'Fiber Support', icon: '\u{1F4E1}', meta: fiberMeta },
 ];
 
 function searchAllGuides(query) {
@@ -63,6 +65,7 @@ const guides = [
     { slug: 'jazz-guitar', accent: 'linear-gradient(180deg, #8D6E63, #3E2723)', icon: '\u{1F3B8}', title: 'Jazz Guitar', sub: 'Voice leading, chord voicings, comping, improvisation, and jazz standards \u2014 for experienced musicians.', count: '30 guides', total: 30 },
     { slug: 'math', accent: 'linear-gradient(180deg, #1565C0, #2E7D32)', icon: '\u{1F9EE}', title: 'Math', sub: 'Number sense, algebra, geometry, growth, data, and personal finance \u2014 32 interactive guides.', count: '32 guides', total: 32 },
     { slug: 'ai-interaction', accent: 'linear-gradient(180deg, #1565C0, #6A1B9A)', icon: '\u{1F916}', title: 'AI Interaction', sub: 'Prompt engineering, tokens, agents, ethics, and practical skills for working with AI \u2014 25 interactive guides.', count: '25 guides', total: 25 },
+    { slug: 'fiber-support', accent: 'linear-gradient(180deg, #0277BD, #00BCD4)', icon: '\u{1F4E1}', title: 'Fiber Support', sub: 'FTTH, Nokia & Calix platforms, iVue, voice systems, and troubleshooting \u2014 43 interactive guides for support agents.', count: '43 guides', total: 43 },
     { slug: 'music2', accent: 'linear-gradient(180deg, #7B1FA2, #1565C0)', icon: '\u{1F3BC}', title: 'Music Theory II', sub: 'Extended harmony, modulation, counterpoint, form analysis, orchestration, and 20th-century techniques \u2014 with playable audio.', count: 'Coming soon', soon: true },
     { slug: 'statistics', accent: 'linear-gradient(180deg, #E65100, #1565C0)', icon: '\u{1F4CA}', title: 'Statistics', sub: 'Descriptive stats, probability, distributions, hypothesis testing, regression, and data literacy \u2014 interactive visualizations.', count: 'Coming soon', soon: true },
     { slug: 'programming', accent: 'linear-gradient(180deg, #2E7D32, #1565C0)', icon: '\u{1F4BB}', title: 'Programming', sub: 'Variables, control flow, functions, data structures, algorithms, and patterns \u2014 visual, language-agnostic approach.', count: 'Coming soon', soon: true },
