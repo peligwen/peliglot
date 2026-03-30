@@ -3,7 +3,7 @@ import { playChord } from '../../../utils/audio';
 import { Insight, Piano, buildChord } from './_helpers';
 
 export function Guide10(){
-  const [root,setRoot]=useState("C");
+  const [root,_setRoot]=useState("C");
   const [type,setType]=useState("power");
   const types=[{k:"power",l:"Power Chord (5)",desc:"Root + 5th only. No 3rd = neither major nor minor. Dominates rock, punk, metal.",iv:[7],c:"#2E7D32"},
     {k:"sus2",l:"Sus2",desc:"3rd replaced by 2nd. Open, ambiguous. Common in pop/folk.",iv:[2,5],c:"#1565C0"},

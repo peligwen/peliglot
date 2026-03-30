@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { playChord } from '../../../utils/audio';
-import { Insight, Piano, buildChord, ALL_NOTES } from './_helpers';
+import { Insight, Piano, buildChord, ALL_NOTES, CHORD_TYPES } from './_helpers';
 
 export function Guide6(){
   const [root,setRoot]=useState("C");

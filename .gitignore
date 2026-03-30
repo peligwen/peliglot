@@ -10,3 +10,14 @@ dist/
 !.dev.vars.example
 .env*
 !.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

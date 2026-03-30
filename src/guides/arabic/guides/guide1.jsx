@@ -32,9 +32,6 @@ const alphabet=[
   {l:"ي",n:"yā'",tr:"y/ī",ipa:"/j/ or /iː/",iso:"ي",ini:"يـ",med:"ـيـ",fin:"ـي",connect:true,cat:"normal"},
 ];
 
-const catLabels={normal:"Standard",throat:"Throat",emphatic:"Emphatic"};
-
-const catFilterColors={normal:"#1B5E20",throat:"#880E4F",emphatic:"#E65100",all:"#333"};
 
 export function Guide1(){
   return(

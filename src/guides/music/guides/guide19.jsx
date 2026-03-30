@@ -4,7 +4,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { ProgressionPlayer } from './_helpers';
 
 export function Guide19(){
-  const [root,setRoot]=useState("C");
+  const [root,_setRoot]=useState("C");
   return(<div>
     <DarkBox title="The backbone of jazz harmony"><div style={{fontSize:14}}>
       <strong style={{color:"#FFE77A"}}>ii – V – I</strong> is to jazz what I – IV – V is to blues. It works because each chord is a fifth away from the next — the strongest resolution in music, chained together.

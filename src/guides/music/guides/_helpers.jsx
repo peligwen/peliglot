@@ -39,18 +39,17 @@ export function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62
   return(
     <div style={{position:"relative",height:120,marginBottom:16,display:"flex",justifyContent:"center"}}>
       <div style={{position:"relative",display:"flex",height:"100%"}}>
-        {notes.map((n,i)=>{
+        {notes.map((n,_i)=>{
           const base=n.slice(0,-1);const isB=isBlack(base);
           const hl=highlighted.includes(base)||highlighted.includes(n);
           const label=labels[base]||labels[n]||"";
           if(isB)return null;
-          const wIdx=notes.slice(0,i+1).filter(x=>!isBlack(x.slice(0,-1))).length-1;
           return(<div key={n} onClick={()=>{playNote(n);onPlay&&onPlay(n,base);}} style={{width:wW,height:"100%",background:hl?highlightColor:"#fff",border:"1px solid #ccc",borderRadius:"0 0 5px 5px",cursor:"pointer",display:"flex",flexDirection:"column",justifyContent:"flex-end",alignItems:"center",paddingBottom:6,position:"relative",zIndex:1,transition:"background 0.1s"}}>
             {label&&<div style={{fontSize:9,fontWeight:700,color:hl?"#fff":"#aaa"}}>{label}</div>}
             <div style={{fontSize:8,color:hl?"rgba(255,255,255,0.7)":"#ccc"}}>{base}</div>
           </div>);
         })}
-        {(()=>{let wPos=0;return notes.map((n,i)=>{
+        {(()=>{let wPos=0;return notes.map((n,_i)=>{
           const base=n.slice(0,-1);const isB=isBlack(base);
           if(!isB){wPos++;return null;}
           const hl=highlighted.includes(base)||highlighted.includes(n);
@@ -75,6 +74,8 @@ export function buildChord(root,intervals){
   for(const iv of intervals){idx=(idx+iv)%12;notes.push(ALL_NOTES[idx]);}
   return notes;
 }
+
+export const CHORD_TYPES={major:[4,3],minor:[3,4],dim:[3,3],aug:[4,4],maj7:[4,3,4],min7:[3,4,3],dom7:[4,3,3],dim7:[3,3,3],hdim7:[3,3,4]};
 
 // GUIDE 1: THE 12 NOTES
 // ═══════════════════════════════════════════════════════════════

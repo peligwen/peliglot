@@ -20,8 +20,6 @@ const meaningChange=[
   {base:"parecer",m1:"to seem",refl:"parecerse",m2:"to resemble",ex:"Se parece a su madre."},
 ];
 
-const pronouns=["me","te","se","nos","os","se"];
-
 export function Guide31(){
   const [tab,setTab]=useState("daily");
   return(<div>

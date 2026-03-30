@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { AlphabetGrid } from '../../../components/templates/AlphabetGrid';
 import { speakSpanish } from '../../../utils/speech';
 import { VowelBar } from './_helpers';

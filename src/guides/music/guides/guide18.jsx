@@ -3,7 +3,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { ProgressionPlayer } from './_helpers';
 
 export function Guide18(){
-  const [root,setRoot]=useState("A");
+  const [root,_setRoot]=useState("A");
   const [prog,setProg]=useState(0);
   const progs=[
     {name:"i – iv – v",nums:["1","4","5"],types:["minor","minor","minor"],desc:"Natural minor feel. Dark but not dramatic."},
