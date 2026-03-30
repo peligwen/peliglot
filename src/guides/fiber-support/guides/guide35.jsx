@@ -1,76 +1,66 @@
-import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { SupportTip, NetworkDiagram } from './_helpers';
-
-const systems = [
-  { id: "ivue", icon: "💼", label: "iVue (BSS)", sub: "Central hub", detail: "Billing, accounts, orders, equipment inventory. Starting point for most support tasks." },
-  { id: "ams", icon: "🔧", label: "Nokia AMS", sub: "Nokia OSS", detail: "Manages Nokia OLTs and ONTs. Config provisioning, alarms, firmware updates." },
-  { id: "smx", icon: "🔩", label: "Calix SMx", sub: "Calix OSS", detail: "Manages Calix OLTs and ONTs. Service profiles, ONT provisioning, monitoring." },
-  { id: "cloud", icon: "☁️", label: "Calix Cloud", sub: "Analytics", detail: "Subscriber insights, remote diagnostics, usage analytics, GigaSpire management." },
-  { id: "meta", icon: "📞", label: "Metaswitch", sub: "Voice (legacy)", detail: "Softswitch for voice services. Subscriber line config, features, SIP registration." },
-  { id: "alianza", icon: "🗣️", label: "Alianza", sub: "Voice (cloud)", detail: "Cloud-based voice platform. Modern replacement for Metaswitch on newer installs." },
-  { id: "cms", icon: "🗄️", label: "CMS", sub: "Legacy mgmt", detail: "Legacy config and reporting. Advanced settings, batch operations, audit history." },
-  { id: "citrix", icon: "🖥️", label: "Citrix", sub: "Access layer", detail: "VDI platform — the gateway through which agents access all other support tools." },
-];
-
-const connections = [
-  "ivue → ams", "ivue → smx", "ivue → meta", "ivue → alianza",
-  "ams → smx", "smx → cloud",
-  "citrix → ivue", "citrix → cms", "citrix → ams", "citrix → smx",
-];
-
-const scenarios = [
-  { name: "New Install", flow: "iVue (create order) → AMS or SMx (provision ONT) → Metaswitch/Alianza (if voice)" },
-  { name: "Trouble Ticket", flow: "iVue (create ticket) → AMS or SMx (check alarms) → Calix Cloud (diagnostics)" },
-  { name: "Speed Change", flow: "iVue (modify order) → AMS or SMx (update service profile on OLT/ONT)" },
-  { name: "Voice Issue", flow: "iVue (check account) → Metaswitch/Alianza (check line registration & features)" },
-];
+import { NetTip, CompareTable } from './_helpers';
 
 export function Guide35() {
-  const [selected, setSelected] = useState(null);
-  const sel = systems.find(s => s.id === selected);
-
   return (
-    <>
-      <DarkBox title="SYSTEM INTEGRATION MAP">
-        This is your visual reference for how all support systems connect. Click any system node below
-        to see what it does and what it connects to.
+    <div>
+      <DarkBox title="WIFI FUNDAMENTALS">
+        WiFi is the last link between the fiber network and the customer's device.
+        Understanding how it works helps you determine whether a complaint is a network issue or an environment issue.
       </DarkBox>
 
-      <Card color="#1565C0" title="Full Ecosystem" subtitle="Click a node to learn more">
-        <NetworkDiagram nodes={systems} connections={connections} title="Support Systems Overview" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8, marginTop: 14 }}>
-          {systems.map(s => (
-            <button key={s.id} onClick={() => setSelected(s.id === selected ? null : s.id)} style={{
-              background: selected === s.id ? "#AED6F1" : "#fff", border: selected === s.id ? "2px solid #0277BD" : "1px solid #AED6F1",
-              borderRadius: 10, padding: 10, cursor: "pointer", textAlign: "center",
-            }}>
-              <div style={{ fontSize: 24 }}>{s.icon}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#0277BD", marginTop: 4 }}>{s.label}</div>
-              <div style={{ fontSize: 10, color: "#2C3E50" }}>{s.sub}</div>
-            </button>
-          ))}
-        </div>
-        {sel && (
-          <div style={{ background: "#AED6F1", borderRadius: 10, padding: 14, marginTop: 12, border: "1px solid #0277BD" }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#0277BD", marginBottom: 6 }}>{sel.icon} {sel.label}</div>
-            <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>{sel.detail}</div>
-          </div>
-        )}
+      <Card color="#0277BD" title="2.4 GHz vs 5 GHz" subtitle="Range versus speed tradeoff">
+        <CompareTable
+          headers={["Feature", "2.4 GHz", "5 GHz"]}
+          rows={[
+            ["Range", "Longer — penetrates walls better", "Shorter — absorbed by obstacles"],
+            ["Speed", "Slower (up to ~150 Mbps typical)", "Faster (up to ~800+ Mbps typical)"],
+            ["Wall penetration", "Good", "Poor"],
+            ["Congestion", "High — only 3 non-overlapping channels", "Low — many available channels"],
+            ["Best for", "IoT, distant rooms, smart home", "Streaming, gaming, nearby devices"],
+          ]}
+        />
       </Card>
 
-      <Card color="#2E7D32" title="Common Scenarios" subtitle="Which systems are involved in each workflow">
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {scenarios.map((s, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32" }}>{s.name}</div>
-              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.flow}</div>
-            </div>
-          ))}
-        </div>
-        <SupportTip text="Bookmark this guide — it's a great reference for understanding which system to check for any given issue. When in doubt, start with iVue and follow the data flow." />
+      <Card color="#1565C0" title="WiFi Channels" subtitle="Why channel selection matters">
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
+          <strong style={{ color: "#1a1a1a" }}>2.4 GHz:</strong> Only channels <strong>1, 6, and 11</strong> are non-overlapping.
+          Using any other channel causes interference with neighbors. In dense areas, every nearby router competes on these three channels.
+        </p>
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
+          <strong style={{ color: "#1a1a1a" }}>5 GHz:</strong> Many more non-overlapping channels available, plus wider channel widths
+          (40/80/160 MHz) for higher throughput. Less crowded overall.
+        </p>
       </Card>
-    </>
+
+      <Card color="#E65100" title="Common Interference Sources" subtitle="What kills WiFi signals">
+        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
+          <li><strong style={{ color: "#1a1a1a" }}>Microwaves</strong> — operate at 2.4 GHz and can wipe out WiFi while running</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Baby monitors</strong> — many use 2.4 GHz frequency range</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Neighbor networks</strong> — especially in apartments, dozens of SSIDs compete</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Bluetooth devices</strong> — also 2.4 GHz, can cause intermittent drops</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Thick walls, metal, mirrors</strong> — physical obstacles attenuate signal rapidly</li>
+        </ul>
+      </Card>
+
+      <Card color="#00838F" title="Signal Strength (dBm)" subtitle="What the numbers mean">
+        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginBottom: 12 }}>
+          WiFi signal strength is measured in <strong>dBm</strong> (decibels relative to milliwatt). Values are always negative — closer to zero is stronger.
+        </p>
+        <CompareTable
+          headers={["dBm Range", "Quality", "Experience"]}
+          rows={[
+            ["-30 to -50", "Excellent", "Right next to router — best possible performance"],
+            ["-50 to -67", "Good", "Reliable for streaming, gaming, video calls"],
+            ["-67 to -70", "Fair", "Usable for browsing, may buffer on HD video"],
+            ["-70 to -80", "Poor", "Intermittent drops, slow speeds, frustrating"],
+            ["Below -80", "Unusable", "Connection drops frequently, very slow"],
+          ]}
+        />
+      </Card>
+
+      <NetTip text="Most customer WiFi complaints are NOT network issues — they're WiFi environment issues. Always check wired speeds first before investigating the fiber network." />
+    </div>
   );
 }

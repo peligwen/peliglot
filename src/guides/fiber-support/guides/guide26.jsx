@@ -1,66 +1,75 @@
+import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { NetTip, SupportTip, Warning, Term, StepFlow } from './_helpers';
+import { SupportTip, NetworkDiagram } from './_helpers';
 
-const activationSteps = [
-  "Service order created in iVue with voice product and phone number (new or ported).",
-  "Phone number (DN) is assigned or reserved for porting from the previous carrier.",
-  "Voice platform is provisioned — subscriber created in Metaswitch, Alianza, or Momentum.",
-  "ONT FXS port is activated and voice VLAN is configured on the access network.",
-  "E911 address is registered with the PSAG (Public Safety Answering Point) database.",
-  "Dial tone is verified — technician or agent makes a test call to confirm service.",
+const systems = [
+  { id: "ivue", icon: "💼", label: "iVue (BSS)", sub: "Central hub", detail: "Billing, accounts, orders, equipment inventory. Starting point for most support tasks." },
+  { id: "ams", icon: "🔧", label: "Nokia AMS", sub: "Nokia OSS", detail: "Manages Nokia OLTs and ONTs. Config provisioning, alarms, firmware updates." },
+  { id: "smx", icon: "🔩", label: "Calix SMx", sub: "Calix OSS", detail: "Manages Calix OLTs and ONTs. Service profiles, ONT provisioning, monitoring." },
+  { id: "cloud", icon: "☁️", label: "Calix Cloud", sub: "Analytics", detail: "Subscriber insights, remote diagnostics, usage analytics, GigaSpire management." },
+  { id: "meta", icon: "📞", label: "Metaswitch", sub: "Voice (legacy)", detail: "Softswitch for voice services. Subscriber line config, features, SIP registration." },
+  { id: "alianza", icon: "🗣️", label: "Alianza", sub: "Voice (cloud)", detail: "Cloud-based voice platform. Modern replacement for Metaswitch on newer installs." },
+  { id: "cms", icon: "🗄️", label: "CMS", sub: "Legacy mgmt", detail: "Legacy config and reporting. Advanced settings, batch operations, audit history." },
+  { id: "citrix", icon: "🖥️", label: "Citrix", sub: "Access layer", detail: "VDI platform — the gateway through which agents access all other support tools." },
 ];
 
-const portingSteps = [
-  "Customer submits LOA (Letter of Authorization) to authorize the port.",
-  "Losing carrier is notified via LSR (Local Service Request).",
-  "FOC (Firm Order Commitment) date is set — typically 3-7 business days.",
-  "On the FOC date, the number is ported to the new switch/platform.",
-  "Verify the ported number is active and calls route correctly.",
+const connections = [
+  "ivue → ams", "ivue → smx", "ivue → meta", "ivue → alianza",
+  "ams → smx", "smx → cloud",
+  "citrix → ivue", "citrix → cms", "citrix → ams", "citrix → smx",
+];
+
+const scenarios = [
+  { name: "New Install", flow: "iVue (create order) → AMS or SMx (provision ONT) → Metaswitch/Alianza (if voice)" },
+  { name: "Trouble Ticket", flow: "iVue (create ticket) → AMS or SMx (check alarms) → Calix Cloud (diagnostics)" },
+  { name: "Speed Change", flow: "iVue (modify order) → AMS or SMx (update service profile on OLT/ONT)" },
+  { name: "Voice Issue", flow: "iVue (check account) → Metaswitch/Alianza (check line registration & features)" },
 ];
 
 export function Guide26() {
+  const [selected, setSelected] = useState(null);
+  const sel = systems.find(s => s.id === selected);
+
   return (
     <>
-      <DarkBox title="VOICE PROVISIONING WORKFLOWS">
-        End-to-end voice activation involves multiple systems working together: <Term>iVue</Term> for
-        order management, the <Term>voice platform</Term> (Metaswitch/Alianza/Momentum) for call
-        control, and the <Term>ONT</Term> for last-mile connectivity.
+      <DarkBox title="SYSTEM INTEGRATION MAP">
+        This is your visual reference for how all support systems connect. Click any system node below
+        to see what it does and what it connects to.
       </DarkBox>
 
-      <Card color="#1565C0" title="Voice Activation Flow" subtitle="From order to dial tone">
-        <StepFlow steps={activationSteps} />
-        <NetTip text="The voice VLAN is separate from data and video VLANs. It receives QoS priority to ensure call quality." />
+      <Card color="#1565C0" title="Full Ecosystem" subtitle="Click a node to learn more">
+        <NetworkDiagram nodes={systems} connections={connections} title="Support Systems Overview" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 8, marginTop: 14 }}>
+          {systems.map(s => (
+            <button key={s.id} onClick={() => setSelected(s.id === selected ? null : s.id)} style={{
+              background: selected === s.id ? "#AED6F1" : "#fff", border: selected === s.id ? "2px solid #0277BD" : "1px solid #AED6F1",
+              borderRadius: 10, padding: 10, cursor: "pointer", textAlign: "center",
+            }}>
+              <div style={{ fontSize: 24 }}>{s.icon}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#0277BD", marginTop: 4 }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: "#2C3E50" }}>{s.sub}</div>
+            </button>
+          ))}
+        </div>
+        {sel && (
+          <div style={{ background: "#AED6F1", borderRadius: 10, padding: 14, marginTop: 12, border: "1px solid #0277BD" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#0277BD", marginBottom: 6 }}>{sel.icon} {sel.label}</div>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>{sel.detail}</div>
+          </div>
+        )}
       </Card>
 
-      <Card color="#00838F" title="Voice VLAN Setup" subtitle="Network configuration for phone service">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
-          The ONT's <Term>FXS port</Term> must be mapped to the correct voice VLAN. This is
-          configured in the OLT (Optical Line Terminal) provisioning and ensures voice traffic
-          is tagged and prioritized separately from data traffic. Without the correct VLAN
-          assignment, the phone will not register with the voice platform.
-        </p>
-        <SupportTip text="If a customer has dial tone issues after a new install, check the voice VLAN assignment first — it's the most common provisioning miss." />
-      </Card>
-
-      <Card color="#6A1B9A" title="Number Porting (LNP)" subtitle="Local Number Portability process">
-        <p style={{ fontSize: 13, lineHeight: 1.6, color: "#333", marginBottom: 12 }}>
-          <Term>LNP (Local Number Portability)</Term> allows customers to keep their existing phone
-          number when switching providers. The process involves coordination between the winning
-          and losing carriers.
-        </p>
-        <StepFlow steps={portingSteps} color="#CE93D8" />
-        <Warning text="Do not disconnect the customer's old service before the port completes. Early disconnection can cause the port to fail and the number may be lost." />
-      </Card>
-
-      <Card color="#C62828" title="E911 Registration" subtitle="Critical safety requirement">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
-          Every voice line must have a verified <Term>E911 address</Term> registered in the ALI
-          (Automatic Location Identification) database. When a subscriber dials 911, this address
-          is sent to the dispatcher so emergency services can locate the caller.
-        </p>
-        <Warning text="ALWAYS verify the E911 address is correct and registered before closing a voice activation order. An incorrect or missing E911 address is a life-safety issue." />
-        <SupportTip text="If a customer moves within the service area, their E911 address must be updated even if the phone number stays the same." />
+      <Card color="#2E7D32" title="Common Scenarios" subtitle="Which systems are involved in each workflow">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {scenarios.map((s, i) => (
+            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32" }}>{s.name}</div>
+              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.flow}</div>
+            </div>
+          ))}
+        </div>
+        <SupportTip text="Bookmark this guide — it's a great reference for understanding which system to check for any given issue. When in doubt, start with iVue and follow the data flow." />
       </Card>
     </>
   );

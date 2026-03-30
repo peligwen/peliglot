@@ -1,60 +1,73 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { SupportTip, Term, StepFlow, CompareTable } from './_helpers';
-
-const searchMethods = [
-  { method: "Account Number", tip: "Fastest — exact match. Found on bills and previous tickets." },
-  { method: "Customer Name", tip: "Use last name first. Partial matches supported." },
-  { method: "Service Address", tip: "Street number + name. Useful for multi-tenant lookups." },
-  { method: "Phone Number", tip: "10-digit format. Works for voice subscribers." },
-  { method: "Equipment Serial", tip: "ONT serial or MAC address — helpful for field tech calls." },
-];
-
-const lookupSteps = [
-  "Open iVue from Citrix and log in with your agent credentials.",
-  "Click Customer Search in the top navigation bar.",
-  "Enter the search criteria (account number, name, address, or phone).",
-  "Select the matching customer from the results list.",
-  "Review the Account Overview: customer info, addresses, and active services.",
-  "Click a service line to see speed tier, package details, and linked equipment.",
-];
+import { NetTip, Term, LEDIndicator, CompareTable } from './_helpers';
 
 export function Guide28() {
   return (
-    <>
-      <DarkBox title="iVUE — CUSTOMER LOOKUP">
-        <Term>iVue</Term> (by Innovative Systems) is the BSS/billing platform used to manage customer
-        accounts, services, orders, and equipment records. It is the primary tool for looking up
-        customer information and verifying service details.
+    <div>
+      <DarkBox title="ONT STATUS & LED INDICATORS">
+        The LEDs on an <Term>ONT</Term> are your first visual diagnostic tool. Understanding what
+        each light means helps you quickly narrow down problems before even logging into a management system.
       </DarkBox>
 
-      <Card color="#1565C0" title="Customer Search Methods" subtitle="Multiple ways to find an account">
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {searchMethods.map((s, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 12, border: "1px solid #AED6F1" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#0277BD" }}>{s.method}</div>
-              <div style={{ fontSize: 12, color: "#333", marginTop: 4 }}>{s.tip}</div>
-            </div>
-          ))}
+      <Card color="#2E7D32" title="Nokia ONT LEDs" subtitle="Common LED meanings">
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>Power</div>
+          <LEDIndicator label="Green solid = Power OK" color="#4CAF50" status="solid" />
+          <LEDIndicator label="Off = No power to ONT" color="#555" status="solid" />
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>PON</div>
+          <LEDIndicator label="Green solid = Registered on OLT" color="#4CAF50" status="solid" />
+          <LEDIndicator label="Green blink = Trying to register" color="#4CAF50" status="blink" />
+          <LEDIndicator label="Off = No optical signal" color="#555" status="solid" />
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>LAN</div>
+          <LEDIndicator label="Green solid = Ethernet link up" color="#4CAF50" status="solid" />
+          <LEDIndicator label="Green blink = Active traffic" color="#4CAF50" status="blink" />
+          <LEDIndicator label="Off = No device connected" color="#555" status="solid" />
+        </div>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#2E7D32", marginBottom: 8 }}>Phone</div>
+          <LEDIndicator label="Green solid = Voice registered" color="#4CAF50" status="solid" />
+          <LEDIndicator label="Off = No voice service" color="#555" status="solid" />
+        </div>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#EF5350", marginBottom: 8 }}>Alarm</div>
+          <LEDIndicator label="Red solid = Critical alarm" color="#F44336" status="solid" />
+          <LEDIndicator label="Red blink = Minor alarm" color="#F44336" status="blink" />
+          <LEDIndicator label="Off = Normal (no alarm)" color="#555" status="solid" />
         </div>
       </Card>
 
-      <Card color="#00838F" title="Account Screen Overview" subtitle="What you see after selecting a customer">
+      <Card color="#00838F" title="Nokia vs Calix LEDs" subtitle="Side-by-side comparison">
         <CompareTable
-          headers={["Section", "Information Shown"]}
+          headers={["LED", "Nokia", "Calix"]}
           rows={[
-            ["Customer Info", "Name, contact details, account number, account status"],
-            ["Service Addresses", "All locations linked to the account"],
-            ["Active Services", "Data plan, speed tier, phone lines, video packages"],
-            ["Equipment", "ONT serial number, MAC address, model, location"],
+            ["Power", "Green = ON, Off = No power", "Green = ON, Off = No power"],
+            ["PON", "Green solid = Registered, Blink = Trying", "Green solid = Sync, Blink = Attempting"],
+            ["LAN", "Green = Link, Blink = Traffic", "Green = Link, Blink = Activity"],
+            ["Phone", "Green = Registered", "Green = Active line"],
+            ["Alarm", "Red solid = Critical, Red blink = Minor", "Red = Alarm active (varies by model)"],
           ]}
         />
       </Card>
 
-      <Card color="#2E7D32" title="Finding a Customer & Checking Services" subtitle="Step-by-step walkthrough">
-        <StepFlow steps={lookupSteps} />
-        <SupportTip text="Always verify customer identity (name, address, or last 4 of SSN) before making any account changes or disclosing service details." />
+      <Card color="#C62828" title="Common LED Patterns" subtitle="Quick diagnosis from lights">
+        <CompareTable
+          headers={["Pattern", "Meaning", "Likely Cause"]}
+          rows={[
+            ["All LEDs off", "No power", "Check outlet, power cord, breaker"],
+            ["Power ON, PON off", "No optical signal", "Fiber issue — cut, dirty connector, or ONT port problem"],
+            ["PON blinking continuously", "Cannot register", "Provisioning issue or OLT port problem"],
+            ["Phone LED off", "No voice service", "Voice not provisioned or SIP registration failure"],
+            ["Alarm red solid", "Critical hardware issue", "ONT may need replacement"],
+          ]}
+        />
       </Card>
-    </>
+
+      <NetTip text="Always ask the customer to describe which LEDs are on, off, or blinking before diving into system checks. It saves time and immediately narrows the problem." />
+    </div>
   );
 }

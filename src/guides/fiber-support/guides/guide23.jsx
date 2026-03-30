@@ -1,65 +1,118 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { NetTip, SupportTip, Term, StepFlow } from './_helpers';
+import { SupportTip, Term, TroubleshootingSim } from './_helpers';
 
-const lookupSteps = [
-  "Log in to MetaView using your support agent credentials.",
-  "Navigate to Subscribers in the left menu panel.",
-  "Search by DN (Directory Number) or subscriber name.",
-  "Click the subscriber entry to view their line configuration.",
-  "Review assigned features, line status, and call forwarding settings.",
-];
+const noDialToneSteps = {
+  start: {
+    question: "Is the ONT power LED on?",
+    info: "Check the ONT device — the Power LED should be solid green.",
+    choices: [
+      { label: "Yes, power LED is on", next: "phone_led" },
+      { label: "No, power LED is off", next: "power_issue" },
+    ],
+  },
+  power_issue: {
+    question: "Check power to the ONT. Is there a power outage in the area?",
+    choices: [
+      { label: "Yes, area outage confirmed", next: "outage_result" },
+      { label: "No outage — ONT still has no power", next: "ont_power_result" },
+    ],
+  },
+  outage_result: {
+    result: "Power outage confirmed. Phone service will restore when power returns. If the customer has a battery backup (BBU), check that it is charged and connected.",
+    success: false,
+  },
+  ont_power_result: {
+    result: "ONT is not receiving power despite no area outage. Check the power adapter and outlet. If using a BBU, try bypassing it. If the ONT still won't power on, it may need replacement — schedule a truck roll.",
+    success: false,
+  },
+  phone_led: {
+    question: "Is the Phone/POTS LED on the ONT solid green?",
+    info: "This LED indicates the FXS port is active and registered with the voice platform.",
+    choices: [
+      { label: "Yes, Phone LED is solid green", next: "platform_check" },
+      { label: "No, Phone LED is off or blinking", next: "vlan_issue" },
+    ],
+  },
+  vlan_issue: {
+    result: "The Phone/POTS LED is not active. Check voice VLAN provisioning on the OLT and verify the ONT FXS port configuration. Re-provision the voice VLAN if needed. If the LED still does not come up, the ONT FXS port may be faulty.",
+    success: false,
+  },
+  platform_check: {
+    question: "Can you see the subscriber active in the voice platform (MetaView or Alianza)?",
+    info: "Look up the subscriber's DN in the appropriate platform and check registration status.",
+    choices: [
+      { label: "Yes, subscriber is registered", next: "test_call" },
+      { label: "No, subscriber not found or unregistered", next: "provision_result" },
+    ],
+  },
+  provision_result: {
+    result: "Subscriber is not active on the voice platform. Verify the service order in iVue is complete and that provisioning was sent to the correct platform (Metaswitch or Alianza). Re-push provisioning if needed.",
+    success: false,
+  },
+  test_call: {
+    question: "Try a test call. What do you hear?",
+    info: "Call the subscriber's number from another phone, and have the subscriber try an outbound call.",
+    choices: [
+      { label: "One-way audio (only one side can hear)", next: "oneway_result" },
+      { label: "No audio at all", next: "noaudio_result" },
+      { label: "Calls work correctly", next: "success_result" },
+    ],
+  },
+  oneway_result: {
+    result: "One-way audio is typically caused by a NAT/firewall issue or SIP ALG interference. Disable SIP ALG on any router in the path. Also check that RTP ports are not being blocked. If the issue persists, escalate to voice platform engineering.",
+    success: false,
+  },
+  noaudio_result: {
+    result: "No audio in either direction suggests an RTP stream failure. Verify codec negotiation and check for firewall rules blocking UDP media ports. This may require voice platform support escalation to analyze SIP/RTP traces.",
+    success: false,
+  },
+  success_result: {
+    result: "Calls are working correctly. The issue may have been intermittent. Document the troubleshooting steps taken and monitor. If the customer reports the issue again, collect specific times and numbers for deeper analysis.",
+    success: true,
+  },
+};
 
-const commonTasks = [
-  { task: "Reset Voicemail PIN", steps: "Subscriber → Voicemail → Reset PIN → Set temporary PIN → Save. Advise customer to change on first login." },
-  { task: "Enable Call Forwarding", steps: "Subscriber → Features → Call Forwarding → Set forward-to number and condition (Busy / No Answer / All) → Save." },
-  { task: "Disable Call Waiting", steps: "Subscriber → Features → Call Waiting → Toggle Off → Save. Customer will no longer hear beep on incoming calls." },
-  { task: "Check Line Status", steps: "Subscriber → Status tab → Verify registration state shows 'Registered'. If 'Unregistered', check ONT and voice VLAN." },
-  { task: "Modify Caller ID", steps: "Subscriber → Features → Caller ID → Update CNAM display name or toggle blocking → Save." },
+const quickRef = [
+  { issue: "One-Way Audio", cause: "NAT/firewall blocking RTP, or SIP ALG enabled on router", fix: "Disable SIP ALG, check firewall rules for UDP media ports" },
+  { issue: "Static / Noise", cause: "Poor cabling from ONT to phone jack, or damaged RJ-11 cable", fix: "Replace patch cable, check house wiring, test with phone plugged directly into ONT" },
+  { issue: "Echo on Calls", cause: "Impedance mismatch or acoustic feedback on handset", fix: "Try a different phone. If echo persists, check for line voltage issues at the ONT FXS port" },
+  { issue: "Caller ID Not Showing", cause: "CNAM feature not enabled, or calling party not sending CNAM", fix: "Verify Caller ID feature is enabled in MetaView/Alianza. External CNAM depends on the originating carrier" },
+  { issue: "Calls Drop After 30s", cause: "SIP session timer or re-INVITE failure", fix: "Check SIP session timer settings on voice platform. May need platform engineering support" },
+  { issue: "Cannot Receive Calls", cause: "Call forwarding enabled or DND active", fix: "Check for unconditional call forwarding or Do-Not-Disturb in the subscriber's feature settings" },
 ];
 
 export function Guide23() {
   return (
     <>
-      <DarkBox title="METAVIEW — MANAGEMENT INTERFACE">
-        <Term>MetaView</Term> is the web-based management portal for the Metaswitch voice platform.
-        Support agents use it to manage subscribers, configure phone features, and troubleshoot
-        line issues without needing direct access to the switch.
+      <DarkBox title="PHONE SERVICE TROUBLESHOOTING">
+        Systematic troubleshooting for voice issues follows the signal path: power, ONT, VLAN,
+        voice platform, then call quality. Use the interactive simulator below to practice.
       </DarkBox>
 
-      <Card color="#1565C0" title="Subscriber Management" subtitle="Creating and modifying phone lines">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
-          Each phone line in MetaView is identified by its <Term>DN (Directory Number)</Term> — the
-          subscriber's phone number. MetaView allows you to view and modify line settings including
-          assigned features, call forwarding rules, voicemail configuration, and SIP registration status.
-        </p>
-        <NetTip text="The DN is the primary key for looking up any subscriber. Always search by full 10-digit number for exact matches." />
+      <Card color="#C62828" title="No Dial Tone Troubleshooting" subtitle="Interactive decision tree">
+        <TroubleshootingSim
+          title="No Dial Tone"
+          scenario="Customer reports no dial tone on their home phone."
+          steps={noDialToneSteps}
+        />
       </Card>
 
-      <Card color="#00838F" title="Looking Up a Subscriber" subtitle="Step-by-step in MetaView">
-        <StepFlow steps={lookupSteps} />
-        <SupportTip text="If the subscriber doesn't appear in MetaView, they may not be provisioned yet. Check iVue for the order status before escalating." />
-      </Card>
-
-      <Card color="#6A1B9A" title="Common MetaView Tasks" subtitle="Quick reference for support agents">
+      <Card color="#1565C0" title="Common Phone Issues" subtitle="Quick reference guide">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {commonTasks.map((t, i) => (
+          {quickRef.map((item, i) => (
             <div key={i} style={{ background: "#fff", borderRadius: 10, padding: 14, border: "1px solid #AED6F1" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#CE93D8", marginBottom: 6 }}>{t.task}</div>
-              <div style={{ fontSize: 12, lineHeight: 1.6, color: "#333" }}>{t.steps}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#C62828", marginBottom: 6 }}>{item.issue}</div>
+              <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5, marginBottom: 4 }}>
+                <Term>Cause:</Term> {item.cause}
+              </div>
+              <div style={{ fontSize: 12, color: "#A5D6A7", lineHeight: 1.5 }}>
+                <Term color="#66BB6A">Fix:</Term> {item.fix}
+              </div>
             </div>
           ))}
         </div>
-      </Card>
-
-      <Card color="#2E7D32" title="Feature Configuration" subtitle="Per-subscriber feature management">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
-          MetaView lets you enable or disable individual calling features on a per-subscriber basis.
-          Features are grouped under the subscriber's profile and include call waiting, caller ID,
-          three-way calling, call forwarding (busy, no answer, unconditional), do-not-disturb, and
-          anonymous call rejection.
-        </p>
-        <SupportTip text="Always confirm changes with the customer before saving. Some features like unconditional call forwarding will prevent the phone from ringing entirely." />
+        <SupportTip text="For persistent audio quality issues, ask the customer to test with a different phone plugged directly into the ONT. This isolates house wiring from the equation." />
       </Card>
     </>
   );

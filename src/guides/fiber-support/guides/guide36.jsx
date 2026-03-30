@@ -1,64 +1,116 @@
 import { Card } from '../../../components/Card';
-import { DarkBox } from '../../../components/DarkBox';
-import { NetTip, Warning, Term, StepFlow, CompareTable } from './_helpers';
+import { TroubleshootingSim, NetTip } from './_helpers';
 
 export function Guide36() {
   return (
     <div>
-      <DarkBox title="OPTICAL SIGNAL TROUBLESHOOTING">
-        Optical power levels tell you the health of the fiber path between the <Term>OLT</Term> and
-        the <Term>ONT</Term>. Learning to read and interpret these values is one of the most
-        important skills for fiber support.
-      </DarkBox>
-
-      <Card color="#1565C0" title="Reading Optical Levels" subtitle="AMS (Nokia) & Calix Cloud">
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333" }}>
-          In <Term>AMS</Term>, navigate to the ONT and check the <Term>Optics</Term> tab.
-          In <Term>Calix Cloud</Term>, open the subscriber device and look under Diagnostics → Optical.
-          Key values to check:
-        </p>
-        <ul style={{ fontSize: 13, lineHeight: 1.8, color: "#333", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#0277BD" }}>ONT Rx Power:</strong> Signal received by the ONT from the OLT. Normal range: <Term>-8 to -25 dBm</Term></li>
-          <li><strong style={{ color: "#0277BD" }}>ONT Tx Power:</strong> Signal transmitted by the ONT. Normal range: <Term>+0.5 to +5 dBm</Term></li>
-          <li><strong style={{ color: "#0277BD" }}>OLT Rx Power:</strong> Signal the OLT receives from the ONT — useful for isolating direction of loss</li>
-        </ul>
-      </Card>
-
-      <Card color="#C62828" title="Signal Level Ranges" subtitle="Know the thresholds">
-        <CompareTable
-          headers={["Range", "ONT Rx (dBm)", "Status", "Action"]}
-          rows={[
-            ["Normal", "-8 to -25", "Healthy", "No action needed"],
-            ["Marginal", "-25 to -27", "Degraded", "Monitor — schedule plant review"],
-            ["Warning", "-27 to -28", "At risk", "Likely service-affecting soon — create ticket"],
-            ["Critical", "Below -28", "Failing", "Service impacted — dispatch tech immediately"],
-          ]}
+      <Card color="#C62828" title="WiFi Diagnostics" subtitle="Interactive troubleshooting simulation">
+        <TroubleshootingSim
+          title="Slow WiFi"
+          scenario="Customer reports slow internet but ONLY on WiFi. Wired speeds test fine."
+          steps={{
+            start: {
+              question: "How many WiFi devices does the customer have connected?",
+              info: "High device counts can saturate the router's WiFi radio even if the internet connection is fine.",
+              choices: [
+                { label: "Many (10+ devices)", next: "many_devices" },
+                { label: "Few (1–5 devices)", next: "few_devices" },
+              ],
+            },
+            many_devices: {
+              question: "Likely device congestion. Is the customer using a single-band (2.4 GHz only) router?",
+              choices: [
+                { label: "Yes — single-band router", next: "single_band" },
+                { label: "No — dual-band router", next: "dual_band_many" },
+              ],
+            },
+            single_band: {
+              question: "Single-band router with many devices — this is the bottleneck.",
+              result: "Recommend upgrading to a dual-band router. Split devices between 2.4 GHz (IoT, smart home) and 5 GHz (streaming, laptops). Consider mesh WiFi for large homes.",
+              success: true,
+            },
+            dual_band_many: {
+              question: "Dual-band but still slow. Are most devices on the same band?",
+              result: "Recommend balancing devices across bands. Rename SSIDs to separate 2.4 and 5 GHz. Ensure band steering is enabled if the router supports it. Check if QoS is prioritizing specific traffic.",
+              success: true,
+            },
+            few_devices: {
+              question: "What band is the affected device on? Can the customer check their WiFi network name or settings?",
+              choices: [
+                { label: "2.4 GHz band", next: "on_24" },
+                { label: "5 GHz band", next: "on_5" },
+                { label: "Unknown / can't tell", next: "unknown_band" },
+              ],
+            },
+            on_24: {
+              question: "2.4 GHz is often congested. Is the customer in an apartment or dense housing area?",
+              info: "In apartments, dozens of neighboring networks compete on the same three non-overlapping channels.",
+              choices: [
+                { label: "Yes — apartment or dense area", next: "dense_24" },
+                { label: "No — house with some distance from neighbors", next: "house_24" },
+              ],
+            },
+            dense_24: {
+              question: "Dense environment on 2.4 GHz — classic congestion scenario.",
+              result: "Recommend switching to 5 GHz if possible, or try channels 1, 6, or 11 (whichever is least used). Consider a WiFi analyzer app to find the least congested channel. Mesh system may help.",
+              success: true,
+            },
+            house_24: {
+              question: "Less likely congestion. Check for interference sources — does the customer have a microwave, baby monitor, or Bluetooth devices near the router?",
+              result: "Recommend moving the router away from interference sources. Try switching to 5 GHz for the affected device. If the router is old, a firmware update or replacement may help.",
+              success: true,
+            },
+            on_5: {
+              question: "Is the affected device far from the router or separated by walls?",
+              choices: [
+                { label: "Yes — far away or through walls", next: "far_5" },
+                { label: "No — relatively close with line of sight", next: "close_5" },
+              ],
+            },
+            far_5: {
+              question: "5 GHz signal degrades quickly through walls and over distance.",
+              result: "5 GHz has shorter range. Recommend moving closer to the router, adding a mesh node or WiFi extender for that location, or switching to 2.4 GHz for better range at the cost of some speed.",
+              success: true,
+            },
+            close_5: {
+              question: "Close to router on 5 GHz but still slow. Check for firmware updates. Is the ONT providing WiFi directly, or is there a separate router?",
+              choices: [
+                { label: "ONT is providing WiFi", next: "ont_wifi" },
+                { label: "Separate router connected to ONT", next: "separate_router" },
+              ],
+            },
+            ont_wifi: {
+              question: "ONT built-in WiFi is often limited in performance.",
+              result: "ONT WiFi radios are typically basic. Recommend the customer use a dedicated WiFi router or mesh system connected to the ONT's Ethernet port for better performance. Disable ONT WiFi to avoid conflicts.",
+              success: true,
+            },
+            separate_router: {
+              question: "Separate router, close range, 5 GHz — possible hardware or firmware issue.",
+              result: "Check router firmware version and update if needed. Try a factory reset of the router. If the router is older than 3-4 years, it may not support modern WiFi standards. Recommend replacement if issue persists.",
+              success: true,
+            },
+            unknown_band: {
+              question: "Have the customer run a wired speed test first to confirm the network is fine. Is wired speed normal?",
+              choices: [
+                { label: "Yes — wired speed is normal", next: "wired_ok" },
+                { label: "No — wired speed is also slow", next: "wired_slow" },
+              ],
+            },
+            wired_ok: {
+              question: "Wired is fine, WiFi is slow — confirmed WiFi environment issue.",
+              result: "The fiber network is working correctly. Focus on WiFi: check band, channel, distance from router, interference sources. Recommend the customer try connecting to the 5 GHz network if available, or reposition the router.",
+              success: true,
+            },
+            wired_slow: {
+              question: "Both wired and WiFi are slow — this is NOT a WiFi-only issue.",
+              result: "Investigate the network side: check optical levels, ONT status, provisioned speed tier, and MSAP/service configuration. This is likely a network or provisioning issue, not WiFi.",
+              success: false,
+            },
+          }}
         />
-        <Warning text="An ONT Rx below -27 dBm is marginal. Below -28 dBm is almost certainly causing packet loss, slow speeds, or drops." />
       </Card>
 
-      <Card color="#00838F" title="Common Loss Sources" subtitle="What degrades optical signal">
-        <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#1a1a1a" }}>Dirty connectors</strong> — most common cause of unexpected loss; cleaning often restores signal</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Bad splices</strong> — a splice with high loss from poor fusion or mechanical splice</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Macrobends</strong> — fiber bent too tightly (around corners, staples, tight coils)</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Damaged fiber</strong> — crushed, cut, or rodent-chewed cable</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Excessive splitter loss</strong> — too many splits or a faulty splitter</li>
-        </ul>
-      </Card>
-
-      <Card color="#4527A0" title="How to Check Optical Levels" subtitle="Step-by-step process">
-        <StepFlow steps={[
-          "Look up the customer's ONT in AMS or Calix Cloud",
-          "Navigate to the optical diagnostics section",
-          "Record the ONT Rx power, Tx power, and OLT Rx power",
-          "Compare Rx values against the threshold table above",
-          "If marginal or critical, check for alarms and recent changes",
-          "Document readings in the ticket — include timestamp and values",
-        ]} />
-      </Card>
-
-      <NetTip text="A sudden large drop in optical power (e.g., -15 dBm yesterday to -30 dBm today) almost always indicates a fiber cut or connector issue — not gradual degradation." />
+      <NetTip text="Always start WiFi troubleshooting by confirming wired speeds are normal. This single test separates WiFi issues from network issues immediately." />
     </div>
   );
 }

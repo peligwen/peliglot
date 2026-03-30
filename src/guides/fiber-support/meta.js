@@ -26,33 +26,33 @@ export const guidesMeta = [
   { id: 20, title: "Calix ONT Provisioning",       subtitle: "Activation & Service Profiles",       cat: "Calix Platform",  color: "#00838F", icon: "✅" },
   { id: 21, title: "Nokia vs Calix",              subtitle: "Side-by-Side Comparison",              cat: "Calix Platform",  color: "#00838F", icon: "⚖️" },
 
-  // Voice Platforms (22–27)
-  { id: 22, title: "Metaswitch Overview",          subtitle: "Softswitch Architecture & Role",       cat: "Voice Platforms", color: "#E65100", icon: "📞" },
-  { id: 23, title: "MetaView Management",         subtitle: "Subscriber & Line Configuration",      cat: "Voice Platforms", color: "#E65100", icon: "🖥️" },
-  { id: 24, title: "Alianza Cloud Voice",         subtitle: "Cloud-Hosted Voice Platform",          cat: "Voice Platforms", color: "#E65100", icon: "☁️" },
-  { id: 25, title: "Momentum Telecom",            subtitle: "UCaaS & Hosted Voice Services",        cat: "Voice Platforms", color: "#E65100", icon: "🎙️" },
-  { id: 26, title: "Voice Provisioning",           subtitle: "End-to-End Voice Activation Flow",    cat: "Voice Platforms", color: "#E65100", icon: "🔄" },
-  { id: 27, title: "Phone Troubleshooting",        subtitle: "No Dial Tone, One-Way Audio & More",  cat: "Voice Platforms", color: "#E65100", icon: "🔍" },
+  // Voice Platforms (22–23)
+  { id: 22, title: "Voice Systems Overview",       subtitle: "Metaswitch, Alianza & Momentum",      cat: "Voice Platforms", color: "#E65100", icon: "📞" },
+  { id: 23, title: "Phone Troubleshooting",        subtitle: "No Dial Tone, One-Way Audio & More",  cat: "Voice Platforms", color: "#E65100", icon: "🔍" },
 
-  // Support Systems (28–35)
-  { id: 28, title: "iVue: Customer Lookup",        subtitle: "Accounts, Services & Equipment",      cat: "Support Systems", color: "#6A1B9A", icon: "🔎" },
-  { id: 29, title: "iVue: Orders",                subtitle: "Provisioning & Activation Workflows",  cat: "Support Systems", color: "#6A1B9A", icon: "📋" },
-  { id: 30, title: "iVue: Trouble Tickets",        subtitle: "Creating, Tracking & Resolving",      cat: "Support Systems", color: "#6A1B9A", icon: "🎫" },
-  { id: 31, title: "CMS Overview",                subtitle: "Legacy System Navigation",             cat: "Support Systems", color: "#6A1B9A", icon: "🗄️" },
-  { id: 32, title: "CMS Workflows",               subtitle: "Daily Operational Tasks",              cat: "Support Systems", color: "#6A1B9A", icon: "📝" },
-  { id: 33, title: "OSS/BSS Concepts",            subtitle: "How All Systems Connect",              cat: "Support Systems", color: "#6A1B9A", icon: "🔗" },
-  { id: 34, title: "Citrix Cloud Access",         subtitle: "Getting Connected & Session Tips",     cat: "Support Systems", color: "#6A1B9A", icon: "🖥️" },
-  { id: 35, title: "System Integration Map",      subtitle: "Visual Data Flow Between Systems",     cat: "Support Systems", color: "#6A1B9A", icon: "🗺️" },
+  // Support Systems (24–26)
+  { id: 24, title: "iVue Overview",               subtitle: "Accounts, Orders & Tickets",           cat: "Support Systems", color: "#6A1B9A", icon: "💼" },
+  { id: 25, title: "Support Tools Overview",       subtitle: "CMS, OSS/BSS & Citrix",               cat: "Support Systems", color: "#6A1B9A", icon: "🛠️" },
+  { id: 26, title: "System Integration Map",      subtitle: "Visual Data Flow Between Systems",     cat: "Support Systems", color: "#6A1B9A", icon: "🗺️" },
 
-  // Troubleshooting (36–43)
-  { id: 36, title: "Optical Signal Issues",        subtitle: "Reading Power Levels & Loss Sources",  cat: "Troubleshooting", color: "#C62828", icon: "📉" },
-  { id: 37, title: "ONT Status & LEDs",           subtitle: "Interpreting Nokia & Calix Indicators", cat: "Troubleshooting", color: "#C62828", icon: "🚦" },
-  { id: 38, title: "No Service Diagnostics",       subtitle: "Customer Has No Internet",             cat: "Troubleshooting", color: "#C62828", icon: "🚫" },
-  { id: 39, title: "Slow Speed Diagnostics",       subtitle: "Customer Reports Slow Speeds",         cat: "Troubleshooting", color: "#C62828", icon: "🐢" },
-  { id: 40, title: "Alarm Triage",                subtitle: "Prioritizing & Escalating Alarms",     cat: "Troubleshooting", color: "#C62828", icon: "🚨" },
-  { id: 41, title: "Provisioning Issues",          subtitle: "Common Failures & Fixes",              cat: "Troubleshooting", color: "#C62828", icon: "❌" },
-  { id: 42, title: "Fiber Cut Response",           subtitle: "Outage Identification & Reporting",    cat: "Troubleshooting", color: "#C62828", icon: "✂️" },
-  { id: 43, title: "Escalation Procedures",        subtitle: "When & How to Escalate",              cat: "Troubleshooting", color: "#C62828", icon: "📤" },
+  // Troubleshooting (27–43)
+  { id: 27, title: "Optical Signal Issues",        subtitle: "Reading Power Levels & Loss Sources",  cat: "Troubleshooting", color: "#C62828", icon: "📉" },
+  { id: 28, title: "ONT Status & LEDs",           subtitle: "Interpreting Nokia & Calix Indicators", cat: "Troubleshooting", color: "#C62828", icon: "🚦" },
+  { id: 29, title: "No Service Diagnostics",       subtitle: "Customer Has No Internet",             cat: "Troubleshooting", color: "#C62828", icon: "🚫" },
+  { id: 30, title: "Slow Speed Diagnostics",       subtitle: "Customer Reports Slow Speeds",         cat: "Troubleshooting", color: "#C62828", icon: "🐢" },
+  { id: 31, title: "Alarm Triage",                subtitle: "Prioritizing & Escalating Alarms",     cat: "Troubleshooting", color: "#C62828", icon: "🚨" },
+  { id: 32, title: "Provisioning Issues",          subtitle: "Common Failures & Fixes",              cat: "Troubleshooting", color: "#C62828", icon: "❌" },
+  { id: 33, title: "Fiber Cut Response",           subtitle: "Outage Identification & Reporting",    cat: "Troubleshooting", color: "#C62828", icon: "✂️" },
+  { id: 34, title: "Escalation Procedures",        subtitle: "When & How to Escalate",              cat: "Troubleshooting", color: "#C62828", icon: "📤" },
+  { id: 35, title: "WiFi Fundamentals",            subtitle: "Bands, Channels & Interference",      cat: "Troubleshooting", color: "#C62828", icon: "📶" },
+  { id: 36, title: "WiFi Diagnostics",             subtitle: "Slow WiFi Decision Tree",             cat: "Troubleshooting", color: "#C62828", icon: "📱" },
+  { id: 37, title: "Intermittent Connectivity",    subtitle: "Service Drops In & Out",              cat: "Troubleshooting", color: "#C62828", icon: "🔄" },
+  { id: 38, title: "Streaming & Gaming",           subtitle: "Buffering, Latency & Jitter",         cat: "Troubleshooting", color: "#C62828", icon: "🎮" },
+  { id: 39, title: "Multi-Device Problems",        subtitle: "DHCP, NAT & Congestion",              cat: "Troubleshooting", color: "#C62828", icon: "📲" },
+  { id: 40, title: "OLT & ONT Statistics",         subtitle: "Reading Operational Data",            cat: "Troubleshooting", color: "#C62828", icon: "📊" },
+  { id: 41, title: "Error Counters & Logs",        subtitle: "BIP, FEC, CRC & What They Mean",      cat: "Troubleshooting", color: "#C62828", icon: "🔢" },
+  { id: 42, title: "Pattern Recognition",          subtitle: "Spotting Trends & Root Causes",       cat: "Troubleshooting", color: "#C62828", icon: "🔎" },
+  { id: 43, title: "Mass Outage Handling",         subtitle: "Scope, Communication & Recovery",     cat: "Troubleshooting", color: "#C62828", icon: "🌐" },
 ];
 
 export const categories = [

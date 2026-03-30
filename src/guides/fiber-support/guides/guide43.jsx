@@ -1,67 +1,61 @@
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
-import { Warning, SupportTip, Term, StepFlow, CompareTable } from './_helpers';
+import { Warning, SupportTip, StepFlow } from './_helpers';
 
 export function Guide43() {
   return (
     <div>
-      <DarkBox title="ESCALATION PROCEDURES">
-        Knowing when and how to escalate is just as important as troubleshooting itself.
-        A good escalation saves time for everyone and gets the customer to resolution faster.
+      <DarkBox title="MASS OUTAGE HANDLING">
+        Mass outages affect many customers at once. Your role: identify the scope, communicate
+        clearly, and track restoration.
       </DarkBox>
 
-      <Card color="#C62828" title="When to Escalate" subtitle="Recognize the signals">
+      <Card color="#C62828" title="Identifying a Mass Outage" subtitle="Signs that it's bigger than one customer">
         <ul style={{ fontSize: 13, lineHeight: 1.9, color: "#333", paddingLeft: 20 }}>
-          <li><strong style={{ color: "#1a1a1a" }}>Exhausted standard troubleshooting</strong> — you have followed the decision trees and still cannot resolve</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Hardware failure</strong> — ONT, OLT card, or other equipment needs replacement</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Plant / fiber issue</strong> — bad optical levels, fiber cut, or physical damage</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Provisioning system error</strong> — system won't accept configuration or order is stuck</li>
-          <li><strong style={{ color: "#1a1a1a" }}>Repeated issue</strong> — same customer calling for the same problem multiple times</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Multiple LOSi/LOS alarms</strong> from the same PON port or OLT appearing within minutes</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Sudden spike in incoming calls</strong> from a geographic area — check if callers share a neighborhood or street</li>
+          <li><strong style={{ color: "#1a1a1a" }}>OLT card or port showing down status</strong> in your NMS — this affects every ONT on that port</li>
+          <li><strong style={{ color: "#1a1a1a" }}>Feeder fiber cut indicators</strong> — all ONTs downstream of a splitter going dark simultaneously</li>
         </ul>
-        <Warning text="Do not escalate without documenting what you have already tried. An escalation without troubleshooting details just bounces back to you." />
       </Card>
 
-      <Card color="#1565C0" title="Escalation Tiers" subtitle="Who handles what">
-        <CompareTable
-          headers={["Tier", "Team", "Handles"]}
-          rows={[
-            ["Tier 1", "Support Agent (you)", "Standard troubleshooting, reboots, basic provisioning, customer education"],
-            ["Tier 2", "Senior Support / NOC", "Advanced provisioning, MSAP config, alarm investigation, remote diagnostics"],
-            ["Tier 3", "Network Engineering", "OLT issues, backhaul problems, capacity planning, complex network faults"],
-            ["Vendor", "Nokia / Calix Support", "Software bugs, firmware issues, hardware defects under warranty"],
-          ]}
-        />
-      </Card>
-
-      <Card color="#00838F" title="Escalation by Issue Type" subtitle="Where to send what">
-        <CompareTable
-          headers={["Issue Type", "Escalate To", "Priority"]}
-          rows={[
-            ["Data (internet) — no service", "Tier 2 → Tier 3 if needed", "High"],
-            ["Data — slow speeds (config ruled out)", "Tier 2 → Engineering", "Medium"],
-            ["Voice — no dial tone", "Tier 2 (voice team)", "High"],
-            ["Plant — fiber cut or damage", "Plant Ops / Outside Plant", "Critical"],
-            ["Provisioning — system error", "Provisioning Team / Tier 2", "Medium"],
-            ["Equipment — ONT or card failure", "Tier 2 + Dispatch", "High"],
-          ]}
-        />
-      </Card>
-
-      <Card color="#4527A0" title="Writing an Effective Escalation" subtitle="What to include">
+      <Card color="#0277BD" title="Response Process" subtitle="Seven-step outage response">
         <StepFlow steps={[
-          "Customer info: name, account number, address, contact number",
-          "Symptom summary: what the customer is experiencing, when it started, how many devices affected",
-          "Troubleshooting performed: list each step taken and the result (be specific)",
-          "Technical readings: optical levels (Rx/Tx), LED status, alarm data with timestamps",
-          "System checks: MSAP/service config status, iVue order status, any errors found",
-          "Your assessment: what you believe the issue is based on your investigation",
+          "Confirm the outage in AMS/Calix Cloud — verify it's not just one customer. Look for multiple alarms from the same PON port or OLT card.",
+          "Identify scope: which OLT, which PON port(s), how many ONTs are affected. This determines the severity and response level.",
+          "Check for known maintenance or planned work — is there a maintenance window that overlaps? Was plant ops already working in the area?",
+          "Report to NOC / plant operations with all details: OLT name, port(s), number of affected ONTs, alarm types, and any known construction activity.",
+          "Begin customer communication: acknowledge the outage, give the estimated affected area. Use consistent messaging across all agents.",
+          "Monitor restoration progress — watch for ONTs coming back online. Track which areas recover first.",
+          "Verify service is fully restored. Follow up on any ONTs that didn't come back online — they may need a remote reboot or have a separate issue.",
         ]} />
-        <p style={{ fontSize: 13, lineHeight: 1.7, color: "#333", marginTop: 12 }}>
-          A complete escalation should answer: <Term>What is happening?</Term> <Term>What did you check?</Term> <Term>What do you think is wrong?</Term>
-        </p>
       </Card>
 
-      <SupportTip text="A good escalation saves everyone time — be thorough but concise. Include all relevant data, but don't write a novel. Bullet points and readings speak louder than paragraphs." />
+      <Card color="#1565C0" title="Customer Communication" subtitle="What to say and what NOT to say">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {[
+            { do: true, text: "\"We're aware of a service interruption in your area. Our technical team is actively working on it.\"" },
+            { do: true, text: "\"We can offer a callback when service is restored so you don't have to wait on hold.\"" },
+            { do: true, text: "\"I'm documenting your report — this helps us track the full scope of the issue.\"" },
+            { do: false, text: "\"It'll be fixed in 30 minutes.\" — Never promise a specific time unless plant ops has confirmed it." },
+            { do: false, text: "\"It's just your area.\" — Minimizing the scope doesn't help the customer." },
+            { do: false, text: "\"Have you tried rebooting?\" — During a confirmed mass outage, don't waste the customer's time with individual troubleshooting." },
+          ].map((item, i) => (
+            <div key={i} style={{
+              padding: 10, borderRadius: 8, fontSize: 13, lineHeight: 1.5,
+              background: item.do ? "#E8F5E9" : "#FFEBEE",
+              border: `1px solid ${item.do ? "#4CAF50" : "#EF5350"}`,
+              color: item.do ? "#2E7D32" : "#C62828",
+            }}>
+              <strong>{item.do ? "✓ DO:" : "✗ DON'T:"}</strong> {item.text}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Warning text="Never tell a customer 'it will be fixed in X minutes' during a fiber cut — plant repairs are unpredictable. Say 'crews are working on it and we'll update you.'" />
+
+      <SupportTip text="After a mass outage is resolved, proactively check for ONTs that didn't come back online — they may need a remote reboot or have a pre-existing issue that was masked." />
     </div>
   );
 }
