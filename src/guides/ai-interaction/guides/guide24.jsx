@@ -6,10 +6,10 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const models = [
-  { name: "Large Frontier", examples: "GPT-4o, Claude Opus, Gemini Ultra", icon: "🚀", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
-  { name: "Mid-tier", examples: "Claude Sonnet, GPT-4o-mini, Gemini Flash", icon: "⚡", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
-  { name: "Small / Local", examples: "Llama 3, Mistral, Phi-3", icon: "📱", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
-  { name: "Specialized", examples: "Codex, Med-PaLM, domain fine-tunes", icon: "🎯", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
+  { name: "Frontier", examples: "Largest models from the major labs — most expensive per token, slowest per request, highest reasoning and multimodal capability.", icon: "🚀", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
+  { name: "Mid-tier", examples: "Faster, cheaper general-purpose models — typically 5–20× cheaper than frontier with most of the quality on common tasks.", icon: "⚡", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
+  { name: "Small / Local", examples: "Open-weight models that run on consumer GPUs or laptops — quality continues to climb each cycle.", icon: "📱", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
+  { name: "Specialized", examples: "Models fine-tuned for code, medicine, legal, or other domains — best in their lane, narrower outside it.", icon: "🎯", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
 ];
 
 export function Guide24() {
@@ -23,7 +23,7 @@ export function Guide24() {
         </div>
       </DarkBox>
 
-      <Card color="#E65100" title="Model Tiers" subtitle="Tap to explore">
+      <Card color="#E65100" title="Model Tiers" subtitle="Tap a tier — specific model names change; these categories don't">
         <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
           {models.map((m, i) => (
             <button key={i} onClick={() => setSel(sel === i ? null : i)} style={{

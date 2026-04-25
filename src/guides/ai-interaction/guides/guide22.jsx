@@ -5,7 +5,7 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const costs = [
-  { phase: "Training", icon: "🏋️", energy: "High", desc: "Training a large model once can use as much energy as hundreds of homes use in a year.", note: "GPT-4-scale training: estimated 50+ GWh" },
+  { phase: "Training", icon: "🏋️", energy: "High", desc: "Training a large model once can use as much energy as hundreds of homes use in a year.", note: "Frontier-model training runs: estimated tens to hundreds of GWh, comparable to a small city's annual use." },
   { phase: "Inference", icon: "💬", energy: "Low per query", desc: "Each query uses a small amount of energy, but billions of queries add up.", note: "Earlier estimates (~2023) put a typical query at 10× a Google search; Epoch AI's Feb-2025 reanalysis revised this ~10× downward, making a typical text query roughly comparable to a Google search. Costs vary: multimodal, long-context, and reasoning-model queries use substantially more." },
   { phase: "Hardware", icon: "🖥️", energy: "Embodied", desc: "Manufacturing GPUs and building data centers has its own carbon footprint.", note: "Rare earth mining, water cooling, chip fabrication" },
 ];

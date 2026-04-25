@@ -5,10 +5,10 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const workflows = [
-  { name: "Code Completion", icon: "✍️", desc: "Inline suggestions as you type. Predicts the next line or block.", tools: "Copilot, Codeium, Supermaven", best: "Boilerplate, repetitive patterns, test scaffolding." },
-  { name: "Chat Assistants", icon: "💬", desc: "Conversational coding help. Explain, debug, refactor through dialogue.", tools: "Claude, ChatGPT, Gemini", best: "Design decisions, debugging, learning new APIs." },
-  { name: "Agentic Coding", icon: "🤖", desc: "AI reads your codebase, edits files, runs tests, and iterates autonomously.", tools: "Claude Code, Cursor, Windsurf", best: "Multi-file changes, refactoring, implementing features." },
-  { name: "Code Review", icon: "🔍", desc: "AI reviews diffs for bugs, style issues, and security vulnerabilities.", tools: "PR review bots, inline analysis", best: "Catching bugs before merge, enforcing standards." },
+  { name: "Code Completion", icon: "✍️", desc: "Inline suggestions as you type. Predicts the next line or block.", tools: "Inline-completion plugins from major editor and AI vendors.", best: "Boilerplate, repetitive patterns, test scaffolding." },
+  { name: "Chat Assistants", icon: "💬", desc: "Conversational coding help. Explain, debug, refactor through dialogue.", tools: "General-purpose chat models from frontier vendors.", best: "Design decisions, debugging, learning new APIs." },
+  { name: "Agentic Coding", icon: "🤖", desc: "AI reads your codebase, edits files, runs tests, and iterates autonomously.", tools: "Agentic IDEs and CLI tools that can read, edit, and run code in your project.", best: "Multi-file changes, refactoring, implementing features." },
+  { name: "Code Review", icon: "🔍", desc: "AI reviews diffs for bugs, style issues, and security vulnerabilities.", tools: "Bot integrations on GitHub/GitLab; in-IDE inline review tools.", best: "Catching bugs before merge, enforcing standards." },
 ];
 
 export function Guide18() {
@@ -34,6 +34,9 @@ export function Guide18() {
               <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}><strong>Best for:</strong> {w.best}</div>
             </div>
           ))}
+          <div style={{ padding: "10px 12px", background: "#B2DFDB", borderRadius: 8, fontSize: 12, lineHeight: 1.6, color: "#004D40" }}>
+            <strong>Note:</strong> Specific tool names in this space change frequently — acquisitions, rebrands, and new entrants arrive every few months. The four modes above are stable; the brands are not.
+          </div>
         </div>
       </Card>
 

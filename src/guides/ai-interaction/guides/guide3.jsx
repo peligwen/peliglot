@@ -5,10 +5,9 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const models = [
-  { name: "GPT-4o", ctx: 128000, bar: 64 },
-  { name: "Claude 3.5 Sonnet", ctx: 200000, bar: 100 },
-  { name: "Llama 3 (8B)", ctx: 8192, bar: 4 },
-  { name: "Gemini 1.5 Pro", ctx: 1000000, bar: 100 },
+  { name: "Small open-weight model (8B class)", ctx: "8K–32K", bar: 4 },
+  { name: "Frontier chat model", ctx: "128K–200K", bar: 20 },
+  { name: "Long-context frontier model", ctx: "1M+", bar: 100 },
 ];
 
 export function Guide3() {
@@ -22,20 +21,20 @@ export function Guide3() {
         </div>
       </DarkBox>
 
-      <Card color="#1565C0" title="Context Window Sizes" subtitle="Tokens by model">
+      <Card color="#1565C0" title="Context Window Sizes" subtitle="Typical ranges by model category — check vendor docs for current figures">
         <div style={{ padding: 16 }}>
           {models.map((m, i) => (
             <div key={i} style={{ marginBottom: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
                 <span>{m.name}</span>
-                <span style={{ color: "#1565C0" }}>{m.ctx.toLocaleString()} tokens</span>
+                <span style={{ color: "#1565C0" }}>{m.ctx} tokens</span>
               </div>
               <div style={{ background: "#eee", borderRadius: 6, height: 14, overflow: "hidden" }}>
                 <div style={{ background: "#1565C0", height: "100%", width: `${m.bar}%`, borderRadius: 6, transition: "width 0.4s" }} />
               </div>
             </div>
           ))}
-          <div style={{ fontSize: 11, color: "#888", marginTop: 8 }}>Bar width is relative, not to scale across all models.</div>
+          <div style={{ fontSize: 11, color: "#888", marginTop: 8 }}>Bar width is relative. Context windows have grown from thousands to millions of tokens — today's frontier number is next year's normal.</div>
         </div>
       </Card>
 
@@ -79,7 +78,7 @@ export function Guide3() {
 
       <Tip text="Long conversations slowly eat your context window. If a model starts 'forgetting' earlier instructions, that's often why — the old tokens were pushed out." />
 
-      <Insight text="200K tokens ≈ roughly 500 pages of text. That's a full novel's worth of context in a single prompt." />
+      <Insight text="100K tokens ≈ roughly 250 pages of text. Today's long-context frontier models fit entire codebases or books in a single prompt — and context limits continue to grow." />
     </div>
   );
 }

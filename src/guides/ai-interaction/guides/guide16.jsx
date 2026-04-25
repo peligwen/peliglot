@@ -64,23 +64,25 @@ export function Guide16() {
         </div>
       </Card>
 
-      <Card color="#00695C" title="Example MCP servers">
+      <Card color="#00695C" title="MCP server ecosystem">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 8 }}>Servers now exist for virtually every developer tool — source control (GitHub/GitLab), file systems, databases, browsers, chat platforms, observability tools, calendars, and more. The ecosystem has grown rapidly since MCP launched in late 2024.</div>
+          <div style={{ marginBottom: 8 }}>Representative categories:</div>
           {[
-            { name: "GitHub", what: "Read/write issues, PRs, code. Create branches, review changes." },
-            { name: "Filesystem", what: "Read, write, search files on your local machine." },
-            { name: "PostgreSQL", what: "Query databases, inspect schemas, run analytics." },
-            { name: "Slack", what: "Read channels, post messages, search conversation history." },
-            { name: "Puppeteer", what: "Browse the web, take screenshots, interact with pages." },
+            { name: "Source control", what: "Read/write issues, PRs, and code across GitHub, GitLab, or similar." },
+            { name: "Local files & DBs", what: "Read, write, query — your machine's files and local databases." },
+            { name: "Web browsers", what: "Browse pages, take screenshots, interact with web UIs." },
+            { name: "Communication & productivity", what: "Channels, messages, calendars, tickets." },
           ].map((s, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <strong>{s.name}:</strong> {s.what}
             </div>
           ))}
+          <div style={{ fontSize: 11, color: "#888", marginTop: 8 }}>Check modelcontextprotocol.io for the current list of official and community servers.</div>
         </div>
       </Card>
 
-      <Tip text="MCP is open source and growing fast. You can write your own MCP server to connect any AI model to any tool or data source you have." />
+      <Tip text="MCP is open source, governed under the Agentic AI Foundation (hosted by the Linux Foundation as of late 2025). You can write your own MCP server to connect any AI model to any tool or data source you have." />
 
       <Insight text="MCP is to AI agents what HTTP is to the web — a shared protocol that lets diverse systems talk to each other without custom wiring." />
     </div>

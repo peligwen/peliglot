@@ -9,7 +9,7 @@ const tools = [
   { name: "Code Execution", icon: "💻", desc: "Run code and return results. Essential for math and data tasks.", example: "Calculate the standard deviation of [4, 8, 15, 16, 23, 42]." },
   { name: "File System", icon: "📁", desc: "Read, write, and search files on your machine.", example: "Find all TODO comments in the src/ directory." },
   { name: "API Calls", icon: "🌐", desc: "Interact with external services — databases, APIs, cloud.", example: "Create a new GitHub issue for this bug." },
-  { name: "Image Generation", icon: "🎨", desc: "Create images from text descriptions.", example: "Draw a diagram of a microservices architecture." },
+  { name: "Multimodal I/O", icon: "🎨", desc: "Read images, audio, or video; generate images or synthesized speech.", example: "Describe what's in this screenshot and generate a diagram." },
 ];
 
 export function Guide13() {
