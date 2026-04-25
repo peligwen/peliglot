@@ -11,9 +11,9 @@ export function Guide24(){
       </div>))}
     </div>
     <SimpleGuide items={[
-      {h:"Teens and tens",b:"11: \u02BBumik\u016Bm\u0101kahi \u00B7 12: \u02BBumik\u016Bm\u0101lua \u00B7 20: iwak\u0101lua\n30: kanakolu \u00B7 40: kanah\u0101 \u00B7 50: kanalima\n100: ho\u02BBokahi haneli \u00B7 1000: ho\u02BBokahi kaukani"},
+      {h:"Teens and tens",b:"11: \u02BBumik\u016Bm\u0101kahi \u00B7 12: \u02BBumik\u016Bm\u0101lua \u00B7 20: iwak\u0101lua\n30: kanakolu \u00B7 40: kanah\u0101 \u00B7 50: kanalima\n100: ho\u02BBokahi haneli \u00B7 1000: ho\u02BBokahi kaukani\nNote: haneli (hundred) and kaukani (thousand) are 19th-century English loanwords (hundred \u2192 haneli). Modern Hawaiian uses these for everyday numeric literacy."},
       {h:"Counting things (with classifiers)",b:"\u02BBElua puke = two books \u00B7 \u02BBEkolu keiki = three children\nNumber comes before the noun (no article needed)"},
-      {h:"Traditional Hawaiian counting",b:"Hawaiian had a base-4 and base-40 system for certain counts (fish, taro). Kauna = 4, kanaha = 40, lau = 400, mano = 4000. Still referenced culturally."},
+      {h:"Traditional Hawaiian counting (base-4 / base-40 system)",b:"Hawaiian had a base-4 and base-40 system for certain counts (fish, taro, canoes):\nKauna = 4 things \u00B7 \u02BBUmi = 10 \u00B7 Kanah\u0101 = 40 things\nLau = 400 \u00B7 Mano = 4,000 \u00B7 Kini = 40,000 \u00B7 Lehu = 400,000\nExample counting fish: 1 kauna (4), 2 kauna (8), ho\u02BBokahi kanah\u0101 (40), ho\u02BBokahi lau (400).\nThis system is still referenced in cultural and ceremonial contexts."},
     ]}/>
   </div>);
 }

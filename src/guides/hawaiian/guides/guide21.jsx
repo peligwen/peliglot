@@ -6,7 +6,7 @@ export function Guide21(){
     {p:"mai",dir:"Toward the speaker",ex:"E hele mai! = Come (toward me)!\nHa\u02BBawi mai = Give (to me)",color:"#C62828",arrow:"\u2190"},
     {p:"aku",dir:"Away from the speaker",ex:"E hele aku! = Go (away from me)!\nHa\u02BBawi aku = Give (to someone else)",color:"#0D47A1",arrow:"\u2192"},
     {p:"a\u02BBe",dir:"Upward / next / more",ex:"E pi\u02BBi a\u02BBe = Go up more\nK\u0113ia mua a\u02BBe = the next one",color:"#2E7D32",arrow:"\u2191"},
-    {p:"iho",dir:"Downward / self / less",ex:"E iho iho = Come down\nnoho iho = sit yourself down",color:"#6A1B9A",arrow:"\u2193"},
+    {p:"iho",dir:"Downward / self / reflexive",ex:"E iho mai = Come down (toward me)\nnoho iho = sit yourself down (reflexive)\nE ha\u02bbalele iho = just leave (intensifying/self-directed)",color:"#6A1B9A",arrow:"\u2193"},
   ];
   return(<div>
     <DarkBox title="Uniquely Hawaiian"><div style={{fontSize:13}}>

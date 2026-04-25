@@ -6,7 +6,7 @@ export function Guide7(){
     {p:"ka / ke",use:"The (singular definite article)",ex:"ka hale = the house \u00B7 ke aloha = the love",color:"#2E7D32"},
     {p:"n\u0101",use:"The (plural definite article)",ex:"n\u0101 keiki = the children",color:"#2E7D32"},
     {p:"he",use:"A/an (indefinite article)",ex:"He kumu au. = I am a teacher.",color:"#E65100"},
-    {p:"i / i\u0101",use:"Object marker (i for things, i\u0101 for people)",ex:"N\u0101n\u0101 au i ka moana. = I look at the ocean.\nN\u0101n\u0101 au i\u0101 Keoni. = I look at John.",color:"#6A1B9A"},
+    {p:"i / i\u0101",use:"Object marker (i before common nouns, i\u0101 before personal names and pronouns)",ex:"N\u0101n\u0101 au i ka moana. = I look at the ocean.\nN\u0101n\u0101 au i\u0101 Keoni. = I look at John.\nN\u0101n\u0101 au i\u0101 \u02bboe. = I look at you. (i\u0101 before pronoun)",color:"#6A1B9A"},
     {p:"ma",use:"At/in/on (location)",ex:"ma ka hale = at the house",color:"#00838F"},
     {p:"no / na",use:"For/belonging to (o/a class)",ex:"no Keoni = for/of John (o-class)",color:"#C62828"},
     {p:"a me",use:"And (connects nouns)",ex:"ka makuahine a me ka makuak\u0101ne = the mother and the father",color:"#880E4F"},

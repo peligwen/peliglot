@@ -2,14 +2,14 @@ import { Card } from '../../../components/Card';
 
 export function Guide28(){
   const phrases=[
-    {hw:"Aloha",en:"Hello/goodbye/love",note:"The most important Hawaiian word \u2014 far deeper than just a greeting"},
+    {hw:"Aloha",en:"Hello/goodbye/love",note:"Far deeper than a greeting. From alo (presence, face) + h\u0101 (breath of life) \u2014 a greeting as an exchange of breath and presence (Pukui, N\u0101n\u0101 I Ke Kumu)"},
     {hw:"Mahalo",en:"Thank you",note:"Also means gratitude, admiration, praise"},
     {hw:"\u02BBAe",en:"Yes",note:"Simple and direct"},
     {hw:"\u02BBA\u02BBole",en:"No",note:"Also used in negation patterns"},
     {hw:"E komo mai",en:"Welcome / come in",note:"Used to invite someone in"},
     {hw:"A hui hou",en:"Until we meet again",note:"Common farewell \u2014 not 'goodbye' but 'see you later'"},
     {hw:"Pehea \u02BBoe?",en:"How are you?",note:"Literally 'How (are) you?'"},
-    {hw:"Maika\u02BBi au",en:"I'm good/well",note:"Response to Pehea \u02BBoe"},
+    {hw:"Maika\u02BBi au",en:"I am well",note:"Response to Pehea \u02BBoe"},
     {hw:"\u02BBO wai kou inoa?",en:"What is your name?",note:"Lit. 'Who (is) your name?' \u2014 O-class for 'name'"},
     {hw:"\u02BBO [name] ko\u02BBu inoa",en:"My name is [name]",note:"O-class possessive for name"},
     {hw:"\u02BBA\u02BBohe mea",en:"You're welcome / it's nothing",note:"Response to mahalo"},
