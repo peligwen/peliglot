@@ -5,7 +5,7 @@ import { PalNote } from './_helpers';
 const soundGroups=[
   {group:"Pharyngeal (deep throat)",color:"#880E4F",sounds:[
     {l:"ح",n:"ḥā'",desc:"Voiceless deep breath from throat — like fogging a mirror but deeper",approx:"Whispered 'h' from very deep"},
-    {l:"ع",n:"'ayn",desc:"Voiced pharyngeal — the iconic Arabic sound. Squeeze the throat while voicing",approx:"No English equivalent. Like gagging gently while saying 'ah'"},
+    {l:"ع",n:"ʿayn",desc:"Voiced pharyngeal — the iconic Arabic sound. Squeeze the throat while voicing",approx:"No English equivalent. Like gagging gently while saying 'ah'"},
   ]},
   {group:"Uvular / Back",color:"#6A1B9A",sounds:[
     {l:"خ",n:"khā'",desc:"Voiceless uvular fricative — like German 'Bach' or Scottish 'loch'",approx:"German/Scottish 'ch'"},

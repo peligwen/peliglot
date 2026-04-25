@@ -7,7 +7,7 @@ export function Guide30(){
   const roots=[
     {root:"ك ت ب",meaning:"writing",words:[{ar:"كَتَبَ",tr:"kataba",m:"he wrote"},{ar:"كِتاب",tr:"kitāb",m:"book"},{ar:"كاتِب",tr:"kātib",m:"writer"},{ar:"مَكتوب",tr:"maktūb",m:"written/letter"},{ar:"مَكتَب",tr:"maktab",m:"office/desk"},{ar:"مَكتَبة",tr:"maktaba",m:"library"},{ar:"كِتابة",tr:"kitāba",m:"writing (act)"}]},
     {root:"د ر س",meaning:"studying",words:[{ar:"دَرَسَ",tr:"darasa",m:"he studied"},{ar:"دَرس",tr:"dars",m:"lesson"},{ar:"مُدَرِّس",tr:"mudarris",m:"teacher"},{ar:"مَدرَسة",tr:"madrasa",m:"school"},{ar:"دِراسة",tr:"dirāsa",m:"study"}]},
-    {root:"ع ل م",meaning:"knowledge",words:[{ar:"عَلِمَ",tr:"'alima",m:"he knew"},{ar:"عِلم",tr:"'ilm",m:"science/knowledge"},{ar:"عالَم",tr:"'ālam",m:"world"},{ar:"عالِم",tr:"'ālim",m:"scholar"},{ar:"مُعَلِّم",tr:"mu'allim",m:"teacher"},{ar:"تَعليم",tr:"ta'līm",m:"education"},{ar:"مَعلومات",tr:"ma'lūmāt",m:"information"}]},
+    {root:"ع ل م",meaning:"knowledge",words:[{ar:"عَلِمَ",tr:"ʿalima",m:"he knew"},{ar:"عِلم",tr:"ʿilm",m:"science/knowledge"},{ar:"عالَم",tr:"ʿālam",m:"world"},{ar:"عالِم",tr:"ʿālim",m:"scholar"},{ar:"مُعَلِّم",tr:"muʿallim",m:"teacher"},{ar:"تَعليم",tr:"taʿlīm",m:"education"},{ar:"مَعلومات",tr:"maʿlūmāt",m:"information"}]},
     {root:"ك ب ر",meaning:"bigness",words:[{ar:"كَبُرَ",tr:"kabura",m:"he grew big"},{ar:"كَبير",tr:"kabīr",m:"big"},{ar:"أَكبَر",tr:"akbar",m:"bigger/greatest"},{ar:"كِبار",tr:"kibār",m:"elders"},{ar:"تَكبير",tr:"takbīr",m:"magnification"}]},
     {root:"ح ب ب",meaning:"love",words:[{ar:"أَحَبَّ",tr:"aḥabba",m:"he loved"},{ar:"حُبّ",tr:"ḥubb",m:"love"},{ar:"حَبيب",tr:"ḥabīb",m:"beloved"},{ar:"مَحبوب",tr:"maḥbūb",m:"loved/popular"}]},
   ];

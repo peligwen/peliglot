@@ -47,6 +47,7 @@ export function Guide2(){
     </div>)}
     <PalNote text="In spoken Palestinian Arabic, short vowels shift: fatḥa often sounds like 'e' or 'i' before certain consonants. Tanwīn is rarely used in speech."/>
     <Insight text="You'll see diacritics in the Quran, children's books, and language textbooks. Newspapers and novels almost never include them — you learn to read without them through context."/>
+    <Insight text="These same marks double as grammatical case markers: fatḥa = accusative, kasra = genitive, ḍamma = nominative. See Guide 14 for the full case system." emoji="🔗"/>
   </div>);
 }
 

@@ -2,34 +2,34 @@ import { AlphabetGrid } from '../../../components/templates/AlphabetGrid';
 import { speakArabic } from '../../../utils/speech';
 
 const alphabet=[
-  {l:"ا",n:"alif",tr:"ā/a",ipa:"/aː/, glottal stop carrier",iso:"ا",ini:"ا",med:"ـا",fin:"ـا",connect:false,cat:"throat"},
-  {l:"ب",n:"bā'",tr:"b",ipa:"/b/",iso:"ب",ini:"بـ",med:"ـبـ",fin:"ـب",connect:true,cat:"normal"},
-  {l:"ت",n:"tā'",tr:"t",ipa:"/t/",iso:"ت",ini:"تـ",med:"ـتـ",fin:"ـت",connect:true,cat:"normal"},
-  {l:"ث",n:"thā'",tr:"th",ipa:"/θ/ (like 'think')",iso:"ث",ini:"ثـ",med:"ـثـ",fin:"ـث",connect:true,cat:"normal",pal:"Often → /t/ or /s/ in Palestinian"},
-  {l:"ج",n:"jīm",tr:"j",ipa:"/dʒ/ (like 'judge')",iso:"ج",ini:"جـ",med:"ـجـ",fin:"ـج",connect:true,cat:"normal",pal:"Pronounced /ʒ/ (like 'measure') in Palestinian"},
-  {l:"ح",n:"ḥā'",tr:"ḥ",ipa:"/ħ/ (deep throat h)",iso:"ح",ini:"حـ",med:"ـحـ",fin:"ـح",connect:true,cat:"throat"},
-  {l:"خ",n:"khā'",tr:"kh",ipa:"/x/ (like German 'Bach')",iso:"خ",ini:"خـ",med:"ـخـ",fin:"ـخ",connect:true,cat:"throat"},
+  {l:"ا",n:"alif",tr:"ā/a",ipa:"/aː/, glottal stop carrier",iso:"ا",ini:"ا",med:"ـا",fin:"ـا",connect:false,cat:"normal"},
+  {l:"ب",n:"bāʾ",tr:"b",ipa:"/b/",iso:"ب",ini:"بـ",med:"ـبـ",fin:"ـب",connect:true,cat:"normal"},
+  {l:"ت",n:"tāʾ",tr:"t",ipa:"/t/",iso:"ت",ini:"تـ",med:"ـتـ",fin:"ـت",connect:true,cat:"normal"},
+  {l:"ث",n:"thāʾ",tr:"th",ipa:"/θ/ (like 'think')",iso:"ث",ini:"ثـ",med:"ـثـ",fin:"ـث",connect:true,cat:"normal",pal:"Often → /t/ or /s/ in Palestinian"},
+  {l:"ج",n:"jīm",tr:"j",ipa:"/dʒ/ (like 'judge'); /ɡ/ in Egyptian MSA",iso:"ج",ini:"جـ",med:"ـجـ",fin:"ـج",connect:true,cat:"normal",pal:"Pronounced /ʒ/ (like 'measure') in Palestinian"},
+  {l:"ح",n:"ḥāʾ",tr:"ḥ",ipa:"/ħ/ (deep throat h)",iso:"ح",ini:"حـ",med:"ـحـ",fin:"ـح",connect:true,cat:"throat"},
+  {l:"خ",n:"khāʾ",tr:"kh",ipa:"/x/ (like German 'Bach')",iso:"خ",ini:"خـ",med:"ـخـ",fin:"ـخ",connect:true,cat:"throat"},
   {l:"د",n:"dāl",tr:"d",ipa:"/d/",iso:"د",ini:"د",med:"ـد",fin:"ـد",connect:false,cat:"normal"},
   {l:"ذ",n:"dhāl",tr:"dh",ipa:"/ð/ (like 'the')",iso:"ذ",ini:"ذ",med:"ـذ",fin:"ـذ",connect:false,cat:"normal",pal:"Often → /d/ or /z/ in Palestinian"},
-  {l:"ر",n:"rā'",tr:"r",ipa:"/r/ (trilled)",iso:"ر",ini:"ر",med:"ـر",fin:"ـر",connect:false,cat:"normal"},
+  {l:"ر",n:"rāʾ",tr:"r",ipa:"/r/ (tapped/trilled)",iso:"ر",ini:"ر",med:"ـر",fin:"ـر",connect:false,cat:"normal"},
   {l:"ز",n:"zāy",tr:"z",ipa:"/z/",iso:"ز",ini:"ز",med:"ـز",fin:"ـز",connect:false,cat:"normal"},
   {l:"س",n:"sīn",tr:"s",ipa:"/s/",iso:"س",ini:"سـ",med:"ـسـ",fin:"ـس",connect:true,cat:"normal"},
   {l:"ش",n:"shīn",tr:"sh",ipa:"/ʃ/ (like 'ship')",iso:"ش",ini:"شـ",med:"ـشـ",fin:"ـش",connect:true,cat:"normal"},
   {l:"ص",n:"ṣād",tr:"ṣ",ipa:"/sˤ/ (emphatic s)",iso:"ص",ini:"صـ",med:"ـصـ",fin:"ـص",connect:true,cat:"emphatic"},
   {l:"ض",n:"ḍād",tr:"ḍ",ipa:"/dˤ/ (emphatic d)",iso:"ض",ini:"ضـ",med:"ـضـ",fin:"ـض",connect:true,cat:"emphatic"},
-  {l:"ط",n:"ṭā'",tr:"ṭ",ipa:"/tˤ/ (emphatic t)",iso:"ط",ini:"طـ",med:"ـطـ",fin:"ـط",connect:true,cat:"emphatic"},
-  {l:"ظ",n:"ẓā'",tr:"ẓ",ipa:"/ðˤ/ (emphatic dh)",iso:"ظ",ini:"ظـ",med:"ـظـ",fin:"ـظ",connect:true,cat:"emphatic",pal:"Often → /ḍ/ or /z/ in Palestinian"},
-  {l:"ع",n:"'ayn",tr:"'",ipa:"/ʕ/ (voiced pharyngeal)",iso:"ع",ini:"عـ",med:"ـعـ",fin:"ـع",connect:true,cat:"throat"},
+  {l:"ط",n:"ṭāʾ",tr:"ṭ",ipa:"/tˤ/ (emphatic t)",iso:"ط",ini:"طـ",med:"ـطـ",fin:"ـط",connect:true,cat:"emphatic"},
+  {l:"ظ",n:"ẓāʾ",tr:"ẓ",ipa:"/ðˤ/ (emphatic dh)",iso:"ظ",ini:"ظـ",med:"ـظـ",fin:"ـظ",connect:true,cat:"emphatic",pal:"Often → /ḍ/ or /z/ in Palestinian"},
+  {l:"ع",n:"ʿayn",tr:"ʿ",ipa:"/ʕ/ (voiced pharyngeal)",iso:"ع",ini:"عـ",med:"ـعـ",fin:"ـع",connect:true,cat:"throat"},
   {l:"غ",n:"ghayn",tr:"gh",ipa:"/ɣ/ (French/German r-like)",iso:"غ",ini:"غـ",med:"ـغـ",fin:"ـغ",connect:true,cat:"throat"},
-  {l:"ف",n:"fā'",tr:"f",ipa:"/f/",iso:"ف",ini:"فـ",med:"ـفـ",fin:"ـف",connect:true,cat:"normal"},
+  {l:"ف",n:"fāʾ",tr:"f",ipa:"/f/",iso:"ف",ini:"فـ",med:"ـفـ",fin:"ـف",connect:true,cat:"normal"},
   {l:"ق",n:"qāf",tr:"q",ipa:"/q/ (deep k)",iso:"ق",ini:"قـ",med:"ـقـ",fin:"ـق",connect:true,cat:"emphatic",pal:"Pronounced as glottal stop /ʔ/ in Palestinian — the signature dialect marker!"},
   {l:"ك",n:"kāf",tr:"k",ipa:"/k/",iso:"ك",ini:"كـ",med:"ـكـ",fin:"ـك",connect:true,cat:"normal"},
   {l:"ل",n:"lām",tr:"l",ipa:"/l/",iso:"ل",ini:"لـ",med:"ـلـ",fin:"ـل",connect:true,cat:"normal"},
   {l:"م",n:"mīm",tr:"m",ipa:"/m/",iso:"م",ini:"مـ",med:"ـمـ",fin:"ـم",connect:true,cat:"normal"},
   {l:"ن",n:"nūn",tr:"n",ipa:"/n/",iso:"ن",ini:"نـ",med:"ـنـ",fin:"ـن",connect:true,cat:"normal"},
-  {l:"ه",n:"hā'",tr:"h",ipa:"/h/",iso:"ه",ini:"هـ",med:"ـهـ",fin:"ـه",connect:true,cat:"normal"},
+  {l:"ه",n:"hāʾ",tr:"h",ipa:"/h/",iso:"ه",ini:"هـ",med:"ـهـ",fin:"ـه",connect:true,cat:"throat"},
   {l:"و",n:"wāw",tr:"w/ū",ipa:"/w/ or /uː/",iso:"و",ini:"و",med:"ـو",fin:"ـو",connect:false,cat:"normal"},
-  {l:"ي",n:"yā'",tr:"y/ī",ipa:"/j/ or /iː/",iso:"ي",ini:"يـ",med:"ـيـ",fin:"ـي",connect:true,cat:"normal"},
+  {l:"ي",n:"yāʾ",tr:"y/ī",ipa:"/j/ or /iː/",iso:"ي",ini:"يـ",med:"ـيـ",fin:"ـي",connect:true,cat:"normal"},
 ];
 
 
@@ -42,7 +42,7 @@ export function Guide1(){
       filterGroups={[
         {id:"all",label:"All",filterFn:()=>true},
         {id:"normal",label:"Standard",filterFn:a=>a.cat==="normal"},
-        {id:"throat",label:"Throat",filterFn:a=>a.cat==="throat"},
+        {id:"throat",label:"Throat (ḥurūf al-ḥalq)",filterFn:a=>a.cat==="throat"},
         {id:"emphatic",label:"Emphatic",filterFn:a=>a.cat==="emphatic"},
       ]}
       primaryColor="#1B5E20"
@@ -73,10 +73,15 @@ export function Guide1(){
         </div>
       )}
       footerContent={
-        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa"}}>
-          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFF8E7",border:"1px solid #F0E4C4"}}/>Non-connecting</span>
-          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#880E4F"}}/>Throat sound</span>
-          <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#E65100"}}/>Emphatic</span>
+        <div>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",fontSize:10,color:"#aaa",marginBottom:8}}>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#FFF8E7",border:"1px solid #F0E4C4"}}/>Non-connecting</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#880E4F"}}/>Throat (ḥurūf al-ḥalq)</span>
+            <span style={{display:"flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:3,background:"#E65100"}}/>Emphatic</span>
+          </div>
+          <div style={{background:"#F3E5F5",borderRadius:8,padding:"8px 12px",fontSize:11,color:"#6A1B9A",textAlign:"center",marginTop:4}}>
+            💡 Hamza (ء) is a full phoneme (glottal stop) treated as a diacritic, not a separate letter in the 28-letter alphabet. See Guide 7 for hamza placement rules. It is also counted among the throat letters (ḥurūf al-ḥalq), giving the classical total of 6.
+          </div>
         </div>
       }
     />

@@ -37,7 +37,7 @@ export function Guide3(){
         </div>
       </div>
     </div>
-    <Insight text="Easy trick: say 'al-' then the letter. If your tongue stays behind your teeth for both the lām and the letter, it's a sun letter. If your tongue moves, it's a moon letter."/>
+    <Insight text="Easy trick: say 'al-' then the letter. For most sun letters (dental/alveolar ones like ت ث د ذ ل ن ص ط), your tongue stays behind your teeth for both. Note: ر (tap) and ش (post-alveolar) are exceptions to the mnemonic but still sun letters."/>
     <PalNote text="The assimilation happens in Palestinian Arabic too — it's universal across all dialects and MSA."/>
   </div>);
 }

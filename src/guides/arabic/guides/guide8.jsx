@@ -27,7 +27,7 @@ export function Guide8(){
           <p style={{margin:"0 0 8px"}}>Looks like <Ar>ي</Ar> without dots. Represents a final <strong>long /ā/</strong> sound.</p>
           <p style={{margin:"0 0 8px"}}>Found at the <strong>end of words only</strong>. Pronounced exactly like regular alif.</p>
           <div style={{background:"#FFF3E0",borderRadius:6,padding:"6px 8px",marginTop:4}}>
-            <Ar>عَلى</Ar> = 'alā (on/upon)<br/>
+            <Ar>عَلى</Ar> = ʿalā (on/upon)<br/>
             <Ar>مُوسى</Ar> = Mūsā (Moses)
           </div>
         </div>
