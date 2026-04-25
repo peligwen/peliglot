@@ -56,6 +56,6 @@ export function Guide14(){
       <p style={{fontSize:13,color:"#e8ecf0",lineHeight:1.6,marginBottom:4}}>{m.desc}</p>
       <p style={{fontSize:12,color:"#8fa3b8",fontStyle:"italic"}}>{m.tip}</p>
     </div>
-    <Insight text="Symmetric (the checkbox) on a centered datum is the cleanest, TNP-safest approach. Default to it for parts that need to grow in both directions; for one-sided asymmetric parts, plain Dimension is fine." />
+    <Insight text="Symmetric (the checkbox) on a centered datum is the cleanest, TNP-safest approach for parts that need to grow in both directions. For asymmetric parts (where one side is mounted/referenced), don&apos;t force Symmetric — plain Dimension off the appropriate face is clearer and just as stable." />
   </div>);
 }

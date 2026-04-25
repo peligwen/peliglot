@@ -83,6 +83,6 @@ export function Guide18(){
     <div style={{background:"#1a2f47",borderRadius:10,border:"1px solid #2a4060",padding:"10px 14px",marginBottom:14,fontSize:12,color:"#e8ecf0",lineHeight:1.5}}>
       <strong style={{color:"#e67e22"}}>Heat-set inserts (M3 brass):</strong> design a Ø4.0&nbsp;mm hole × 4.0&nbsp;mm deep, then push the insert in with a soldering iron at ~260&nbsp;°C. Sized for the common community-standard M3×D5xL5 brass insert; verify with your specific brand. Far more reliable than self-tapping into FDM plastic.
     </div>
-    <Insight text="For 3D-printed parts that'll hold a real metric screw directly, add 0.1–0.3 mm to the clearance diameter (FDM shrinks holes). For repeated assembly/disassembly, use heat-set inserts instead — printer tolerance matters more than ISO spec." />
+    <Insight text="For 3D-printed parts that'll hold a real metric screw directly, add 0.1–0.3 mm to the clearance diameter to compensate for FDM hole shrinkage — unless your slicer's hole compensation (PrusaSlicer 'Elephant foot compensation' / Bambu 'XY hole compensation') is already enabled, in which case the nominal ISO value is fine. For repeated assembly/disassembly, use heat-set inserts (Guide 20) instead." />
   </div>);
 }

@@ -24,6 +24,11 @@ export function Guide10(){
       {constraints.map((c2,i)=>(<button key={i} onClick={()=>setCt(i)} style={btnStyle(ct===i)}>{c2.name}</button>))}
     </div>
     <SketchDiagram title={`${c.name} — ${c.desc}`} width={320} height={200} geometry={c.geo} constraints={c.cc} />
+    <div style={{background:"#162a3d",borderRadius:10,padding:"8px 14px",border:"1px solid #243a52",marginBottom:12,fontSize:11,color:"#8fa3b8",lineHeight:1.5,display:"flex",gap:14,flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>
+      <span style={{fontSize:10,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",fontWeight:700}}>Glyph legend:</span>
+      <span><svg width={14} height={14} style={{verticalAlign:"middle"}}><circle cx={7} cy={7} r={4} fill="#e67e22"/></svg> coincident</span>
+      <span><svg width={20} height={14} style={{verticalAlign:"middle"}}><line x1={4} y1={3} x2={16} y2={3} stroke="#e67e22" strokeWidth={1.5}/><line x1={4} y1={11} x2={16} y2={11} stroke="#e67e22" strokeWidth={1.5}/></svg> H/V/parallel/equal/tangent etc. (orange marks)</span>
+    </div>
     <div style={{background:"#162a3d",borderRadius:10,padding:"10px 14px",border:"1px solid #243a52",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
       <kbd style={{background:"#0f2a3d",border:"1px solid #2a4060",borderRadius:5,padding:"3px 10px",fontSize:13,color:"#3498db",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap"}}>{c.shortcut}</kbd>
       <span style={{fontSize:13,color:"#8fa3b8"}}>{c.name}: {c.desc}</span>

@@ -10,7 +10,7 @@ export function Guide1(){
   ];
   const sys=systems[unitSys];
   const prefs=[
-    {path:"Edit > Preferences > General","setting":"Auto-save every 5 min","value":"ON"},
+    {path:"Edit > Preferences > General","setting":"Auto-save every 5 min","value":"Default OFF — turn ON, set interval ≤ 5 min"},
     {path:"Edit > Preferences > General","setting":"Create backup files (keep ≥ 2)","value":"ON"},
     {path:"Edit > Preferences > Units","setting":"Unit system","value":"Standard (mm)"},
     {path:"Edit > Preferences > Part Design","setting":"Auto refine model","value":"Default ON; toggle OFF if you hit helix/thread/cascading-fillet weirdness after booleans"},

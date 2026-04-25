@@ -11,7 +11,7 @@ export function Guide22(){
       {icon:"✏️",label:"Sketch (Base profile)",children:[]},
       {icon:"⬆️",label:"Pad (10mm)",children:[]},
       {icon:"✏️",label:"Sketch001 (Hole circle)",children:[]},
-      {icon:"⬇️",label:"Pocket (Through all) ← Tip",highlighted:true,children:[]},
+      {icon:"⬇️",label:"Pocket (Through all)",tip:true,children:[]},
     ]},
   ];
   const multiTree=[
@@ -20,11 +20,11 @@ export function Guide22(){
         {icon:"✏️",label:"Sketch (Base profile)",children:[]},
         {icon:"⬆️",label:"Pad (10mm)",children:[]},
         {icon:"✏️",label:"Sketch001 (Hole circle)",children:[]},
-        {icon:"⬇️",label:"Pocket (Through all) ← Tip",highlighted:true,children:[]},
+        {icon:"⬇️",label:"Pocket (Through all)",tip:true,children:[]},
       ]},
       {icon:"🎁",label:"Body001 (Washer)",children:[
         {icon:"✏️",label:"Sketch002",children:[]},
-        {icon:"⬆️",label:"Pad001 (2mm)",children:[]},
+        {icon:"⬆️",label:"Pad001 (2mm)",tip:true,children:[]},
       ]},
     ]},
   ];

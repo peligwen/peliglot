@@ -18,7 +18,7 @@ export const guidesMeta = [
   {id:17,title:"Loft & Additive Pipe",subtitle:"Profile-to-profile, sweep a path",cat:"Features",color:"#229954",icon:"🌊"},
   {id:18,title:"Hole Feature",subtitle:"Parametric screw holes",cat:"Features",color:"#27ae60",icon:"🕳️"},
   {id:19,title:"Fillet & Chamfer",subtitle:"Round or bevel edges",cat:"Features",color:"#229954",icon:"🔘"},
-  {id:20,title:"Draft",subtitle:"Angled faces for release/print",cat:"Features",color:"#27ae60",icon:"📐"},
+  {id:20,title:"Heat-Set Inserts",subtitle:"Brass threads for printed plastic",cat:"3D Printing",color:"#e74c3c",icon:"🧷"},
   {id:21,title:"Linear, Polar, Mirror Patterns",subtitle:"Duplicate features parametrically",cat:"Features",color:"#229954",icon:"▦"},
   {id:22,title:"Body & Part Containers",subtitle:"Tip, visibility, multi-body",cat:"Structure",color:"#9b59b6",icon:"📦"},
   {id:23,title:"Datum Planes & Axes",subtitle:"Stable reference geometry",cat:"Structure",color:"#8e44ad",icon:"✈️"},

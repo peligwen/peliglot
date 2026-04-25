@@ -76,10 +76,11 @@ export function FeatureTree({nodes=[],title}){
   function renderNode(node,depth){
     const indent=depth*12;const hasChildren=node.children&&node.children.length>0;
     return(<div key={node.label+depth}>
-      <div style={{display:"flex",alignItems:"center",padding:"4px 8px",paddingLeft:8+indent,background:node.highlighted?"#1e3a56":"transparent",borderRadius:6,marginBottom:2}}>
+      <div style={{display:"flex",alignItems:"center",padding:"4px 8px",paddingLeft:8+indent,background:node.tip?"#3a2418":node.highlighted?"#1e3a56":"transparent",borderRadius:6,marginBottom:2,border:node.tip?"1px solid #e67e22":"none"}}>
         <span style={{color:"#607387",fontSize:10,marginRight:4}}>{hasChildren?"▸":"·"}</span>
         <span style={{fontSize:13,marginRight:6}}>{node.icon}</span>
-        <span style={{fontSize:13,color:node.highlighted?"#e67e22":"#c8d8e8",fontWeight:node.highlighted?700:400}}>{node.label}</span>
+        <span style={{fontSize:13,color:node.tip||node.highlighted?"#e67e22":"#c8d8e8",fontWeight:node.tip||node.highlighted?700:400}}>{node.label}</span>
+        {node.tip&&<span style={{marginLeft:8,fontSize:9,padding:"1px 7px",borderRadius:4,background:"#e67e22",color:"#1a1510",fontWeight:800,letterSpacing:1}}>TIP</span>}
       </div>
       {hasChildren&&node.children.map(child=>renderNode(child,depth+1))}
     </div>);

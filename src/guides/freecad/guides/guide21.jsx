@@ -49,11 +49,18 @@ export function Guide21(){
           </>}
           {tab===2&&<>
             <line x1={160} y1={20} x2={160} y2={190} stroke="#3498db" strokeWidth={1.5} strokeDasharray="6,4"/>
-            <text x={168} y={32} fontSize={9} fill="#3498db">Mirror plane</text>
+            <text x={168} y={32} fontSize={9} fill="#3498db">YZ datum plane (mirror)</text>
             <rect x={70} y={70} width={60} height={60} rx={4} fill="none" stroke="#e67e22" strokeWidth={2}/>
             <rect x={190} y={70} width={60} height={60} rx={4} fill="none" stroke="#27ae60" strokeWidth={2} strokeDasharray="4,3"/>
             <text x={100} y={150} textAnchor="middle" fontSize={10} fill="#e67e22">Original</text>
             <text x={220} y={150} textAnchor="middle" fontSize={10} fill="#27ae60">Mirror</text>
+            {/* axis labels */}
+            <line x1={20} y1={185} x2={45} y2={185} stroke="#607387" strokeWidth={1}/>
+            <polygon points="45,185 41,182 41,188" fill="#607387"/>
+            <text x={50} y={188} fontSize={9} fill="#607387">X</text>
+            <line x1={20} y1={185} x2={20} y2={160} stroke="#607387" strokeWidth={1}/>
+            <polygon points="20,160 17,164 23,164" fill="#607387"/>
+            <text x={26} y={158} fontSize={9} fill="#607387">Y</text>
           </>}
         </svg>
       </div>

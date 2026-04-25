@@ -49,6 +49,9 @@ export function Guide28(){
         <span style={{fontSize:12,fontWeight:700,color:"#e74c3c"}}>{name}: </span><span style={{fontSize:12,color:"#8fa3b8"}}>{val}</span>
       </div>))}
     </div>
-    <Insight text="Calibrate tolerances for YOUR printer with a test print. Every FDM setup is different — nozzle size, cooling, slicer, filament all affect shrinkage. One calibration cube of fits saves dozens of failed prints." />
+    <div style={{background:"#162a3d",borderRadius:10,padding:"10px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:12,color:"#8fa3b8",lineHeight:1.5}}>
+      <strong style={{color:"#e8ecf0"}}>Hole orientation matters:</strong> the numbers above assume <em>vertical-axis holes</em> — printed wall-by-wall, perimeter rings stacked. Holes with a <em>horizontal axis</em> (printed layer-by-layer) deform less in diameter but more in roundness (they sag at the top). For horizontal holes, increase clearance by another +0.1 mm or reorient the part if the hole is critical.
+    </div>
+    <Insight text="Calibrate tolerances for YOUR printer with a test print — search 'XYZ calibration cube' or 'tolerance test print' on Printables for a one-evening calibration. Every FDM setup is different (nozzle, cooling, slicer, filament); one calibration print saves dozens of failed assemblies." />
   </div>);
 }

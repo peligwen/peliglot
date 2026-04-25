@@ -40,6 +40,12 @@ export function Guide5(){
         {type:"coincident",at:{x:240,y:60}},
       ]}
     />}
+    <div style={{background:"#162a3d",borderRadius:10,padding:"8px 14px",border:"1px solid #243a52",marginBottom:12,fontSize:11,color:"#8fa3b8",lineHeight:1.5,display:"flex",gap:14,flexWrap:"wrap",alignItems:"center",justifyContent:"center"}}>
+      <span style={{fontSize:10,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",fontWeight:700}}>Diagram legend:</span>
+      <span><svg width={14} height={14} style={{verticalAlign:"middle"}}><circle cx={7} cy={7} r={4} fill="#e67e22"/></svg> coincident</span>
+      <span><svg width={20} height={14} style={{verticalAlign:"middle"}}><line x1={2} y1={7} x2={18} y2={7} stroke="#8fa3b8" strokeWidth={1.5}/></svg> geometry</span>
+      <span><svg width={20} height={14} style={{verticalAlign:"middle"}}><line x1={2} y1={7} x2={18} y2={7} stroke="#f39c12" strokeWidth={1.2} strokeDasharray="3,2"/></svg> dimension</span>
+    </div>
     <div style={{background:"#162a3d",borderRadius:10,border:"1px solid #243a52",overflow:"hidden",marginBottom:14}}>
       <div style={{padding:"7px 14px",background:"#1e3a56",fontSize:10,fontWeight:700,color:"#607387",letterSpacing:1.5,textTransform:"uppercase"}}>Sketcher shortcuts</div>
       {shortcuts.map((sc,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 14px",borderTop:"1px solid #1e3a56"}}>

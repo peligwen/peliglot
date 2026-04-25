@@ -30,7 +30,10 @@ export function Guide27(){
         {Array.from({length:w.perims},(_, pi)=>(<line key={pi} x1={140-wallPx/2+(pi+0.5)*(wallPx/w.perims)} y1={22} x2={140-wallPx/2+(pi+0.5)*(wallPx/w.perims)} y2={98} stroke={w.vc} strokeWidth={0.5} strokeDasharray="3,3"/>))}
       </svg>
     </div>
-    <div style={{background:w.vc+"22",borderRadius:8,padding:"8px 14px",border:`1px solid ${w.vc}44`,marginBottom:14,fontSize:13,color:w.vc,fontWeight:600,textAlign:"center"}}>{w.verdict}</div>
+    <div style={{background:w.vc+"22",borderRadius:8,padding:"8px 14px",border:`1px solid ${w.vc}44`,marginBottom:8,fontSize:13,color:w.vc,fontWeight:600,textAlign:"center"}}>{w.verdict}</div>
+    <div style={{background:"#162a3d",borderRadius:8,padding:"8px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:11,color:"#8fa3b8",lineHeight:1.5}}>
+      <strong style={{color:"#e8ecf0"}}>Slicer caveat:</strong> the perimeter math above assumes wall = N × nozzle Ø. Slicers actually use <em>extrusion width</em> (typically 0.42–0.48 mm for a 0.4 mm nozzle), so a 0.8 mm wall gets ~1.7 perimeters — slicer rounds to 2 with thin gap fill or 1 with a gap. For best results, set wall = N × your slicer&apos;s configured extrusion width, not nozzle diameter.
+    </div>
     <div style={{fontSize:11,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6,textAlign:"center"}}>Overhang rule</div>
     <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
       <svg width={320} height={130} style={{background:"#0f1e2d",borderRadius:10,border:"1px solid #243a52"}}>
@@ -49,7 +52,7 @@ export function Guide27(){
     </div>
     <div style={{background:"#162a3d",borderRadius:10,border:"1px solid #243a52",overflow:"hidden",marginBottom:14}}>
       <div style={{padding:"7px 14px",background:"#1e3a56",fontSize:10,fontWeight:700,color:"#607387",letterSpacing:1.5,textTransform:"uppercase"}}>Supportless design moves</div>
-      {[["45° chamfers","Replace downward-facing overhangs with 45° chamfers"],["Teardrop holes","Use teardrop profile for horizontal holes — bottom 45° point, top semicircle"],["Orient flat faces down","Put the flattest, largest face on the build plate — stable and support-free"],].map(([name,desc],i)=>(<div key={i} style={{padding:"7px 14px",borderTop:"1px solid #1e3a56"}}>
+      {[["45° chamfers","Replace downward-facing overhangs with 45° chamfers — prints support-free."],["Teardrop holes","Use teardrop profile for horizontal holes — bottom 45° point, top semicircle."],["Orient flat faces down","Put the flattest, largest face on the build plate — stable and support-free."],["Bridge spans","Unsupported horizontal bridges print fine up to ~30 mm with good cooling, ~50 mm at the limits. Beyond that: add a support, change orientation, or split the part."],].map(([name,desc],i)=>(<div key={i} style={{padding:"7px 14px",borderTop:"1px solid #1e3a56"}}>
         <span style={{fontSize:12,fontWeight:700,color:"#e74c3c"}}>{name}: </span><span style={{fontSize:12,color:"#8fa3b8"}}>{desc}</span>
       </div>))}
     </div>
