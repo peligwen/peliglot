@@ -45,6 +45,25 @@ export function Guide21(){
         <div style={{fontSize:11,color:"#888",marginTop:4,background:"#FAFAFA",padding:"4px 8px",borderRadius:6}}>{n.note}</div>
       </div>))}
       <Insight text="Two valid patterns: 'Nunca como carne' (negative word first, no 'no' needed) OR 'No como carne nunca' ('no' + verb + negative word). Both mean the same thing!"/>
+      <div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #eee",marginTop:8}}>
+        <div style={{padding:"8px 14px",background:"#E8F5E9",borderBottom:"1px solid #C8E6C9",fontSize:12,fontWeight:700,color:"#2E7D32"}}>Affirmative ↔ Negative Pairs</div>
+        {[["siempre","always","nunca / jamás","never"],
+          ["algo","something","nada","nothing"],
+          ["alguien","someone","nadie","nobody"],
+          ["también","also / too","tampoco","neither / not either"],
+          ["algún/alguna","some","ningún/ninguna","no / none"]].map(([af,afen,neg,negen],i)=>(
+          <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 1fr",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+            <div style={{padding:"8px 12px",borderRight:"1px solid #f0eeeb"}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#2E7D32"}}>{af}</div>
+              <div style={{fontSize:11,color:"#999"}}>{afen}</div>
+            </div>
+            <div style={{padding:"8px 12px"}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#C62828"}}>{neg}</div>
+              <div style={{fontSize:11,color:"#999"}}>{negen}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>:<QuizSection
       items={quizItems}
       answerKey="answer"

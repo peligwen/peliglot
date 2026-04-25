@@ -21,7 +21,7 @@ const estarUses=[
   {cat:"Result of change",ex:"La puerta está abierta. — The door is open."},
   {cat:"Temporary states",ex:"El café está frío. — The coffee is cold."},
   {cat:"Appearance",ex:"Estás muy guapo hoy. — You look handsome today."},
-  {cat:"Dead (result of dying)",ex:"El perro está muerto. — The dog is dead."},
+  {cat:"Past-participle adjectives",ex:"La ventana está cerrada / abierta / escrita / rota / muerta. — All result-states use estar."},
 ];
 const shifts=[
   {a:"aburrido",s:"boring (personality)",e:"bored (feeling)",exS:"Él es aburrido.",exE:"Él está aburrido."},

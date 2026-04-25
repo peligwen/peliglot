@@ -22,7 +22,7 @@ const scenarios=[
   {sit:"A job interview",answer:"usted",why:"Professional/formal → usted is expected."},
   {sit:"Your coworker (same age)",answer:"tú",why:"Peers often use tú, but follow their lead."},
   {sit:"An elderly stranger",answer:"usted",why:"Age difference + stranger → usted."},
-  {sit:"A waiter at a casual restaurant",answer:"usted",why:"Service context → usted is standard in most countries."},
+  {sit:"A waiter at a casual restaurant",answer:"usted",why:"Service context → usted is standard in most Latin American countries; in Spain, tú is common in casual venues."},
 ];
 
 export function Guide24(){

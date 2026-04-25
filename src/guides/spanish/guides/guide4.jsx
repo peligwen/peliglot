@@ -21,6 +21,10 @@ const irregulars=[
   {v:"ir",forms:["voy","vas","va","vamos","vais","van"],m:"to go"},
   {v:"tener",forms:["tengo","tienes","tiene","tenemos","tenéis","tienen"],m:"to have"},
   {v:"hacer",forms:["hago","haces","hace","hacemos","hacéis","hacen"],m:"to do/make"},
+  {v:"estar",forms:["estoy","estás","está","estamos","estáis","están"],m:"to be (state/location)"},
+  {v:"poder",forms:["puedo","puedes","puede","podemos","podéis","pueden"],m:"to be able to (o→ue boot)"},
+  {v:"saber",forms:["sé","sabes","sabe","sabemos","sabéis","saben"],m:"to know (facts)"},
+  {v:"decir",forms:["digo","dices","dice","decimos","decís","dicen"],m:"to say/tell"},
 ];
 
 export function Guide4(){
@@ -43,7 +47,7 @@ export function Guide4(){
     </div>
     <ConjugationTable stem={d.stem} endings={d.endings} verb={d.verb} meaning={d.meaning} color={cols[vt]}/>
     <button onClick={()=>setShowIrreg(!showIrreg)} style={{width:"100%",padding:"10px",borderRadius:10,border:"1.5px solid #ddd",background:showIrreg?"#1a1a1a":"#fff",color:showIrreg?"#fff":"#666",fontSize:12,fontWeight:700,cursor:"pointer",marginTop:8,marginBottom:8}}>
-      {showIrreg?"Hide":"Show"} Top 4 Irregulars ⚡
+      {showIrreg?"Hide":"Show"} Top 8 Irregulars ⚡
     </button>
     {showIrreg&&<Card color="#1a1a1a" title="Essential Irregular Verbs">
       {irregulars.map((ir,i)=>(<div key={ir.v} style={{padding:"8px 16px",borderBottom:i<irregulars.length-1?"1px solid #f0eeeb":"none"}}>

@@ -20,12 +20,12 @@ const regions=[
     {feat:"Distinción (Spain)",ex:"C/Z before e/i = /θ/ (like English 'th'): cerveza → /therbetha/"},
     {feat:"Seseo (Latin America)",ex:"C/Z before e/i = /s/ (no 'th'): cerveza → /serbesa/"},
     {feat:"Yeísmo (most regions)",ex:"LL = Y sound: pollo → /poyo/"},
-    {feat:"Sheísmo (Argentina)",ex:"LL/Y = /sh/: pollo → /posho/, yo → /sho/"},
+    {feat:"Sheísmo / rehilamiento (Argentina)",ex:"LL/Y = /sh/ (or /zh/ for older speakers): pollo → /posho/, yo → /sho/"},
     {feat:"Aspirated -s (Caribbean)",ex:"Final -s weakens or drops: estos → /ehtoh/ or /etoh/"},
   ]},
   {id:"grammar",label:"Grammar",color:"#0D47A1",desc:"Structural differences between regions",content:[
     {feat:"Ustedes replaces vosotros",ex:"All of Latin America uses ustedes for ALL plural 'you' (formal + informal)"},
-    {feat:"Leísmo (Spain)",ex:"Le/les used for direct objects (people): Le vi ayer (instead of Lo vi)"},
+    {feat:"Leísmo (Spain)",ex:"Le/les used for masculine animate direct objects: Le vi ayer (instead of Lo vi). RAE accepts leísmo de persona for masculine persons."},
     {feat:"Pretérito vs Perfecto",ex:"🇪🇸 He comido hoy (present perfect common) · 🇲🇽 Comí hoy (preterite preferred)"},
   ]},
 ];

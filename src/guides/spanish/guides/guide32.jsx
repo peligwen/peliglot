@@ -26,7 +26,7 @@ const groups={
   dar:{color:"#0D47A1",label:"Dar + noun",note:"Dar = to give, but in many expressions it means something completely different.",items:[
     {sp:"dar un paseo",en:"to take a walk",lit:"to give a walk",tail:"un paseo"},
     {sp:"dar igual",en:"to not matter",lit:"to give equal",tail:"igual"},
-    {sp:"darse cuenta de",en:"to realize",lit:"to give oneself account of",tail:"se cuenta de"},
+    {sp:"darse cuenta de",en:"to realize",lit:"to give oneself account of",tail:"cuenta de",reflexive:true},
     {sp:"dar a luz",en:"to give birth",lit:"to give to light",tail:"a luz"},
     {sp:"dar la bienvenida",en:"to welcome",lit:"to give the welcome",tail:"la bienvenida"},
     {sp:"dar miedo",en:"to scare",lit:"to give fear",tail:"miedo"},
@@ -59,7 +59,8 @@ export function Guide32(){
       {pronouns.map((p,i)=>(<button key={p} onClick={()=>setPro(i)} style={{padding:"5px 12px",borderRadius:8,border:pro===i?"2px solid #1a1a1a":"1.5px solid #ddd",background:pro===i?"#1a1a1a":"#fff",color:pro===i?"#fff":"#666",fontSize:11,fontWeight:700,cursor:"pointer"}}>{p}</button>))}
     </div>
     {g.items.map(i=>{
-      const verb=pro===-1?i.sp:`${forms[pro]} ${i.tail}`;
+      const reflPron=["me","te","se","nos","os","se"];
+      const verb=pro===-1?i.sp:i.reflexive?`${reflPron[pro]} ${forms[pro]} ${i.tail}`:`${forms[pro]} ${i.tail}`;
       return(<div key={i.sp} style={{background:"#fff",borderRadius:10,padding:"10px 14px",marginBottom:6,border:"1px solid #eee"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
           <span style={{fontSize:14,fontWeight:700,color:g.color}}>
@@ -72,5 +73,21 @@ export function Guide32(){
       </div>);
     })}
     <Insight text="With tener expressions, use mucho/a (not muy) for emphasis: Tengo MUCHA hambre (not *muy hambre). The noun determines mucho vs mucha."/>
+    <div style={{background:"#E8F5E9",borderRadius:12,padding:"14px 16px",marginTop:8,border:"1.5px solid #C8E6C9"}}>
+      <div style={{fontSize:13,fontWeight:800,color:"#2E7D32",marginBottom:8}}>Tener que + infinitive — Obligation</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.7,marginBottom:8}}>The most-used tener structure: <strong>tener que + infinitive</strong> = "to have to / must." Different from tener + noun — no noun, just the infinitive.</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,fontSize:12,marginBottom:8}}>
+        {[{sp:"Tengo que estudiar.",en:"I have to study."},
+          {sp:"Tienes que comer.",en:"You have to eat."},
+          {sp:"Tiene que ir al médico.",en:"He has to go to the doctor."},
+          {sp:"Tenemos que salir ya.",en:"We have to leave now."}].map((ex,i)=>(
+          <div key={i} style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #C8E6C9"}}>
+            <div style={{fontWeight:600,color:"#2E7D32",fontStyle:"italic"}}>{ex.sp}</div>
+            <div style={{color:"#888",fontSize:11}}>{ex.en}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{fontSize:11,color:"#555",lineHeight:1.6}}>Also: <strong>hay que + infinitive</strong> = "one must / it is necessary to" (impersonal, no subject): <em>Hay que estudiar más.</em> (One needs to study more.)</div>
+    </div>
   </div>);
 }
