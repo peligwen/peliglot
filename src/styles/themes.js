@@ -59,3 +59,13 @@ export const jazzTheme = {
   focusColor: '#8D6E63',
   scrollbarThumb: '#3a3025',
 };
+
+export const freecadTheme = {
+  ...darkTheme,
+  bg: '#0d1b2a',
+  headerBg: '#162a3d',
+  borderColor: '#243a52',
+  sidebarBg: '#162a3d',
+  focusColor: '#e67e22',
+  scrollbarThumb: '#2a4060',
+};
