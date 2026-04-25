@@ -28,6 +28,7 @@ export function Guide2(){
       </div>
     </div>))}
     <Insight text="Why negative × negative = positive? Think of it as reversing direction twice. Face right (+). Turn around (×-1) = face left. Turn around again (×-1) = face right again. Two reversals = back to positive." />
+    <Insight text="The algebraic reason: this is the only definition that keeps a(b + c) = ab + ac working when c is negative. Math has to be self-consistent — and that consistency forces (−)(−) = +." />
   </div>);
 }
 

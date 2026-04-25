@@ -20,7 +20,7 @@ export function Guide5(){return(<div>
       <div style={{fontSize:12,color:"#888",fontFamily:"monospace",marginTop:2}}>{s.ex}</div>
     </div>))}
   </Card>
-  <Insight text="The viral equation '6 ÷ 2(1+2) = ?' causes arguments because the notation is ambiguous, not because people are bad at math. In real math and programming, you'd add parentheses to make it clear." />
+  <Insight text="The viral equation '6 ÷ 2(1+2) = ?' causes arguments because the notation is ambiguous, not because people are bad at math. PEMDAS gives 9 (divide first, then multiply). But in older textbooks and on many calculators, juxtaposition (writing 2 next to a bracket) implies higher priority — giving 1. Both answers follow consistent rules; the expression is just badly written. Real math and programming always add parentheses to make it unambiguous." />
 </div>);}
 
 // ═══════════════════════════════════════════════════════════════

@@ -14,7 +14,7 @@ export function Guide32(){return(<div>
       {task:"Unit pricing",math:"Division & comparison. $4.99/16oz vs $6.49/24oz. Which is cheaper per ounce?",icon:"🛒"},
       {task:"Sale prices",math:"Percentages. 30% off $80 = $80 × 0.70 = $56. Or: 10% = $8, ×3 = $24 off → $56.",icon:"🏷"},
       {task:"Comparing phone plans",math:"Linear equations. $40/mo unlimited vs $20/mo + $0.10/text. When does unlimited win?",icon:"📱"},
-      {task:"Mortgage shopping",math:"Compound interest. 6% vs 6.5% on $300K over 30 years = $70K+ difference.",icon:"🏠"},
+      {task:"Mortgage shopping",math:"Compound interest. 6% vs 7% on $300K over 30 years ≈ $71K difference in total interest paid.",icon:"🏠"},
     ].map((t,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"8px 14px",borderBottom:i<7?"1px solid #f0eeeb":"none",gap:10}}>
       <span style={{fontSize:22}}>{t.icon}</span>
       <div style={{flex:1}}><span style={{fontWeight:700,color:"#2E7D32"}}>{t.task}</span><br/><span style={{fontSize:12,color:"#555"}}>{t.math}</span></div>

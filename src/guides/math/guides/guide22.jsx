@@ -17,4 +17,18 @@ export function Guide22(){return(<div>
     </div>))}
   </Card>
   <Insight text="IQ scores: mean=100, SD=15. 'Within 2 SD' = 70-130, which covers 95% of people. A score of 145 is 3 SD above the mean — that's the top 0.15%. Standard deviation tells you HOW unusual something is." />
+  <div style={{background:"#fff",borderRadius:12,border:"1px solid #e0dcd5",padding:"12px 14px",marginTop:8}}>
+    <div style={{fontWeight:700,color:"#1565C0",fontSize:13,marginBottom:6}}>How to compute standard deviation</div>
+    <div style={{fontFamily:"monospace",fontSize:13,fontWeight:800,color:"#333",marginBottom:6}}>σ = √( Σ(xᵢ − x̄)² / n )</div>
+    <div style={{fontSize:11,color:"#555",marginBottom:8}}>Step by step with test scores [70, 75, 80, 85, 90]:</div>
+    {[
+      {step:"Mean (x̄)", val:"(70+75+80+85+90)/5 = 80"},
+      {step:"Deviations from mean", val:"−10, −5, 0, +5, +10"},
+      {step:"Squared deviations", val:"100, 25, 0, 25, 100"},
+      {step:"Average squared deviation", val:"(100+25+0+25+100)/5 = 50"},
+      {step:"σ = √50", val:"≈ 7.07"},
+    ].map((s,i)=>(<div key={i} style={{display:"grid",gridTemplateColumns:"140px 1fr",fontSize:11,padding:"3px 0",borderBottom:i<4?"1px solid #f5f3ef":"none"}}>
+      <span style={{color:"#888"}}>{s.step}</span><span style={{fontWeight:600,color:"#1565C0"}}>{s.val}</span>
+    </div>))}
+  </div>
 </div>);}

@@ -23,5 +23,21 @@ export function Guide17(){
       </div>
     </div>
     <Insight text="The Rule of 72: divide 72 by your interest rate to find how many years to double. At 7%, your money doubles roughly every 72/7 ≈ 10 years. At 10%, every 7.2 years." />
+    {(()=>{const r7=0.07/12;const n35=35*12;const n25=45*12;const fv35=monthly*(((1+r7)**n35-1)/r7);const fv25=monthly*(((1+r7)**n25-1)/r7);return(<div style={{background:"#FFF3E0",borderRadius:12,padding:"12px 14px",border:"2px solid #E65100",marginTop:8}}>
+      <div style={{fontWeight:700,color:"#E65100",marginBottom:6,fontSize:13}}>What if you started 10 years earlier?</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+        <div style={{padding:"8px",background:"#fff",borderRadius:8,textAlign:"center"}}>
+          <div style={{fontSize:10,color:"#888"}}>Start at 35 → retire at 70</div>
+          <div style={{fontSize:16,fontWeight:800,color:"#C62828"}}>${Math.round(fv35).toLocaleString()}</div>
+          <div style={{fontSize:9,color:"#aaa"}}>35 years of ${monthly}/mo at 7%</div>
+        </div>
+        <div style={{padding:"8px",background:"#E8F5E9",borderRadius:8,textAlign:"center"}}>
+          <div style={{fontSize:10,color:"#888"}}>Start at 25 → retire at 70</div>
+          <div style={{fontSize:16,fontWeight:800,color:"#2E7D32"}}>${Math.round(fv25).toLocaleString()}</div>
+          <div style={{fontSize:9,color:"#aaa"}}>45 years of ${monthly}/mo at 7%</div>
+        </div>
+      </div>
+      <div style={{fontSize:11,color:"#555",marginTop:6,textAlign:"center"}}>Starting 10 years earlier = <strong>{Math.round(fv25/fv35*10)/10}× more money</strong> — same monthly payment, same rate.</div>
+    </div>);})()}
   </div>);
 }

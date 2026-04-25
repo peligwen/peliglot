@@ -35,7 +35,7 @@ export function Guide3(){
       <div style={{textAlign:"center",fontSize:11,color:"#888",marginTop:6}}>{num} out of {den} parts filled</div>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
-      {[{frac:"1/2",dec:"0.5",pct:"50%"},{frac:"1/3",dec:"0.333...",pct:"33.3%"},{frac:"1/4",dec:"0.25",pct:"25%"},{frac:"1/5",dec:"0.2",pct:"20%"},{frac:"3/4",dec:"0.75",pct:"75%"},{frac:"1/10",dec:"0.1",pct:"10%"}].map(c=>(<div key={c.frac} style={{background:"#fff",borderRadius:8,padding:"8px",border:"1px solid #e0dcd5",textAlign:"center"}}>
+      {[{frac:"1/2",dec:"0.5",pct:"50%"},{frac:"1/3",dec:"0.333...",pct:"33.3...%"},{frac:"1/4",dec:"0.25",pct:"25%"},{frac:"1/5",dec:"0.2",pct:"20%"},{frac:"3/4",dec:"0.75",pct:"75%"},{frac:"1/10",dec:"0.1",pct:"10%"}].map(c=>(<div key={c.frac} style={{background:"#fff",borderRadius:8,padding:"8px",border:"1px solid #e0dcd5",textAlign:"center"}}>
         <div style={{fontSize:14,fontWeight:700,color:"#1565C0"}}>{c.frac}</div>
         <div style={{fontSize:11,color:"#555"}}>{c.dec} = {c.pct}</div>
       </div>))}
