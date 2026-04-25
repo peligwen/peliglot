@@ -124,6 +124,7 @@ export function Guide1() {
         accentBg="#FFF8E7"
         accentFn={l=>vowels.includes(l.letter)}
         badgeFn={l=>l.tricky?{color:"#D4A843"}:null}
+        borderFn={l=>playing&&letters[tourIdx]?.letter===l.letter?"2px solid #2C5F2D":null}
         speakFn={speakSpanish}
         speakKey="name"
         gridMin="56px"
