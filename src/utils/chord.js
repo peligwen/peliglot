@@ -60,8 +60,8 @@
  * chordToneArray("C11")      → ["C4","E4","G4","Bb4","D5","F5"]
  * chordToneArray("C13")      → ["C4","E4","G4","Bb4","D5","F5","A5"]
  * chordToneArray("G7b9")     → ["G4","B4","D5","F5","Ab5"]
- * chordToneArray("G7#9")     → ["G4","B4","D5","F5","A#5"]
- * chordToneArray("G7#11")    → ["G4","B4","D5","F5","A5","C#6"]
+ * chordToneArray("G7#9")     → ["G4","B4","D5","F5","Bb5"]   (A#→Bb via flat normalisation)
+ * chordToneArray("G7#11")    → ["G4","B4","D5","F5","A5","Db6"]  (C#→Db via flat normalisation)
  * chordToneArray("G7b13")    → ["G4","B4","D5","F5","A5","C6","Eb6"]
  */
 

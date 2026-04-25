@@ -68,6 +68,8 @@ export function GuideShell({
   const sidebarRef = useRef(null);
   // Remember body overflow before locking, so we restore it exactly on close.
   const bodyOverflowRef = useRef('');
+  // Tracks whether the menu was opened at least once — prevents focus theft on first mount.
+  const wasOpenRef = useRef(false);
 
   const crossLinks = useMemo(() => {
     const sameCat = guidesMeta.filter(g => g.cat === meta.cat && g.id !== meta.id);
@@ -85,8 +87,11 @@ export function GuideShell({
 
   // Move focus into sidebar when it opens; restore to hamburger on close.
   // Lock body scroll while the modal overlay is active.
+  // wasOpenRef guards the close path so the effect does not run on initial mount
+  // (when menuOpen is false) and steal focus from the page before the user acts.
   useEffect(() => {
     if (menuOpen) {
+      wasOpenRef.current = true;
       bodyOverflowRef.current = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
 
@@ -97,13 +102,18 @@ export function GuideShell({
         const focusable = getFocusable(sidebarRef.current);
         if (focusable.length > 0) focusable[0].focus();
       }
-    } else {
+    } else if (wasOpenRef.current) {
+      wasOpenRef.current = false;
       document.body.style.overflow = bodyOverflowRef.current;
       setSearchTerm('');
       // Return focus to the button that opened the sidebar.
       hamburgerRef.current?.focus();
     }
   }, [menuOpen]);
+
+  // Restore body overflow if the component unmounts while the sidebar is open
+  // (e.g. user navigates away mid-session).
+  useEffect(() => () => { document.body.style.overflow = bodyOverflowRef.current; }, []);
 
   const openSearch = () => {
     focusSearchRef.current = true;
