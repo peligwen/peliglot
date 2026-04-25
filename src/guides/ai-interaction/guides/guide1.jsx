@@ -8,7 +8,7 @@ const concepts = [
   { label: "Training Data", desc: "Billions of pages of text — books, articles, code, conversations — that the model learned patterns from." },
   { label: "Parameters", desc: "Numerical weights (billions of them) that encode learned patterns. More parameters generally means more capability, but also more cost." },
   { label: "Inference", desc: "The process of generating a response. The model predicts one token at a time, each choice influenced by everything before it." },
-  { label: "Pre-training vs Fine-tuning", desc: "Pre-training learns general language from massive data. Fine-tuning adjusts behavior for specific tasks like following instructions or being helpful." },
+  { label: "Pre-training vs Fine-tuning", desc: "Pre-training learns general language from massive data. Fine-tuning adjusts behavior for specific tasks. Modern chat models use a multi-stage pipeline: pre-training → supervised fine-tuning → preference-based methods (RLHF, DPO, Constitutional AI) that align the model with human preferences." },
 ];
 
 export function Guide1() {
@@ -48,7 +48,7 @@ export function Guide1() {
       <Card color="#1565C0" title="What an LLM is NOT">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div><strong>Not a database.</strong> It doesn't look up stored facts — it reconstructs plausible answers from patterns.</div>
-          <div style={{ marginTop: 8 }}><strong>Not a search engine.</strong> It doesn't browse the web in real time (unless given tools to do so).</div>
+          <div style={{ marginTop: 8 }}><strong>Not a search engine on its own.</strong> Most chat products combine the LLM with a search tool, but the LLM itself is just predicting tokens — it isn't crawling the web.</div>
           <div style={{ marginTop: 8 }}><strong>Not conscious.</strong> It has no beliefs, desires, or experiences. It's a very sophisticated pattern matcher.</div>
         </div>
       </Card>

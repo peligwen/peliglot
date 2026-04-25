@@ -25,6 +25,9 @@ export function Guide2(){
       <div style={{fontSize:16,fontWeight:800,color:"#C62828"}}>{iv.name} <span style={{fontSize:12,color:"#888"}}>({iv.half} half-steps)</span></div>
       <div style={{fontSize:13,color:"#555",marginTop:4}}>{iv.mood}</div>
     </div>}
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #f0eeeb",marginBottom:12,fontSize:12,color:"#555"}}>
+      <strong style={{color:"#C62828"}}>Enharmonic equivalents:</strong> The tritone (6 half-steps) has two names — <strong>augmented 4th (A4)</strong> and <strong>diminished 5th (d5)</strong>. Same pitch, different function: A4 (e.g. F→B) resolves outward to a 6th; d5 (B→F) resolves inward to a 3rd. Equal temperament makes them sound identical, but in tonal harmony they behave differently.
+    </div>
     <Insight text="The major third (4 half-steps) sounds happy. The minor third (3 half-steps) sounds sad. This single interval is what separates major from minor — the entire mood shift comes from ONE half-step difference." />
   </div>);
 }

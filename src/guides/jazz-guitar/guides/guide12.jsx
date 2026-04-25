@@ -9,7 +9,7 @@ export function Guide12(){return(<div>
   <Card color="#6A1B9A" title="Pentatonic superimposition chart">
     {[{over:"Cmaj7",pent:"D major pent (D-E-F#-A-B)",sound:"Gives you 9-3-#11-13-7 — Lydian flavor",color:"#c4a87a"},
       {over:"Dm7",pent:"F major pent (F-G-A-C-D)",sound:"Gives you b3-4(11)-5-b7-R — pure Dorian",color:"#81C784"},
-      {over:"G7",pent:"Ab minor pent (Ab-Cb-Db-Eb-Gb)",sound:"Gives you b9-3-b5(#11)-b13-R — altered dominant",color:"#EF9A9A"},
+      {over:"G7",pent:"Bb minor pent (Bb-Db-Eb-F-Ab)",sound:"Gives you #9-#11-b13-b7-b9 — the canonical altered-dominant pent",color:"#EF9A9A"},
       {over:"G7",pent:"Bb major pent (Bb-C-D-F-G)",sound:"Gives you b3(#9)-4(11)-5-b7-R — Mixolydian/blues",color:"#90CAF9"},
       {over:"Cm7",pent:"Eb major pent (Eb-F-G-Bb-C)",sound:"Gives you b3-4(11)-5-b7-R — minor pentatonic from b3",color:"#CE93D8"},
     ].map((p,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<4?"1px solid #333":"none"}}>

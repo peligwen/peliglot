@@ -27,6 +27,15 @@ export function Guide24(){
         {r.items.map((e,j)=>(<span key={j} style={{padding:"4px 10px",borderRadius:8,background:`${r.color}10`,color:r.color,fontSize:12,fontWeight:600,border:`1px solid ${r.color}20`}}>{e}</span>))}
       </div>
     </div>))}
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#E65100",marginBottom:4}}>Transporte: IN vs ON</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.7}}>
+        <strong style={{color:"#C62828"}}>IN:</strong> carro, taxi — pequeño/privado, entras metiéndote<br/>
+        <em>in a car · in a taxi · in a cab</em><br/>
+        <strong style={{color:"#E65100"}}>ON:</strong> autobús, tren, avión, barco — grande/público, subes a bordo<br/>
+        <em>on the bus · on the train · on the plane · on a boat</em>
+      </div>
+    </div>
     <Chatt text="'Over yonder' = por allá. 'Up the road a piece' = a poca distancia. 'Down the mountain' = en el valle." />
   </div>);
 }

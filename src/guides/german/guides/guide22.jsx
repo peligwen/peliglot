@@ -15,4 +15,11 @@ export function Guide22(){return(<div>
     <strong style={{color:"#FFE77A"}}>Writing:</strong> use Präteritum — Ich machte das.<br/>
     <strong style={{color:"#EF9A9A"}}>Always Präteritum</strong> (even in speech) for: sein (war), haben (hatte), and all modals (konnte, musste, wollte...).
   </div></DarkBox>
+  <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#00695C",marginBottom:6}}>Strong-verb Präteritum endings (add to the changed stem):</div>
+    <div style={{fontSize:13,color:"#555",lineHeight:1.7}}>
+      ich <strong style={{color:"#00695C"}}>kam</strong> · du <strong style={{color:"#00695C"}}>kamst</strong> · er/sie/es <strong style={{color:"#00695C"}}>kam</strong> · wir <strong style={{color:"#00695C"}}>kamen</strong> · ihr <strong style={{color:"#00695C"}}>kamt</strong> · sie <strong style={{color:"#00695C"}}>kamen</strong><br/>
+      <span style={{fontSize:11,color:"#888"}}>Endings: — / -st / — / -en / -t / -en. Note: 1st and 3rd singular have NO ending — the changed stem alone.</span>
+    </div>
+  </div>
 </div>);}

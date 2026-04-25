@@ -8,7 +8,7 @@ const numbers=[
   {n:0,sp:"cero"},{n:1,sp:"uno"},{n:2,sp:"dos"},{n:3,sp:"tres"},{n:4,sp:"cuatro"},
   {n:5,sp:"cinco"},{n:6,sp:"seis"},{n:7,sp:"siete"},{n:8,sp:"ocho"},{n:9,sp:"nueve"},
   {n:10,sp:"diez"},{n:11,sp:"once"},{n:12,sp:"doce"},{n:13,sp:"trece"},{n:14,sp:"catorce"},
-  {n:15,sp:"quince"},{n:16,sp:"dieciséis"},{n:20,sp:"veinte"},{n:21,sp:"veintiuno"},
+  {n:15,sp:"quince"},{n:16,sp:"dieciséis"},{n:17,sp:"diecisiete"},{n:18,sp:"dieciocho"},{n:19,sp:"diecinueve"},{n:20,sp:"veinte"},{n:21,sp:"veintiuno"},
   {n:30,sp:"treinta"},{n:40,sp:"cuarenta"},{n:50,sp:"cincuenta"},{n:100,sp:"cien"},
   {n:1000,sp:"mil"},{n:1000000,sp:"un millón"},
 ];
@@ -40,6 +40,21 @@ export function Guide23(){
         </div>))}
       </div>
       <Insight text="Uno shortens before masculine nouns: veintiún libros. Cien becomes ciento before another number: ciento dos (102)."/>
+      <div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #eee",marginTop:8}}>
+        <div style={{padding:"8px 14px",background:"#E3F2FD",borderBottom:"1px solid #BBDEFB",fontSize:12,fontWeight:700,color:"#0277BD"}}>Ordinal Numbers (1st–10th)</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:0}}>
+          {[["1º","primero/a"],["2º","segundo/a"],["3º","tercero/a"],["4º","cuarto/a"],["5º","quinto/a"],
+            ["6º","sexto/a"],["7º","séptimo/a"],["8º","octavo/a"],["9º","noveno/a"],["10º","décimo/a"]].map(([ord,sp],i)=>(
+            <div key={i} style={{padding:"8px 6px",textAlign:"center",borderBottom:i<5?"1px solid #f0eeeb":"none",borderRight:i%5<4?"1px solid #f0eeeb":"none"}}>
+              <div style={{fontSize:14,fontWeight:800,color:"#0277BD"}}>{ord}</div>
+              <div style={{fontSize:9,color:"#666",fontWeight:600}}>{sp}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{padding:"8px 12px",fontSize:11,color:"#888",borderTop:"1px solid #f0eeeb",lineHeight:1.5}}>
+          Primero/tercero shorten to <strong>primer/tercer</strong> before a masculine singular noun: <em>el primer día</em>, <em>el tercer piso</em>. Used for floors, dates (el primero), royalty (Carlos V), rankings.
+        </div>
+      </div>
     </div>}
     {tab==="dates"&&<Card color="#0277BD" title="Dates">
       <div style={{background:"#E3F2FD",borderRadius:10,padding:"14px",marginBottom:12,textAlign:"center"}}>
@@ -63,7 +78,7 @@ export function Guide23(){
         <span style={{fontSize:20,fontWeight:800,color:"#0277BD",fontFamily:"monospace"}}>{t.time}</span>
         <span style={{fontSize:13,fontWeight:600,color:"#1a1a1a"}}>{t.sp}</span>
       </div>))}
-      <Insight text="y media = :30 · y cuarto = :15 · menos cuarto = :45. In Mexico, 12-hour format is common: Son las tres de la tarde (3 PM)."/>
+      <Insight text="y media = :30 · y cuarto = :15 · menos cuarto = :45. In Mexico and much of Latin America, 'Son las cuatro y cuarenta y cinco' or 'Quince para las cinco' is also common — the 'menos cuarto' form is more typical of Spain."/>
     </div>}
   </div>);
 }

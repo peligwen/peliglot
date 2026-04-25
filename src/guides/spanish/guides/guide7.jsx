@@ -48,6 +48,18 @@ export function Guide7(){
         <div style={{fontSize:12,color:"#888"}}>{u.en}</div>
       </div>))}
     </Card>
+    <div style={{background:"#FFF3E0",borderRadius:12,padding:"12px 16px",marginTop:8,border:"1.5px solid #FFE0B2"}}>
+      <div style={{fontSize:12,fontWeight:800,color:"#E65100",marginBottom:6}}>Verbs that resist the progressive</div>
+      <div style={{fontSize:11,color:"#555",lineHeight:1.6,marginBottom:6}}>These verbs are almost never used in the progressive, even when English might use "-ing":</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:6}}>
+        {["ir","venir","estar","tener","ser","querer","saber","conocer","poder"].map(v=>(
+          <span key={v} style={{padding:"3px 8px",borderRadius:8,background:"#FFF8E1",color:"#E65100",fontSize:11,fontWeight:700,border:"1px solid #FFE082"}}>{v}</span>
+        ))}
+      </div>
+      <div style={{fontSize:11,color:"#777"}}>
+        <em>Estoy yendo al cine</em> is grammatically possible but sounds odd — say <em>Voy al cine</em>. <em>Estoy teniendo</em> is essentially never used — say <em>Tengo</em>.
+      </div>
+    </div>
     <Insight text="English 'I'm eating' can mean right now OR generally — Spanish only uses the progressive for right now. 'I'm studying Spanish (in general)' = Estudio español."/>
   </div>);
 }

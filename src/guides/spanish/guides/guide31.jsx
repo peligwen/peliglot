@@ -53,6 +53,9 @@ export function Guide31(){
         {["Se hablan todos los días. (They talk to each other every day.)","Nos escribimos cartas. (We write letters to each other.)","Se quieren mucho. (They love each other a lot.)"].map(ex=>(<div key={ex} style={{fontSize:13,color:"#1a1a1a",marginBottom:4,fontStyle:"italic"}}>{ex}</div>))}
       </div>
       <Insight text="Context tells you reflexive vs reciprocal: 'Se miran' = They look at themselves OR They look at each other. Add 'el uno al otro' to clarify: Se miran el uno al otro."/>
+    <div style={{background:"#EDE7F6",borderRadius:10,padding:"10px 14px",marginTop:8,border:"1.5px solid #D1C4E9",fontSize:12,color:"#4527A0",lineHeight:1.6}}>
+      <strong>Linguist note:</strong> Some of these are technically <em>pronominal</em> verbs — the <em>se</em> is part of the verb, not literally 'oneself'. <em>Dormirse</em> (to fall asleep) ≠ 'to sleep oneself'; <em>arrepentirse</em> has no non-reflexive base meaning. The reflexive pronoun pattern is the same; the meaning is idiomatic.
+    </div>
     </div>}
   </div>);
 }

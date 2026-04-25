@@ -3,11 +3,11 @@ import { Card } from '../../../components/Card';
 import { CultureNote } from './_helpers';
 
 const minPairs=[
-  {w1:"pau",m1:"finished",w2:"pa'u",m2:"skirt/sarong",w3:"p\u0101'\u016B",m3:"moist, damp"},
-  {w1:"kau",m1:"to place",w2:"ka'u",m2:"my (a-class)",w3:"k\u0101'\u016B",m3:"a district on Hawai\u02BBi"},
-  {w1:"moa",m1:"chicken",w2:"mo'a",m2:"cooked",w3:"\u2014",m3:"\u2014"},
-  {w1:"ai",m1:"to eat",w2:"'ai",m2:"food",w3:"\u2014",m3:"\u2014"},
-  {w1:"ko",m1:"sugarcane",w2:"k\u014D",m2:"to drag/pull",w3:"ko'o",m3:"support"},
+  {w1:"pau",m1:"finished",w2:"paʻu",m2:"skirt/sarong",w3:"p\u0101\u02BB\u016B",m3:"moist, damp"},
+  {w1:"kau",m1:"to place",w2:"kaʻu",m2:"my (a-class)",w3:"k\u0101\u02BB\u016B",m3:"a district on Hawai\u02BBi"},
+  {w1:"moa",m1:"chicken",w2:"moʻa",m2:"cooked",w3:"\u2014",m3:"\u2014"},
+  {w1:"ai",m1:"to eat",w2:"\u02BBai",m2:"food",w3:"\u2014",m3:"\u2014"},
+  {w1:"ko",m1:"sugarcane",w2:"k\u014D",m2:"to drag/pull",w3:"koʻo",m3:"support"},
 ];
 
 export function Guide4(){

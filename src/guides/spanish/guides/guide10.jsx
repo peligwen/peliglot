@@ -34,5 +34,8 @@ export function Guide10(){
       </div>))}
     </Card>
     <Insight text="Ser & Ir share identical preterite forms. The imperfect only has 3 irregulars: ser, ir, ver."/>
+    <div style={{background:"#FFF8E7",borderRadius:10,padding:"10px 14px",marginTop:8,border:"1px solid #F0E4C4",fontSize:12,color:"#8B6914",lineHeight:1.6}}>
+      <strong>See also:</strong> venir, dar, ver, traer, querer, poner — all essential early-intermediate irregulars. Their stems follow the same patterns: <em>venir</em> (vine/vengo), <em>traer</em> (traje), <em>querer</em> (quise/quiero e→ie). Guide 9 covers boot-verb patterns (e→ie, o→ue).
+    </div>
   </div>);
 }

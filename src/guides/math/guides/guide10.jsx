@@ -10,7 +10,7 @@ export function Guide10(){
   const r=rules[rule];
   return(<div>
     <DarkBox title="A machine: input → rule → output"><div style={{fontSize:14}}>
-      A function takes a number in, applies a rule, and gives a number out. <strong style={{color:"#FFE77A"}}>Every function is just a rule.</strong> f(x) = 2x + 1 means "double it and add one."
+      A function is a rule that gives <strong style={{color:"#FFE77A"}}>exactly one output</strong> for each input. f(x) = 2x + 1 means "double it and add one." Different inputs can share an output (x² turns both 3 and −3 into 9), but one input <em>never</em> produces two different outputs — that's what makes it a function.
     </div></DarkBox>
     <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center"}}>
       {rules.map((rl,i)=>(<button key={i} onClick={()=>setRule(i)} style={{padding:"6px 14px",borderRadius:8,border:rule===i?"2.5px solid #6A1B9A":"1.5px solid #ddd",background:rule===i?"#6A1B9A":"#fff",color:rule===i?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:12}}>{rl.name}</button>))}
@@ -26,6 +26,7 @@ export function Guide10(){
         <div style={{padding:"10px",background:"#E8F5E9",borderRadius:10}}><div style={{fontSize:10,color:"#888"}}>Output</div><div style={{fontSize:24,fontWeight:800,color:"#2E7D32"}}>{r.fn(input)}</div></div>
       </div>
     </div>
+    <Insight text="On a graph: draw a vertical line anywhere. If it crosses the curve more than once at the same x, it's not a function — one input would have two outputs." />
     <Insight text="Spreadsheet formulas are functions. =A1*2+1 takes cell A1 as input, doubles it, adds 1. Every formula in Excel/Sheets is a function. You've been using them all along." />
   </div>);
 }

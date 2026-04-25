@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
-import { Insight, buildScale, MAJOR_STEPS } from './_helpers';
+import { Insight, buildScale, MAJOR_STEPS, FLAT_SCALE_MAP, ENHARMONIC } from './_helpers';
 
 const circleOfFifths=[
   {key:"C",sharps:0,flats:0,rel:"Am"},{key:"G",sharps:1,flats:0,rel:"Em"},{key:"D",sharps:2,flats:0,rel:"Bm"},
@@ -25,8 +25,13 @@ export function Guide5(){
         {k.sharps>0?`${k.sharps} sharp${k.sharps>1?"s":""}`:k.flats>0?`${k.flats} flat${k.flats>1?"s":""}`:("No sharps or flats")}
       </div>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginTop:8}}>
-        {buildScale(k.key.replace("b","").replace("#",""),MAJOR_STEPS).slice(0,7).map((n,i)=>(<span key={i} style={{padding:"4px 10px",borderRadius:6,background:"#E8F5E9",color:"#2E7D32",fontSize:13,fontWeight:700,border:"1px solid #C8E6C9"}}>{n}</span>))}
+        {(FLAT_SCALE_MAP[k.key]||buildScale(ENHARMONIC[k.key]||k.key,MAJOR_STEPS).slice(0,7)).map((n,i)=>(<span key={i} style={{padding:"4px 10px",borderRadius:6,background:"#E8F5E9",color:"#2E7D32",fontSize:13,fontWeight:700,border:"1px solid #C8E6C9"}}>{n}</span>))}
       </div>
+    </div>
+    <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #C8E6C9",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#2E7D32",marginBottom:4}}>Order of sharps &amp; flats</div>
+      <div style={{fontSize:12,color:"#555",marginBottom:4}}>Sharps: <strong>F C G D A E B</strong> — mnemonic: <em>"Father Charles Goes Down And Ends Battle"</em></div>
+      <div style={{fontSize:12,color:"#555"}}>Flats: <strong>B E A D G C F</strong> — the same sentence reversed: <em>"Battle Ends And Down Goes Charles's Father"</em></div>
     </div>
     <Insight text="To find the key of a song: look at the sharps/flats it uses, find that key on the circle. Or simpler — what chord does the song feel like it 'comes home' to? That's probably the key." />
   </div>);

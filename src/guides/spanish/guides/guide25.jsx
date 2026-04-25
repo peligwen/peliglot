@@ -28,7 +28,7 @@ const grammarTraps=[
   {wrong:"Es bueno para salud",seems:"It's good for health",actual:"Missing the article",correct:"Es bueno para la salud",note:"Spanish requires articles where English drops them."},
   {wrong:"Me gusta los libros",seems:"I like the books",actual:"Wrong — gustan (plural) needed",correct:"Me gustan los libros",note:"Gustar agrees with the THING liked, not the person."},
   {wrong:"Conozco a Madrid",seems:"I know Madrid",actual:"Personal 'a' is for people only",correct:"Conozco Madrid",note:"Personal 'a' goes before people: Conozco A María. Not places or things."},
-  {wrong:"Vi a la película",seems:"I saw the movie",actual:"Personal 'a' is for people only",correct:"Vi la película",note:"Vi A mi hermano (person) ✓ but Vi la película (thing) ✓."},
+  {wrong:"Vi a la película",seems:"I saw the movie",actual:"Personal 'a' is for people only",correct:"Vi la película",note:"Personal 'a' goes before people: Vi A mi hermano ✓. Not before things: Vi la película ✓ (no 'a')."},
 ];
 
 const dColors={5:"#C62828",4:"#E65100",3:"#F9A825"};
@@ -73,6 +73,27 @@ export function Guide25(){
         <div style={{fontSize:14,fontWeight:700,color:"#2E7D32",marginBottom:4}}>✓ {m.correct}</div>
         <div style={{fontSize:11,color:"#888",background:"#FAFAFA",padding:"4px 8px",borderRadius:6}}>{m.note}</div>
       </div>))}
+      <div style={{background:"#E3F2FD",borderRadius:12,padding:"14px 16px",marginBottom:8,border:"1.5px solid #BBDEFB"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#0D47A1",marginBottom:8}}>Personal 'A' — One of the most important rules</div>
+        <div style={{fontSize:12,color:"#555",lineHeight:1.7,marginBottom:8}}>Spanish requires <strong>a</strong> before a direct object that is a specific person (or personified animal). English has no equivalent.</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,fontSize:12,marginBottom:8}}>
+          <div style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #BBDEFB"}}>
+            <div style={{fontWeight:700,color:"#2E7D32",marginBottom:2}}>✓ With people</div>
+            <div style={{fontStyle:"italic"}}>Veo <strong>a</strong> María.</div>
+            <div style={{color:"#888",fontSize:11}}>I see María.</div>
+          </div>
+          <div style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #BBDEFB"}}>
+            <div style={{fontWeight:700,color:"#C62828",marginBottom:2}}>✗ NOT with things</div>
+            <div style={{fontStyle:"italic"}}>Veo la película.</div>
+            <div style={{color:"#888",fontSize:11}}>I see the movie. (no 'a')</div>
+          </div>
+        </div>
+        <div style={{fontSize:11,color:"#555",lineHeight:1.6}}>
+          <strong>Also required:</strong> after buscar, esperar, llamar, querer + person: <em>Busco <strong>a</strong> mi amigo.</em><br/>
+          <strong>After nadie/alguien:</strong> <em>No conozco <strong>a</strong> nadie aquí.</em> (No one = treated as a person)<br/>
+          <strong>With animals:</strong> Optional for pets: <em>Llamo <strong>a</strong> mi perro.</em>
+        </div>
+      </div>
       <Insight text="Most grammar traps come from translating English structure directly. Spanish has different rules for: personal 'a', articles, verb+preposition combos, and ser/estar/tener distinctions."/>
     </div>}
     {tab==="quiz"&&<QuizSection

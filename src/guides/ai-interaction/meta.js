@@ -28,6 +28,9 @@ export const guidesMeta = [
 
   { id: 24, title: "Models & Trade-offs",     subtitle: "Choosing the right model for the job",          cat: "Practical",     color: "#E65100", icon: "🎛️" },
   { id: 25, title: "Final Quiz",              subtitle: "Test your overall AI knowledge",                cat: "Practical",     color: "#E65100", icon: "🧪" },
+  { id: 26, title: "Hallucination",           subtitle: "Why models make things up — and how to catch it", cat: "Practical",   color: "#E65100", icon: "🌀" },
+  { id: 27, title: "Retrieval-Augmented Generation", subtitle: "Grounding AI in real documents",         cat: "Practical",     color: "#E65100", icon: "📎" },
+  { id: 28, title: "Training Cutoff & Staleness", subtitle: "What the model doesn't know — and why",    cat: "Practical",     color: "#E65100", icon: "📅" },
 ];
 
 export const categories = ["Foundations", "Prompt Craft", "Agentic", "Ethics", "Practical"];

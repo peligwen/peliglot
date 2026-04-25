@@ -12,8 +12,8 @@ export function Guide9(){
     </div></DarkBox>
     <div style={{background:"#fff",borderRadius:14,padding:"14px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
       <div style={{fontSize:13,fontWeight:700,color:"#E65100",marginBottom:8}}>Distance = Rate × Time</div>
-      <div style={{display:"flex",gap:8}}><NumInput label="Distance" value={dist} onChange={setDist} unit="miles" color="#E65100"/><NumInput label="Speed" value={rate} onChange={setRate} unit="mph" color="#E65100"/></div>
-      <div style={{fontSize:16,fontWeight:700,color:"#E65100",textAlign:"center",padding:"8px",background:"#FFF3E0",borderRadius:8,marginTop:8}}>Time = {(dist/rate).toFixed(1)} hours ({Math.round(dist/rate*60)} min)</div>
+      <div style={{display:"flex",gap:8}}><NumInput label="Distance" value={dist} onChange={setDist} unit="miles" color="#E65100"/><NumInput label="Speed" min={1} value={Math.max(1,rate)} onChange={v=>setRate(Math.max(1,v))} unit="mph" color="#E65100"/></div>
+      <div style={{fontSize:16,fontWeight:700,color:"#E65100",textAlign:"center",padding:"8px",background:"#FFF3E0",borderRadius:8,marginTop:8}}>Time = {(dist/Math.max(1,rate)).toFixed(1)} hours ({Math.round(dist/Math.max(1,rate)*60)} min)</div>
     </div>
     <div style={{background:"#fff",borderRadius:14,padding:"14px 16px",border:"1px solid #e0dcd5",marginBottom:12}}>
       <div style={{fontSize:13,fontWeight:700,color:"#1565C0",marginBottom:8}}>Area = Length × Width</div>

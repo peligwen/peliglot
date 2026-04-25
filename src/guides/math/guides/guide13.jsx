@@ -17,6 +17,7 @@ export function Guide13(){
       </div>
       <div style={{textAlign:"center",fontSize:20,fontWeight:800,color:"#2E7D32"}}>c = √{a*a+b*b} = {c.toFixed(2)}</div>
     </div>
+    <Insight text="The three angles in any triangle always sum to 180°. Know two angles? Subtract from 180° to find the third. A roof truss with a 40° and 60° angle has a third angle of 80°." />
     <Insight text="Practical use: need to know the diagonal of a room? A 12×16 ft room has a diagonal of √(144+256) = √400 = 20 ft. That's how much cable you need corner to corner." />
   </div>);
 }

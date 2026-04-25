@@ -2,14 +2,15 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useGuideNavigation } from '../hooks/useGuideNavigation';
 import { lightTheme } from '../styles/themes';
+import { ErrorBoundary } from './ErrorBoundary';
 
 // Update this map when adding new guide collections
 const relatedCollections = {
   spanish: { slug: 'english', title: 'American English', icon: '\u{1F1FA}\u{1F1F8}' },
-  english: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
-  arabic: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
+  english: { slug: 'spanish', title: 'Español', icon: '\u{1F1EA}\u{1F1F8}' },
+  arabic: { slug: 'spanish', title: 'Español', icon: '\u{1F1EA}\u{1F1F8}' },
   german: { slug: 'english', title: 'American English', icon: '\u{1F1FA}\u{1F1F8}' },
-  hawaiian: { slug: 'spanish', title: 'Espa\u00f1ol', icon: '\u{1F1EA}\u{1F1F8}' },
+  hawaiian: { slug: 'spanish', title: 'Español', icon: '\u{1F1EA}\u{1F1F8}' },
   music: { slug: 'jazz-guitar', title: 'Jazz Guitar', icon: '\u{1F3B8}' },
   'jazz-guitar': { slug: 'music', title: 'Music Theory', icon: '\u{1F3B9}' },
   math: { slug: 'ai-interaction', title: 'AI Interaction', icon: '\u{1F916}' },
@@ -38,6 +39,13 @@ function guideScore(g, query) {
   );
 }
 
+/** Returns all focusable elements inside `container`. Re-queried on every call so dynamic content is included. */
+function getFocusable(container) {
+  return Array.from(container.querySelectorAll(
+    'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+  ));
+}
+
 export function GuideShell({
   guidesMeta,
   guideComponents,
@@ -56,6 +64,12 @@ export function GuideShell({
   const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef(null);
   const focusSearchRef = useRef(false);
+  const hamburgerRef = useRef(null);
+  const sidebarRef = useRef(null);
+  // Remember body overflow before locking, so we restore it exactly on close.
+  const bodyOverflowRef = useRef('');
+  // Tracks whether the menu was opened at least once — prevents focus theft on first mount.
+  const wasOpenRef = useRef(false);
 
   const crossLinks = useMemo(() => {
     const sameCat = guidesMeta.filter(g => g.cat === meta.cat && g.id !== meta.id);
@@ -71,17 +85,67 @@ export function GuideShell({
       .sort((a, b) => b.score - a.score);
   }, [searchTerm, guidesMeta]);
 
+  // Move focus into sidebar when it opens; restore to hamburger on close.
+  // Lock body scroll while the modal overlay is active.
+  // wasOpenRef guards the close path so the effect does not run on initial mount
+  // (when menuOpen is false) and steal focus from the page before the user acts.
   useEffect(() => {
-    if (menuOpen && focusSearchRef.current && searchRef.current) {
-      searchRef.current.focus();
-      focusSearchRef.current = false;
+    if (menuOpen) {
+      wasOpenRef.current = true;
+      bodyOverflowRef.current = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
+      if (focusSearchRef.current && searchRef.current) {
+        searchRef.current.focus();
+        focusSearchRef.current = false;
+      } else if (sidebarRef.current) {
+        const focusable = getFocusable(sidebarRef.current);
+        if (focusable.length > 0) focusable[0].focus();
+      }
+    } else if (wasOpenRef.current) {
+      wasOpenRef.current = false;
+      document.body.style.overflow = bodyOverflowRef.current;
+      setSearchTerm('');
+      // Return focus to the button that opened the sidebar.
+      hamburgerRef.current?.focus();
     }
-    if (!menuOpen) setSearchTerm('');
   }, [menuOpen]);
+
+  // Restore body overflow if the component unmounts while the sidebar is open
+  // (e.g. user navigates away mid-session).
+  useEffect(() => () => { document.body.style.overflow = bodyOverflowRef.current; }, []);
 
   const openSearch = () => {
     focusSearchRef.current = true;
     setMenuOpen(true);
+  };
+
+  /** Focus trap — Tab cycles within sidebar; Escape closes. */
+  const handleSidebarKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      if (searchTerm) { setSearchTerm(''); searchRef.current?.focus(); }
+      else setMenuOpen(false);
+      return;
+    }
+
+    if (e.key === 'Tab' && sidebarRef.current) {
+      const focusable = getFocusable(sidebarRef.current);
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
   };
 
   return (
@@ -109,6 +173,7 @@ export function GuideShell({
         flexShrink: 0, zIndex: 10, fontFamily: theme.shellFont,
       }}>
         <button
+          ref={hamburgerRef}
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? 'Close menu' : 'Open guide menu'}
           aria-expanded={menuOpen}
@@ -120,7 +185,7 @@ export function GuideShell({
             color: theme.textMuted, flexShrink: 0,
           }}
         >
-          {'\u2630'}
+          {'☰'}
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: theme.textPrimary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: theme.shellFont }}>
@@ -139,7 +204,9 @@ export function GuideShell({
       {/* CONTENT */}
       <main id="main-content" role="main" ref={contentRef} style={{ flex: 1, overflow: 'auto', padding: '16px', position: 'relative' }}>
         <div key={page} style={{ animation: 'fadeIn 0.2s ease', maxWidth: 700, margin: '0 auto', fontFamily: theme.contentFont }}>
-          <GuideComp />
+          <ErrorBoundary>
+            <GuideComp />
+          </ErrorBoundary>
 
           {/* Cross-links: related guides in same category */}
           {crossLinks.length > 0 && (
@@ -215,7 +282,7 @@ export function GuideShell({
             fontSize: 13, fontWeight: 700, cursor: page === 0 ? 'default' : 'pointer',
           }}
         >
-          {'\u2190'} Prev
+          {'←'} Prev
         </button>
         <button
           onClick={openSearch}
@@ -227,7 +294,7 @@ export function GuideShell({
             color: theme.textMuted, flexShrink: 0,
           }}
         >
-          {'\u2315'}
+          {'⌕'}
         </button>
         <button
           onClick={next} disabled={page === total - 1} aria-label="Next guide"
@@ -238,7 +305,7 @@ export function GuideShell({
             fontSize: 13, fontWeight: 700, cursor: page === total - 1 ? 'default' : 'pointer',
           }}
         >
-          Next {'\u2192'}
+          Next {'→'}
         </button>
       </nav>
 
@@ -247,13 +314,12 @@ export function GuideShell({
 
       {/* SIDE MENU */}
       <aside
-        id="sidebar-menu" role="navigation" aria-label="Guide list"
-        onKeyDown={e => {
-          if (e.key === 'Escape') {
-            if (searchTerm) { setSearchTerm(''); searchRef.current?.focus(); }
-            else setMenuOpen(false);
-          }
-        }}
+        ref={sidebarRef}
+        id="sidebar-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Guide list"
+        onKeyDown={handleSidebarKeyDown}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
           background: theme.sidebarBg, zIndex: 30,
@@ -290,7 +356,7 @@ export function GuideShell({
                 border: 'none', background: 'none', cursor: 'pointer',
                 fontSize: 14, color: theme.textSecondary, padding: 2, lineHeight: 1,
               }}
-            >{'\u00d7'}</button>
+            >{'×'}</button>
           )}
         </div>
         <div style={{ flex: 1, overflow: 'auto', padding: '8px 0' }}>
@@ -382,7 +448,7 @@ export function GuideShell({
                           <div style={{ fontSize: 10, color: theme.sidebarSubText, fontStyle: 'italic' }}>{g.title}</div>
                         </div>
                         {isVisited && !isActive ? (
-                          <span style={{ fontSize: 11, color: '#4CAF50', fontWeight: 700 }}>{'\u2713'}</span>
+                          <span style={{ fontSize: 11, color: '#4CAF50', fontWeight: 700 }}>{'✓'}</span>
                         ) : (
                           <span style={{ fontSize: 10, color: theme.buttonDisabledText, fontWeight: 600 }}>{g.id}</span>
                         )}

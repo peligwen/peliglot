@@ -38,5 +38,77 @@ export function Guide13(){
       </div>))}
     </Card>
     <Insight text="Default position is AFTER the noun: 'la casa roja'. Before the noun adds subjective or emotional emphasis: 'la hermosa vista'."/>
+
+    <div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #eee",marginTop:8}}>
+      <div style={{padding:"10px 16px",background:"#E3F2FD",borderBottom:"1px solid #BBDEFB",fontSize:13,fontWeight:800,color:"#0D47A1"}}>Demonstratives — este / ese / aquel</div>
+      <div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.6}}>
+        Three levels of distance. All agree in gender and number with the noun they modify.
+      </div>
+      <div style={{overflowX:"auto"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+          <thead><tr style={{background:"#E3F2FD"}}>
+            <th style={{padding:"6px 12px",textAlign:"left",fontWeight:700,color:"#0D47A1"}}>Distance</th>
+            <th style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>Masc.S</th>
+            <th style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>Fem.S</th>
+            <th style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>Masc.P</th>
+            <th style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>Fem.P</th>
+            <th style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>Neuter</th>
+          </tr></thead>
+          <tbody>
+            {[{d:"This/these (here)",ms:"este",fs:"esta",mp:"estos",fp:"estas",n:"esto"},
+              {d:"That/those (there)",ms:"ese",fs:"esa",mp:"esos",fp:"esas",n:"eso"},
+              {d:"That/those (far away)",ms:"aquel",fs:"aquella",mp:"aquellos",fp:"aquellas",n:"aquello"}].map((r,i)=>(
+              <tr key={i} style={{borderBottom:"1px solid #f0eeeb"}}>
+                <td style={{padding:"6px 12px",color:"#555"}}>{r.d}</td>
+                <td style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>{r.ms}</td>
+                <td style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#AD1457"}}>{r.fs}</td>
+                <td style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#0D47A1"}}>{r.mp}</td>
+                <td style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#AD1457"}}>{r.fp}</td>
+                <td style={{padding:"6px 8px",textAlign:"center",fontWeight:700,color:"#558B2F"}}>{r.n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div style={{padding:"8px 14px",fontSize:11,color:"#888",borderTop:"1px solid #f0eeeb",lineHeight:1.6}}>
+        Neuter forms (<em>esto, eso, aquello</em>) refer to ideas/concepts with unknown or no gender: <em>¿Qué es esto?</em> (What is this?). The three-way distance (here/there/over-there) maps roughly to yo/tú/él proximity.
+      </div>
+    </div>
+
+    <div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #eee",marginTop:8}}>
+      <div style={{padding:"10px 16px",background:"#FFF3E0",borderBottom:"1px solid #FFE0B2",fontSize:13,fontWeight:800,color:"#E65100"}}>Possessives — Short vs Long Form</div>
+      <div style={{padding:"10px 14px",fontSize:12,color:"#555",lineHeight:1.6}}>
+        <strong>Short form</strong> (before noun): mi, tu, su, nuestro/a, vuestro/a, su.<br/>
+        <strong>Long form</strong> (after noun, or standalone): mío/a, tuyo/a, suyo/a, nuestro/a, vuestro/a, suyo/a.
+      </div>
+      <div style={{overflowX:"auto"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+          <thead><tr style={{background:"#FFF3E0"}}>
+            <th style={{padding:"6px 12px",textAlign:"left",fontWeight:700,color:"#E65100"}}>Person</th>
+            <th style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:"#E65100"}}>Short (before noun)</th>
+            <th style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:"#E65100"}}>Long (after noun)</th>
+          </tr></thead>
+          <tbody>
+            {[{p:"I",short:"mi / mis",long:"mío/a/os/as"},
+              {p:"you (tú)",short:"tu / tus",long:"tuyo/a/os/as"},
+              {p:"he/she/Ud.",short:"su / sus",long:"suyo/a/os/as"},
+              {p:"we",short:"nuestro/a/os/as",long:"nuestro/a/os/as"},
+              {p:"vosotros",short:"vuestro/a/os/as",long:"vuestro/a/os/as"},
+              {p:"they/Uds.",short:"su / sus",long:"suyo/a/os/as"}].map((r,i)=>(
+              <tr key={i} style={{borderBottom:"1px solid #f0eeeb"}}>
+                <td style={{padding:"6px 12px",color:"#555"}}>{r.p}</td>
+                <td style={{padding:"6px 10px",textAlign:"center",fontWeight:700,color:"#E65100"}}>{r.short}</td>
+                <td style={{padding:"6px 10px",textAlign:"center",fontWeight:600,color:"#555"}}>{r.long}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div style={{padding:"8px 14px",fontSize:11,color:"#888",borderTop:"1px solid #f0eeeb",lineHeight:1.6}}>
+        <strong>Short form:</strong> <em>mi libro</em> (my book) — no article needed.<br/>
+        <strong>Long form:</strong> <em>el libro mío</em> (the book of mine) — used after noun or as pronoun: <em>¿Es tuyo?</em> (Is it yours?)<br/>
+        Long forms agree in gender + number with the noun: <em>la amiga mía</em>, <em>los libros tuyos</em>.
+      </div>
+    </div>
   </div>);
 }

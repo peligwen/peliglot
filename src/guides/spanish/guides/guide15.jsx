@@ -30,6 +30,11 @@ export function Guide15(){
       {p.alt&&<div style={{fontSize:13,color:"#aaa",marginTop:4}}>Also valid: <strong style={{color:"#555"}}>{p.alt}</strong></div>}
     </div>
     <div style={{background:`${col}10`,borderRadius:10,padding:"10px 14px",marginBottom:12,border:`1px solid ${col}25`,fontSize:12,color:"#555",lineHeight:1.5}}>{p.note}</div>
+    <div style={{background:"#FFF3E0",borderRadius:10,padding:"10px 14px",marginBottom:8,border:"1.5px solid #FFE0B2",fontSize:12,color:"#555",lineHeight:1.6}}>
+      <strong style={{color:"#E65100"}}>Double pronouns with infinitive/gerund:</strong> When two pronouns appear with an infinitive or gerund, both can attach (adding accents as needed) or both go before the conjugated verb — never split them.<br/>
+      <em>Voy a dárselo.</em> = <em>Se lo voy a dar.</em> — both correct; accent on <em>dár-</em> when attached.<br/>
+      <em>Estoy diciéndoselo.</em> = <em>Se lo estoy diciendo.</em> — accent on <em>diciéndo-</em> because 3+ syllables.
+    </div>
     <Insight text="1st & 2nd person (me, te, nos) are the same for DO, IO, and reflexive. The split only matters in 3rd person: lo/la (DO), le (IO), se (reflexive)."/>
   </div>);
 }

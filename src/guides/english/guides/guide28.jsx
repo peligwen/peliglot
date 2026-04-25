@@ -25,4 +25,16 @@ export function Guide28(){return(<div>
       <div style={{fontSize:12,color:"#555"}}>'Sit down'<br/>→ She told me <strong>to sit down</strong>.<br/>'Don't touch' → told me <strong>not to touch</strong>.</div>
     </div>
   </div>
+  <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#4527A0",marginBottom:6}}>Cambios de tiempo y lugar:</div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,fontSize:11}}>
+      {[["now → then","today → that day"],["tomorrow → the next day","yesterday → the day before"],["here → there","this → that"],["come → go","bring → take"]].map((pair,i)=>(<div key={i} style={{background:"#EDE7F6",borderRadius:6,padding:"4px 8px",color:"#4527A0"}}>{pair[0]} · {pair[1]}</div>))}
+    </div>
+  </div>
+  <div style={{background:"#EDE7F6",borderRadius:8,padding:"8px 12px",fontSize:12,color:"#4527A0",marginBottom:12}}>
+    💡 <strong>Excepciones al retroceso:</strong><br/>
+    · Verdades generales/atemporales no tienen que retroceder: "He said the earth <em>orbits</em> the sun." ✓<br/>
+    · <strong>should/would/could/might</strong> ya son formas pasadas — no retroceden.<br/>
+    · <strong>must</strong> deóntico: puede quedarse: "She said I must/had to leave."
+  </div>
 </div>);}

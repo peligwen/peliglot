@@ -8,7 +8,7 @@ const presets = [
   { label: "Factual (0.0)", temp: 0, desc: "Always picks the most likely token. Great for math, code, and factual Q&A." },
   { label: "Balanced (0.7)", temp: 0.7, desc: "Default for most use. A mix of coherence and variety." },
   { label: "Creative (1.0)", temp: 1.0, desc: "More variety, more surprise. Good for brainstorming and fiction." },
-  { label: "Wild (1.5)", temp: 1.5, desc: "Very random. Often incoherent but occasionally brilliant." },
+  { label: "Wild (1.5)", temp: 1.5, desc: "Very random. Often incoherent but occasionally surprising. Note: many APIs cap user-accessible temperature at 1.0 or 2.0, so exact behavior varies by platform." },
 ];
 
 const words = [

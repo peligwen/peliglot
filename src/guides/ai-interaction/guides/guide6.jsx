@@ -60,6 +60,27 @@ export function Guide6() {
         </div>
       </Card>
 
+      <Card color="#6A1B9A" title="The Iteration Loop">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 10 }}>The most important prompting skill isn't writing the perfect prompt — it's iterating toward one:</div>
+          {[
+            { step: "Write", detail: "Draft a prompt that captures what you want." },
+            { step: "Run", detail: "See the actual output." },
+            { step: "Diagnose", detail: "Name the failure mode: too vague? wrong format? missing context? wrong tone?" },
+            { step: "Adjust", detail: "Change exactly one thing to address that failure mode." },
+            { step: "Retest", detail: "Run again and compare. Did it improve? If yes, keep the change. If not, try a different adjustment." },
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+              <div style={{ background: "#6A1B9A", color: "#fff", borderRadius: "50%", width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+              <div>
+                <span style={{ fontWeight: 700, color: "#6A1B9A" }}>{item.step}:</span> {item.detail}
+              </div>
+            </div>
+          ))}
+          <div style={{ marginTop: 8, fontSize: 12, color: "#666" }}>Changing one thing at a time is what makes iteration informative. If you change everything at once, you can't learn from the result.</div>
+        </div>
+      </Card>
+
       <Tip text="You can always iterate. Start with a prompt, see the result, then refine. Prompting is a conversation, not a one-shot command." />
 
       <Insight text="Constraints are your friend. 'Explain X in 3 bullet points' almost always produces better output than 'Explain X'." />

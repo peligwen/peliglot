@@ -10,8 +10,9 @@
     "deploy": "npm run build && wrangler deploy",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "validate": "node scripts/validate-guides.cjs",
-    "check": "npm run lint && npm run build && npm run validate"
+    "validate": "node scripts/validate-guides.cjs && node scripts/check-orthography.cjs",
+    "check": "npm run lint && npm run build && npm run validate",
+    "check-orthography": "node scripts/check-orthography.cjs"
   },
   "dependencies": {
     "react": "^18.2.0",

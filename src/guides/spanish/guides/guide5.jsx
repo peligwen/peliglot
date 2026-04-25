@@ -22,6 +22,14 @@ export function Guide5(){
       <TriggerChips label="Preterite triggers" color="#B71C1C" words={["ayer","anoche","una vez","de repente","en 2020"]}/>
       <TriggerChips label="Imperfect triggers" color="#1565C0" words={["siempre","cada día","de niño/a","mientras","generalmente"]}/>
     </div>
+    <div style={{background:"#EDE7F6",borderRadius:12,padding:"14px 16px",marginBottom:8,border:"1.5px solid #D1C4E9"}}>
+      <div style={{fontSize:13,fontWeight:800,color:"#4527A0",marginBottom:6}}>Key pattern: Interrupted action</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.7,marginBottom:6}}>The most common real-world use: <span style={{color:"#1565C0",fontWeight:700}}>imperfect</span> for the background action + <span style={{color:"#B71C1C",fontWeight:700}}>preterite</span> for the interruption.</div>
+      <div style={{background:"#fff",borderRadius:8,padding:"10px 12px",border:"1px solid #D1C4E9",fontSize:13,fontStyle:"italic",color:"#1a1a1a"}}>
+        <span style={{color:"#1565C0",fontWeight:700}}>Comía</span> cuando <span style={{color:"#B71C1C",fontWeight:700}}>llegó</span>.
+        <div style={{fontSize:11,color:"#888",fontStyle:"normal",marginTop:4}}>I <em>was eating</em> (ongoing background) when she <em>arrived</em> (completed interruption).</div>
+      </div>
+    </div>
     <Insight text="The imperfect only has 3 irregular verbs: ser, ir, ver. And -ER/-IR share identical endings in BOTH tenses!"/>
   </div>);
 }

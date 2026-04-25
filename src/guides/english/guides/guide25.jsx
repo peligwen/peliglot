@@ -4,7 +4,7 @@ import { Trampa } from './_helpers';
 export function Guide25(){
   const pairs=[
     {en:"depend ON",es:"depender DE",color:"#C62828"},{en:"consist OF",es:"consistir EN",color:"#1565C0"},
-    {en:"interested IN",es:"interesado EN",color:"#2E7D32"},{en:"dream ABOUT",es:"soñar CON",color:"#6A1B9A"},
+    {en:"interested IN",es:"interesado EN",color:"#2E7D32"},{en:"dream ABOUT/OF",es:"soñar CON (ambas OK)",color:"#6A1B9A"},
     {en:"married TO",es:"casado CON",color:"#E65100"},{en:"worry ABOUT",es:"preocuparse POR",color:"#880E4F"},
     {en:"listen TO",es:"escuchar ∅",color:"#C62828"},{en:"look AT",es:"mirar ∅",color:"#1565C0"},
     {en:"wait FOR",es:"esperar ∅",color:"#2E7D32"},{en:"arrive IN/AT",es:"llegar A (¡nunca TO!)",color:"#E65100"},

@@ -63,7 +63,7 @@ export function Guide11() {
 
       <Tip text="Build a personal prompt library. Save patterns that work well for your common tasks — emails, code reviews, data analysis, writing — and refine them over time." />
 
-      <Insight text="The 'iterative refinement' pattern is surprisingly effective. Asking the model to critique and improve its own output often produces results better than a single carefully crafted prompt." />
+      <Insight text="The 'iterative refinement' pattern works well for style, prose, and persuasion. For reasoning tasks, the evidence is more mixed — models can talk themselves into a worse answer by over-anchoring on superficial critique. Verify the final result, not just the process." />
     </div>
   );
 }

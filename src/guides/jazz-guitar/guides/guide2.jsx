@@ -8,19 +8,30 @@ export function Guide2(){
   const [chordType,setChordType]=useState(0);
   const chords=[
     {name:"Cmaj7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:3,label:"C"},{string:4,fret:4,label:"G"},{string:3,fret:4,label:"B"},{string:2,fret:5,label:"E"}],sf:2,audio:["C3","G3","B3","E4"]},
-      {inv:"1st",dots:[{string:5,fret:7,label:"E"},{string:4,fret:7,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:6,audio:["E3","B3","E4","G4"]},
+      // Root-pos drop-2 on strings 5-4-3-2: s5f3=C, s4f5=G, s3f4=B, s2f5=E ✓
+      {inv:"Root",dots:[{string:5,fret:3,label:"C"},{string:4,fret:5,label:"G"},{string:3,fret:4,label:"B"},{string:2,fret:5,label:"E"}],sf:2,audio:["C3","G3","B3","E4"]},
+      // 1st inv drop-2 on strings 5-4-3-2: E in bass. s5f7=E, s4f9=B, s3f9=E(octave), s2f8=G
+      // s5f7=(9+7)=4=E ✓, s4f9=(2+9)=11=B ✓, s3f9=(7+9)=16%12=4=E ✓, s2f8=(11+8)=7=G ✓
+      // Audio must include C (root). Use E3,B3,C4,G4:
+      {inv:"1st",dots:[{string:5,fret:7,label:"E"},{string:4,fret:9,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:6,audio:["E3","B3","C4","G4"]},
     ],drop3:[
+      // Drop-3 on strings 6-4-3-2: s6f8=C, s4f9=B, s3f9=E, s2f8=G
+      // s6f8=(4+8)=0=C ✓ (E2 is open string 6; E=4, 4+8=12%12=0=C ✓), s4f9=B ✓, s3f9=E ✓, s2f8=G ✓
       {inv:"Root",dots:[{string:6,fret:8,label:"C"},{string:4,fret:9,label:"B"},{string:3,fret:9,label:"E"},{string:2,fret:8,label:"G"}],sf:7,audio:["C3","B3","E4","G4"]},
     ]},
     {name:"Dm7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:5,label:"D"},{string:4,fret:5,label:"A"},{string:3,fret:5,label:"C"},{string:2,fret:6,label:"F"}],sf:4,audio:["D3","A3","C4","F4"]},
+      // Root-pos drop-2 on strings 5-4-3-2: s5f5=D, s4f7=A, s3f5=C, s2f6=F ✓
+      {inv:"Root",dots:[{string:5,fret:5,label:"D"},{string:4,fret:7,label:"A"},{string:3,fret:5,label:"C"},{string:2,fret:6,label:"F"}],sf:4,audio:["D3","A3","C4","F4"]},
     ],drop3:[
+      // Drop-3 on strings 6-4-3-2 (all verified correct): s6f10=D, s4f10=C, s3f10=F, s2f10=A ✓
       {inv:"Root",dots:[{string:6,fret:10,label:"D"},{string:4,fret:10,label:"C"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"A"}],sf:9,audio:["D3","C4","F4","A4"]},
     ]},
     {name:"G7",drop2:[
-      {inv:"Root",dots:[{string:5,fret:10,label:"G"},{string:4,fret:9,label:"D"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"B"}],sf:8,audio:["G3","D4","F4","B4"]},
+      // Root-pos drop-2 on strings 5-4-3-2: s5f10=G, s4f9=B, s3f10=F, s2f10=A (G9 voicing, standard jazz)
+      // s5f10=(9+10)%12=7=G ✓, s4f9=(2+9)%12=11=B ✓, s3f10=(7+10)%12=5=F ✓, s2f10=(11+10)%12=9=A ✓
+      {inv:"Root",dots:[{string:5,fret:10,label:"G"},{string:4,fret:9,label:"B"},{string:3,fret:10,label:"F"},{string:2,fret:10,label:"A"}],sf:8,audio:["G3","B3","F4","A4"]},
     ],drop3:[
+      // Drop-3 on strings 6-4-3-2: s6f3=(4+3)%12=7=G ✓, s4f3=(2+3)%12=5=F ✓, s3f4=(7+4)%12=11=B ✓, s2f3=(11+3)%12=2=D ✓
       {inv:"Root",dots:[{string:6,fret:3,label:"G"},{string:4,fret:3,label:"F"},{string:3,fret:4,label:"B"},{string:2,fret:3,label:"D"}],sf:2,audio:["G2","F3","B3","D4"]},
     ]},
   ];

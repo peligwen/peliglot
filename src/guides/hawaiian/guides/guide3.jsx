@@ -23,7 +23,7 @@ export function Guide3(){
       </div>))}
     </Card>
     <SimpleGuide items={[
-      {h:"Stress rules",b:"\u2022 Stress falls on the second-to-last syllable (penultimate) for most words\n\u2022 Long vowels (with kahak\u014D) and diphthongs attract stress\n\u2022 In longer words, secondary stress falls on alternating syllables before the main stress"},
+      {h:"Stress rules",b:"\u2022 Stress is mora-based: falls on the second-to-last mora\n\u2022 A long vowel (kahak\u014D) or diphthong counts as two morae \u2014 so it attracts stress\n\u2022 In practice: stress the second-to-last vowel unit, counting long vowels double\n\u2022 In longer words, secondary stress falls on alternating morae before the main stress"},
       {h:"The W sound variation",b:"\u2022 After 'u' or 'o': W sounds like English /w/\n\u2022 After 'i' or 'e': W often sounds like /v/\n\u2022 At the start of a word: usually /w/\n\u2022 Example: 'Ewa = 'eva, but wai = wai"},
     ]}/>
   </div>);

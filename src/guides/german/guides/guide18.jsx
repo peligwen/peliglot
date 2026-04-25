@@ -23,7 +23,7 @@ export function Guide18(){
       );})}
     </Card>
     <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
-      <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>Key irregulars: sein, haben, werden</div>
+      <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>Critical auxiliaries — memorize whole (sein, haben, werden)</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,fontSize:12}}>
         {[{v:"sein",f:"bin, bist, ist, sind, seid, sind"},{v:"haben",f:"habe, hast, hat, haben, habt, haben"},{v:"werden",f:"werde, wirst, wird, werden, werdet, werden"}].map(x=>(<div key={x.v} style={{padding:"6px 8px",borderRadius:6,background:"#f5f3ef"}}>
           <strong style={{color:"#C62828"}}>{x.v}</strong><br/><span style={{fontSize:10,color:"#888"}}>{x.f}</span>

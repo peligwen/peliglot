@@ -63,7 +63,7 @@ export function Guide8() {
         </div>
       </Card>
 
-      <Tip text="System prompts aren't truly 'secret'. Determined users can sometimes get models to reveal them. Never put passwords or API keys in a system prompt." />
+      <Tip text="System prompts aren't truly 'secret'. Standard prompt-injection techniques can usually extract them with enough effort — treat system prompts as low-confidentiality. Never put passwords, API keys, or sensitive PII in a system prompt." />
 
       <Insight text="Many AI products you use daily are the same base model + a carefully crafted system prompt. The prompt IS the product." />
     </div>

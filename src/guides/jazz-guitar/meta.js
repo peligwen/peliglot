@@ -29,6 +29,8 @@ export const guidesMeta = [
   {id:28,title:"Soloing Over Form",subtitle:"Keeping your place in 32 bars",cat:"Navigation",color:"#424242",icon:"🗺"},
   {id:29,title:"Transcription",subtitle:"The single best practice method",cat:"Navigation",color:"#616161",icon:"👂"},
   {id:30,title:"Practice to Bandstand",subtitle:"Structuring practice, finding your voice",cat:"Navigation",color:"#757575",icon:"🎤"},
+  {id:31,title:"The CAGED System",subtitle:"Five shapes, one fretboard",cat:"Harmony",color:"#BF360C",icon:"🗺"},
+  {id:32,title:"12-Bar Jazz Blues",subtitle:"The foundational form",cat:"ii-V-I",color:"#4A148C",icon:"🎷"},
 ];
 
 export const categories = ["Harmony","Melody","Rhythm","ii-V-I","Tone","Navigation"];

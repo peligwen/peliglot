@@ -13,7 +13,7 @@ export function Guide11(){
   const aClass=[
     {cat:"Things you create or acquire",ex:"food, crafts, art you make"},
     {cat:"Things you control",ex:"children (younger), students, pets"},
-    {cat:"Knowledge & skills",ex:"work, ideas, mana'o (thoughts)"},
+    {cat:"Knowledge & skills",ex:"work, ideas, manaʻo (thoughts)"},
     {cat:"Plants you cultivate",ex:"garden, crops"},
     {cat:"Food & drink",ex:"anything you eat or drink"},
     {cat:"Tools & instruments",ex:"pen, computer, surfboard"},
@@ -37,6 +37,7 @@ export function Guide11(){
       </div>
     </div>
     <Insight text="Think of O-class as 'received/inherent' \u2014 things that came to you or are part of you. A-class is 'acquired/created' \u2014 things you went out and got or made."/>
+    <Insight text="Famous exception: k\u0101ne/wahine (husband/wife) are O-class even though you chose your spouse. Hawaiian thought treats the marriage relationship as a given bond, not an act of control. This is the #1 exception students forget."/>
     <CultureNote text="The O/A distinction reflects Hawaiian values about humans' relationship to the world. Your parents are O-class \u2014 you didn't choose them; they're part of who you are. Your food is A-class \u2014 you actively sought it."/>
   </div>);
 }

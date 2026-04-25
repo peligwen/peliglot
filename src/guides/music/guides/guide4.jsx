@@ -28,6 +28,9 @@ export function Guide4(){
         {scale.slice(0,7).map((n,i)=>(<span key={i} style={{padding:"4px 12px",borderRadius:8,background:"#EDE7F6",color:"#6A1B9A",fontSize:14,fontWeight:700,border:"1px solid #D1C4E9"}}>{n}</span>))}
       </div>
     </div>
+    {mode==="melodic"&&<div style={{background:"#EDE7F6",borderRadius:10,padding:"10px 14px",border:"1px solid #D1C4E9",marginBottom:12,fontSize:12,color:"#4A148C"}}>
+      <strong>Classical vs. jazz melodic minor:</strong> In classical practice, melodic minor uses these raised 6th and 7th <em>ascending</em> only — descending, the scale reverts to natural minor. In jazz, the ascending form is used in both directions (sometimes called the "jazz minor" or "jazz melodic minor"). It serves as the parent scale for altered dominant and other jazz sounds.
+    </div>}
     <Insight text="The 'relative minor' of any major key is the 6th degree. C major's relative minor = A minor. Same notes, different home base, completely different mood." />
   </div>);
 }

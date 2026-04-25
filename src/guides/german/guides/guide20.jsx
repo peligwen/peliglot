@@ -8,11 +8,12 @@ export function Guide20(){
     {m:"dürfen",en:"may/allowed to",ex:"Darf ich fragen?",conj:"darf, darfst, darf, dürfen, dürft, dürfen",color:"#2E7D32"},
     {m:"sollen",en:"should/supposed to",ex:"Du sollst nicht stehlen.",conj:"soll, sollst, soll, sollen, sollt, sollen",color:"#E65100"},
     {m:"wollen",en:"want to",ex:"Ich will schlafen.",conj:"will, willst, will, wollen, wollt, wollen",color:"#6A1B9A"},
-    {m:"möchten",en:"would like",ex:"Ich möchte ein Bier.",conj:"möchte, möchtest, möchte, möchten, möchtet, möchten",color:"#880E4F"},
+    {m:"mögen",en:"to like",ex:"Ich mag Kaffee.",conj:"mag, magst, mag, mögen, mögt, mögen",color:"#00695C",note:"möchten ('would like') = the polite Konjunktiv II of mögen"},
+    {m:"möchten",en:"would like",ex:"Ich möchte ein Bier.",conj:"möchte, möchtest, möchte, möchten, möchtet, möchten",color:"#880E4F",note:"Konjunktiv II of mögen — used for polite requests"},
   ];
   const [sel,setSel]=useState(null);
   return(<div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:14}}>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:5,marginBottom:14}}>
       {modals.map((m,i)=>{const isSel=sel===i;return(
         <button key={i} onClick={()=>setSel(isSel?null:i)} style={{padding:"10px 4px",borderRadius:10,border:isSel?`2.5px solid ${m.color}`:"1.5px solid #ddd",background:isSel?m.color:"#fff",color:isSel?"#fff":"#333",cursor:"pointer",textAlign:"center"}}>
           <div style={{fontSize:15,fontWeight:800}}>{m.m}</div>
@@ -27,13 +28,16 @@ export function Guide20(){
         </div>
         <div style={{padding:"10px 16px"}}>
           <div style={{fontSize:14,color:"#555",fontStyle:"italic",marginBottom:6}}>{m.ex}</div>
-          <div style={{fontSize:11,color:"#888",fontFamily:"monospace"}}>{m.conj}</div>
+          <div style={{fontSize:11,color:"#888",fontFamily:"monospace",marginBottom:m.note?4:0}}>{m.conj}</div>
+          {m.note&&<div style={{fontSize:11,color:"#777",background:"#f5f3ef",borderRadius:6,padding:"4px 8px"}}>{m.note}</div>}
         </div>
       </div>
     );})()}
     <DarkBox title="The verb bracket (Satzklammer)"><div style={{fontSize:13}}>
       Modal at position 2, infinitive at the <strong style={{color:"#FFE77A"}}>END</strong>:<br/>
-      Ich <strong style={{color:"#FFE77A"}}>kann</strong> heute nicht <strong style={{color:"#FFE77A"}}>kommen</strong>.<br/>
+      <div style={{margin:"8px 0",fontFamily:"monospace",fontSize:14,letterSpacing:0.5}}>
+        Ich <span style={{color:"#FFE77A",fontWeight:800}}>kann</span> <span style={{borderTop:"2px solid #FFE77A",borderLeft:"2px solid #FFE77A",borderBottom:"2px solid #FFE77A",padding:"1px 6px",color:"#ccc",borderRadius:"4px 0 0 4px"}}> heute nicht </span><span style={{borderTop:"2px solid #FFE77A",borderRight:"2px solid #FFE77A",borderBottom:"2px solid #FFE77A",padding:"1px 6px",color:"#FFE77A",fontWeight:800,borderRadius:"0 4px 4px 0"}}>kommen</span>.
+      </div>
       <span style={{color:"#aaa",fontSize:11}}>Everything gets sandwiched between the two verb parts.</span>
     </div></DarkBox>
   </div>);

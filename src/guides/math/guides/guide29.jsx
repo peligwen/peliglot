@@ -3,11 +3,15 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { Slider } from './_helpers';
 
+// 2025 single-filer brackets — IRS Rev. Proc. 2024-40
+// https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2025
+// Note: this calculator shows federal income tax only; standard deduction is NOT subtracted.
+// "Taxable income" means income after deductions. Check IRS.gov for the latest year's brackets.
 export function Guide29(){
-  const brackets=[{min:0,max:11600,rate:10},{min:11601,max:47150,rate:12},{min:47151,max:100525,rate:22},{min:100526,max:191950,rate:24},{min:191951,max:243725,rate:32},{min:243726,max:609350,rate:35},{min:609351,max:Infinity,rate:37}];
+  const brackets=[{min:0,max:11925,rate:10},{min:11925,max:48475,rate:12},{min:48475,max:103350,rate:22},{min:103350,max:197300,rate:24},{min:197300,max:250525,rate:32},{min:250525,max:626350,rate:35},{min:626350,max:Infinity,rate:37}];
   const [income,setIncome]=useState(75000);
   let tax=0;let remaining=income;
-  const breakdown=brackets.map(b=>{const taxable=Math.min(Math.max(remaining,0),b.max-b.min+1);const t=taxable*b.rate/100;tax+=t;remaining-=taxable;return{...b,taxable,tax:t};}).filter(b=>b.taxable>0);
+  const breakdown=brackets.map(b=>{const taxable=Math.min(Math.max(remaining,0),b.max-b.min);const t=taxable*b.rate/100;tax+=t;remaining-=taxable;return{...b,taxable,tax:t};}).filter(b=>b.taxable>0);
   const effective=income>0?(tax/income*100):0;
   return(<div>
     <DarkBox title="Why 'moving into a higher bracket' isn't bad"><div style={{fontSize:14}}>
@@ -25,6 +29,7 @@ export function Guide29(){
         <div style={{padding:"10px",background:"#FFF3E0",borderRadius:8,textAlign:"center"}}><div style={{fontSize:10,color:"#888"}}>Effective rate</div><div style={{fontSize:20,fontWeight:800,color:"#E65100"}}>{effective.toFixed(1)}%</div></div>
       </div>
     </div>
-    <Insight text="Your effective rate is ALWAYS lower than your marginal bracket. At $75K income, your marginal rate is 22% but your effective rate is only ~16%. The brackets protect you." />
+    <Insight text="Your effective rate is ALWAYS lower than your marginal bracket. At $75K income, your marginal rate is 22% but your effective rate is only ~15%. The brackets protect you." />
+    <div style={{fontSize:10,color:"#aaa",textAlign:"center",marginTop:4}}>2025 single filers · Federal income tax only · Taxable income (after deductions) · Rev. Proc. 2024-40 · Verify current brackets at IRS.gov before filing.</div>
   </div>);
 }

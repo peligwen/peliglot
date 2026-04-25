@@ -14,7 +14,7 @@ export function Guide33(){
     </Card>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
       <Card color="#C62828" title="Propinas (¡obligatorias!)">
-        {[{place:"Restaurantes",tip:"18-20%"},{place:"Cafeterías",tip:"$1-2"},{place:"Peluquería",tip:"15-20%"},{place:"Uber/Lyft",tip:"15-20%"}].map((t,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",fontSize:12}}>
+        {[{place:"Restaurantes",tip:"18-22% (20% normal en 2026)"},{place:"Cafeterías",tip:"$1-2"},{place:"Peluquería",tip:"15-20%"},{place:"Uber/Lyft",tip:"15-20%"}].map((t,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none",fontSize:12}}>
           <span style={{color:"#555"}}>{t.place}</span><span style={{fontWeight:700,color:"#C62828"}}>{t.tip}</span>
         </div>))}
       </Card>

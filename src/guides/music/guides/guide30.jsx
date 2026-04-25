@@ -10,9 +10,9 @@ export function Guide30(){return(<div>
     {[{genre:"Blues",chords:"Dominant 7ths everywhere (I7, IV7, V7)",scale:"Minor pentatonic + blue note",rhythm:"Shuffle feel, 12-bar form",sig:"The 'bent' note. Raw expression."},
       {genre:"Jazz",chords:"7ths, 9ths, 13ths. ii-V-I. Complex harmony.",scale:"All modes, altered scales, chromaticism",rhythm:"Swing, complex syncopation",sig:"Improvisation over changes."},
       {genre:"Rock",chords:"Power chords, I-IV-V, barre chords",scale:"Pentatonic, blues scale",rhythm:"Driving 4/4, heavy on 2 & 4",sig:"Distorted guitar, backbeat."},
-      {genre:"Hip-Hop",chords:"Sampled loops, minor keys, simple progressions",scale:"Minor pentatonic, chromatic bass lines",rhythm:"Boom-bap, trap hi-hats, syncopated flows",sig:"The beat IS the instrument. Vocal rhythm = melodic."},
+      {genre:"Hip-Hop",chords:"Sampled loops, frequently minor or modal progressions",scale:"Minor pentatonic, chromatic bass lines, modal samples",rhythm:"Boom-bap, trap hi-hats, syncopated flows",sig:"The beat IS the instrument. Vocal rhythm = melodic."},
       {genre:"EDM",chords:"Simple triads, suspended chords, long pads",scale:"Minor scales, modal shifts",rhythm:"Four-on-the-floor kick, build-drop structure",sig:"The 'drop.' Texture and energy over harmony."},
-      {genre:"Country",chords:"I-IV-V, I-vi-IV-V, simple triads",scale:"Major pentatonic, mixolydian",rhythm:"Train beat, two-step, shuffle",sig:"Steel guitar, fiddle. Storytelling lyrics."},
+      {genre:"Country",chords:"I-IV-V, I-IV-V-IV, simple triads",scale:"Major pentatonic, mixolydian",rhythm:"Train beat, two-step, shuffle",sig:"Steel guitar, fiddle. Storytelling lyrics."},
     ].map((g,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none"}}>
       <div style={{fontSize:15,fontWeight:800,color:"#1a1a1a"}}>{g.genre}</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,marginTop:4,fontSize:11}}>

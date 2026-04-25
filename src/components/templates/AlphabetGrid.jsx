@@ -86,7 +86,7 @@ export function AlphabetGrid({
             <button key={ch ?? i} onClick={() => {
               setSel(isSel ? null : i);
               if (!isSel && speakFn) speakFn(speakKey ? lt[speakKey] : ch);
-            }} style={{
+            }} aria-label={`${ch}${nm ? `, ${nm}` : ''}`} style={{
               aspectRatio: "1",
               border: isSel ? `2.5px solid ${primaryColor}` : customBorder || "1.5px solid #e0dcd5",
               borderRadius: 12,

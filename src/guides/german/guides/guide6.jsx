@@ -22,7 +22,7 @@ export function Guide6(){
       <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
         {[{p:"für",m:"for"},{p:"gegen",m:"against"},{p:"ohne",m:"without"},{p:"um",m:"around"},{p:"durch",m:"through"},{p:"bis",m:"until"}].map(x=>(<span key={x.p} style={{padding:"4px 10px",borderRadius:8,background:"#E3F2FD",color:"#1565C0",fontSize:12,fontWeight:700,border:"1px solid #BBDEFB"}}>{x.p} <span style={{fontWeight:400,color:"#888"}}>({x.m})</span></span>))}
       </div>
-      <div style={{fontSize:11,color:"#888",marginTop:6}}>Mnemonic: <strong>DOGFU</strong> — durch, ohne, gegen, für, um</div>
+      <div style={{fontSize:11,color:"#888",marginTop:6}}>Mnemonic: <strong>DOGFU</strong> — durch, ohne, gegen, für, um · <em>plus bis, entlang, wider for the full 8</em></div>
     </div>
     <Insight text="Good news: ONLY masculine articles change from Nominativ to Akkusativ. der→den, ein→einen. Everything else stays identical." />
   </div>);

@@ -18,7 +18,7 @@ export function Guide9() {
           <PromptBox
             label="Direct (no CoT)"
             prompt={"A store has 23 apples. They buy 6 boxes of 8.\nThen sell 15. How many apples remain?"}
-            response="56 (incorrect)"
+            response="71 (incorrect)"
             color="#999"
           />
           <PromptBox
@@ -28,7 +28,7 @@ export function Guide9() {
             color="#6A1B9A"
           />
           <div style={{ fontSize: 12, color: "#666", marginTop: 6, lineHeight: 1.5 }}>
-            Both get 56 here, but CoT lets you <em>verify</em> each step. On harder problems, CoT often gets the right answer where direct prompting fails.
+            Without CoT the model skips the subtraction step and reports the intermediate total as the answer. With CoT, each step is visible — making the correct answer auditable and reproducible.
           </div>
         </div>
       </Card>
@@ -68,9 +68,9 @@ export function Guide9() {
         </div>
       </Card>
 
-      <Tip text="Some models now do chain-of-thought internally (extended thinking). You may not see the reasoning, but the model is still 'working through it' behind the scenes." />
+      <Tip text="Reasoning-class models (o-series, Claude extended thinking, Gemini thinking) generate chain-of-thought internally. Whether you see that chain depends on the product surface — some show it, some hide it. For non-reasoning models, adding 'Let's think step by step' is how you get visible reasoning." />
 
-      <Insight text="CoT uses more tokens (= more cost), but the accuracy improvement is often worth it. It's a classic quality-vs-cost trade-off." />
+      <Insight text="CoT uses more tokens (= more cost), but the accuracy improvement is often worth it. It's a classic quality-vs-cost trade-off. One caveat: on some problems, CoT can lead the model to 'reason' its way into a wrong answer it would have got right directly — always verify the conclusion, not just the chain." />
     </div>
   );
 }

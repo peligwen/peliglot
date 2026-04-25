@@ -34,6 +34,17 @@ export function Guide6(){
       </div>
     </div>}
     <Trampa text="El auxiliar DO/DOES es probablemente el hábito más difícil de construir. En español dices '¿Hablas inglés?' directamente. En inglés NECESITAS el auxiliar: 'Do you speak English?'" />
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:6}}>Ortografía de la 3ª persona (-s):</div>
+      {[{rule:"La mayoría: + s",ex:"work → works · play → plays · drive → drives"},
+        {rule:"-ch/-sh/-s/-x/-z: + es",ex:"watch → watches · fix → fixes · pass → passes"},
+        {rule:"Consonante + y → -ies",ex:"study → studies · try → tries · carry → carries"},
+        {rule:"-o irregular: + es",ex:"go → goes · do → does"},
+      ].map((r,i)=>(<div key={i} style={{padding:"4px 0",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:12,fontWeight:700,color:"#6A1B9A"}}>{r.rule}:</span>{" "}
+        <span style={{fontSize:11,color:"#888",fontStyle:"italic"}}>{r.ex}</span>
+      </div>))}
+    </div>
   </div>);
 }
 

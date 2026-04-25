@@ -9,7 +9,7 @@ export const guidesMeta = [
   {id:8,title:"Wechselpräpositionen",subtitle:"Two-Way Prepositions",cat:"Cases",color:"#6A1B9A",icon:"↔"},
   {id:9,title:"Genitiv",subtitle:"Possession & Formal Usage",cat:"Cases",color:"#00695C",icon:"3️⃣"},
   {id:10,title:"Der, Die, Das",subtitle:"Gender Prediction & Rules",cat:"Nouns",color:"#C62828",icon:"♂♀"},
-  {id:11,title:"Pluralbildung",subtitle:"The 5 Plural Patterns",cat:"Nouns",color:"#1565C0",icon:"➕"},
+  {id:11,title:"Pluralbildung",subtitle:"5 Main Plural Groups (± umlaut)",cat:"Nouns",color:"#1565C0",icon:"➕"},
   {id:12,title:"Komposita",subtitle:"Compound Nouns",cat:"Nouns",color:"#2E7D32",icon:"🔗"},
   {id:13,title:"N-Deklination",subtitle:"Weak Nouns",cat:"Nouns",color:"#E65100",icon:"📎"},
   {id:14,title:"Adjektivendungen",subtitle:"Adjective Endings",cat:"Nouns",color:"#6A1B9A",icon:"📝"},

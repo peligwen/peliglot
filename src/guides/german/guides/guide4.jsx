@@ -3,10 +3,10 @@ import { Insight } from '../../../components/Insight';
 
 export function Guide4(){
   const groups=[
-    {label:"Native words: stress syllable 1",examples:[{w:"ÁR·bei·ten",m:"to work"},{w:"FRÜH·stück",m:"breakfast"},{w:"WÓH·nung",m:"apartment"},{w:"FÉN·ster",m:"window"}],color:"#1a1a1a"},
-    {label:"Separable prefixes: prefix gets stress",examples:[{w:"ÁN·ru·fen",m:"to call"},{w:"ÁUF·ste·hen",m:"to get up"},{w:"MÍT·kom·men",m:"to come along"},{w:"ÉIN·kau·fen",m:"to shop"}],color:"#1565C0"},
-    {label:"Inseparable prefixes: root gets stress",examples:[{w:"ver·STÉ·hen",m:"to understand"},{w:"er·ZÄ́H·len",m:"to narrate"},{w:"be·SÚ·chen",m:"to visit"},{w:"ent·SCHÚL·di·gen",m:"to excuse"}],color:"#C62828"},
-    {label:"Foreign words: keep original stress",examples:[{w:"Stu·DÉNT",m:"student"},{w:"Te·le·FÓN",m:"telephone"},{w:"Re·stau·RÁNT",m:"restaurant"},{w:"U·ni·ver·si·TÄ́T",m:"university"}],color:"#2E7D32"},
+    {label:"Native words: stress syllable 1",examples:[{w:"AR-bei-ten",m:"to work"},{w:"FRÜH-stück",m:"breakfast"},{w:"WOH-nung",m:"apartment"},{w:"FEN-ster",m:"window"}],color:"#1a1a1a"},
+    {label:"Separable prefixes: prefix gets stress",examples:[{w:"AN-ru-fen",m:"to call"},{w:"AUF-ste-hen",m:"to get up"},{w:"MIT-kom-men",m:"to come along"},{w:"EIN-kau-fen",m:"to shop"}],color:"#1565C0"},
+    {label:"Inseparable prefixes: root gets stress",examples:[{w:"ver-STE-hen",m:"to understand"},{w:"er-ZÄH-len",m:"to narrate"},{w:"be-SU-chen",m:"to visit"},{w:"ent-SCHUL-di-gen",m:"to excuse"}],color:"#C62828"},
+    {label:"Foreign words: keep original stress",examples:[{w:"Stu-DENT",m:"student"},{w:"Te-le-FON",m:"telephone"},{w:"Re-stau-RANT",m:"restaurant"},{w:"U-ni-ver-si-TÄT",m:"university"}],color:"#2E7D32"},
   ];
   return(<div>
     {groups.map((g,gi)=>(<Card key={gi} color={g.color} title={g.label}>

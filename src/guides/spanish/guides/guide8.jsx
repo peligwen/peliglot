@@ -4,7 +4,7 @@ import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
 import { pronouns6 } from './_helpers';
 
-const haberForms={pp:{l:"Presente Perfecto",f:["he","has","ha","hemos","habéis","han"],c:"#1B5E20"},plup:{l:"Pluscuamperfecto",f:["había","habías","había","habíamos","habíais","habían"],c:"#4A148C"},futP:{l:"Futuro Perfecto",f:["habré","habrás","habrá","habremos","habréis","habrán"],c:"#E65100"},condP:{l:"Condicional Perfecto",f:["habría","habrías","habría","habríamos","habríais","habrían"],c:"#01579B"},ppS:{l:"Perfecto Subjuntivo",f:["haya","hayas","haya","hayamos","hayáis","hayan"],c:"#880E4F"},plupS:{l:"Pluscuamp. Subj.",f:["hubiera","hubieras","hubiera","hubiéramos","hubierais","hubieran"],c:"#3E2723"}};
+const haberForms={pp:{l:"Presente Perfecto",f:["he","has","ha","hemos","habéis","han"],c:"#1B5E20",freq:"★★★"},plup:{l:"Pluscuamperfecto",f:["había","habías","había","habíamos","habíais","habían"],c:"#4A148C",freq:"★★★"},futP:{l:"Futuro Perfecto",f:["habré","habrás","habrá","habremos","habréis","habrán"],c:"#E65100",freq:"★☆☆"},condP:{l:"Condicional Perfecto",f:["habría","habrías","habría","habríamos","habríais","habrían"],c:"#01579B",freq:"★☆☆"},ppS:{l:"Perfecto Subjuntivo",f:["haya","hayas","haya","hayamos","hayáis","hayan"],c:"#880E4F",freq:"★★☆"},plupS:{l:"Pluscuamp. Subj.",f:["hubiera","hubieras","hubiera","hubiéramos","hubierais","hubieran"],c:"#3E2723",freq:"★★☆"}};
 
 const perfectUses={
   pp:{use:"Actions with present relevance",ex:"He viajado a España.",en:"I have traveled to Spain.",tip:"Like English present perfect. Often with ya, todavía, nunca, alguna vez."},
@@ -22,11 +22,12 @@ export function Guide8(){
       <strong style={{color:"#FFE77A"}}>HABER</strong> (conjugated) + <strong>PARTICIPIO</strong> (-ado/-ido)<br/>
       <span style={{color:"#aaa",fontSize:12}}>The participle never changes — only haber conjugates!</span>
     </div></DarkBox>
+    <div style={{fontSize:10,color:"#aaa",textAlign:"center",marginBottom:4}}>★★★ daily · ★★☆ common · ★☆☆ rare/advanced</div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:5}}>
-      {Object.entries(haberForms).slice(0,3).map(([k,v])=>(<button key={k} onClick={()=>setAt(k)} style={{padding:"8px 4px",borderRadius:8,border:at===k?`2.5px solid ${v.c}`:"1.5px solid #ddd",background:at===k?v.c:"#fff",color:at===k?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{v.l}</button>))}
+      {Object.entries(haberForms).slice(0,3).map(([k,v])=>(<button key={k} onClick={()=>setAt(k)} style={{padding:"8px 4px",borderRadius:8,border:at===k?`2.5px solid ${v.c}`:"1.5px solid #ddd",background:at===k?v.c:"#fff",color:at===k?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{v.l}<div style={{fontSize:8,marginTop:2,opacity:0.8}}>{v.freq}</div></button>))}
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:5,marginBottom:16}}>
-      {Object.entries(haberForms).slice(3).map(([k,v])=>(<button key={k} onClick={()=>setAt(k)} style={{padding:"8px 4px",borderRadius:8,border:at===k?`2.5px solid ${v.c}`:"1.5px solid #ddd",background:at===k?v.c:"#fff",color:at===k?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{v.l}</button>))}
+      {Object.entries(haberForms).slice(3).map(([k,v])=>(<button key={k} onClick={()=>setAt(k)} style={{padding:"8px 4px",borderRadius:8,border:at===k?`2.5px solid ${v.c}`:"1.5px solid #ddd",background:at===k?v.c:"#fff",color:at===k?"#fff":"#555",cursor:"pointer",fontSize:10,fontWeight:700,textAlign:"center",lineHeight:1.2}}>{v.l}<div style={{fontSize:8,marginTop:2,opacity:0.8}}>{v.freq}</div></button>))}
     </div>
     <Card color={t.c} title={t.l} subtitle="hablar → hablado">
       {pronouns6.map((p,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"0 16px",height:44,borderBottom:i<5?"1px solid #f0eeeb":"none"}}>

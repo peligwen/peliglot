@@ -28,6 +28,9 @@ export function Guide6(){
          "Root + Major 3rd (4h) + Major 3rd (4h) = dreamy, unresolved"}
       </div>
     </div>
+    {(type==="aug"||type==="dim")&&<div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12,fontSize:12,color:"#555"}}>
+      <strong style={{color:"#C62828"}}>Symmetrical chords:</strong> {type==="aug"?"The augmented triad divides the octave into three equal major thirds. C augmented = E augmented = Ab augmented — only 4 unique augmented chords exist (instead of 12). Useful for smooth voice-leading and surprising modulations.":"The diminished 7th chord divides the octave into four equal minor thirds. Cdim7 = Ebdim7 = Gbdim7 = Adim7 — only 3 unique dim7 chords exist. Every dominant 7b9 chord contains a dim7 (G7b9 → Bdim7)."}
+    </div>}
     <Insight text="The difference between a happy chord and a sad chord is ONE half-step in the middle note. C major = C-E-G. C minor = C-Eb-G. Just the E drops to Eb." />
   </div>);
 }

@@ -8,7 +8,7 @@ const examples = [
   { text: "Hello world", tokens: ["Hello", " world"], count: 2 },
   { text: "I'm happy!", tokens: ["I", "'m", " happy", "!"], count: 4 },
   { text: "Tokenization", tokens: ["Token", "ization"], count: 2 },
-  { text: "GPT-4 is great", tokens: ["G", "PT", "-", "4", " is", " great"], count: 6 },
+  { text: "AI models are great", tokens: ["AI", " models", " are", " great"], count: 4 },
   { text: "unconstitutional", tokens: ["un", "constit", "utional"], count: 3 },
   { text: "¿Hablas español?", tokens: ["¿", "Hab", "las", " espa", "ñ", "ol", "?"], count: 7 },
 ];
@@ -38,7 +38,7 @@ export function Guide2() {
             ))}
           </div>
           <div style={{ background: "#1a1a1a", borderRadius: 10, padding: 16 }}>
-            <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>INPUT: "{ex.text}" → {ex.count} tokens</div>
+            <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>INPUT: "{ex.text}" → {ex.count} tokens (using a BPE tokenizer typical of OpenAI models; Llama, Gemini, and Claude tokenizers split text differently)</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {ex.tokens.map((t, i) => (
                 <span key={i} style={{
@@ -56,7 +56,7 @@ export function Guide2() {
       <Card color="#1565C0" title="Why Tokens Matter">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 10 }}><strong>Pricing.</strong> API costs are per-token. A 1,000-word essay is roughly 1,300 tokens. You pay for both input and output tokens.</div>
-          <div style={{ marginBottom: 10 }}><strong>Context limits.</strong> Every model has a maximum token count (e.g., 200K tokens). Your prompt + the response must fit.</div>
+          <div style={{ marginBottom: 10 }}><strong>Context limits.</strong> Every model has a maximum token count, which has grown from thousands to millions of tokens over a few years and continues to grow. Your prompt + the response must fit within this limit.</div>
           <div style={{ marginBottom: 10 }}><strong>Speed.</strong> Models generate one token at a time. Longer responses take longer.</div>
           <div><strong>Non-English text</strong> often uses more tokens per word because tokenizers are trained mostly on English data.</div>
         </div>

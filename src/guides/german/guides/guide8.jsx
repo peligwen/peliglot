@@ -28,5 +28,21 @@ export function Guide8(){
       </div>))}
     </Card>
     <Insight text="If there's a CHANGE of position (going somewhere) = accusative. If the position is STATIC (being somewhere) = dative." />
+  <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:8}}>Canonical verb pairs — direction vs. location:</div>
+    {[{akk:"legen (lay → Akk)",dat:"liegen (lie/be → Dat)",ex1:"Ich lege das Buch auf den Tisch.",ex2:"Das Buch liegt auf dem Tisch."},
+      {akk:"stellen (stand upright → Akk)",dat:"stehen (be standing → Dat)",ex1:"Ich stelle die Flasche in den Kühlschrank.",ex2:"Die Flasche steht im Kühlschrank."},
+      {akk:"setzen (set/seat → Akk)",dat:"sitzen (sit/be seated → Dat)",ex1:"Ich setze das Kind auf den Stuhl.",ex2:"Das Kind sitzt auf dem Stuhl."},
+      {akk:"hängen (hang, transitive → Akk)",dat:"hängen (hang, intransitive → Dat)",ex1:"Ich hänge das Bild an die Wand.",ex2:"Das Bild hängt an der Wand."},
+    ].map((p,i)=>(<div key={i} style={{paddingBottom:8,marginBottom:8,borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
+      <div style={{display:"flex",gap:4,marginBottom:4}}>
+        <span style={{padding:"2px 8px",borderRadius:5,background:"#FFEBEE",color:"#C62828",fontSize:11,fontWeight:700}}>{p.akk}</span>
+        <span style={{color:"#ccc",fontSize:11,alignSelf:"center"}}>↔</span>
+        <span style={{padding:"2px 8px",borderRadius:5,background:"#E3F2FD",color:"#1565C0",fontSize:11,fontWeight:700}}>{p.dat}</span>
+      </div>
+      <div style={{fontSize:12,color:"#555",fontStyle:"italic"}}>{p.ex1}</div>
+      <div style={{fontSize:12,color:"#777",fontStyle:"italic"}}>{p.ex2}</div>
+    </div>))}
+  </div>
   </div>);
 }

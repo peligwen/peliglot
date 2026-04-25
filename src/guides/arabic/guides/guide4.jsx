@@ -7,7 +7,7 @@ const wordExamples=[
   {word:"كَتَبَ",trans:"kataba",meaning:"he wrote",letters:["كـ","ـتـ","ـبَ"],pos:["initial","medial","final"]},
   {word:"دَرَسَ",trans:"darasa",meaning:"he studied",letters:["د","ر","سَ"],pos:["isolated*","isolated*","isolated"],note:"د and ر don't connect forward"},
   {word:"كِتاب",trans:"kitāb",meaning:"book",letters:["كـ","ـتـ","ـا","ب"],pos:["initial","medial","(alif)","final"]},
-  {word:"مَدرَسة",trans:"madrasa",meaning:"school",letters:["مـ","ـد","ر","سـ","ـة"],pos:["initial","(breaks)","(breaks)","initial","final tā' marbūṭa"]},
+  {word:"مَدرَسة",trans:"madrasa",meaning:"school",letters:["مـ","ـد","ر","سـ","ـة"],pos:["initial","final","isolated","initial","final tā' marbūṭa"],note:"د takes final form (follows م); ر is isolated (د doesn't connect forward); سـ restarts a sub-word"},
 ];
 
 export function Guide4(){

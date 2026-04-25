@@ -14,7 +14,7 @@ const verbs=[
 const endings=["ra","ras","ra","ramos","rais","ran"];
 
 const siClauses=[
-  {type:"Possible (present)",si:"Si + present indicative",result:"present / future",ex:"Si llueve, me quedo en casa.",color:"#2E7D32"},
+  {type:"Possible (present/future)",si:"Si + present indicative",result:"present or future",ex:"Si llueve, me quedo en casa. / Si llueve, me quedaré en casa.",color:"#2E7D32"},
   {type:"Unlikely (hypothetical)",si:"Si + past subjunctive",result:"conditional",ex:"Si tuviera dinero, viajaría a España.",color:"#E65100"},
   {type:"Impossible (past)",si:"Si + pluperfect subjunctive",result:"conditional perfect",ex:"Si hubiera estudiado, habría aprobado.",color:"#C62828"},
 ];
@@ -38,5 +38,23 @@ export function Guide29(){
       </div>))}
     </Card>
     <Insight text="The -se form (hablase, tuviese) is equally correct and common in Spain. In Latin America, -ra is strongly preferred."/>
+    <div style={{background:"#E8F5E9",borderRadius:12,padding:"14px 16px",marginTop:8,border:"1.5px solid #C8E6C9"}}>
+      <div style={{fontSize:13,fontWeight:800,color:"#2E7D32",marginBottom:8}}>Contrary-to-fact advice: "Si yo fuera tú…"</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.7,marginBottom:8}}>
+        The most common use of the unlikely si-clause is giving advice. The formula is: <strong>Si yo fuera tú, + conditional.</strong>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:12}}>
+        <div style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #C8E6C9"}}>
+          <div style={{fontWeight:700,color:"#2E7D32",marginBottom:2}}>Si yo fuera tú,</div>
+          <div style={{fontStyle:"italic",color:"#1a1a1a"}}>no lo haría.</div>
+          <div style={{color:"#888",fontSize:11}}>If I were you, I wouldn't do it.</div>
+        </div>
+        <div style={{background:"#fff",borderRadius:8,padding:"8px 10px",border:"1px solid #C8E6C9"}}>
+          <div style={{fontWeight:700,color:"#2E7D32",marginBottom:2}}>Si tuviera más tiempo,</div>
+          <div style={{fontStyle:"italic",color:"#1a1a1a"}}>estudiaría más.</div>
+          <div style={{color:"#888",fontSize:11}}>If I had more time, I'd study more.</div>
+        </div>
+      </div>
+    </div>
   </div>);
 }

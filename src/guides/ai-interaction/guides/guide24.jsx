@@ -6,10 +6,10 @@ import { Insight } from '../../../components/Insight';
 import { Tip } from './_helpers';
 
 const models = [
-  { name: "Large Frontier", examples: "GPT-4o, Claude Opus, Gemini Ultra", icon: "🚀", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
-  { name: "Mid-tier", examples: "Claude Sonnet, GPT-4o-mini, Gemini Flash", icon: "⚡", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
-  { name: "Small / Local", examples: "Llama 3, Mistral, Phi-3", icon: "📱", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
-  { name: "Specialized", examples: "Codex, Med-PaLM, domain fine-tunes", icon: "🎯", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
+  { name: "Frontier", examples: "Largest models from the major labs — most expensive per token, slowest per request, highest reasoning and multimodal capability.", icon: "🚀", cost: "$$$", speed: "Slower", quality: "Highest", best: "Complex reasoning, nuanced writing, difficult code, multi-step tasks" },
+  { name: "Mid-tier", examples: "Faster, cheaper general-purpose models — typically 5–20× cheaper than frontier with most of the quality on common tasks.", icon: "⚡", cost: "$$", speed: "Fast", quality: "Very good", best: "Most everyday tasks, coding, analysis, conversation" },
+  { name: "Small / Local", examples: "Open-weight models that run on consumer GPUs or laptops — quality continues to climb each cycle.", icon: "📱", cost: "$", speed: "Fastest", quality: "Good", best: "Simple tasks, classification, extraction, privacy-sensitive work" },
+  { name: "Specialized", examples: "Models fine-tuned for code, medicine, legal, or other domains — best in their lane, narrower outside it.", icon: "🎯", cost: "Varies", speed: "Varies", quality: "Best in domain", best: "Tasks within their specialty: code, medicine, legal, etc." },
 ];
 
 export function Guide24() {
@@ -23,7 +23,7 @@ export function Guide24() {
         </div>
       </DarkBox>
 
-      <Card color="#E65100" title="Model Tiers" subtitle="Tap to explore">
+      <Card color="#E65100" title="Model Tiers" subtitle="Tap a tier — specific model names change; these categories don't">
         <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
           {models.map((m, i) => (
             <button key={i} onClick={() => setSel(sel === i ? null : i)} style={{
@@ -70,6 +70,22 @@ export function Guide24() {
               <div style={{ color: "#333", marginTop: 2 }}>{item.guide}</div>
             </div>
           ))}
+        </div>
+      </Card>
+
+      <Card color="#E65100" title="Reasoning vs Non-Reasoning">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 8 }}>Cutting across all tiers is a newer dimension: <strong>reasoning models</strong> that think before answering.</div>
+          {[
+            { label: "Standard (non-reasoning)", detail: "Generate the response in one pass. Fast, predictable cost, best for most tasks." },
+            { label: "Reasoning models", detail: "Generate an internal chain of thought before producing the final answer. Higher accuracy on hard problems — math, logic, multi-step planning — at the cost of more tokens and latency. Most major vendors now offer a reasoning variant alongside their standard model." },
+          ].map((item, i) => (
+            <div key={i} style={{ marginBottom: 10, padding: "10px 14px", background: "#FFF3E0", borderRadius: 8 }}>
+              <div style={{ fontWeight: 700, color: "#E65100" }}>{item.label}</div>
+              <div style={{ color: "#333", marginTop: 2 }}>{item.detail}</div>
+            </div>
+          ))}
+          <div style={{ fontSize: 12, color: "#666" }}>For reasoning models, you typically don't need "think step by step" prompts — the model does it internally. Use them when accuracy on hard problems matters more than speed or cost.</div>
         </div>
       </Card>
 

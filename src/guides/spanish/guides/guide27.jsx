@@ -17,8 +17,8 @@ export function Guide27(){
     {expr:"Está despejado",   eng:"It's clear",      type:"esta", icon:"🌤️", ex:"Está despejado esta mañana.",       exE:"It's clear this morning."},
     {expr:"Hay niebla",       eng:"There's fog",     type:"hay",  icon:"🌫️", ex:"Hay mucha niebla en la costa.",     exE:"There's a lot of fog on the coast."},
     {expr:"Hay tormenta",     eng:"There's a storm", type:"hay",  icon:"⛈️", ex:"Hay una tormenta esta noche.",      exE:"There's a storm tonight."},
-    {expr:"Hay granizo",      eng:"There's hail",    type:"hay",  icon:"🌨️", ex:"Hay granizo en el norte.",          exE:"There's hail in the north."},
-    {expr:"Hay lluvia",       eng:"There's rain",    type:"hay",  icon:"🌂", ex:"Hay lluvia toda la semana.",         exE:"There's rain all week."},
+    {expr:"Hay granizo",      eng:"There's hail",    type:"hay",  icon:"🌨️", ex:"Hay granizo en el norte.",          exE:"There's hail in the north. (Forecast register; conversationally: Está granizando.)"},
+    {expr:"Hay lluvia",       eng:"There's rain",    type:"hay",  icon:"🌂", ex:"Hay lluvia toda la semana.",         exE:"There's rain all week. (Forecast register; conversationally: Está lloviendo.)"},
   ];
   const seasons=[
     {name:"La Primavera",eng:"Spring",icon:"🌸",color:"#C2185B",months:"marzo – mayo",   desc:"templado / mild"},

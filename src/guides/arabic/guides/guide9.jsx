@@ -24,6 +24,7 @@ export function Guide9(){
       {h:"With moon letters: lām stays",b:"القَمَر = al-qamar (the moon)"},
       {h:"al- makes nouns definite for adjective agreement",b:"الكتاب الكبير = al-kitāb al-kabīr (the big book)\nBoth noun AND adjective get al-"},
       {h:"No al- in iḍāfa (construct) on first noun",b:"كتاب الطالب = kitāb aṭ-ṭālib (the student's book)\nFirst noun is definite by relationship, not by al-"},
+      {h:"Indefiniteness in unvocalized text",b:"Tanwīn marks indefiniteness in fully vocalized MSA.\nIn everyday unvocalized text (newspapers, websites),\nthe absence of al- is the only indefiniteness signal."},
     ]}/>
     <PalNote text="In Palestinian Arabic, al- is often shortened to just 'l-' or 'il-'. الكتاب = il-ktāb."/>
   </div>);

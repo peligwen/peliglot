@@ -15,7 +15,7 @@ const irregTu=[
 ];
 
 const modes=[
-  {id:"tu",label:"Tú (+)",desc:"Drop the -s from present tú form",ex:["hablas → ¡habla!","comes → ¡come!","escribe → ¡escribe!"],color:"#2E7D32"},
+  {id:"tu",label:"Tú (+)",desc:"Drop the -s from present tú form",ex:["hablas → ¡habla!","comes → ¡come!","escribes → ¡escribe!"],color:"#2E7D32"},
   {id:"neg",label:"Tú (−)",desc:"No + present subjunctive tú form",ex:["¡no hables!","¡no comas!","¡no escribas!"],color:"#C62828"},
   {id:"ud",label:"Usted",desc:"Present subjunctive él/ella form",ex:["¡hable!","¡coma!","¡escriba!"],color:"#0D47A1"},
   {id:"nos",label:"Nosotros",desc:"Present subjunctive nosotros form (= Let's...)",ex:["¡hablemos!","¡comamos!","¡vamos! (ir)"],color:"#6A1B9A"},

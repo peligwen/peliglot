@@ -55,6 +55,7 @@ export function Guide19() {
             { block: "Error handling", desc: "Retry on failure, fall back to a simpler approach, or escalate to a human." },
             { block: "State management", desc: "Track context, results, and decisions across steps." },
             { block: "Observability", desc: "Log every step so you can debug and optimize the pipeline." },
+            { block: "Evals", desc: "A set of input/expected-output pairs (or a graded rubric) you run on every change. Without evals, you cannot tell if a prompt edit helped or hurt — this is what separates toy pipelines from production systems." },
           ].map((b, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <span style={{ fontWeight: 700, color: "#00695C" }}>{b.block}:</span> {b.desc}

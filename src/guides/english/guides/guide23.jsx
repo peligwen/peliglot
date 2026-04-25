@@ -14,7 +14,7 @@ export function Guide23(){return(<div>
   <DarkBox title="Trampas con adverbios"><div style={{fontSize:13,lineHeight:1.6,textAlign:"left"}}>
     <strong style={{color:"#EF9A9A"}}>hard ≠ hardly:</strong> She works <strong style={{color:"#FFE77A"}}>hard</strong> (mucho) vs She <strong style={{color:"#FFE77A"}}>hardly</strong> works (apenas)<br/>
     <strong style={{color:"#90CAF9"}}>-ly no siempre necesario:</strong> He drives slow / slowly (ambos OK en americano)<br/>
-    <strong style={{color:"#81C784"}}>good vs well:</strong> She sings <strong style={{color:"#FFE77A"}}>well</strong> (formal) · She sings <strong style={{color:"#FFE77A"}}>good</strong> (casual americano)
+    <strong style={{color:"#81C784"}}>good vs well:</strong> She sings <strong style={{color:"#FFE77A"}}>well</strong> = estándar, siempre correcto · She sings <strong style={{color:"#FFE77A"}}>good</strong> = muy informal (se oye en AmE coloquial, pero se considera incorrecto en escrito y contextos formales — usa <em>well</em> para estar seguro/a)
   </div></DarkBox>
 </div>);}
 

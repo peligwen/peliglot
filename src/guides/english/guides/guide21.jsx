@@ -16,6 +16,6 @@ export function Guide21(){
         <span style={{color:"#C62828",fontSize:12}}>❌ {e.wrong}</span> <span style={{color:"#aaa",fontSize:11}}>({e.rule})</span>
       </div>))}
     </Card>
-    <Nota text="¡Los adjetivos ingleses NO cambian por género ni número! 'A tall man, a tall woman, tall people' — siempre solo 'tall'. ¡Alivio enorme vs español!" />
+    <Nota text="Adjetivos sin concordancia de género ni número — 'tall man, tall woman, tall people'. EXCEPCIÓN: los demostrativos sí concuerdan con el número (no género): this/that (singular) vs these/those (plural). Son los únicos adjetivos que cambian." />
   </div>);
 }

@@ -52,7 +52,7 @@ export function Guide15() {
           {[
             "Break big asks into smaller, sequential requests",
             "Verify intermediate results before the model builds on them",
-            "Provide context the model might be missing",
+            "Provide context the model might be missing — models cannot ask clarifying questions reliably, so the clarification you wish the model would ask is the context you should put in the prompt",
             "Redirect when the model goes down a wrong path",
           ].map((tip, i) => (
             <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>

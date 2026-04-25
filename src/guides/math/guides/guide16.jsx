@@ -26,5 +26,6 @@ export function Guide16(){
       </div>
     </div>
     <Insight text="The formula: Salary in year N = $base + $raise × N. If you start at $40K with $2K annual raises, year 10 = $40K + $2K×10 = $60K. Linear growth adds the same amount each period." />
+    <Insight text="Negative slope in real life: a $30,000 car depreciating $3,000/year. Value in year N = 30,000 − 3,000 × N. After 10 years: $0. Same y = mx + b, but m is negative — the line goes down." />
   </div>);
 }

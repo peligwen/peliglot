@@ -4,7 +4,7 @@ import { Insight } from '../../../components/Insight';
 
 export function Guide19(){
   const sep=[{prefix:"an-",ex:"anrufen → Ich rufe dich an.",m:"to call"},{prefix:"auf-",ex:"aufmachen → Ich mache die Tür auf.",m:"to open"},{prefix:"mit-",ex:"mitkommen → Kommst du mit?",m:"to come along"},{prefix:"ein-",ex:"einkaufen → Ich kaufe im Supermarkt ein.",m:"to shop"}];
-  const insep=[{prefix:"ver-",ex:"verstehen → Ich verstehe das.",m:"to understand"},{prefix:"be-",ex:"besuchen → Ich besuche dich.",m:"to visit"},{prefix:"er-",ex:"erzählen → Er erzählt eine Geschichte.",m:"to narrate"},{prefix:"ent-",ex:"entschuldigen → Entschuldigen Sie!",m:"to excuse"}];
+  const insep=[{prefix:"ver-",ex:"verstehen → Ich verstehe das.",m:"to understand"},{prefix:"be-",ex:"besuchen → Ich besuche dich.",m:"to visit"},{prefix:"er-",ex:"erzählen → Er erzählt eine Geschichte.",m:"to narrate"},{prefix:"ent-",ex:"entschuldigen → Entschuldigen Sie!",m:"to excuse"},{prefix:"ge-",ex:"gehorchen → Das Kind gehorcht.",m:"to obey"},{prefix:"zer-",ex:"zerstören → Der Sturm zerstört alles.",m:"to destroy"},{prefix:"miss-",ex:"missverstehen → Du hast mich missverstanden.",m:"to misunderstand"},{prefix:"emp-",ex:"empfehlen → Ich empfehle das Restaurant.",m:"to recommend"}];
   return(<div>
     <DarkBox title="Prefixes transform meaning"><div style={{fontSize:14}}>
       stehen = stand · <strong style={{color:"#FFE77A"}}>ver</strong>stehen = understand · <strong style={{color:"#FFE77A"}}>auf</strong>stehen = get up · <strong style={{color:"#FFE77A"}}>be</strong>stehen = pass/exist
@@ -21,6 +21,12 @@ export function Guide19(){
         <span style={{fontSize:13,color:"#555",fontStyle:"italic"}}>{s.ex}</span>
       </div>))}
     </Card>
+    <div style={{background:"#FFF8E1",borderRadius:10,padding:"10px 14px",border:"1px solid #FFE082",marginBottom:10}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#E65100",marginBottom:4}}>Variable prefixes — can be either:</div>
+      <div style={{fontSize:12,color:"#555"}}>über-, um-, unter-, durch-, hinter-, wider- depend on the verb:<br/>
+      <em>umfahren</em> (sep.) = drive around · <em>umfahren</em> (insep.) = run over<br/>
+      <em>übersetzen</em> (sep.) = cross (a river) · <em>übersetzen</em> (insep.) = translate</div>
+    </div>
     <Insight text="In subordinate clauses, separable prefixes rejoin: '...weil ich die Tür aufmache.' The prefix goes back to the verb." />
   </div>);
 }

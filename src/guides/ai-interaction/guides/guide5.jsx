@@ -58,12 +58,29 @@ export function Guide5() {
           <SimpleGuide items={[
             { h: "In-context learning", b: "Given a few examples in the prompt, models can perform new tasks they weren't explicitly trained for." },
             { h: "Chain-of-thought", b: "When asked to 'think step by step', models produce better answers — as if reasoning emerges from structured output." },
-            { h: "Scale surprises", b: "Some abilities only appear at certain model sizes. A model with 10B parameters might fail where a 100B model succeeds." },
+            { h: "Scale surprises", b: "Some abilities appear sharply at larger model sizes — though some apparent jumps turn out to be artifacts of how the ability was measured, not a true threshold. A model with 10B parameters may still fail on tasks a 100B model handles well." },
           ]} />
         </div>
       </Card>
 
-      <Tip text="Models don't have hidden thoughts. Everything happens in the token sequence. If you want the model to reason, you need to make it 'show its work' in the output." />
+      <Card color="#1565C0" title="Reasoning models: a different mode">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 8 }}>Since ~2025, major vendors offer <strong>reasoning-class models</strong> that generate a chain of thought before producing their final answer.</div>
+          <div style={{ marginBottom: 8 }}>The internal chain is still tokens — but the model may generate thousands of reasoning tokens you never see before writing the response you receive.</div>
+          {[
+            { h: "Don't prompt 'think step by step'", b: "Reasoning models already do this. Asking may be redundant or counterproductive." },
+            { h: "Expect higher latency", b: "The model is spending compute on the internal chain before answering." },
+            { h: "Best for hard problems", b: "Math, logic, multi-step planning, and tasks where accuracy matters more than speed." },
+          ].map((item, i) => (
+            <div key={i} style={{ marginBottom: 8, padding: "8px 12px", background: "#E3F2FD", borderRadius: 6 }}>
+              <div style={{ fontWeight: 700, color: "#1565C0" }}>{item.h}</div>
+              <div style={{ color: "#333", marginTop: 2 }}>{item.b}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Tip text="Most LLM responses don't reflect hidden deliberation — what you see is what was generated, token by token. Exception: reasoning-class models (o-series, Claude extended thinking, Gemini thinking, DeepSeek R1) generate an explicit reasoning chain before answering; whether you see that chain depends on the product surface. For non-reasoning models, making the model 'show its work' in the output is what gets you auditable reasoning." />
     </div>
   );
 }
