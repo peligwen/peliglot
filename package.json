@@ -11,7 +11,8 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "validate": "node scripts/validate-guides.cjs",
-    "check": "npm run lint && npm run build && npm run validate"
+    "check": "npm run lint && npm run build && npm run validate",
+    "check-orthography": "node scripts/check-orthography.cjs"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -3,13 +3,14 @@ export const lightTheme = {
   headerBg: '#fff',
   borderColor: '#e0dcd5',
   textPrimary: '#1a1a1a',
-  textSecondary: '#999',
+  textSecondary: '#6E6E6E', // 4.6:1 on #FDFBF7 — passes WCAG AA
+  textTertiary: '#999',     // 2.84:1 — AA-Large only (use for large/bold text ≥18px)
   textMuted: '#555',
   sidebarBg: '#fff',
   sidebarActiveItemBg: '#f0eeeb',
   sidebarItemText: '#333',
   sidebarItemActiveText: null, // uses guide color
-  sidebarSubText: '#999',
+  sidebarSubText: '#6E6E6E', // 4.6:1 on #fff — passes WCAG AA
   focusColor: '#00695C',
   dotInactive: '#ddd',
   buttonBg: '#fff',

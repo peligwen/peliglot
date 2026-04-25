@@ -35,7 +35,7 @@ export function Guide10(){
         </div>))}
       </Card>
     </div>
-    <ExpandSection label="⚠ Feminine WITHOUT tā' marbūṭa" color="#AD1457">
+    <ExpandSection title="⚠ Feminine WITHOUT tā' marbūṭa" color="#AD1457">
       <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #eee"}}>
         {femNoTM.map((w,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"6px 0",borderBottom:i<femNoTM.length-1?"1px solid #f0eeeb":"none",gap:10}}>
           <span style={{fontSize:18,fontFamily:"'Noto Sans Arabic','Amiri',serif",color:"#AD1457",direction:"rtl",minWidth:50,textAlign:"center"}}>{w.ar}</span>

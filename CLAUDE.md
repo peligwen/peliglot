@@ -217,7 +217,7 @@ All in `src/components/`:
 | `DarkBox` | Highlighted concept/intro box | `<DarkBox title="Title">children</DarkBox>` |
 | `Insight` | Tip/hint callout with emoji | `<Insight text="tip text" emoji="emoji" />` |
 | `SimpleGuide` | Q&A list from data array | `<SimpleGuide items={[{h:"heading",b:"body"}]} />` |
-| `ExpandSection` | Collapsible section | `<ExpandSection title="Title">children</ExpandSection>` |
+| `ExpandSection` | Collapsible section | `<ExpandSection title="Title" color="#hex">children</ExpandSection>` |
 | `GuideShell` | Navigation wrapper (used in index.jsx only) | See Step 3 above |
 
 ## Conventions
@@ -266,3 +266,200 @@ Run `npm run check` before considering any change complete. This catches:
 - Syntax errors and broken imports (via build)
 - Unused variables and hooks violations (via lint)
 - Missing guide files or registration gaps (via validate)
+
+## Shared Component Contracts
+
+The authoritative source of truth is always the component file itself. This section is a
+quick-reference for anyone generating new guide content.
+
+### `Card({ color, title, children })`
+
+`src/components/Card.jsx` — a content section with a colored header bar.
+
+```jsx
+<Card color="#1B5E20" title="Section Title">
+  {/* body content */}
+</Card>
+```
+
+- `color` (string, required) — header background color.
+- `title` (string, required) — header text.
+- `children` — body content.
+
+---
+
+### `DarkBox({ title, children })`
+
+`src/components/DarkBox.jsx` — a dark-background concept callout used at the top of a guide.
+
+```jsx
+<DarkBox title="Key Concept">
+  <p>Explanation text…</p>
+</DarkBox>
+```
+
+- `title` (string, required) — callout heading.
+- `children` — body content.
+
+---
+
+### `Insight({ text, emoji })`
+
+`src/components/Insight.jsx` — a tip/hint callout with an emoji.
+
+```jsx
+<Insight text="Remember: adjective agrees in gender." emoji="💡" />
+```
+
+- `text` (string, required) — tip text.
+- `emoji` (string) — leading emoji; defaults to 💡 if omitted.
+
+---
+
+### `SimpleGuide({ items })`
+
+`src/components/SimpleGuide.jsx` — a Q&A / definition list from a data array.
+
+```jsx
+<SimpleGuide items={[
+  { h: "¿Cómo estás?", b: "How are you?" },
+]} />
+```
+
+- `items` (array, required) — each item has `h` (heading) and `b` (body).
+
+---
+
+### `ExpandSection({ title, color, children })`
+
+`src/components/ExpandSection.jsx` — a collapsible section with a toggle button.
+
+> **Note:** The prop was renamed from `label` → `title` (Phase 1 infrastructure commit).
+> If you encounter old code using `label=`, rename it.
+
+```jsx
+<ExpandSection title="Advanced Notes" color="#1B5E20">
+  {/* hidden content */}
+</ExpandSection>
+```
+
+- `title` (string, required) — button label.
+- `color` (string) — background color when open; defaults to `#1a1a1a`.
+- `children` — revealed content.
+
+---
+
+### `GuideShell({ guidesMeta, guideComponents, categories, catColors, theme, storageKey, sidebarTitle, sidebarSubtitle })`
+
+`src/components/GuideShell.jsx` — the full navigation wrapper. Used only in `index.jsx` files; never inside guide components.
+
+- `guidesMeta` (array) — from `meta.js`; see Step 2.
+- `guideComponents` (array) — from `components.jsx`; must be same order as `guidesMeta`.
+- `categories` (array of strings) — from `meta.js`.
+- `catColors` (object `{ [cat]: "#hex" }`) — from `meta.js`.
+- `theme` (object) — from `src/styles/themes.js`; default `lightTheme`.
+- `storageKey` (string) — e.g. `"peliglot-spanish"`.
+- `sidebarTitle` (string) — collection name shown in sidebar header.
+- `sidebarSubtitle` (string) — e.g. `"30 Interactive Guides"`.
+
+---
+
+### `AlphabetGrid({ letters, letterKey?, nameKey?, filterGroups, detailFields, primaryColor, speakFn?, introTitle, introContent, renderDetail?, borderFn?, badgeFn?, gridProps?, ... })`
+
+`src/components/templates/AlphabetGrid.jsx` — interactive letter grid with filter buttons and a detail panel.
+
+- `letters` (array, required) — letter objects (any shape).
+- `letterKey` (string, default `"l"`) — field for the displayed glyph.
+- `nameKey` (string, default `"name"`) — field for the small subtitle under each letter.
+- `filterGroups` (array `[{ id, label, filterFn }]`) — filter buttons above the grid.
+- `detailFields` (array `[{ key, label?, bgColor?, borderColor?, textColor? }]`) — fields shown in the detail panel.
+- `primaryColor` (string) — accent color for selection + header.
+- `speakFn` (function `(text) => void`) — called on letter tap.
+- `speakKey` (string) — field passed to `speakFn`; defaults to `letterKey`.
+- `introTitle` / `introContent` — optional `DarkBox` shown above the grid.
+- `renderDetail` (function `(letter, { primaryColor, highlightColor }) => JSX`) — fully custom detail panel.
+- `borderFn` (function `(letter) => string | null`) — per-letter border override.
+- `badgeFn` (function `(letter) => { color } | null`) — small dot badge on letter.
+- `gridProps` (object) — extra styles on the grid container (e.g. `{ direction: "rtl" }`).
+
+---
+
+### `VerbConjugation({ pronouns, stem, endings, verb?, meaning?, color, title?, compact? })`
+
+`src/components/templates/VerbConjugation.jsx` — pronoun-based conjugation table.
+
+```jsx
+// Full Card mode
+<VerbConjugation pronouns={["yo","tú","él"]} stem="habl" endings={["o","as","a"]}
+  verb="hablar" meaning="to speak" color="#D84315" />
+
+// Compact mode (no Card wrapper)
+<VerbConjugation pronouns={["yo","tú","él"]} stem="habl" endings={["é","aste","ó"]}
+  title="Pretérito" color="#B71C1C" compact />
+```
+
+- `pronouns` (array, required) — pronoun labels.
+- `stem` (string, required) — verb stem.
+- `endings` (array, required) — one ending per pronoun.
+- `verb` / `meaning` (strings) — shown in the Card header (full mode).
+- `color` (string, required) — accent color.
+- `title` (string) — used in compact mode instead of verb/meaning.
+- `compact` (boolean) — omit the Card wrapper; render a smaller table.
+
+---
+
+### `QuizSection({ items, answerKey?, renderQuestion, optionCount?, color, resultMessages? })`
+
+`src/components/templates/QuizSection.jsx` — multiple-choice quiz with scoring.
+
+> **Always pass `resultMessages`** for non-English collections so the result text
+> matches the collection language or is at least appropriate.
+
+```jsx
+<QuizSection
+  items={items}
+  answerKey="answer"
+  renderQuestion={(q) => <div>{q.question}</div>}
+  optionCount={4}
+  color="#0277BD"
+  resultMessages={{ high: "¡Excelente!", mid: "¡Bien!", low: "Sigue practicando." }}
+/>
+```
+
+- `items` (array, required) — quiz items (any shape).
+- `answerKey` (string, default `"answer"`) — field name for the correct answer string.
+- `renderQuestion` (function `(item) => JSX`, required) — custom question renderer.
+- `optionCount` (number, default `4`) — number of choices.
+- `color` (string, required) — accent color.
+- `resultMessages` (object `{ high, mid, low }`) — result screen text.
+
+---
+
+### `FlashcardDeck({ items, color?, title?, speakFn?, speakKey? })`
+
+`src/components/templates/FlashcardDeck.jsx` — swipeable flashcard deck with got-it / again flow.
+
+```jsx
+<FlashcardDeck items={[{ front: "hola", back: "hello" }]} color="#1565C0" />
+```
+
+- `items` (array, required) — each item has `front` (displayed before flip) and `back` (shown after flip).
+- `color` (string, default `"#1565C0"`) — accent color.
+- `title` (string) — optional label above the deck.
+- `speakFn` (function `(text) => void`) — called when card flips.
+- `speakKey` (string, default `"front"`) — field passed to `speakFn`.
+
+---
+
+### `ProgressRing({ progress, size?, strokeWidth?, color? })`
+
+`src/components/ProgressRing.jsx` — circular SVG progress indicator.
+
+```jsx
+<ProgressRing progress={0.75} size={48} color="#2E7D32" />
+```
+
+- `progress` (number 0–1, required) — fill fraction.
+- `size` (number, default `36`) — SVG width/height in px.
+- `strokeWidth` (number, default `3`) — ring thickness in px.
+- `color` (string, default `"#2E7D32"`) — ring fill color.

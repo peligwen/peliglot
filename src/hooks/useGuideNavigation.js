@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
 function readPage(storageKey, total) {
   const h = parseInt(location.hash.slice(1), 10);
@@ -51,8 +51,9 @@ export function useGuideNavigation(total, storageKey, guidesMeta) {
     setMenuOpen(false);
     if (contentRef.current) contentRef.current.scrollTop = 0;
   };
-  const prev = () => setPage(p => p > 0 ? p - 1 : p);
-  const next = () => setPage(p => p < total - 1 ? p + 1 : p);
+
+  const prev = useCallback(() => setPage(p => p > 0 ? p - 1 : p), []);
+  const next = useCallback(() => setPage(p => p < total - 1 ? p + 1 : p), [total]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -62,7 +63,7 @@ export function useGuideNavigation(total, storageKey, guidesMeta) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [total]);
+  }, [prev, next]);
 
   // Swipe navigation for mobile
   useEffect(() => {
@@ -105,14 +106,14 @@ export function useGuideNavigation(total, storageKey, guidesMeta) {
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchend', onTouchEnd);
     };
-  }, [total]);
+  }, [prev, next]);
 
   useEffect(() => {
     history.replaceState(null, null, '#' + page);
   }, [page]);
 
   useEffect(() => {
-    try { localStorage.setItem(storageKey, page); } catch { /* ignore */ }
+    try { localStorage.setItem(storageKey, String(page)); } catch { /* ignore */ }
     trackVisited(storageKey, page);
     trackRecent(storageKey, page, guidesMeta);
     setVisitedVersion(v => v + 1);

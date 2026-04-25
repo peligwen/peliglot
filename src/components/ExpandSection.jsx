@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function ExpandSection({ label, color, children }) {
+export function ExpandSection({ title, color, children }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ marginBottom: 8 }}>
@@ -15,7 +15,7 @@ export function ExpandSection({ label, color, children }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}
       >
-        <span>{label}</span>
+        <span>{title}</span>
         <span style={{ fontSize: 16, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0)' }}>{'\u2304'}</span>
       </button>
       {open && <div style={{ marginTop: 8 }}>{children}</div>}
