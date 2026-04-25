@@ -6,7 +6,7 @@ import { Tip } from './_helpers';
 
 const sources = [
   { stage: "Training Data", icon: "📚", desc: "If the data over-represents some groups or perspectives, the model inherits those imbalances.", example: "A model trained mostly on English text may perform poorly on other languages or cultures." },
-  { stage: "Labeling & Feedback", icon: "🏷️", desc: "Human raters who fine-tune models bring their own cultural assumptions and biases.", example: "What counts as 'helpful' or 'harmful' varies across cultures and contexts." },
+  { stage: "Labeling & Feedback", icon: "🏷️", desc: "Preference-tuning methods (RLHF, DPO) optimize for the preferences of the raters doing the labeling — typically a non-representative sample. The result is that the model's notion of 'helpful' or 'harmful' is shaped by that population.", example: "What counts as 'helpful' or 'harmful' varies across cultures and contexts — and the rater pool may not reflect your users." },
   { stage: "Prompt Design", icon: "📝", desc: "How questions are framed can trigger biased patterns in the model.", example: "Asking 'Why is X bad?' presupposes X is bad and steers the response." },
   { stage: "Deployment Context", icon: "🏢", desc: "Using a model in contexts it wasn't designed for amplifies errors and biases.", example: "A general chat model used for hiring decisions without careful guardrails." },
 ];
@@ -39,7 +39,7 @@ export function Guide20() {
       <Card color="#C62828" title="What You Can Do">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           {[
-            { action: "Test with diverse inputs", desc: "Try your prompts with different names, demographics, and contexts. Look for inconsistent treatment." },
+            { action: "Test with diverse inputs", desc: "Try your prompts with different names, demographics, and contexts. Look for inconsistent treatment. For example: send the same résumé content to the model twice — once with name 'John Smith' and once with 'Jamal Washington' — and compare the evaluations. Any differential framing is a bias signal worth investigating." },
             { action: "Don't automate high-stakes decisions", desc: "Use AI to inform human decisions, not replace them, for hiring, lending, healthcare, and legal contexts." },
             { action: "Ask for multiple perspectives", desc: "Prompt the model to consider different viewpoints before drawing conclusions." },
             { action: "Document limitations", desc: "When building AI products, be transparent about what the model can and can't do fairly." },

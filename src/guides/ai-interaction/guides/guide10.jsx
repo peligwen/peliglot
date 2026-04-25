@@ -51,7 +51,7 @@ export function Guide10() {
         </div>
       </Card>
 
-      <Tip text="Many APIs now support 'structured outputs' or 'tool use' that force the model to return valid JSON matching a schema. This is more reliable than asking nicely in the prompt." />
+      <Tip text="Asking the model nicely in the prompt is the fallback. The reliable approach is to use your API's structured-output or function-call / JSON-schema mode, which constrains decoding to guarantee schema conformance. Most major chat APIs support this — check your provider's docs for 'structured outputs' or 'tool use'." />
 
       <Insight text="Structured output is the bridge between AI and software. It turns natural language into data your code can process." />
     </div>

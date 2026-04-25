@@ -65,9 +65,26 @@ export function Guide13() {
         </div>
       </Card>
 
+      <Card color="#00695C" title="Multimodal capabilities">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 8 }}>Beyond text-in / text-out, frontier models increasingly handle:</div>
+          {[
+            { cap: "Image input (vision)", desc: "Describe images, answer questions about photos, read diagrams and charts." },
+            { cap: "Audio input", desc: "Transcribe speech, answer questions from voice recordings." },
+            { cap: "Video input", desc: "Summarize video, identify events — available on some frontier models." },
+            { cap: "Image / audio output", desc: "Generate images from text descriptions, or synthesize speech from text." },
+          ].map((item, i) => (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <span style={{ fontWeight: 700, color: "#00695C" }}>{item.cap}:</span> {item.desc}
+            </div>
+          ))}
+          <div style={{ marginTop: 8, fontSize: 12, color: "#666" }}>Multimodal capability varies by model and API tier — check your provider's docs for what's available.</div>
+        </div>
+      </Card>
+
       <Tip text="Tool use is the difference between 'AI that talks about things' and 'AI that does things'. It's what turns a chatbot into an assistant." />
 
-      <Insight text="The model doesn't actually run tools itself. It outputs a structured request (like a JSON function call), and the host system executes it. This is a critical safety boundary." />
+      <Insight text="The model doesn't actually run tools itself. It outputs a structured request (like a JSON function call), and the host system executes it. This is the only place to enforce safety and authorization — the model cannot be trusted to enforce these for you." />
     </div>
   );
 }

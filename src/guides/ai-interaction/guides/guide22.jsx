@@ -6,7 +6,7 @@ import { Tip } from './_helpers';
 
 const costs = [
   { phase: "Training", icon: "🏋️", energy: "High", desc: "Training a large model once can use as much energy as hundreds of homes use in a year.", note: "GPT-4-scale training: estimated 50+ GWh" },
-  { phase: "Inference", icon: "💬", energy: "Low per query", desc: "Each query uses a small amount of energy, but billions of queries add up.", note: "One query ≈ 10x a Google search in energy" },
+  { phase: "Inference", icon: "💬", energy: "Low per query", desc: "Each query uses a small amount of energy, but billions of queries add up.", note: "Earlier estimates (~2023) put a typical query at 10× a Google search; Epoch AI's Feb-2025 reanalysis revised this ~10× downward, making a typical text query roughly comparable to a Google search. Costs vary: multimodal, long-context, and reasoning-model queries use substantially more." },
   { phase: "Hardware", icon: "🖥️", energy: "Embodied", desc: "Manufacturing GPUs and building data centers has its own carbon footprint.", note: "Rare earth mining, water cooling, chip fabrication" },
 ];
 
@@ -55,7 +55,7 @@ export function Guide22() {
       <Card color="#C62828" title="Putting it in perspective">
         <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ marginBottom: 8 }}>AI's energy use is real but should be compared to alternatives:</div>
-          <div style={{ marginBottom: 8 }}>• Video streaming, cryptocurrency mining, and air travel each have larger total carbon footprints globally.</div>
+          <div style={{ marginBottom: 8 }}>• AI's energy use is growing fast; even so, the <em>current</em> total is still smaller than other large categories like video streaming, cryptocurrency mining, and air travel.</div>
           <div style={{ marginBottom: 8 }}>• AI can also <em>reduce</em> emissions by optimizing energy grids, logistics, and building systems.</div>
           <div>The question isn't whether to use AI, but whether its benefits justify its costs in each application.</div>
         </div>

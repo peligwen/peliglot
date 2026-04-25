@@ -23,6 +23,9 @@ import { Guide22 } from './guides/guide22';
 import { Guide23 } from './guides/guide23';
 import { Guide24 } from './guides/guide24';
 import { Guide25 } from './guides/guide25';
+import { Guide26 } from './guides/guide26';
+import { Guide27 } from './guides/guide27';
+import { Guide28 } from './guides/guide28';
 
 export const guideComponents = [
   Guide1, Guide2, Guide3, Guide4, Guide5,
@@ -30,4 +33,5 @@ export const guideComponents = [
   Guide11, Guide12, Guide13, Guide14, Guide15,
   Guide16, Guide17, Guide18, Guide19, Guide20,
   Guide21, Guide22, Guide23, Guide24, Guide25,
+  Guide26, Guide27, Guide28,
 ];

@@ -38,7 +38,7 @@ export function Guide2() {
             ))}
           </div>
           <div style={{ background: "#1a1a1a", borderRadius: 10, padding: 16 }}>
-            <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>INPUT: "{ex.text}" → {ex.count} tokens</div>
+            <div style={{ fontSize: 11, color: "#888", marginBottom: 8 }}>INPUT: "{ex.text}" → {ex.count} tokens (using a BPE tokenizer typical of OpenAI models; Llama, Gemini, and Claude tokenizers split text differently)</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {ex.tokens.map((t, i) => (
                 <span key={i} style={{

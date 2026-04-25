@@ -68,6 +68,24 @@ export function Guide14() {
         </div>
       </Card>
 
+      <Card color="#00695C" title="When the loop ends">
+        <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ marginBottom: 8 }}>Loops can run forever or burn budget on the wrong path. Practical agents need explicit stop conditions:</div>
+          {[
+            { cond: "Success criteria met", detail: "The agent has produced the required output and verified it passes defined checks." },
+            { cond: "Budget exhausted", detail: "A hard cap on token count or number of tool calls prevents runaway cost." },
+            { cond: "Maximum iterations", detail: "A ceiling on loop iterations catches infinite-retry spirals." },
+            { cond: "Repeated failure pattern", detail: "If the same sub-task fails N times, escalate rather than retry forever." },
+            { cond: "Human escalation triggered", detail: "Uncertainty or high-stakes actions route back to a human before proceeding." },
+          ].map((item, i) => (
+            <div key={i} style={{ marginBottom: 8, padding: "8px 12px", background: "#E0F2F1", borderRadius: 6 }}>
+              <div style={{ fontWeight: 700, color: "#00695C" }}>{item.cond}</div>
+              <div style={{ color: "#333", marginTop: 2 }}>{item.detail}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       <Tip text="The quality of an agent is mostly about the quality of its loop: how well it plans, how it handles errors, and when it decides to ask for help vs. push forward." />
 
       <Insight text="Unlike a chatbot (1 prompt → 1 response), an agent might make dozens of tool calls to complete a single task. Each call feeds back into the next decision." />

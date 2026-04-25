@@ -36,6 +36,7 @@ export function Guide21() {
       <Card color="#C62828" title="Practical Guidelines">
         <SimpleGuide items={[
           { h: "Don't pass off AI output as your own original work", b: "Especially in academic, journalistic, or legal contexts. Disclose AI use when it matters." },
+          { h: "Watch for verbatim reproduction", b: "LLMs sometimes reproduce snippets from training data word-for-word. If the output looks unusually polished or specific, search for it — you may be reading something copyrighted. This is a separate copyright risk from the training-data debate." },
           { h: "Review AI code for license issues", b: "AI might reproduce snippets from open-source code. Check that you comply with any applicable licenses." },
           { h: "Check your AI provider's terms", b: "Most providers (OpenAI, Anthropic, Google) grant you rights to use the output, but terms vary." },
           { h: "Add your own creative contribution", b: "Heavily editing, curating, or building on AI output strengthens your claim to the final work." },
