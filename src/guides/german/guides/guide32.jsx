@@ -16,6 +16,13 @@ export function Guide32(){
   ];
   const dColors={5:"#C62828",4:"#E65100",3:"#F9A825"};
   return(<div>
+    <div style={{display:"flex",gap:12,padding:"8px 14px",background:"#f5f3ef",borderRadius:10,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
+      <span style={{fontSize:11,fontWeight:700,color:"#888"}}>Risk level:</span>
+      {[{d:5,c:"#C62828",l:"embarrassing if wrong"},{d:4,c:"#E65100",l:"often confused"},{d:3,c:"#F9A825",l:"mild trip-up"}].map(x=>(<span key={x.d} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:"#555"}}>
+        <span style={{width:8,height:8,borderRadius:"50%",background:x.c,flexShrink:0,display:"inline-block"}}/>
+        {x.l}
+      </span>))}
+    </div>
     <Card color="#C62828" title="Falsche Freunde — False Friends">
       {falseF.map((f,i)=>(<div key={i} style={{display:"flex",alignItems:"center",padding:"7px 14px",borderBottom:i<falseF.length-1?"1px solid #f0eeeb":"none",gap:8}}>
         <div style={{width:5,height:5,borderRadius:"50%",background:dColors[f.d],flexShrink:0}}/>

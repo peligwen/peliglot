@@ -17,7 +17,7 @@ export function Guide12(){
     <Card color="#2E7D32" title="Compound examples" subtitle="Last word = gender">
       {compounds.map((c,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<compounds.length-1?"1px solid #f0eeeb":"none"}}>
         <div style={{display:"flex",gap:4,alignItems:"center",marginBottom:4}}>
-          {c.parts.map((p,j)=>(<><span key={j} style={{padding:"3px 8px",borderRadius:6,background:j===c.parts.length-1?"#2E7D32":"#f5f3ef",color:j===c.parts.length-1?"#fff":"#888",fontSize:13,fontWeight:700}}>{p}</span>{j<c.parts.length-1&&<span style={{color:"#ccc"}}>+</span>}</>))}
+          {c.parts.map((p,j)=>(<span key={j} style={{display:"inline-flex",alignItems:"center",gap:4}}><span style={{padding:"3px 8px",borderRadius:6,background:j===c.parts.length-1?"#2E7D32":"#f5f3ef",color:j===c.parts.length-1?"#fff":"#888",fontSize:13,fontWeight:700}}>{p}</span>{j<c.parts.length-1&&<span style={{color:"#ccc"}}>+</span>}</span>))}
           <span style={{color:"#ccc",margin:"0 4px"}}>=</span>
           <span style={{fontSize:15,fontWeight:800,color:"#2E7D32"}}>{c.word}</span>
         </div>

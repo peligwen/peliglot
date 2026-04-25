@@ -26,11 +26,20 @@ export function Guide26(){
       </div>
     </div>
     <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
-      <div style={{fontSize:13,fontWeight:700,color:"#1565C0",marginBottom:6}}>Time-Manner-Place (TeMaPla):</div>
-      <div style={{fontSize:13,color:"#555"}}>
-        Ich fahre <strong>[morgen]</strong> <strong>[mit dem Zug]</strong> <strong>[nach Berlin]</strong>.<br/>
-        <span style={{fontSize:11,color:"#888"}}>= I'm going [tomorrow] [by train] [to Berlin].</span>
+      <div style={{fontSize:13,fontWeight:700,color:"#1565C0",marginBottom:8}}>Time-Manner-Place (TeMaPla) — adverbials always in this order:</div>
+      <div style={{display:"grid",gridTemplateColumns:"40px 1fr 1fr 1fr",gap:4,marginBottom:6,fontSize:10,fontWeight:700,color:"#999"}}>
+        <div></div><div style={{color:"#E65100"}}>Time (wann?)</div><div style={{color:"#1565C0"}}>Manner (wie?)</div><div style={{color:"#2E7D32"}}>Place (wo?/wohin?)</div>
       </div>
+      {[{s:"Ich fahre",t:"morgen",m:"mit dem Zug",p:"nach Berlin."},
+        {s:"Er geht",t:"jeden Tag",m:"schnell",p:"zur Arbeit."},
+        {s:"Sie hat",t:"gestern",m:"alleine",p:"im Park gesessen."},
+      ].map((r,i)=>(<div key={i} style={{fontSize:12,marginBottom:4,display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+        <span style={{color:"#555"}}>{r.s}</span>
+        <span style={{background:"#FFF3E0",color:"#E65100",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{r.t}</span>
+        <span style={{background:"#E3F2FD",color:"#1565C0",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{r.m}</span>
+        <span style={{background:"#E8F5E9",color:"#2E7D32",padding:"1px 6px",borderRadius:4,fontWeight:700}}>{r.p}</span>
+      </div>))}
+      <div style={{fontSize:11,color:"#888",marginTop:6}}>Violating TeMaPla is grammatical but sounds unnatural to a native ear.</div>
     </div>
   </div>);
 }

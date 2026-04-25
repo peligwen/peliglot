@@ -28,4 +28,18 @@ export function Guide33(){return(<div>
     • Fewer 'please' and 'sorry' than English — it's <strong style={{color:"#FFE77A"}}>efficiency, not hostility</strong><br/>
     • Direct feedback = they trust you to handle it
   </div></DarkBox>
+  <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#1a1a1a",marginBottom:8}}>Same request — two cultures:</div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+      <div style={{background:"#F3F8FF",borderRadius:8,padding:"8px 12px"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#1565C0",marginBottom:4,textTransform:"uppercase"}}>American English</div>
+        <div style={{fontSize:12,color:"#555",fontStyle:"italic"}}>"Could I maybe possibly get a coffee, if it's not too much trouble?"</div>
+      </div>
+      <div style={{background:"#F5FFF5",borderRadius:8,padding:"8px 12px"}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#2E7D32",marginBottom:4,textTransform:"uppercase"}}>German equivalent (equally polite)</div>
+        <div style={{fontSize:13,color:"#333",fontWeight:700}}>"Einen Kaffee, bitte."</div>
+      </div>
+    </div>
+    <div style={{fontSize:11,color:"#888",marginTop:8}}>The German phrase is not rude — it's the normal, polite way to order. No hedging needed; the context handles it.</div>
+  </div>
 </div>);}

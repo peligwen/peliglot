@@ -1,4 +1,5 @@
 import { Card } from '../../../components/Card';
+import { ExpandSection } from '../../../components/ExpandSection';
 
 export function Guide28(){
   return(<div>
@@ -20,6 +21,18 @@ export function Guide28(){
         </div>
       </Card>
     </div>
+    <ExpandSection title="nicht placement rules (where exactly?)" color="#C62828">
+      <div style={{background:"#fff",borderRadius:10,padding:"12px 14px",border:"1px solid #e0dcd5"}}>
+        {[{rule:"End of clause — negating the whole sentence",ex:"Ich habe das Buch nicht gelesen.",note:"(whole action negated)"},
+          {rule:"Before adjective/adverb/PP — negating specifically",ex:"Das ist nicht gut. · Er fährt nicht schnell.",note:""},
+          {rule:"Before non-conjugated verb parts (participle, infinitive, separable prefix)",ex:"Ich habe es nicht gemacht. · Er kommt nicht mit.",note:"Common intermediate error: *Ich habe nicht es gemacht."},
+        ].map((r,i)=>(<div key={i} style={{paddingBottom:8,marginBottom:8,borderBottom:i<2?"1px solid #f0eeeb":"none"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#C62828",marginBottom:3}}>{i+1}. {r.rule}</div>
+          <div style={{fontSize:13,color:"#555",fontStyle:"italic"}}>{r.ex}</div>
+          {r.note&&<div style={{fontSize:11,color:"#aaa"}}>{r.note}</div>}
+        </div>))}
+      </div>
+    </ExpandSection>
     <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:"1px solid #e0dcd5",marginBottom:16}}>
       <div style={{fontSize:13,fontWeight:700,color:"#2E7D32",marginBottom:6}}>Questions — just move the verb:</div>
       <div style={{fontSize:13,color:"#555",lineHeight:1.7}}>
