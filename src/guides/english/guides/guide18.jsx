@@ -33,5 +33,14 @@ export function Guide18(){
       <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>'They' como singular (género desconocido/no binario)</div>
       <div style={{fontSize:12,color:"#555"}}>Someone left <strong>their</strong> bag. · If anyone calls, tell <strong>them</strong> I'm busy.<br/><span style={{fontSize:11,color:"#888"}}>Esto es inglés moderno estándar, no un error.</span></div>
     </div>
+    <div style={{background:"#FFEBEE",borderRadius:10,padding:"10px 14px",border:"1px solid #FFCDD2",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#C62828",marginBottom:4}}>⚠️ Trampa: "My friend and I" vs "My friend and me"</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.7}}>
+        <strong>Prueba</strong>: quita la otra persona — ¿usarías I o me solo?<br/>
+        ✅ <em>My friend and <strong>I</strong> went.</em> (= I went ✓)<br/>
+        ✅ <em>She called my friend and <strong>me</strong>.</em> (= She called me ✓)<br/>
+        ❌ <em>She called my friend and <strong>I</strong>.</em> — muy frecuente, siempre incorrecto en formal.
+      </div>
+    </div>
   </div>);
 }

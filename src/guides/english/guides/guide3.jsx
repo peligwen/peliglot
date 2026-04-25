@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
+import { speakEnglish } from '../../../utils/speech';
 import { Chatt } from './_helpers';
 
 const consonantChallenges=[
@@ -7,7 +8,7 @@ const consonantChallenges=[
   {sound:"/ʃ/ (sh)",words:["ship","show","push","she"],tip:"Labios hacia adelante como soplando una vela y di 'shhh'. No existe en español.",color:"#1565C0",cat:"sibilant"},
   {sound:"/dʒ/ (j)",words:["judge","job","gym","age"],tip:"Como 'ch' pero con vibración en la garganta. NO es la J española (/x/ de 'jota').",color:"#2E7D32",cat:"sibilant"},
   {sound:"/z/",words:["zoo","easy","is","has"],tip:"Como /s/ pero CON vibración. Mano en la garganta — debes sentir vibración. La S entre vocales en inglés muchas veces es /z/.",color:"#6A1B9A",cat:"sibilant"},
-  {sound:"/θ/ (th sorda)",words:["think","bath","three"],tip:"¡Lengua entre los dientes! Sin vibración. Como la Z de España.",color:"#E65100",cat:"dental"},
+  {sound:"/θ/ (th sorda)",words:["think","bath","three"],tip:"¡Lengua entre los dientes! Sin vibración. Sonido NUEVO — no existe en español latinoamericano (la Z de España es similar, pero la mayoría de hablantes latinoamericanos no la tienen). Practica: 'ssss' con lengua entre los dientes.",color:"#E65100",cat:"dental"},
   {sound:"/ð/ (th sonora)",words:["the","this","mother"],tip:"¡Lengua entre los dientes CON vibración! Como la D suave del español entre vocales.",color:"#E65100",cat:"dental"},
   {sound:"S + consonante",words:["stop","speak","school","sport"],tip:"¡NO pongas 'e' antes! En español: escuela. En inglés: school. Practica: 'ssssstop'.",color:"#880E4F",cat:"cluster"},
   {sound:"Grupos finales",words:["texts","months","strengths"],tip:"El inglés acumula consonantes al final. No las cortes ni añadas vocales.",color:"#00695C",cat:"cluster"},
@@ -30,7 +31,10 @@ export function Guide3(){
           <div style={{display:"flex",gap:4,flexWrap:"wrap",flex:1}}>{c.words.map((w,j)=>(<span key={j} style={{fontSize:12,color:"#888",fontStyle:"italic"}}>{w}{j<c.words.length-1?" ·":""}</span>))}</div>
           <span style={{fontSize:14,color:"#ccc"}}>{isSel?"▲":"▼"}</span>
         </div>
-        {isSel&&<div style={{padding:"10px 14px",borderTop:"1px solid #f0eeeb",background:"#FAFAF5",fontSize:12,color:"#555",lineHeight:1.6}}>{c.tip}</div>}
+        {isSel&&<div style={{padding:"10px 14px",borderTop:"1px solid #f0eeeb",background:"#FAFAF5"}}>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:6}}>{c.words.filter(w=>!w.includes("≠")).map((w,j)=>(<button key={j} onClick={e=>{e.stopPropagation();speakEnglish(w.split(" ")[0]);}} style={{background:`${c.color}15`,border:`1px solid ${c.color}30`,borderRadius:6,padding:"3px 8px",cursor:"pointer",fontSize:12,color:c.color,fontWeight:600}}>🔊 {w.split(" ")[0]}</button>))}</div>
+          <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>{c.tip}</div>
+        </div>}
       </div>
     );})}
     <Chatt text="El inglés sureño suaviza consonantes finales: 'didn't' → 'din't', 'last night' → 'las' night'. Normal aquí, pero practica las formas completas para situaciones formales." />

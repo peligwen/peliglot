@@ -7,7 +7,7 @@ export function Guide22(){
   const tables={
     short:{title:"Cortos: -er / -est",data:[{b:"tall",c:"taller",s:"tallest"},{b:"big",c:"bigger",s:"biggest"},{b:"happy",c:"happier",s:"happiest"},{b:"nice",c:"nicer",s:"nicest"},{b:"hot",c:"hotter",s:"hottest"}],color:"#E65100"},
     long:{title:"Largos (2+ sílabas): more / most",data:[{b:"beautiful",c:"more beautiful",s:"most beautiful"},{b:"interesting",c:"more interesting",s:"most interesting"},{b:"expensive",c:"more expensive",s:"most expensive"},{b:"important",c:"more important",s:"most important"}],color:"#1565C0"},
-    irreg:{title:"Irregulares (memoriza)",data:[{b:"good",c:"better",s:"best"},{b:"bad",c:"worse",s:"worst"},{b:"far",c:"farther",s:"farthest"},{b:"little",c:"less",s:"least"},{b:"much/many",c:"more",s:"most"}],color:"#C62828"},
+    irreg:{title:"Irregulares (memoriza)",data:[{b:"good",c:"better",s:"best"},{b:"bad",c:"worse",s:"worst"},{b:"far (distancia)",c:"farther",s:"farthest"},{b:"far (abstracto)",c:"further",s:"furthest"},{b:"little",c:"less",s:"least"},{b:"much/many",c:"more",s:"most"}],color:"#C62828"},
   };
   const t=tables[mode];
   return(<div>
@@ -25,6 +25,11 @@ export function Guide22(){
     <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
       <div style={{fontSize:13,fontWeight:700,color:"#2E7D32",marginBottom:4}}>Comparaciones con as...as:</div>
       <div style={{fontSize:13,color:"#555"}}>She's <strong>as tall as</strong> me. = Es tan alta como yo.<br/>It's <strong>not as cold as</strong> yesterday. = No hace tanto frío como ayer.</div>
+    </div>
+    <div style={{background:"#EDE7F6",borderRadius:8,padding:"8px 12px",fontSize:11,color:"#4527A0",marginBottom:12}}>
+      💡 <strong>farther/farthest</strong> = distancia física: "Nashville is farther than Knoxville."<br/>
+      <strong>further/furthest</strong> = distancia abstracta o "más": "further details, further information, nothing could be further from the truth."<br/>
+      En conversación AmE se mezclan cada vez más, pero la distinción ayuda en escritura.
     </div>
     <Chatt text="Intensificadores sureños: 'right' = muy ('right cold'), 'real' = realmente ('real nice'), 'plumb' = completamente ('plumb crazy')." />
   </div>);

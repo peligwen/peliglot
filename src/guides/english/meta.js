@@ -1,6 +1,6 @@
 export const guidesMeta = [
   {id:1,title:"The Alphabet",subtitle:"26 letras, 44+ sonidos",cat:"Pronunciación",color:"#1565C0",icon:"🔤"},
-  {id:2,title:"Vowel Sounds",subtitle:"15 vocales vs tus 5",cat:"Pronunciación",color:"#C62828",icon:"🗣"},
+  {id:2,title:"Vowel Sounds",subtitle:"~16 vocales americanas vs tus 5",cat:"Pronunciación",color:"#C62828",icon:"🗣"},
   {id:3,title:"Consonant Challenges",subtitle:"Sonidos que no existen en español",cat:"Pronunciación",color:"#2E7D32",icon:"👅"},
   {id:4,title:"Spelling Patterns",subtitle:"La ortografía caótica del inglés",cat:"Pronunciación",color:"#6A1B9A",icon:"✍"},
   {id:5,title:"Stress & Rhythm",subtitle:"El ritmo del inglés americano",cat:"Pronunciación",color:"#E65100",icon:"🎵"},

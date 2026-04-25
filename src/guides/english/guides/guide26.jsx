@@ -18,7 +18,7 @@ export function Guide26(){
         <span style={{fontSize:12,color:"#888"}}>{c.form}</span>
       </div>))}
     </Card>
-    <Nota text="Usa los conectores casuales al hablar, los formales al escribir. 'However' en una conversación suena raro. 'But' en un ensayo suena informal." />
+    <Nota text="Uso de conectores: 'but/so' son conjunciones coordinantes — van con coma. 'However/therefore' son adverbios conjuntivos — necesitan PUNTO Y COMA o punto nuevo: ✅ 'He was tired; however, he worked.' ❌ 'He was tired, however he worked.' (coma sola = error grave)" />
   </div>);
 }
 

@@ -25,8 +25,8 @@ const engLetters=[
   {l:"U",sounds:["/ʌ/ cup","/uː/ blue","/ʊ/ put","/juː/ use"],tricky:true,type:"vowel",tip:"4 sonidos posibles. /ʌ/ en 'cup' no existe en español."},
   {l:"V",sounds:["/v/ very"],tricky:true,type:"consonant",tip:"¡Dientes superiores tocan labio inferior! En español B y V suenan igual. En inglés son DIFERENTES."},
   {l:"W",sounds:["/w/ water"],tricky:false,type:"consonant",tip:"Muda en: write, wrong, wrist, wrap."},
-  {l:"X",sounds:["/ks/ box","/ɡz/ exam"],tricky:false,type:"consonant",tip:"/ks/ al final, /ɡz/ antes de vocal acentuada."},
-  {l:"Y",sounds:["/j/ yes","/aɪ/ my","/ɪ/ gym"],tricky:false,type:"consonant",tip:"Como consonante = /j/ (yes). Como vocal = /aɪ/ (my) o /ɪ/ (gym)."},
+  {l:"X",sounds:["/ks/ box","/ɡz/ exam"],tricky:false,type:"consonant",tip:"/ks/ al final. /ɡz/ en palabras como exam, exist, exact (vocal acentuada sigue). Pero expect, excel tienen /ks/ — el patrón es aproximado, no absoluto."},
+  {l:"Y",sounds:["/j/ yes","/aɪ/ my","/ɪ/ gym","/i/ happy"],tricky:false,type:"consonant",tip:"Como consonante = /j/ (yes). Como vocal al final no acentuado = /i/ (happy, funny, every) — el uso más frecuente. También /aɪ/ (my) y /ɪ/ (gym)."},
   {l:"Z",sounds:["/z/ zoo"],tricky:true,type:"consonant",tip:"Siempre con vibración /z/. NO es la Z española (/s/ o /θ/)."},
 ];
 

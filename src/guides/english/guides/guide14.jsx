@@ -21,6 +21,18 @@ export function Guide14(){
       </div>))}
     </Card>
     <Trampa text="El error más frecuente: poner 'the' donde el español usa 'el/la' para lo general. 'Me gusta LA música' = 'I like music' (sin THE)." />
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#1565C0",marginBottom:6}}>THE con nombres propios:</div>
+      {[{rule:"Países plurales / uniones",ex:"the United States, the Netherlands, the Philippines, the UAE"},
+        {rule:"Ríos, océanos, cordilleras, desiertos",ex:"the Mississippi, the Pacific, the Rockies, the Sahara, the Tennessee River"},
+        {rule:"Instituciones definitorias",ex:"the Pentagon, the Supreme Court, the White House"},
+        {rule:"Sin THE: montañas solas, lagos, islas individuales",ex:"Mount Rainier, Lake Michigan, Cuba, Hawaii"},
+        {rule:"Sin THE: idiomas, continentes, la mayoría de ciudades/países",ex:"Spanish, Europe, Mexico, Chattanooga"},
+      ].map((r,i)=>(<div key={i} style={{padding:"4px 0",borderBottom:i<4?"1px solid #f0eeeb":"none"}}>
+        <span style={{fontSize:12,fontWeight:700,color:"#1565C0"}}>{r.rule}:</span>{" "}
+        <span style={{fontSize:11,color:"#888",fontStyle:"italic"}}>{r.ex}</span>
+      </div>))}
+    </div>
   </div>);
 }
 

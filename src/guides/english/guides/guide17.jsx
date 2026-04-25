@@ -17,12 +17,12 @@ export function Guide17(){return(<div>
         <span style={{fontSize:11,color:"#888"}}>NO: 'the house of Maria'</span>
       </div>
     </Card>
-    <Card color="#1565C0" title="'of' para cosas">
+    <Card color="#1565C0" title="'of' para cosas (en general)">
       <div style={{padding:"10px 14px",fontSize:13,color:"#555",lineHeight:1.6}}>
         the door <strong style={{color:"#1565C0"}}>of</strong> the house<br/>
         the end <strong style={{color:"#1565C0"}}>of</strong> the movie<br/>
         the color <strong style={{color:"#1565C0"}}>of</strong> the car<br/>
-        <span style={{fontSize:11,color:"#888"}}>NO: 'the house's door'</span>
+        <span style={{fontSize:11,color:"#888"}}>✅ pero también: today<strong style={{color:"#E65100"}}>'s</strong> news · the car<strong style={{color:"#E65100"}}>'s</strong> engine · a week<strong style={{color:"#E65100"}}>'s</strong> vacation</span>
       </div>
     </Card>
   </div>

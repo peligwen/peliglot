@@ -4,7 +4,7 @@ import { Chatt } from './_helpers';
 
 export function Guide32(){
   const [mode,setMode]=useState("universal");
-  const universal=[{en:"It's a piece of cake",es:"Es pan comido"},{en:"Break a leg",es:"¡Mucha suerte!"},{en:"Hit the nail on the head",es:"Dar en el clavo"},{en:"Cost an arm and a leg",es:"Costar un ojo de la cara"},{en:"No way!",es:"¡No puede ser!"},{en:"My bad",es:"Mi culpa"},{en:"I'm down",es:"Le entro / me apunto"},{en:"It's not my cup of tea",es:"No es lo mío"}];
+  const universal=[{en:"It's a piece of cake",es:"Es pan comido"},{en:"Break a leg",es:"¡Mucha suerte!"},{en:"Hit the nail on the head",es:"Dar en el clavo"},{en:"Cost an arm and a leg",es:"Costar un ojo de la cara"},{en:"No way!",es:"¡No puede ser!"},{en:"My bad",es:"Mi culpa"},{en:"I'm down",es:"Le entro / me apunto — informal/joven. En contexto profesional di 'I'm in' o 'Sounds good'"},{en:"It's not my cup of tea",es:"No es lo mío"}];
   const southern=[{en:"Bless your heart",es:"Simpatía genuina O insulto suave"},{en:"I reckon",es:"Yo creo / supongo"},{en:"Over yonder",es:"Por allá"},{en:"Fixin' to",es:"A punto de"},{en:"Might could",es:"Tal vez pueda"},{en:"Carry me to the store",es:"Llévame a la tienda (en carro)"},{en:"Mash the button",es:"Presiona el botón"},{en:"Coke (= any soda)",es:"Cualquier refresco ('What kind of Coke?' 'Sprite')"}];
   const items=mode==="universal"?universal:southern;
   return(<div>

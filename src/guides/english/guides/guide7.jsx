@@ -46,7 +46,15 @@ export function Guide7(){
         <span style={{fontWeight:700,color:"#6A1B9A"}}>{v.pp}</span>
       </div>))}
     </Card>
-    <Chatt text="Modales dobles: 'I might could help you' = Tal vez pueda ayudarte. 'Used to could' = Antes podía. Gramaticalmente sureños, no errores." />
+    <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#6A1B9A",marginBottom:4}}>gone vs been — trampa frecuente:</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>
+        <strong style={{color:"#6A1B9A"}}>BEEN</strong> = visitar y haber vuelto: <em>"Have you ever been to Nashville?"</em> (= ¿fuiste y volviste?)<br/>
+        <strong style={{color:"#C62828"}}>GONE</strong> = se fue y todavía está allá: <em>"She's gone to Atlanta"</em> (= se fue y sigue allá)<br/>
+        <span style={{fontSize:11,color:"#888"}}>❌ "Have you ever gone to Nashville?" implica que todavía estás allá.</span>
+      </div>
+    </div>
+    <Chatt text="El sureño usa 'dove' y 'dived' para el pasado de 'dive' — ambas formas son válidas en AmE. También: 'drug' (arrastró, pasado dialectal de 'drag') se oye en el habla rural de Chattanooga." />
   </div>);
 }
 

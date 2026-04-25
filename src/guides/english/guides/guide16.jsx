@@ -25,5 +25,14 @@ export function Guide16(){
       </div>
       <div style={{fontSize:11,color:"#888",marginTop:4}}>Usa 'a pair of': a pair of pants, a pair of scissors</div>
     </div>
+  <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #e0dcd5",marginBottom:12}}>
+    <div style={{fontSize:12,fontWeight:700,color:"#880E4F",marginBottom:6}}>Plurales greco-latinos (en inglés culto/académico):</div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:4}}>
+      {[{s:"analysis",p:"analyses"},{s:"crisis",p:"crises"},{s:"criterion",p:"criteria"},{s:"phenomenon",p:"phenomena"},{s:"cactus",p:"cacti/cactuses"},{s:"index",p:"indices/indexes"}].map((w,i)=>(<div key={i} style={{fontSize:12,color:"#555",padding:"3px 0",borderBottom:(i<4)?"1px solid #f0eeeb":"none"}}>
+        <span style={{color:"#999"}}>{w.s}</span> → <span style={{fontWeight:700,color:"#880E4F"}}>{w.p}</span>
+      </div>))}
+    </div>
+    <div style={{fontSize:11,color:"#888",marginTop:4}}>Formas regulares (-es) también se aceptan en inglés cotidiano para algunos (cactuses, indexes).</div>
+  </div>
   </div>);
 }

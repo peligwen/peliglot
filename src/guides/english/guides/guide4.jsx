@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight as Nota } from '../../../components/Insight';
+import { speakEnglish } from '../../../utils/speech';
 
 const spellingPatterns=[
   {pattern:"-tion",sound:"/ʃən/",examples:["nation","education","information","situation"],color:"#6A1B9A"},
   {pattern:"-ight",sound:"/aɪt/",examples:["night","light","fight","right","might"],color:"#C62828"},
-  {pattern:"-ough",sound:"¡7 sonidos!",examples:["through /uː/","though /oʊ/","thought /ɔː/","tough /ʌf/","cough /ɒf/","bough /aʊ/"],color:"#E65100"},
+  {pattern:"-ough",sound:"¡6 sonidos!",examples:["through /u/","though /oʊ/","thought /ɔ/","tough /ʌf/","cough /ɔf/","bough /aʊ/"],color:"#E65100"},
   {pattern:"-ness",sound:"/nəs/",examples:["happiness","darkness","kindness","sadness"],color:"#2E7D32"},
   {pattern:"-ful",sound:"/fəl/",examples:["beautiful","wonderful","careful","useful"],color:"#1565C0"},
   {pattern:"kn-",sound:"/n/ (k muda)",examples:["know","knee","knife","knock","knit"],color:"#880E4F"},
   {pattern:"wr-",sound:"/r/ (w muda)",examples:["write","wrong","wrist","wrap","wreck"],color:"#00695C"},
+  {pattern:"i before e",sound:"regla general",examples:["believe","achieve","piece","field","— PERO: receive","ceiling","weigh","neighbor","weird","height"],color:"#880E4F"},
 ];
 
 export function Guide4(){
@@ -30,7 +32,7 @@ export function Guide4(){
       <div style={{background:"#fff",borderRadius:14,overflow:"hidden",border:`2px solid ${p.color}`,marginBottom:16,animation:"fadeIn 0.2s ease"}}>
         <div style={{background:p.color,padding:"12px 16px",color:"#fff"}}><span style={{fontSize:18,fontWeight:800,fontFamily:"monospace"}}>{p.pattern}</span> <span style={{opacity:.7,marginLeft:8}}>= {p.sound}</span></div>
         <div style={{padding:"10px 16px",display:"flex",flexWrap:"wrap",gap:6}}>
-          {p.examples.map((e,j)=>(<span key={j} style={{padding:"5px 12px",borderRadius:8,background:`${p.color}10`,color:p.color,fontSize:13,fontWeight:600,border:`1px solid ${p.color}25`}}>{e}</span>))}
+          {p.examples.map((e,j)=>{const isWord=!e.startsWith("—")&&!e.includes("/");return(<span key={j} onClick={isWord?()=>speakEnglish(e.split(" ")[0]):undefined} style={{padding:"5px 12px",borderRadius:8,background:`${p.color}10`,color:p.color,fontSize:13,fontWeight:600,border:`1px solid ${p.color}25`,cursor:isWord?"pointer":"default"}}>{isWord?"🔊 ":""}{e}</span>);})}
         </div>
       </div>
     );})()}

@@ -4,12 +4,14 @@ import { Trampa } from './_helpers';
 export function Guide29(){return(<div>
   <Card color="#2E7D32" title="Pronombres relativos" subtitle="Quién, cuál, que, cuyo">
     {[{pron:"WHO",use:"personas (sujeto)",ex:"The woman who called is here.",color:"#2E7D32"},
-      {pron:"WHICH",use:"cosas (no-definitorias, con comas)",ex:"This book, which I bought yesterday, is great.",color:"#1565C0"},
-      {pron:"THAT",use:"personas o cosas (definitorias, sin comas)",ex:"The book that I read was good.",color:"#6A1B9A"},
+      {pron:"WHICH",use:"cosas (no-definitoria, con comas — y también restrictiva en BrE y conversación)",ex:"This book, which I bought yesterday, is great. / The book which I read was good (conversacional).",color:"#1565C0"},
+      {pron:"THAT",use:"personas o cosas (definitoria/restrictiva, sin comas) — estilo formal AmE",ex:"The book that I read was good. (en estilo formal AmE, 'that' es la preferida en cláusulas restrictivas)",color:"#6A1B9A"},
+      {pron:"WHOM",use:"personas (objeto, formal/escrito)",ex:"The person whom I met was kind. (informal: 'who I met')",color:"#880E4F"},
+      {pron:"WHEN/WHY",use:"tiempo (when) · razón (why)",ex:"The day when we met... / The reason why she left...",color:"#4527A0"},
       {pron:"WHOSE",use:"posesión",ex:"The man whose car broke down...",color:"#E65100"},
       {pron:"WHERE",use:"lugar",ex:"The restaurant where we ate...",color:"#C62828"},
       {pron:"∅ omitido",use:"cuando es OBJETO (se puede omitir)",ex:"The book (that) I read... ✅ The man (who) I met... ✅",color:"#888"},
-    ].map((r,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<5?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${r.color}`}}>
+    ].map((r,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<7?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${r.color}`}}>
       <span style={{background:r.color,color:"#fff",padding:"1px 8px",borderRadius:4,fontSize:12,fontWeight:800}}>{r.pron}</span> <span style={{fontSize:11,color:"#888"}}>{r.use}</span><br/>
       <span style={{fontSize:12,color:"#555",fontStyle:"italic"}}>{r.ex}</span>
     </div>))}

@@ -31,6 +31,10 @@ export function Guide15(){
         <div style={{fontSize:12,color:"#555"}}>Do you have any? I don't have any money.</div>
       </div>
     </div>
+    <div style={{background:"#EDE7F6",borderRadius:8,padding:"8px 12px",fontSize:12,color:"#4527A0",marginBottom:12}}>
+      💡 <strong>news</strong> termina en -s pero es <strong>SINGULAR</strong>: "The news IS bad" ✅ — "The news are bad" ❌<br/>
+      Lo mismo: <em>mathematics IS, physics IS, economics IS, politics IS</em> (terminan en -s, se conjugan en singular).
+    </div>
     <Nota text="A LOT OF funciona con contables e incontables — es la opción más segura si no estás seguro/a." />
   </div>);
 }
