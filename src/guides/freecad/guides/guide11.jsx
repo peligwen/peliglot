@@ -5,11 +5,12 @@ import { Insight, SketchDiagram } from './_helpers';
 export function Guide11(){
   const [width,setWidth]=useState(40);
   const shortcuts=[
-    {key:"K, D",action:"Smart Distance (auto H/V/slanted)"},
-    {key:"K, H",action:"Horizontal distance"},
-    {key:"K, V",action:"Vertical distance"},
+    {key:"D",action:"Dimension (contextual: distance, radius, angle…)"},
+    {key:"K, D",action:"Distance — point-to-point / length (legacy)"},
+    {key:"L",action:"Horizontal distance"},
+    {key:"I",action:"Vertical distance"},
     {key:"K, R",action:"Radius"},
-    {key:"K, N",action:"Diameter"},
+    {key:"K, O",action:"Diameter"},
     {key:"K, A",action:"Angle"},
     {key:"K, L",action:"Lock (fix X and Y of a point)"},
   ];
@@ -47,7 +48,7 @@ export function Guide11(){
       ]}
     />
     <div style={{background:"#162a3d",borderRadius:10,border:"1px solid #243a52",overflow:"hidden",marginBottom:14}}>
-      <div style={{padding:"7px 14px",background:"#1e3a56",fontSize:10,fontWeight:700,color:"#607387",letterSpacing:1.5,textTransform:"uppercase"}}>Dimension shortcuts (K, group)</div>
+      <div style={{padding:"7px 14px",background:"#1e3a56",fontSize:10,fontWeight:700,color:"#607387",letterSpacing:1.5,textTransform:"uppercase"}}>Dimension shortcuts (FreeCAD 1.0)</div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)"}}>
         {shortcuts.map((sc,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 12px",borderTop:"1px solid #1e3a56",borderRight:i%2===0?"1px solid #1e3a56":"none"}}>
           <kbd style={{background:"#0f2a3d",border:"1px solid #2a4060",borderRadius:4,padding:"2px 7px",fontSize:11,color:"#3498db",fontFamily:"monospace",fontWeight:700,whiteSpace:"nowrap"}}>{sc.key}</kbd>
@@ -55,6 +56,6 @@ export function Guide11(){
         </div>))}
       </div>
     </div>
-    <Insight text="Use K, D (smart distance) by default — it picks the right kind of distance based on the line orientation. Save H/V/angle shortcuts for when you need to override the smart pick." />
+    <Insight text="Use D (Dimension) by default in FreeCAD 1.0 — it picks the right kind of constraint (distance, radius, angle) based on what you select. K, D is the legacy point-to-point distance tool; reach for it only when you want that specific behavior." />
   </div>);
 }

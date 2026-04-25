@@ -13,7 +13,7 @@ export function Guide1(){
     {path:"Edit > Preferences > General","setting":"Auto-save every 5 min","value":"ON"},
     {path:"Edit > Preferences > General","setting":"Create backup files (keep ≥ 2)","value":"ON"},
     {path:"Edit > Preferences > Units","setting":"Unit system","value":"Standard (mm)"},
-    {path:"Edit > Preferences > Part Design","setting":"Auto refine model","value":"OFF — causes Toponaming issues"},
+    {path:"Edit > Preferences > Part Design","setting":"Auto refine model","value":"Default ON; toggle OFF if you hit helix/thread/cascading-fillet weirdness after booleans"},
   ];
   const btnStyle=(active)=>({padding:"6px 14px",borderRadius:8,border:active?"2px solid #e67e22":"1.5px solid #243a52",background:active?"#1a2f47":"#162a3d",color:active?"#e67e22":"#8fa3b8",cursor:"pointer",fontWeight:700,fontSize:13});
   return(<div>

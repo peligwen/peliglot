@@ -18,7 +18,7 @@ export function Guide3(){
     {key:"5",action:"Bottom view"},
     {key:"6",action:"Left view"},
     {key:"V, F",action:"Fit all (press V then F)"},
-    {key:"V, O",action:"Toggle ortho / perspective"},
+    {key:"V, P",action:"Toggle perspective"},
     {key:"Space",action:"Toggle visibility of selected"},
   ];
   const s=styles[nav];

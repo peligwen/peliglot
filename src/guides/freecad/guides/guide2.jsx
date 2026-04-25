@@ -26,6 +26,6 @@ export function Guide2(){
         <div style={{fontSize:11,color:w.vc,fontWeight:700,textAlign:"right",whiteSpace:"nowrap"}}>{w.verdict}</div>
       </div>))}
     </div>
-    <Insight text="Switching workbenches only changes the toolbar. Your model and its features stay the same. Don't overthink which one you're in — Part Design opens the others automatically when needed." />
+    <Insight text="Activating a workbench just swaps the toolbar — your features and history don't move. Right-click any toolbar to mix tools across workbenches (e.g. enable Sketcher constraints while in Mesh) and you'll skip most of the constant switching tax." />
   </div>);
 }

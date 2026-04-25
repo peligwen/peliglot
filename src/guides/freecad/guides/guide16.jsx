@@ -51,6 +51,6 @@ export function Guide16(){
     <div style={{background:"#162a3d",borderRadius:10,padding:"12px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:13,color:"#e8ecf0",lineHeight:1.6}}>
       <strong style={{color:"#e67e22"}}>Important:</strong> The profile <strong>must</strong> be entirely on one side of the axis — it cannot cross it. Add a <strong style={{color:"#f39c12"}}>construction line</strong> in the sketch itself to represent the axis, or reference an external axis (X/Y/Z of the body, or a Datum Line).
     </div>
-    <Insight text="Revolution over 360° is how you model anything cylindrical — bottles, spools, wheels. For print orientation, consider revolving around the Z axis so the part prints standing up (fewer supports)." />
+    <Insight text="Revolutions inherit the sketch plane's normal as the default axis. Build the profile on XZ and revolve around Z, and the part stands up the Z-axis automatically — ready to export and print without re-orienting in the slicer." />
   </div>);
 }

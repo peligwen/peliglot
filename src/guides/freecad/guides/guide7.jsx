@@ -15,7 +15,7 @@ export function Guide7(){
   const centeredRectGeo=[{type:"line",x1:80,y1:55,x2:240,y2:55},{type:"line",x1:240,y1:55,x2:240,y2:155},{type:"line",x1:240,y1:155,x2:80,y2:155},{type:"line",x1:80,y1:155,x2:80,y2:55},{type:"line",x1:160,y1:20,x2:160,y2:190,construction:true}];
   return(<div>
     <DarkBox title="RECTS & POLYGONS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
-      Rectangle is the most common shape. <strong style={{color:"#f39c12"}}>Corner rectangle (G, R)</strong> is the default — click two corners. <strong style={{color:"#f39c12"}}>Centered rectangle (G, O)</strong> draws from center with built-in symmetry — perfect for parts you want mirrored. <strong style={{color:"#f39c12"}}>Polygon (G, P)</strong> for nuts, gears, and symmetric parts.
+      Rectangle is the most common shape. <strong style={{color:"#f39c12"}}>Corner rectangle (G, R)</strong> is the default — click two corners. <strong style={{color:"#f39c12"}}>Centered rectangle (G, V)</strong> draws from center with built-in symmetry — perfect for parts you want mirrored. <strong style={{color:"#f39c12"}}>Polygon (G, P, R)</strong> for nuts, gears, and symmetric parts.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
       {["Corner Rect","Centered Rect","Polygon"].map((t,i)=>(<button key={i} onClick={()=>setShape(i)} style={btnStyle(shape===i)}>{t}</button>))}
@@ -24,8 +24,8 @@ export function Guide7(){
       {sideOpts.map(n=>(<button key={n} onClick={()=>setSides(n)} style={{...btnStyle(sides===n),padding:"4px 10px",fontSize:12}}>{n} sides</button>))}
     </div>}
     {shape===0&&<SketchDiagram title="Corner Rectangle (G, R) — click two opposite corners" width={320} height={200} geometry={cornerRectGeo} constraints={[{type:"horizontal",at:{x:160,y:60}},{type:"horizontal",at:{x:160,y:150}},{type:"vertical",at:{x:80,y:105}},{type:"vertical",at:{x:240,y:105}}]} />}
-    {shape===1&&<SketchDiagram title="Centered Rectangle (G, O) — symmetry constraint built in" width={320} height={200} geometry={centeredRectGeo} constraints={[{type:"symmetric",at:{x:160,y:105}}]} />}
-    {shape===2&&<SketchDiagram title={`Regular ${sides}-gon (G, P) — dialog asks for side count`} width={320} height={200} geometry={polyGeo(sides,160,105,65)} constraints={[{type:"fix",at:{x:160,y:105}}]} />}
+    {shape===1&&<SketchDiagram title="Centered Rectangle (G, V) — symmetry constraint built in" width={320} height={200} geometry={centeredRectGeo} constraints={[{type:"symmetric",at:{x:160,y:105}}]} />}
+    {shape===2&&<SketchDiagram title={`Regular ${sides}-gon (G, P, R) — dialog asks for side count`} width={320} height={200} geometry={polyGeo(sides,160,105,65)} constraints={[{type:"fix",at:{x:160,y:105}}]} />}
     <Insight text="Always use centered rectangle when you want the part mirrored about the origin. The symmetry is free; adding it later costs two constraints and a lot of re-dimensioning." />
   </div>);
 }

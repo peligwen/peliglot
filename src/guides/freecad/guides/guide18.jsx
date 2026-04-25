@@ -9,10 +9,10 @@ export function Guide18(){
   const sizes=["M3","M4","M5","M6"];
   const htypes=["Clearance","Tap","Counterbore","Countersunk"];
   const data=[
-    {screw:"M3",clearance:3.2,tap:2.5,cbDia:5.5,cbDepth:3.0,csDia:6.0,csAngle:90},
-    {screw:"M4",clearance:4.3,tap:3.3,cbDia:7.0,cbDepth:4.0,csDia:8.0,csAngle:90},
-    {screw:"M5",clearance:5.3,tap:4.2,cbDia:8.5,cbDepth:5.0,csDia:9.5,csAngle:90},
-    {screw:"M6",clearance:6.4,tap:5.0,cbDia:10.0,cbDepth:6.0,csDia:11.5,csAngle:90},
+    {screw:"M3",clearance:3.2,tap:2.5,cbDia:6.5,cbDepth:3.5,csDia:6.0,csAngle:90},
+    {screw:"M4",clearance:4.3,tap:3.3,cbDia:8.0,cbDepth:4.6,csDia:8.0,csAngle:90},
+    {screw:"M5",clearance:5.3,tap:4.2,cbDia:10.0,cbDepth:5.7,csDia:9.5,csAngle:90},
+    {screw:"M6",clearance:6.4,tap:5.0,cbDia:11.0,cbDepth:6.8,csDia:11.5,csAngle:90},
   ];
   const d=data[size];
   const activeDia=htype===0?d.clearance:htype===1?d.tap:htype===2?d.cbDia:d.csDia;
@@ -80,6 +80,9 @@ export function Guide18(){
         <span style={{fontSize:12,color:"#e8ecf0"}}>Ø{row.cbDia}/{row.cbDepth}mm</span>
       </div>))}
     </div>
-    <Insight text="For 3D-printed parts that'll hold a real metric screw, add 0.1–0.3mm to the clearance diameter (FDM shrinks holes). Printer tolerance matters more than ISO spec here." />
+    <div style={{background:"#1a2f47",borderRadius:10,border:"1px solid #2a4060",padding:"10px 14px",marginBottom:14,fontSize:12,color:"#e8ecf0",lineHeight:1.5}}>
+      <strong style={{color:"#e67e22"}}>Heat-set inserts (M3 brass):</strong> design a Ø4.0&nbsp;mm hole × 4.0&nbsp;mm deep, then push the insert in with a soldering iron at ~260&nbsp;°C. Sized for the common community-standard M3×D5xL5 brass insert; verify with your specific brand. Far more reliable than self-tapping into FDM plastic.
+    </div>
+    <Insight text="For 3D-printed parts that'll hold a real metric screw directly, add 0.1–0.3 mm to the clearance diameter (FDM shrinks holes). For repeated assembly/disassembly, use heat-set inserts instead — printer tolerance matters more than ISO spec." />
   </div>);
 }

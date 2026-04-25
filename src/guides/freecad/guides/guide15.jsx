@@ -9,8 +9,8 @@ export function Guide15(){
     {name:"Dimension",desc:"Cut N mm deep into the solid. Depth is a hard number you enter.",tnp:"Safe",tip:"Use only when the cut depth is a real design requirement — not just 'the current thickness.'"},
     {name:"Through All",desc:"Cut completely through the solid in the normal direction. Doesn't care how thick the part is.",tnp:"Very safe — recommended for holes",tip:"The single best choice for bolt holes, vents, and any cut that should penetrate the part. Future-proof."},
     {name:"Symmetric",desc:"Cut N/2 each direction from the sketch plane. Good for slots centered in a part.",tnp:"Safe",tip:"Use for slots or channels that run through the middle of a symmetric body."},
-    {name:"Up to First",desc:"Cut until the pocket hits the first face in its path.",tnp:"Fragile",tip:"Same caveat as Pad Up to First — the target face can move."},
-    {name:"Up to Face",desc:"Cut until the pocket reaches a specific named face.",tnp:"Fragile",tip:"More targeted than Up to First, but still a TNP-risk face reference."},
+    {name:"To first",desc:"Cut until the pocket hits the first face in its path.",tnp:"Fragile",tip:"Same caveat as the Pad equivalent — the target face can move."},
+    {name:"Up to face",desc:"Cut until the pocket reaches a specific picked face.",tnp:"Fragile",tip:"More targeted than To first, but still a TNP-risk face reference."},
   ];
   const m=modes[mode];
   const blockGeo=[
@@ -27,7 +27,7 @@ export function Guide15(){
     3:[{type:"line",x1:120,y1:80,x2:120,y2:160},{type:"line",x1:120,y1:160,x2:200,y2:160},{type:"line",x1:200,y1:160,x2:200,y2:80}],
     4:[{type:"line",x1:120,y1:80,x2:120,y2:155},{type:"line",x1:120,y1:155,x2:200,y2:155},{type:"line",x1:200,y1:155,x2:200,y2:80}],
   };
-  const cutLabels={0:"N mm deep",1:"Through all — full depth",2:"N/2 each side of plane",3:"To first face",4:"To named face"};
+  const cutLabels={0:"N mm deep",1:"Through all — full depth",2:"N/2 each side of plane",3:"To first face",4:"To picked face"};
   return(<div>
     <DarkBox title="POCKET — SUBTRACT FROM SOLID"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#27ae60"}}>Pocket</strong> is the inverse of Pad — it subtracts a sketched profile from the solid. Modes mirror Pad, with <strong style={{color:"#27ae60"}}>Through All</strong> as the killer option for any cut that should fully penetrate the part.

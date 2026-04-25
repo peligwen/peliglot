@@ -20,9 +20,9 @@ export function Guide29(){
   ];
   return(<div>
     <DarkBox title="STL EXPORT &amp; ORIENTATION"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
-      Export to STL when ready to slice. <strong style={{color:"#e74c3c"}}>Mesh refinement</strong> controls tessellation quality — higher = smoother curves but larger files. Set it once per project and forget it unless you see faceting artifacts.
+      Export to STL when ready to slice. FreeCAD&apos;s STL dialog has two parameters — <strong style={{color:"#e74c3c"}}>Linear deflection</strong> (max edge length) and <strong style={{color:"#e74c3c"}}>Angular deflection</strong> (degrees). There are no preset names; the labels below are <em>values you&apos;d enter</em> for each quality level.
     </div></DarkBox>
-    <div style={{fontSize:11,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6,textAlign:"center"}}>Mesh refinement</div>
+    <div style={{fontSize:11,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6,textAlign:"center"}}>Mesh refinement (values to enter)</div>
     <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
       {qualities.map((ql,i)=>(<button key={i} onClick={()=>setQual(i)} style={btnStyle(qual===i)}>{ql.label}</button>))}
     </div>
@@ -44,6 +44,9 @@ export function Guide29(){
     <div style={{background:"#162a3d",borderRadius:10,padding:"10px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:13,color:"#8fa3b8",lineHeight:1.5}}>
       <strong style={{color:"#e8ecf0"}}>Orientation tip:</strong> before export, orient your model so the face you want on the print bed is horizontal (facing down in FreeCAD&apos;s Z-down world). Many slicers import with the FreeCAD orientation — you can re-orient in the slicer, but setting it correctly in FreeCAD avoids confusion.
     </div>
-    <Insight text="For most functional prints, Standard mesh refinement is fine. Jump to Fine only for visible-curve parts (cases, handles). Very Fine is rarely worth the file-size hit." />
+    <div style={{background:"#162a3d",borderRadius:10,padding:"10px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:13,color:"#8fa3b8",lineHeight:1.5}}>
+      <strong style={{color:"#e8ecf0"}}>Pick Binary STL, not ASCII</strong> in the export-format dropdown — same geometry, roughly half the file size. Most slicers prefer binary, and you save bandwidth on every download.
+    </div>
+    <Insight text="For most functional prints, Standard refinement values are fine. Jump to Fine only for visible-curve parts (cases, handles). Very Fine is rarely worth the file-size hit." />
   </div>);
 }

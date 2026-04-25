@@ -10,14 +10,14 @@ export function Guide9(){
      geo:[{type:"line",x1:60,y1:110,x2:260,y2:110},{type:"line",x1:160,y1:40,x2:160,y2:180}],
      after:[{type:"line",x1:60,y1:110,x2:160,y2:110},{type:"line",x1:160,y1:40,x2:160,y2:110}],
      caption:"Trimmed: right segment and bottom segment removed at intersection"},
-    {name:"Extend",shortcut:"G, E",desc:"Click a segment's endpoint to extend it to meet another element.",
+    {name:"Extend",shortcut:"G, Q",desc:"Click a segment's endpoint to extend it to meet another element.",
      geo:[{type:"line",x1:80,y1:110,x2:160,y2:110},{type:"line",x1:160,y1:50,x2:250,y2:170}],
      caption:"Extend short horizontal to meet the diagonal"},
     {name:"Split",shortcut:"G, Z",desc:"Click a point on a segment to split it into two segments joined at that point.",
      geo:[{type:"line",x1:60,y1:110,x2:260,y2:110}],
      constraints:[{type:"coincident",at:{x:160,y:110}}],
      caption:"One line split into two at midpoint — each segment is now independent"},
-    {name:"Fillet",shortcut:"G, F",desc:"Click a corner where two lines meet to replace it with a tangent arc.",
+    {name:"Fillet",shortcut:"G, F, F",desc:"Click a corner where two lines meet to replace it with a tangent arc.",
      geo:[{type:"line",x1:80,y1:160,x2:160,y2:160},{type:"line",x1:160,y1:60,x2:160,y2:160},{type:"arc",cx:160,cy:130,r:30,start:180,end:270}],
      caption:"Corner replaced with a tangent arc — tangent constraints applied automatically"},
     {name:"Offset",shortcut:"Sketcher menu",desc:"Creates an offset copy of selected geometry at a specified distance. Great for wall-thickness outlines.",
@@ -27,7 +27,7 @@ export function Guide9(){
   const t=tools[tool];
   return(<div>
     <DarkBox title="SKETCH EDITING TOOLS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
-      After drawing comes cleaning up. <strong style={{color:"#f39c12"}}>Trim (G, T)</strong> and <strong style={{color:"#f39c12"}}>Extend (G, E)</strong> are the most-used. Fillet builds sketch-level rounded corners so you don&apos;t need to add a Part Design fillet feature later.
+      After drawing comes cleaning up. <strong style={{color:"#f39c12"}}>Trim (G, T)</strong> and <strong style={{color:"#f39c12"}}>Extend (G, Q)</strong> are the most-used. Fillet builds sketch-level rounded corners so you don&apos;t need to add a Part Design fillet feature later.
     </div></DarkBox>
     <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
       {tools.map((to,i)=>(<button key={i} onClick={()=>setTool(i)} style={btnStyle(tool===i)}>{to.name}</button>))}

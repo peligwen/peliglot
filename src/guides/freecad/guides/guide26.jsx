@@ -10,8 +10,8 @@ export function Guide26(){
       steps:["File > Import > .step or .stp","Result: a non-parametric Part solid in the tree","To use in Part Design: wrap in a Body, or use as a SubShapeBinder source","Edges and faces are preserved as clean B-rep geometry"],
       note:"STEP is the right format for vendor-supplied mechanical parts — motor mounts, bearings, brackets. The solid arrives clean and can be used as a reference or boolean partner."},
     {label:"Mesh (STL/OBJ)",color:"#e74c3c",status:"Painful",
-      steps:["File > Import > .stl — result is a Mesh object, not a solid","Switch to Mesh workbench > Mesh tools > Evaluate & Repair","Then: Part workbench > 'Convert to shape from mesh'","Then: Part > 'Convert to solid' — often fails on complex geometry"],
-      note:"High-poly or organic meshes frequently fail conversion. Even when it succeeds, the result is a faceted solid that has thousands of tiny triangular faces — unusable for Part Design features."},
+      steps:["File > Import > .stl — result is a Mesh object, not a solid","Mesh workbench > Mesh tools > Evaluate & Repair to clean any defects","Mesh > Mesh to Shape (optional: Refine shape from mesh — lossy)","Part > Convert to solid — often fails on complex/organic geometry"],
+      note:"High-poly or organic meshes frequently fail conversion. Even when it succeeds, the result is a faceted solid with thousands of tiny triangular faces — unusable for further Part Design features."},
   ];
   const m=modes[mode];
   return(<div>

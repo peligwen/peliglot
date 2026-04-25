@@ -6,8 +6,8 @@ export function Guide25(){
   const [mode,setMode]=useState(0);
   const btnStyle=(active)=>({padding:"6px 14px",borderRadius:8,border:active?"2px solid #9b59b6":"1.5px solid #243a52",background:active?"#1a1a3a":"#162a3d",color:active?"#9b59b6":"#8fa3b8",cursor:"pointer",fontWeight:700,fontSize:13});
   const modes=[
-    {label:"External Geometry (avoid)",color:"#e74c3c",desc:"In Sketcher, click 'External Geometry' then pick an edge/vertex on another body. Blue reference lines appear in your sketch. These lines are tied to the original edge by its topological name — which can change when upstream features are edited (classic TNP). Result: your sketch turns red, feature fails, painful debugging.",status:"Fragile"},
-    {label:"ShapeBinder (recommended)",color:"#27ae60",desc:"In Part Design, use 'Model > Helpers > SubShapeBinder' to copy referenced geometry into the current body as a persistent sub-shape. The binder holds a stable copy that survives upstream edits far better than raw External Geometry. One extra step at creation; saves hours later.",status:"Stable"},
+    {label:"External Geometry (legacy)",color:"#e74c3c",desc:"In Sketcher, click 'External Geometry' then pick an edge/vertex on another body. Blue reference lines appear in your sketch, tied to the original edge by topological name. FreeCAD 1.0's TNP fix has substantially improved reliability here, but cross-body references via raw External Geometry are still the more fragile choice — when topology does shift, your sketch turns red and the feature fails.",status:"Improved in 1.0, still riskier"},
+    {label:"ShapeBinder (recommended)",color:"#27ae60",desc:"In Part Design, use 'Part Design > Helper tools > Create a sub-object(s) shape binder' (toolbar icon also available) to copy referenced geometry into the current body as a persistent sub-shape. After creating it, set the binder's 'Claim children' property to true so the source body can be moved or edited freely without re-breaking the link. One extra step at creation; saves hours later.",status:"Stable"},
   ];
   const m=modes[mode];
   const binderTree=[
@@ -36,6 +36,6 @@ export function Guide25(){
       <div style={{fontSize:13,color:"#e8ecf0",lineHeight:1.6}}>{m.desc}</div>
     </div>
     {mode===1&&<FeatureTree title="ShapeBinder in model tree" nodes={binderTree}/>}
-    <Insight text="Any time you'd use External Geometry across bodies, use a ShapeBinder instead. It's an extra step at creation but saves hours when you inevitably edit upstream features." />
+    <Insight text="Across bodies, prefer SubShapeBinder. Set its 'Claim children' to true so the source can be reordered or edited without re-establishing the link — this is the property that turns the binder from 'fragile' to 'forgiving'." />
   </div>);
 }
