@@ -21,6 +21,9 @@ export function Guide11(){return(<div>
       <div style={{fontSize:11,color:"#aaa",marginTop:2}}>{e.ex}</div>
     </div>))}
   </Card>
+  <div style={{background:"#fff",borderRadius:10,padding:"10px 14px",border:"1px solid #f0eeeb",marginBottom:12,fontSize:12,color:"#555"}}>
+      <strong style={{color:"#880E4F"}}>Specific vs. catch-all alterations:</strong> <strong>G7b9</strong> specifies exactly one alteration. <strong>G7alt</strong> is a catch-all — it means "use any combination of b9, #9, b5(#11), b13." On a jazz chart, G7alt gives the player freedom to choose the specific tensions. When you see G7#11 or G7b9, a specific color is requested.
+    </div>
   <Insight text="You don't need extensions to write great songs. Most pop uses triads and 7ths. Extensions are spices — a little goes a long way. Add a 9th when a triad sounds too plain." />
 </div>);}
 

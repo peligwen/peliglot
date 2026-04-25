@@ -4,9 +4,11 @@ import { playChord, playSequence } from '../../../utils/audio';
 import { Insight, playBtnStyle } from './_helpers';
 
 export function Guide18(){
-  const iiVI_C = {dm7:["D3","A3","C4","F4"], g7:["D3","G3","B3","F4"], cmaj7:["E3","G3","C4","E4"]};
-  const iiVI_F = {dm7:["G3","D4","F4","Bb4"], g7:["G3","C4","E4","Bb4"], cmaj7:["A3","C4","F4","A4"]};
-  const iiVI_Bb = {dm7:["C4","G4","Bb4","Eb5"], g7:["C4","F4","A4","Eb5"], cmaj7:["D4","F4","Bb4","D5"]};
+  // Cmaj7/Fmaj7/Bbmaj7 arrays now include the M7 (B/E/A respectively).
+  // The b7→M3 / b7→M7 voice-leading is the entire lesson — audio must demonstrate it.
+  const iiVI_C = {dm7:["D3","A3","C4","F4"], g7:["D3","G3","B3","F4"], cmaj7:["C3","E3","G3","B3"]};
+  const iiVI_F = {dm7:["G3","D4","F4","Bb4"], g7:["G3","C4","E4","Bb4"], cmaj7:["F3","A3","C4","E4"]};
+  const iiVI_Bb = {dm7:["C4","G4","Bb4","Eb5"], g7:["C4","F4","A4","Eb5"], cmaj7:["Bb3","D4","F4","A4"]};
   const guideTones = [["F4","C5"],["F4","B4"],["E4","B4"]];
   return(<div>
   <DarkBox title="The single most important progression in jazz"><div style={{fontSize:14}}>

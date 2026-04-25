@@ -17,5 +17,5 @@ export function Guide7(){return(<div>
       <div style={{fontSize:11,color:"#999",marginTop:2}}>{s.use}</div>
     </div>))}
   </Card>
-  <Insight text="Start a descending dominant bebop scale from the root on a downbeat. The chord tones (R, b7, 5, 3) will ALL land on downbeats. This is the Charlie Parker principle — the scale is designed for rhythmic alignment." />
+  <Insight text="Start a descending dominant bebop scale from the root on a downbeat. The chord tones (R, b7, 5, 3) will ALL land on downbeats. These three scales were codified by pianist Barry Harris — his workshops are the canonical source. Charlie Parker's lines are built on this rhythmic-alignment principle throughout." />
 </div>);}

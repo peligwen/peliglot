@@ -17,7 +17,7 @@ export function Guide1(){
       <div style={{fontSize:18,fontWeight:800,color:"#C62828"}}>{noteName(selNote)}</div>
       <div style={{fontSize:12,color:"#888",marginTop:4}}>This note repeats at every octave. C2, C3, C4, C5 are all "C" — same letter, different pitch. The distance between them is always 12 half-steps.</div>
     </div>}
-    <Insight text="There's no note between B and C, or between E and F — these are natural half-steps. Every other pair of natural notes has a sharp/flat between them. This is why the piano has gaps in the black keys." />
+    <Insight text="There's no black key between B and C, or between E and F — these are natural half-steps. All five other adjacent natural-note pairs have a sharp/flat between them. This is why the piano has gaps in the black keys." />
   </div>);
 }
 

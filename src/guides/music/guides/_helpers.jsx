@@ -1,9 +1,25 @@
 import { Insight as BaseInsight } from '../../../components/Insight';
 import { playNote, playChord, playSequence } from '../../../utils/audio';
+import { chordToneArray } from '../../../utils/chord';
 
 export const ALL_NOTES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 
 export const NOTE_NAMES={"C#":"Db","D#":"Eb","F#":"Gb","G#":"Ab","A#":"Bb"};
+
+// Map flat-key names to their sharp equivalents in ALL_NOTES.
+// Used so buildScale/buildChord work for any root.
+export const ENHARMONIC={"Db":"C#","Eb":"D#","Gb":"F#","Ab":"G#","Bb":"A#"};
+
+// For a given flat key, the canonical scale spelling uses flat names.
+// This map gives the flat-spelled notes for each flat key's major scale.
+export const FLAT_SCALE_MAP={
+  "Db":["Db","Eb","F","Gb","Ab","Bb","C"],
+  "Eb":["Eb","F","G","Ab","Bb","C","D"],
+  "Ab":["Ab","Bb","C","Db","Eb","F","G"],
+  "Bb":["Bb","C","D","Eb","F","G","A"],
+  "F": ["F","G","A","Bb","C","D","E"],
+  "Gb":["Gb","Ab","Bb","Cb","Db","Eb","F"],
+};
 
 export const isBlack=n=>n.includes("#");
 
@@ -64,14 +80,19 @@ export function Piano({startOctave=4,keys=12,highlighted=[],highlightColor="#C62
 }
 
 export function buildScale(root,steps){
-  let idx=ALL_NOTES.indexOf(root);const notes=[root];
-  for(const s of steps){idx=(idx+s)%12;notes.push(ALL_NOTES[idx]);}
+  const lookupRoot=ENHARMONIC[root]||root;
+  // Flat keys: roots with 'b' suffix, plus F (whose scale has Bb).
+  const useFlats=root.includes("b")||root==="F";
+  let idx=ALL_NOTES.indexOf(lookupRoot);const notes=[root];
+  for(const s of steps){idx=(idx+s)%12;notes.push(useFlats?(NOTE_NAMES[ALL_NOTES[idx]]||ALL_NOTES[idx]):ALL_NOTES[idx]);}
   return notes;
 }
 
 export function buildChord(root,intervals){
-  let idx=ALL_NOTES.indexOf(root);const notes=[root];
-  for(const iv of intervals){idx=(idx+iv)%12;notes.push(ALL_NOTES[idx]);}
+  const lookupRoot=ENHARMONIC[root]||root;
+  const useFlats=root.includes("b")||root==="F";
+  let idx=ALL_NOTES.indexOf(lookupRoot);const notes=[root];
+  for(const iv of intervals){idx=(idx+iv)%12;notes.push(useFlats?(NOTE_NAMES[ALL_NOTES[idx]]||ALL_NOTES[idx]):ALL_NOTES[idx]);}
   return notes;
 }
 
@@ -80,14 +101,27 @@ export const CHORD_TYPES={major:[4,3],minor:[3,4],dim:[3,3],aug:[4,4],maj7:[4,3,
 // GUIDE 1: THE 12 NOTES
 // ═══════════════════════════════════════════════════════════════
 
-export function ProgressionPlayer({root,numerals,chordTypes,color}){
-  const scale=buildScale(root,MAJOR_STEPS);
-  const chords=numerals.map((num,i)=>{const idx=parseInt(num)-1;const r=scale[idx];return{root:r,type:chordTypes[i],notes:buildChord(r,CHORD_TYPES[chordTypes[i]]).map(n=>n+"4")};});
+// ProgressionPlayer — two modes:
+//   1. Numeral mode (legacy): root + numerals + chordTypes → derives chord roots from major scale
+//   2. Symbol mode: chords=[{label:"Dm7",symbol:"Dm7"}, ...] → uses chordToneArray for accurate audio
+export function ProgressionPlayer({root,numerals,chordTypes,chords:explicitChords,color}){
+  let chords;
+  if(explicitChords){
+    // Symbol mode — caller supplies explicit chord symbols; audio from chordToneArray
+    chords=explicitChords.map(c=>({
+      label:c.label||c.symbol,
+      notes:chordToneArray(c.symbol,{octave:c.octave||3}),
+    }));
+  } else {
+    // Numeral mode — derive roots from major scale, use buildChord for audio
+    const scale=buildScale(root,MAJOR_STEPS);
+    chords=numerals.map((num,i)=>{const idx=parseInt(num)-1;const r=scale[idx];return{label:r+(chordTypes[i]==="minor"?"m":chordTypes[i]==="dim"?"°":""),notes:buildChord(r,CHORD_TYPES[chordTypes[i]]).map(n=>n+"4")};});
+  }
   return(
     <div style={{background:"#fff",borderRadius:12,padding:"12px 16px",border:`2px solid ${color}`,marginBottom:16}}>
       <div style={{display:"flex",gap:6,marginBottom:8,justifyContent:"center"}}>
         {chords.map((c,i)=>(<button key={i} onClick={()=>playChord(c.notes)} style={{flex:1,maxWidth:90,padding:"8px 4px",borderRadius:8,background:color,color:"#fff",cursor:"pointer",textAlign:"center",border:"none"}}>
-          <div style={{fontSize:16,fontWeight:800}}>{c.root}{c.type==="minor"?"m":c.type==="dim"?"°":""}</div>
+          <div style={{fontSize:16,fontWeight:800}}>{c.label}</div>
         </button>))}
       </div>
       <button onClick={()=>playSequence(chords.map(c=>c.notes),600)} style={{width:"100%",padding:"8px",borderRadius:8,background:"#1a1a1a",color:"#FFE77A",border:"none",cursor:"pointer",fontSize:13,fontWeight:700}}>▶ Play full progression</button>

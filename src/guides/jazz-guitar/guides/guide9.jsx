@@ -8,7 +8,7 @@ export function Guide9(){return(<div>
   </div></DarkBox>
   <Card color="#BF360C" title="Enclosure types">
     {[{type:"Chromatic above + below",pattern:"Target: E → approach: F - Eb - E",desc:"Half step from above, half step from below, land. The most common enclosure."},
-      {type:"Diatonic above + chromatic below",pattern:"Target: E → approach: F - D# - E",desc:"Scale tone above, chromatic below. Slightly smoother."},
+      {type:"Diatonic above + chromatic below",pattern:"Target: G → approach: A (diatonic above) - F# (chromatic below) - G",desc:"Scale tone above, chromatic below. Clear example: in C major, approaching G from A (diatonic) then F# (chromatic)."},
       {type:"Double chromatic",pattern:"Target: E → approach: F# - F - Eb - E",desc:"Two notes above, one below. More elaborate — adds rhythmic interest."},
       {type:"Arpeggio into enclosure",pattern:"Over Cmaj7: G - B → F - Eb - E",desc:"Outline the chord, then enclose a target. Combines vertical and horizontal."},
     ].map((e,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #333":"none"}}>

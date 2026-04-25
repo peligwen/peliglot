@@ -8,7 +8,7 @@ export function Guide21(){return(<div>
   <Card color="#880E4F" title="Common modulation techniques">
     {[{name:"Up a half-step (truck driver's modulation)",desc:"The final chorus goes up a half-step for extra energy. The cheapest trick in pop — but it works.",ex:"Beyoncé 'Love on Top', Bon Jovi 'Livin' on a Prayer'"},
       {name:"To the relative minor/major",desc:"Shift between parallel emotional worlds. C major ↔ A minor. Same notes, different home.",ex:"Verse in minor, chorus in relative major — very common."},
-      {name:"Pivot chord modulation",desc:"A chord that exists in BOTH keys serves as a bridge. Smooth and sophisticated.",ex:"Am is vi in C major and ii in G major — pivot through it."},
+      {name:"Pivot chord modulation",desc:"A chord that exists in BOTH keys serves as a bridge. The pivot is prepared in the old key and re-functioned in the new key. To land the modulation, follow the pivot with a V–I cadence in the new key.",ex:"Am is vi in C major (prepared) and ii in G major (re-functioned → D7 → G confirms G major)."},
       {name:"Direct modulation",desc:"Just jump. No preparation. Shocking but effective when intentional.",ex:"Abrupt key change between song sections."},
     ].map((m,i)=>(<div key={i} style={{padding:"10px 14px",borderBottom:i<3?"1px solid #f0eeeb":"none"}}>
       <div style={{fontSize:14,fontWeight:700,color:"#880E4F"}}>{m.name}</div>

@@ -13,7 +13,7 @@ export function Guide22(){return(<div>
       {deg:"4",feel:"Gentle pull toward 3 or 5. Suspension, expectation.",color:"#1565C0"},
       {deg:"5",feel:"Stability, but not home. A resting point mid-phrase.",color:"#2E7D32"},
       {deg:"6",feel:"Warm in major, bittersweet. Can lean toward 5 or 7.",color:"#6A1B9A"},
-      {deg:"7",feel:"Maximum tension. A half-step from home. NEEDS to resolve to 1.",color:"#C62828"},
+      {deg:"7",feel:"Maximum tension in major and harmonic minor — a half-step below home, desperately wants to resolve up. In natural minor the ♭7 is a whole step below, giving a softer, descending feel instead.",color:"#C62828"},
     ].map((d,i)=>(<div key={i} style={{padding:"8px 14px",borderBottom:i<6?"1px solid #f0eeeb":"none",borderLeft:`4px solid ${d.color}`}}>
       <span style={{fontWeight:700,color:d.color}}>{d.deg}</span><br/>
       <span style={{fontSize:12,color:"#555"}}>{d.feel}</span>
