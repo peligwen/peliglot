@@ -266,6 +266,79 @@ All in `src/components/`:
 - All styles are inline — no CSS files, no Tailwind, no CSS modules
 - Speech functions use the Web Speech API; available voices vary by platform
 
+## Mastery Layer
+
+The spaced-repetition engine. Full contract in `src/mastery/ARCHITECTURE.md`.
+
+### `useMastery` hook
+
+```ts
+import { useMastery } from '../../hooks/useMastery';
+
+const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated } =
+  useMastery(adapter); // adapter is optional; defaults to defaultMasteryAdapter
+```
+
+- `getCardState(cardId)` — synchronous read from in-memory cache; returns `CardState | undefined`.
+- `rateCard(cardId, rating)` — persist a review result; returns `Promise<CardState>`.
+- `streak` — `{ current, longest, lastReviewDate }` (DST-safe local-date string).
+- `todaysReviewCount` — count of cards reviewed today (local date).
+- `dailyGoal` — configurable via `setDailyGoal(n)`.
+- `isHydrated` — false until the initial `bulkExport()` resolves; gates render.
+
+**When to use:** any component or route that needs to display or update mastery
+state. Currently only the Spanish practice route (`/guides/spanish/practice`)
+uses it.
+
+### `MasteryStorageAdapter` interface
+
+Defined in `src/mastery/adapter.ts`. Methods: `read`, `write`, `listDue`,
+`bulkExport`, `bulkImport`, `writeMeta`. All return `Promise`s — even
+`LocalStorageMasteryAdapter`, which is synchronous internally. This makes the
+Phase 2d cloud-backend swap a single-file addition.
+
+See `src/mastery/ARCHITECTURE.md` for the full contract, LWW semantics, and
+sign-in migration story. **Do not import the adapter concrete class directly in
+components.** Always go through `useMastery`.
+
+### Hard rule: components never touch the adapter directly
+
+The `defaultMasteryAdapter` singleton lives in `src/mastery/index.ts`.
+`useMastery.ts` is the only non-test file that imports it.
+**No component, guide, or extractor should import `LocalStorageMasteryAdapter`
+or any concrete adapter class.** This ensures Phase 2d's cloud-swap is one
+file, not a codebase-wide hunt.
+
+### `ReviewCard` extraction pattern
+
+Each guide that supports mastery has extractors in
+`src/guides/{slug}/mastery/extractors/guide{N}.ts`. Each extractor exports a
+single `extract(): ReviewCard[]` function. The aggregator
+(`src/guides/{slug}/mastery/index.ts`) concatenates all extractor outputs.
+
+```ts
+// Extractor skeleton
+import type { ReviewCard } from '../../../../mastery/cards';
+import { myData } from '../../guides/dataN';
+
+export function extract(): ReviewCard[] {
+  return myData.map(item => ({
+    cardId: `{slug}-{N}-{stable-slug}`,
+    guideId: N,
+    guideSlug: '{slug}',
+    kind: 'noun-gender',        // must match prompt.kind
+    prompt: { kind: 'noun-gender', noun: item.noun },
+    answer: item.answer,
+    speakText: item.noun,
+  }));
+}
+```
+
+Card IDs must be stable across data reorders (slug from content, not index).
+Every extractor in `src/guides/spanish/mastery/extractors/` has a matching
+`guide{N}.test.ts` that verifies ID uniqueness, `kind` consistency, and
+non-empty answers.
+
 ## Verifying Changes
 
 Run `npm run check` before considering any change complete. This catches:

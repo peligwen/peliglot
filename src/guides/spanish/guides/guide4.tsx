@@ -4,28 +4,12 @@ import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
 import { VerbTypeSelector, ConjugationTable } from './_helpers';
 import type { VerbType } from './_helpers';
-
-const presentData={
-  ar:{verb:"hablar",stem:"habl",endings:["o","as","a","amos","áis","an"],meaning:"to speak"},
-  er:{verb:"comer",stem:"com",endings:["o","es","e","emos","éis","en"],meaning:"to eat"},
-  ir:{verb:"vivir",stem:"viv",endings:["o","es","e","imos","ís","en"],meaning:"to live"},
-};
+import { presentData, irregulars } from './data4';
 
 const uses=[
   {label:"Current actions",ex:"Hablo español. — I speak Spanish.",color:"#D84315"},
   {label:"Habitual / routine",ex:"Comemos a las dos. — We eat at two (every day).",color:"#00695C"},
   {label:"Near future",ex:"Mañana viajo a México. — Tomorrow I travel to Mexico.",color:"#4527A0"},
-];
-
-const irregulars=[
-  {v:"ser",forms:["soy","eres","es","somos","sois","son"],m:"to be (essence)"},
-  {v:"ir",forms:["voy","vas","va","vamos","vais","van"],m:"to go"},
-  {v:"tener",forms:["tengo","tienes","tiene","tenemos","tenéis","tienen"],m:"to have"},
-  {v:"hacer",forms:["hago","haces","hace","hacemos","hacéis","hacen"],m:"to do/make"},
-  {v:"estar",forms:["estoy","estás","está","estamos","estáis","están"],m:"to be (state/location)"},
-  {v:"poder",forms:["puedo","puedes","puede","podemos","podéis","pueden"],m:"to be able to (o→ue boot)"},
-  {v:"saber",forms:["sé","sabes","sabe","sabemos","sabéis","saben"],m:"to know (facts)"},
-  {v:"decir",forms:["digo","dices","dice","decimos","decís","dicen"],m:"to say/tell"},
 ];
 
 export function Guide4(){

@@ -2,20 +2,13 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
+import { adjs, nouns, shifts } from './data13';
+import type { FormKey } from './data13';
 
 export function Guide13(){
-  type FormKey = "ms"|"fs"|"mp"|"fp";
   const [gen,setGen]=useState("m");const [num,setNum]=useState("s");
-  const adjs=[
-    {base:"alto",forms:{ms:"alto",fs:"alta",mp:"altos",fp:"altas"},en:"tall",type:"4-form"},
-    {base:"rojo",forms:{ms:"rojo",fs:"roja",mp:"rojos",fp:"rojas"},en:"red",type:"4-form"},
-    {base:"grande",forms:{ms:"grande",fs:"grande",mp:"grandes",fp:"grandes"},en:"big",type:"2-form"},
-    {base:"difícil",forms:{ms:"difícil",fs:"difícil",mp:"difíciles",fp:"difíciles"},en:"difficult",type:"2-form"},
-    {base:"español",forms:{ms:"español",fs:"española",mp:"españoles",fp:"españolas"},en:"Spanish",type:"nationality"},
-  ];
-  const key=(gen+num) as FormKey;const nouns:{ms:string;fs:string;mp:string;fp:string}={ms:"el chico",fs:"la chica",mp:"los chicos",fp:"las chicas"};
+  const key=(gen+num) as FormKey;
   const col=gen==="m"?"#1565C0":"#AD1457";
-  const shifts=[{a:"pobre",before:"unfortunate",after:"poor (no money)"},{a:"viejo",before:"long-time (friend)",after:"elderly"},{a:"grande/gran",before:"great",after:"big (size)"},{a:"nuevo",before:"another/different",after:"brand-new"},{a:"único",before:"only",after:"unique"}];
   return(<div>
     <DarkBox title="Agreement Rule"><div style={{fontSize:14}}>Adjectives must match the noun in <strong style={{color:"#90CAF9"}}>gender</strong> and <strong style={{color:"#FFE77A"}}>number</strong>. Toggle below to see how they change.</div></DarkBox>
     <div style={{display:"flex",gap:8,marginBottom:10,justifyContent:"center"}}>
