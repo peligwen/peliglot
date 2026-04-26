@@ -16,6 +16,7 @@ import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
 import { guidesMeta as freecadMeta } from './guides/freecad/meta';
 import './styles/landing.css';
 import type { GuideMeta } from './types/guide';
+import { SITE_URL } from './config/site';
 import {
   siteTagline,
   siteHeroPitch,
@@ -253,8 +254,6 @@ function useVisitedCounts(): Record<string, number> {
   }, []);
 }
 
-const SITE_URL = 'https://peliglot.com';
-
 const landingJsonLd: object[] = [
   {
     '@context': 'https://schema.org',
@@ -289,7 +288,7 @@ export function LandingPage(): ReactElement {
     canonical: '/',
     type: 'website',
     jsonLd: landingJsonLd,
-    ogImage: 'https://peliglot.com/og/site.png',
+    ogImage: `${SITE_URL}/og/site.png`,
   });
 
   return (

@@ -5,20 +5,13 @@ import { siteSupportPitch } from './copy/positioning';
 import { supporters } from './data/supporters';
 import type { Supporter } from './data/supporters';
 import { colors, spacing, radii, typography } from './styles/tokens';
+import { SITE_URL } from './config/site';
 
 // ---------------------------------------------------------------------------
-// Ko-fi config
+// Ko-fi config — VITE_KOFI_USERNAME overrides the default for staging/preview.
 // ---------------------------------------------------------------------------
-const kofiUsername: string = (() => {
-  const fromEnv = import.meta.env.VITE_KOFI_USERNAME as string | undefined;
-  if (!fromEnv) {
-    if (import.meta.env.DEV) {
-      console.warn("[Peliglot] VITE_KOFI_USERNAME not set; using fallback 'peliglot'.");
-    }
-    return 'peliglot';
-  }
-  return fromEnv;
-})();
+const kofiUsername: string =
+  (import.meta.env.VITE_KOFI_USERNAME as string | undefined) ?? 'peliglot';
 
 // ---------------------------------------------------------------------------
 // Tier display config
@@ -130,7 +123,7 @@ export function SupportersPage(): ReactElement {
     title: 'Support Peliglot — Hand-crafted interactive learning guides',
     description: siteSupportPitch,
     canonical: '/support',
-    ogImage: 'https://peliglot.com/og/site.png',
+    ogImage: `${SITE_URL}/og/site.png`,
   });
 
   const grouped = TIER_ORDER.reduce<Record<Supporter['tier'], Supporter[]>>(

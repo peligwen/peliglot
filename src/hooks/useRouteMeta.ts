@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
-const SITE_ORIGIN = 'https://peliglot.com';
+import { SITE_URL } from '../config/site';
 
 export interface RouteMetaProps {
   title: string;
@@ -78,8 +77,8 @@ export function useRouteMeta({
 }: RouteMetaProps): void {
   const { pathname } = useLocation();
   const canonicalHref = canonical
-    ? `${SITE_ORIGIN}${canonical}`
-    : `${SITE_ORIGIN}${pathname}`;
+    ? `${SITE_URL}${canonical}`
+    : `${SITE_URL}${pathname}`;
 
   // Stable JSON-LD dep — avoids infinite re-run if callers pass fresh object literals.
   const jsonLdKey = jsonLd != null ? JSON.stringify(jsonLd) : '';
