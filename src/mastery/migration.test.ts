@@ -139,3 +139,57 @@ describe('StubRemoteAdapter — per-card LWW merge', () => {
     expect(report).toEqual({ accepted: 2, rejected: 1, unchanged: 1 });
   });
 });
+
+describe('StubRemoteAdapter — writeMeta', () => {
+  let adapter: StubRemoteAdapter;
+
+  beforeEach(() => {
+    adapter = new StubRemoteAdapter();
+  });
+
+  it('writes streak and reads it back via bulkExport', async () => {
+    await adapter.writeMeta({
+      streak: { current: 5, longest: 10, lastReviewDate: '2026-04-25' },
+    });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.streak?.current).toBe(5);
+    expect(exported.streak?.longest).toBe(10);
+    expect(exported.streak?.lastReviewDate).toBe('2026-04-25');
+  });
+
+  it('writes settings.dailyGoal and reads it back via bulkExport', async () => {
+    await adapter.writeMeta({ settings: { dailyGoal: 10 } });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.settings?.dailyGoal).toBe(10);
+  });
+
+  it('writeMeta({ streak }) does not clobber existing dailyGoal', async () => {
+    await adapter.writeMeta({ settings: { dailyGoal: 20 } });
+    await adapter.writeMeta({
+      streak: { current: 1, longest: 3, lastReviewDate: '2026-04-26' },
+    });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.settings?.dailyGoal).toBe(20);
+    expect(exported.streak?.current).toBe(1);
+  });
+
+  it('writeMeta({ settings }) does not clobber existing streak', async () => {
+    await adapter.writeMeta({
+      streak: { current: 7, longest: 14, lastReviewDate: '2026-04-20' },
+    });
+    await adapter.writeMeta({ settings: { dailyGoal: 8 } });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.streak?.current).toBe(7);
+    expect(exported.settings?.dailyGoal).toBe(8);
+  });
+
+  it('bulkExport includes no streak/settings before any writeMeta', async () => {
+    const exported = await adapter.bulkExport();
+    expect(exported.streak).toBeUndefined();
+    expect(exported.settings).toBeUndefined();
+  });
+});

@@ -20,10 +20,11 @@ import type {
   CardState,
   MasteryExport,
   MergeReport,
+  StreakState,
   WriteResult,
 } from './types';
 
-export type { CardState, MasteryExport, MergeReport, WriteResult };
+export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult };
 
 /**
  * The adapter interface every storage backend must satisfy.
@@ -72,4 +73,21 @@ export interface MasteryStorageAdapter {
    * Returns a `MergeReport` with counts for each outcome bucket.
    */
   bulkImport(snapshot: MasteryExport): Promise<MergeReport>;
+
+  /**
+   * Persist metadata (streak and/or settings) without touching card records.
+   *
+   * The update is a **partial merge**: only fields that are present in `meta`
+   * are overwritten; omitted fields leave existing persisted values intact.
+   * This means `writeMeta({ streak })` will NOT clobber a previously-written
+   * `dailyGoal`, and `writeMeta({ settings })` will NOT clobber the streak.
+   *
+   * Called by `useMastery` on every `rateCard` (streak update) and every
+   * `setDailyGoal` call. Using a dedicated method avoids the full
+   * bulkExport → bulkImport round-trip that Option B would require.
+   */
+  writeMeta(meta: {
+    streak?: StreakState;
+    settings?: { dailyGoal?: number };
+  }): Promise<void>;
 }

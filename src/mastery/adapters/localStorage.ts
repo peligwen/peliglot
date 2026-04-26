@@ -17,7 +17,7 @@
  */
 
 import type { MasteryStorageAdapter, WriteResult, MergeReport } from '../adapter';
-import type { CardState, MasteryExport } from '../types';
+import type { CardState, MasteryExport, StreakState } from '../types';
 import { migrate, emptyExport, CURRENT_SCHEMA_VERSION } from '../migrations';
 
 const STORAGE_KEY = 'peliglot-mastery-v1';
@@ -92,6 +92,21 @@ export class LocalStorageMasteryAdapter implements MasteryStorageAdapter {
       ...(this.snapshot.streak !== undefined && { streak: { ...this.snapshot.streak } }),
       ...(this.snapshot.settings !== undefined && { settings: { ...this.snapshot.settings } }),
     };
+  }
+
+  async writeMeta(meta: {
+    streak?: StreakState;
+    settings?: { dailyGoal?: number };
+  }): Promise<void> {
+    // Partial merge: only overwrite present fields; leave absent ones intact.
+    this.snapshot = {
+      ...this.snapshot,
+      ...(meta.streak !== undefined && { streak: { ...meta.streak } }),
+      ...(meta.settings !== undefined && {
+        settings: { ...this.snapshot.settings, ...meta.settings },
+      }),
+    };
+    this.persistSnapshot();
   }
 
   async bulkImport(incoming: MasteryExport): Promise<MergeReport> {

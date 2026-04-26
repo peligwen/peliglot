@@ -11,11 +11,12 @@
  */
 
 import type { MasteryStorageAdapter, WriteResult, MergeReport } from '../adapter';
-import type { CardState, MasteryExport } from '../types';
+import type { CardState, MasteryExport, StreakState } from '../types';
 import { CURRENT_SCHEMA_VERSION } from '../migrations';
 
 export class StubRemoteAdapter implements MasteryStorageAdapter {
   private cards: Map<string, CardState> = new Map();
+  private meta: { streak?: StreakState; settings?: { dailyGoal?: number } } = {};
 
   /** Seed the adapter with initial card state for test setup. */
   seed(cardId: string, state: CardState): void {
@@ -61,7 +62,28 @@ export class StubRemoteAdapter implements MasteryStorageAdapter {
     for (const [cardId, state] of this.cards) {
       cards[cardId] = state;
     }
-    return { schemaVersion: CURRENT_SCHEMA_VERSION, cards };
+    return {
+      schemaVersion: CURRENT_SCHEMA_VERSION,
+      cards,
+      ...(this.meta.streak !== undefined && { streak: { ...this.meta.streak } }),
+      ...(this.meta.settings !== undefined && { settings: { ...this.meta.settings } }),
+    };
+  }
+
+  async writeMeta(meta: {
+    streak?: StreakState;
+    settings?: { dailyGoal?: number };
+  }): Promise<void> {
+    // Partial merge: only overwrite present fields; leave absent ones intact.
+    if (meta.streak !== undefined) {
+      this.meta = { ...this.meta, streak: { ...meta.streak } };
+    }
+    if (meta.settings !== undefined) {
+      this.meta = {
+        ...this.meta,
+        settings: { ...this.meta.settings, ...meta.settings },
+      };
+    }
   }
 
   async bulkImport(incoming: MasteryExport): Promise<MergeReport> {

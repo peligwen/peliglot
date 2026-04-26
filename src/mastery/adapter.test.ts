@@ -158,4 +158,58 @@ describe('LocalStorageMasteryAdapter', () => {
     const after = await adapter.bulkExport();
     expect(Object.keys(after.cards)).not.toContain('injected');
   });
+
+  // -------------------------------------------------------------------------
+  // writeMeta — partial merge of streak and settings
+  // -------------------------------------------------------------------------
+  it('writeMeta persists streak and streak survives across instances', async () => {
+    const adapter = new LocalStorageMasteryAdapter();
+    await adapter.writeMeta({
+      streak: { current: 3, longest: 7, lastReviewDate: '2026-04-25' },
+    });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.streak?.current).toBe(3);
+    expect(exported.streak?.longest).toBe(7);
+    expect(exported.streak?.lastReviewDate).toBe('2026-04-25');
+
+    // New instance reads it back from localStorage.
+    const adapter2 = new LocalStorageMasteryAdapter();
+    const exported2 = await adapter2.bulkExport();
+    expect(exported2.streak?.current).toBe(3);
+    expect(exported2.streak?.lastReviewDate).toBe('2026-04-25');
+  });
+
+  it('writeMeta persists dailyGoal', async () => {
+    const adapter = new LocalStorageMasteryAdapter();
+    await adapter.writeMeta({ settings: { dailyGoal: 10 } });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.settings?.dailyGoal).toBe(10);
+  });
+
+  it('writeMeta({ streak }) does not clobber existing dailyGoal', async () => {
+    const adapter = new LocalStorageMasteryAdapter();
+    await adapter.writeMeta({ settings: { dailyGoal: 15 } });
+    await adapter.writeMeta({
+      streak: { current: 2, longest: 5, lastReviewDate: '2026-04-26' },
+    });
+
+    const exported = await adapter.bulkExport();
+    // Both fields survive.
+    expect(exported.settings?.dailyGoal).toBe(15);
+    expect(exported.streak?.current).toBe(2);
+  });
+
+  it('writeMeta({ settings }) does not clobber existing streak', async () => {
+    const adapter = new LocalStorageMasteryAdapter();
+    await adapter.writeMeta({
+      streak: { current: 4, longest: 8, lastReviewDate: '2026-04-24' },
+    });
+    await adapter.writeMeta({ settings: { dailyGoal: 7 } });
+
+    const exported = await adapter.bulkExport();
+    expect(exported.streak?.current).toBe(4);
+    expect(exported.settings?.dailyGoal).toBe(7);
+  });
 });

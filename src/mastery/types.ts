@@ -72,8 +72,13 @@ export interface StreakState {
   current: number;
   /** Longest streak ever recorded. */
   longest: number;
-  /** Epoch ms timestamp of the last practice session date (midnight). */
-  lastPracticeDay: number | null;
+  /**
+   * ISO local-date string (YYYY-MM-DD) of the last day on which a card was
+   * reviewed. Stored as a local-time date string — not epoch ms — so that
+   * timezone changes don't accidentally count as a missed or gained day.
+   * Null when no card has ever been reviewed.
+   */
+  lastReviewDate: string | null;
 }
 
 // ---------------------------------------------------------------------------

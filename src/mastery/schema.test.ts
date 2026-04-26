@@ -124,7 +124,7 @@ describe('bulkExport / bulkImport round-trip', () => {
     const snapshot: MasteryExport = {
       schemaVersion: 1,
       cards: { c1: makeCard('c1', 10) },
-      streak: { current: 5, longest: 10, lastPracticeDay: Date.now() },
+      streak: { current: 5, longest: 10, lastReviewDate: '2026-04-25' },
       settings: { dailyGoal: 20 },
     };
     localStorage.setItem('peliglot-mastery-v1', JSON.stringify(snapshot));
