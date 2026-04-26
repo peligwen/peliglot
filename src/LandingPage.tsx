@@ -289,6 +289,7 @@ export function LandingPage(): ReactElement {
     canonical: '/',
     type: 'website',
     jsonLd: landingJsonLd,
+    ogImage: 'https://peliglot.com/og/site.png',
   });
 
   return (

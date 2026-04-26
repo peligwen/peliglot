@@ -100,6 +100,81 @@ if (!fs.existsSync(sitemapPath)) {
 }
 
 // ---------------------------------------------------------------------------
+// Check OG images (Phase 1.3)
+// Reads first 24 bytes of each PNG to verify IHDR width+height = 1200x630.
+// ---------------------------------------------------------------------------
+var OG_DIR = path.join(DIST, 'og');
+
+function checkPngDimensions(filePath) {
+  // PNG IHDR: 8-byte signature + 4-byte length + 4-byte 'IHDR' + 4-byte width + 4-byte height
+  // Width at byte offset 16, height at byte offset 20 (big-endian uint32)
+  try {
+    var buf = Buffer.alloc(24);
+    var fd = fs.openSync(filePath, 'r');
+    fs.readSync(fd, buf, 0, 24, 0);
+    fs.closeSync(fd);
+    // PNG signature check: first 8 bytes
+    if (buf[0] !== 0x89 || buf[1] !== 0x50 || buf[2] !== 0x4E || buf[3] !== 0x47) {
+      return { ok: false, reason: 'not a valid PNG (bad signature)' };
+    }
+    var width = buf.readUInt32BE(16);
+    var height = buf.readUInt32BE(20);
+    return { ok: true, width: width, height: height };
+  } catch (e) {
+    return { ok: false, reason: e.message };
+  }
+}
+
+if (!fs.existsSync(OG_DIR)) {
+  console.error('ERROR: dist/og/ not found. Run `npm run build` (which runs prebuild) first.');
+  errors++;
+} else {
+  // Check site card
+  var siteOgPath = path.join(OG_DIR, 'site.png');
+  if (!fs.existsSync(siteOgPath)) {
+    console.error('ERROR: dist/og/site.png not found.');
+    errors++;
+  } else {
+    var siteCheck = checkPngDimensions(siteOgPath);
+    if (!siteCheck.ok) {
+      console.error('ERROR: dist/og/site.png is invalid: ' + siteCheck.reason);
+      errors++;
+    } else if (siteCheck.width !== 1200 || siteCheck.height !== 630) {
+      console.error('ERROR: dist/og/site.png wrong dimensions: ' + siteCheck.width + 'x' + siteCheck.height + ' (expected 1200x630)');
+      errors++;
+    } else {
+      console.log('og/site.png OK (' + siteCheck.width + 'x' + siteCheck.height + ')');
+    }
+  }
+
+  // Check one card per collection slug
+  var ogErrors = 0;
+  for (var k = 0; k < slugs.length; k++) {
+    var ogSlug = slugs[k];
+    var ogPath = path.join(OG_DIR, ogSlug + '.png');
+    if (!fs.existsSync(ogPath)) {
+      console.error('ERROR: dist/og/' + ogSlug + '.png not found.');
+      ogErrors++;
+      errors++;
+    } else {
+      var ogCheck = checkPngDimensions(ogPath);
+      if (!ogCheck.ok) {
+        console.error('ERROR: dist/og/' + ogSlug + '.png invalid: ' + ogCheck.reason);
+        ogErrors++;
+        errors++;
+      } else if (ogCheck.width !== 1200 || ogCheck.height !== 630) {
+        console.error('ERROR: dist/og/' + ogSlug + '.png wrong dimensions: ' + ogCheck.width + 'x' + ogCheck.height);
+        ogErrors++;
+        errors++;
+      }
+    }
+  }
+  if (ogErrors === 0) {
+    console.log('og/<slug>.png OK (' + slugs.length + ' collection cards, all 1200x630)');
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
 if (errors > 0) {
