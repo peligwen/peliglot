@@ -148,7 +148,7 @@ describe('LocalStorageMasteryAdapter', () => {
   // -------------------------------------------------------------------------
   // bulkExport returns a deep copy
   // -------------------------------------------------------------------------
-  it('bulkExport returns a copy — external mutation does not affect adapter', async () => {
+  it('bulkExport returns a copy — adding a key does not affect adapter', async () => {
     const adapter = new LocalStorageMasteryAdapter();
     await adapter.write('c1', makeCard('c1', 1, Date.now()));
     const exported = await adapter.bulkExport();
@@ -157,6 +157,19 @@ describe('LocalStorageMasteryAdapter', () => {
     // Adapter should not be affected.
     const after = await adapter.bulkExport();
     expect(Object.keys(after.cards)).not.toContain('injected');
+  });
+
+  it('bulkExport deep copy — mutating a card field does not corrupt adapter snapshot', async () => {
+    const adapter = new LocalStorageMasteryAdapter();
+    await adapter.write('c1', makeCard('c1', 1, Date.now()));
+    const exported = await adapter.bulkExport();
+    const originalReps = exported.cards['c1']!.reps;
+    // Mutate a field on the exported card object.
+    exported.cards['c1']!.reps = 9999;
+    // Adapter's internal snapshot must be unchanged.
+    const after = await adapter.bulkExport();
+    expect(after.cards['c1']!.reps).toBe(originalReps);
+    expect(after.cards['c1']!.reps).not.toBe(9999);
   });
 
   // -------------------------------------------------------------------------

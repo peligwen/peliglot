@@ -35,15 +35,22 @@ export class LocalStorageMasteryAdapter implements MasteryStorageAdapter {
   // ---------------------------------------------------------------------------
 
   private loadFromStorage(): MasteryExport {
+    let raw: string | null;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw === null) return emptyExport();
-      const parsed: unknown = JSON.parse(raw);
-      return migrate(parsed);
+      raw = localStorage.getItem(STORAGE_KEY);
     } catch {
-      // localStorage unavailable (private mode, parse error, etc.)
+      // localStorage unavailable (private mode, etc.)
       return emptyExport();
     }
+    if (raw === null) return emptyExport();
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      console.warn('[mastery] localStorage snapshot was unparseable; resetting', err);
+      return emptyExport();
+    }
+    return migrate(parsed);
   }
 
   private persistSnapshot(): void {
@@ -85,10 +92,17 @@ export class LocalStorageMasteryAdapter implements MasteryStorageAdapter {
   }
 
   async bulkExport(): Promise<MasteryExport> {
-    // Return a deep copy so external mutations don't affect internal state.
+    // Return a deep copy so external mutations cannot corrupt the adapter's
+    // internal snapshot. Shallow-copying the cards record is not enough:
+    // a caller doing `exported.cards['c1'].reps++` would mutate the shared
+    // CardState object. Each card value is spread into a new object.
+    const cards: Record<string, CardState> = {};
+    for (const [id, state] of Object.entries(this.snapshot.cards)) {
+      cards[id] = { ...state };
+    }
     return {
       schemaVersion: this.snapshot.schemaVersion,
-      cards: { ...this.snapshot.cards },
+      cards,
       ...(this.snapshot.streak !== undefined && { streak: { ...this.snapshot.streak } }),
       ...(this.snapshot.settings !== undefined && { settings: { ...this.snapshot.settings } }),
     };
