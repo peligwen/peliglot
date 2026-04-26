@@ -27,11 +27,11 @@ That's it.
 ## Within-collection navigation
 
 When you move between guides inside a collection (e.g. from Spanish Guide 1 to
-Guide 2), the URL hash updates via `history.pushState`. Cloudflare Web
-Analytics observes the navigation and records each guide visit. The Back and
-Forward buttons walk through the in-collection history and are also recorded.
-What's logged is still only the URL — the hash fragment counts as part of the
-path here, no extra metadata.
+Guide 2), only the URL hash changes (`/guides/spanish` → `/guides/spanish#1`).
+Cloudflare's beacon records the path, not the hash, so individual guide visits
+inside a collection are **not** measured. We see that someone opened the
+Spanish collection — we don't see which guides they read. Per-guide signal is
+out of scope for this phase; a deliberate trade for the privacy promise.
 
 ## Fonts
 
@@ -47,6 +47,15 @@ stack and everything will still work.
 
 [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/) — a
 privacy-first, cookieless analytics product included in Cloudflare's free tier.
+The beacon script loads from `static.cloudflareinsights.com` and reports to
+`cloudflareinsights.com`. Both are Cloudflare-operated.
+
+## Donations
+
+The /support page links out to **Ko-fi** (`ko-fi.com`). No Ko-fi script or
+iframe loads on Peliglot itself; the link is a plain `<a target="_blank">` and
+no request is made until you click it. From the moment you click, you're on
+Ko-fi's site and Ko-fi's privacy policy applies.
 
 ## Why
 

@@ -129,12 +129,13 @@ export function AnalyticsPage(): ReactElement {
         <Section title="Within-collection navigation">
           <p>
             When you move between guides inside a collection (e.g. from Spanish
-            Guide 1 to Guide 2), the URL hash updates via{' '}
-            <code>history.pushState</code>. Cloudflare Web Analytics observes
-            the navigation and records each guide visit. The Back and Forward
-            buttons walk through the in-collection history and are also
-            recorded. What's logged is still only the URL — the hash fragment
-            counts as part of the path here, no extra metadata.
+            Guide 1 to Guide 2), only the URL hash changes (
+            <code>/guides/spanish</code> &rarr; <code>/guides/spanish#1</code>
+            ). Cloudflare's beacon records the path, not the hash, so
+            individual guide visits inside a collection are <strong>not</strong>{' '}
+            measured. We see that someone opened the Spanish collection — we
+            don't see which guides they read. Per-guide signal is out of scope
+            for this phase; a deliberate trade for the privacy promise.
           </p>
         </Section>
 
@@ -163,7 +164,20 @@ export function AnalyticsPage(): ReactElement {
               Cloudflare Web Analytics
             </a>{' '}
             — a privacy-first, cookieless analytics product included in
-            Cloudflare's free tier.
+            Cloudflare's free tier. The beacon script loads from{' '}
+            <code>static.cloudflareinsights.com</code> and reports to{' '}
+            <code>cloudflareinsights.com</code>. Both are Cloudflare-operated.
+          </p>
+        </Section>
+
+        <Section title="Donations">
+          <p>
+            The <Link to="/support" style={{ color: colors.text.primary }}>/support</Link>{' '}
+            page links out to <strong>Ko-fi</strong> (<code>ko-fi.com</code>).
+            No Ko-fi script or iframe loads on Peliglot itself; the link is a
+            plain anchor and no request is made until you click it. From the
+            moment you click, you're on Ko-fi's site and Ko-fi's privacy policy
+            applies.
           </p>
         </Section>
 
