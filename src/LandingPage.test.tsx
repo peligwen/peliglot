@@ -77,9 +77,9 @@ describe('LandingPage — SpanishRecommendationCTA', () => {
 
   it('has-due: shows due-card count CTA when cards are due', async () => {
     const dueCards = [
-      { cardId: 'card-1', state: { cardId: 'card-1', due: Date.now() - 1000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0, updatedAt: Date.now() } },
-      { cardId: 'card-2', state: { cardId: 'card-2', due: Date.now() - 2000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0, updatedAt: Date.now() } },
-      { cardId: 'card-3', state: { cardId: 'card-3', due: Date.now() - 3000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0, updatedAt: Date.now() } },
+      { cardId: 'card-1', state: { cardId: 'card-1', due: Date.now() - 1000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0 as const, updatedAt: Date.now() } },
+      { cardId: 'card-2', state: { cardId: 'card-2', due: Date.now() - 2000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0 as const, updatedAt: Date.now() } },
+      { cardId: 'card-3', state: { cardId: 'card-3', due: Date.now() - 3000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0 as const, updatedAt: Date.now() } },
     ];
     mockUseMastery.mockReturnValue(makeUseMasteryReturn({
       isHydrated: true,
@@ -132,7 +132,7 @@ describe('LandingPage — SpanishRecommendationCTA', () => {
     mockUseMastery.mockReturnValue(makeUseMasteryReturn({
       isHydrated: true,
       dueCards: [
-        { cardId: 'c1', state: { cardId: 'c1', due: Date.now() - 1000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0, updatedAt: Date.now() } },
+        { cardId: 'c1', state: { cardId: 'c1', due: Date.now() - 1000, stability: 1, difficulty: 5, reps: 1, lapses: 0, lastReview: null, learningSteps: 0, fsrsState: 0 as const, updatedAt: Date.now() } },
       ],
     }));
     renderLanding();
