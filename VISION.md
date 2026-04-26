@@ -21,7 +21,7 @@ Peliglot is that place.
 ## North Star
 
 A *house style of teaching* applied to whatever the curious want to learn.
-Eclectic by design. Crafted by hand. Useful at every depth — drop in for ten
+Eclectic by design. Opinionated and finite. Useful at every depth — drop in for ten
 minutes of curiosity, or stay for months if you actually want to learn the
 thing.
 

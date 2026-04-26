@@ -76,7 +76,7 @@ test('landing page: <title> and <meta description> are set correctly', async ({ 
   await page.waitForLoadState('networkidle');
 
   await expect(page).toHaveTitle(/Peliglot/);
-  await expect(page).toHaveTitle(/Hand-crafted/);
+  await expect(page).toHaveTitle(/Interactive learning guides/);
 
   const description = await page.locator('meta[name="description"]').getAttribute('content');
   expect(description).toContain('No ads, no accounts');

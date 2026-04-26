@@ -114,7 +114,7 @@ function TierSection({ tier, entries }: { tier: Supporter['tier']; entries: Supp
 
 export function SupportersPage(): ReactElement {
   useRouteMeta({
-    title: 'Support Peliglot — Hand-crafted interactive learning guides',
+    title: 'Support Peliglot — Interactive learning guides',
     description: siteSupportPitch,
     canonical: '/support',
     ogImage: `${SITE_URL}/og/site.png`,

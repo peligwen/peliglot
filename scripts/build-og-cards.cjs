@@ -503,7 +503,7 @@ async function main() {
 
   // ---- Site card ----
   var siteTagline =
-    'Hand-crafted interactive guides for languages and more. No ads, no accounts.';
+    'Free interactive guides for languages and more. No ads, no accounts.';
   var siteHeroPitch =
     'Ten collections. Over 300 guides. Built by one person who wanted to learn, not to be marketed to.';
 

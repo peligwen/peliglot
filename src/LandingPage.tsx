@@ -261,7 +261,7 @@ const landingJsonLd: object[] = [
     name: 'Peliglot',
     url: SITE_URL,
     description:
-      'Hand-crafted interactive guides for languages and more. No ads, no accounts.',
+      'Free interactive guides for languages and more. No ads, no accounts.',
   },
   {
     '@context': 'https://schema.org',
@@ -283,7 +283,7 @@ export function LandingPage(): ReactElement {
   const visitedCounts = useVisitedCounts();
 
   useRouteMeta({
-    title: 'Peliglot — Hand-crafted interactive learning guides',
+    title: 'Peliglot — Interactive learning guides',
     description: siteTagline,
     canonical: '/',
     type: 'website',

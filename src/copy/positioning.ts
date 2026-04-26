@@ -5,7 +5,7 @@
  * OG cards, and the donation/supporters page.
  *
  * Voice rules: direct, occasionally dry. No LinkedIn-speak.
- * Eclectic + textbook-averse + hand-made are the three notes.
+ * Eclectic + textbook-averse + opinionated are the three notes.
  */
 
 export type CollectionSlug =
@@ -22,7 +22,7 @@ export type CollectionSlug =
 
 /** ≤80 chars. Goes in <meta name="description"> and OG site card. */
 export const siteTagline =
-  'Hand-crafted interactive guides for languages and more. No ads, no accounts.';
+  'Free interactive guides for languages and more. No ads, no accounts.';
 
 /**
  * The longer hero copy. 1–3 sentences.
@@ -48,7 +48,6 @@ export const siteFor = [
 export const siteIsNot = [
   'A course platform. No certificates, no modules, no "learning paths."',
   'Duolingo. Gamification serves the learning, not the streak.',
-  'An AI slop farm. Every guide was written by hand and checked against reality.',
 ] as const;
 
 /**

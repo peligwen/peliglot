@@ -1,7 +1,7 @@
 {
-  "name": "Peliglot — Hand-crafted interactive learning guides",
+  "name": "Peliglot — Interactive learning guides",
   "short_name": "Peliglot",
-  "description": "Hand-crafted interactive guides for languages and more. No ads, no accounts.",
+  "description": "Free interactive guides for languages and more. No ads, no accounts.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FDFBF7",
