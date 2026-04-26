@@ -6,6 +6,7 @@ import { guideComponents } from './components';
 export function Component() {
   return (
     <GuideShell
+      slug="german"
       guidesMeta={guidesMeta}
       guideComponents={guideComponents}
       categories={categories}

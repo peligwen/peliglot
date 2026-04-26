@@ -2,6 +2,7 @@ import { useState, useMemo, useRef } from 'react';
 import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { useGuideNavigation } from '../hooks/useGuideNavigation';
+import { useRouteMeta } from '../hooks/useRouteMeta';
 import { lightTheme } from '../styles/themes';
 import { colors, spacing, radii, typography } from '../styles/tokens';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -9,6 +10,8 @@ import { GuideSidebar } from './GuideSidebar';
 import { GuideNav } from './GuideNav';
 import type { GuideMeta, GuideComponents, CategoryColors } from '../types/guide';
 import type { Theme } from '../styles/themes';
+import { collectionOneLiners } from '../copy/positioning';
+import type { CollectionSlug } from '../copy/positioning';
 
 // Update this map when adding new guide collections
 const relatedCollections: Record<string, { slug: string; title: string; icon: string }> = {
@@ -24,6 +27,7 @@ const relatedCollections: Record<string, { slug: string; title: string; icon: st
 };
 
 export interface GuideShellProps {
+  slug: CollectionSlug;
   guidesMeta: GuideMeta[];
   guideComponents: GuideComponents;
   categories: string[];
@@ -35,6 +39,7 @@ export interface GuideShellProps {
 }
 
 export function GuideShell({
+  slug,
   guidesMeta,
   guideComponents,
   categories,
@@ -64,8 +69,37 @@ export function GuideShell({
     setMenuOpen(true);
   };
 
-  const slug = storageKey.replace('peliglot-', '');
   const related = relatedCollections[slug];
+
+  // Per-route meta: update on every guide page change within this collection.
+  // Format: "<guide title> — <sidebarTitle> | Peliglot"
+  const guideTitle = `${meta.title} — ${sidebarTitle} | Peliglot`;
+  const guideDescription =
+    (meta.subtitle ?? collectionOneLiners[slug]) || sidebarSubtitle;
+  const collectionJsonLd = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: sidebarTitle,
+    url: `https://peliglot.com/guides/${slug}`,
+    description: collectionOneLiners[slug] ?? sidebarSubtitle,
+    mainEntity: {
+      '@type': 'CreativeWorkSeries',
+      name: sidebarTitle,
+      hasPart: guidesMeta.map(g => ({
+        '@type': 'CreativeWork',
+        name: g.title,
+        position: g.id,
+      })),
+    },
+  }), [slug, sidebarTitle, sidebarSubtitle, guidesMeta]);
+
+  useRouteMeta({
+    title: guideTitle,
+    description: guideDescription,
+    canonical: `/guides/${slug}`,
+    type: 'website',
+    jsonLd: collectionJsonLd,
+  });
 
   return (
     <div style={{

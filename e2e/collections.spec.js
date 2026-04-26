@@ -61,5 +61,23 @@ for (const { slug, sidebarTitle } of collections) {
     // Also assert the page counter in the top bar updated to "2/N"
     // (the aria-label on the guide counter badge updates to "Guide 2 of N guides")
     await expect(page.getByLabel(/Guide 2 of \d+ guides/)).toBeVisible();
+
+    // Assert per-route <title> contains both the collection name and "Peliglot"
+    await expect(page).toHaveTitle(new RegExp(sidebarTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    await expect(page).toHaveTitle(/Peliglot/);
   });
 }
+
+// ---------------------------------------------------------------------------
+// Landing page meta checks
+// ---------------------------------------------------------------------------
+test('landing page: <title> and <meta description> are set correctly', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page).toHaveTitle(/Peliglot/);
+  await expect(page).toHaveTitle(/Hand-crafted/);
+
+  const description = await page.locator('meta[name="description"]').getAttribute('content');
+  expect(description).toContain('No ads, no accounts');
+});

@@ -6,6 +6,7 @@ import { guideComponents } from './components';
 export function Component() {
   return (
     <GuideShell
+      slug="ai-interaction"
       guidesMeta={guidesMeta}
       guideComponents={guideComponents}
       categories={categories}

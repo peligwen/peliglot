@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { ProgressRing } from './components/ProgressRing';
 import { readVisited } from './hooks/useProgress';
+import { useRouteMeta } from './hooks/useRouteMeta';
 import { guidesMeta as spanishMeta } from './guides/spanish/meta';
 import { guidesMeta as arabicMeta } from './guides/arabic/meta';
 import { guidesMeta as englishMeta } from './guides/english/meta';
@@ -252,8 +253,44 @@ function useVisitedCounts(): Record<string, number> {
   }, []);
 }
 
+const SITE_URL = 'https://peliglot.com';
+
+const landingJsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Peliglot',
+    url: SITE_URL,
+    description:
+      'Hand-crafted interactive guides for languages and more. No ads, no accounts.',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Peliglot',
+    url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
+
 export function LandingPage(): ReactElement {
   const visitedCounts = useVisitedCounts();
+
+  useRouteMeta({
+    title: 'Peliglot — Hand-crafted interactive learning guides',
+    description: siteTagline,
+    canonical: '/',
+    type: 'website',
+    jsonLd: landingJsonLd,
+  });
+
   return (
     <>
       <style>{`@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}@media(prefers-reduced-motion:reduce){.resume-toast{animation:none!important}}`}</style>
