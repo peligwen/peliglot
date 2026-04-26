@@ -48,6 +48,12 @@ export function useGuideNavigation(
   const pageRef = useRef<number>(state.page);
   pageRef.current = state.page;
 
+  // History sync uses pushState only on user-initiated navs; mount + hash-sync
+  // bootstrap use replaceState so we don't insert phantom history entries.
+  // popstate (Back/Forward) sets fromPopstate to skip the sync effect entirely.
+  const userNavCount = useRef<number>(0);
+  const fromPopstate = useRef<boolean>(false);
+
   // On mount, if a valid hash is present it takes precedence over localStorage.
   // useLayoutEffect runs before first paint so there's no visible flicker.
   useLayoutEffect(() => {
@@ -60,6 +66,7 @@ export function useGuideNavigation(
   }, []);
 
   const goTo = (i: number): void => {
+    userNavCount.current += 1;
     setPage(i);
     setMenuOpen(false);
     if (contentRef.current) contentRef.current.scrollTop = 0;
@@ -67,12 +74,18 @@ export function useGuideNavigation(
 
   const prev = useCallback(() => {
     const p = pageRef.current;
-    if (p > 0) setPage(p - 1);
+    if (p > 0) {
+      userNavCount.current += 1;
+      setPage(p - 1);
+    }
   }, [setPage]);
 
   const next = useCallback(() => {
     const p = pageRef.current;
-    if (p < total - 1) setPage(p + 1);
+    if (p < total - 1) {
+      userNavCount.current += 1;
+      setPage(p + 1);
+    }
   }, [total, setPage]);
 
   useEffect(() => {
@@ -129,8 +142,28 @@ export function useGuideNavigation(
   }, [prev, next]);
 
   useEffect(() => {
-    history.replaceState(null, '', '#' + state.page);
+    if (fromPopstate.current) {
+      fromPopstate.current = false;
+      return;
+    }
+    if (userNavCount.current === 0) {
+      history.replaceState(null, '', '#' + state.page);
+      return;
+    }
+    history.pushState(null, '', '#' + state.page);
   }, [state.page]);
+
+  useEffect(() => {
+    const onPop = () => {
+      const h = readHashPage(total);
+      if (h !== null && h !== pageRef.current) {
+        fromPopstate.current = true;
+        setPage(h);
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [total, setPage]);
 
   useEffect(() => {
     markVisited(state.page);

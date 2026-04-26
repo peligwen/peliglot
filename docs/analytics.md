@@ -24,12 +24,14 @@ That's it.
 - **No per-user tracking.** Sessions are not stitched together across visits.
 - **No ad targeting.** The data is never used for advertising or sold to third
   parties.
-- **Within-collection guide navigation.** When you move between individual
-  guides inside a collection (e.g. from Spanish Guide 1 to Guide 2), the URL
-  hash updates via `history.replaceState`, which SPA analytics beacons do not
-  intercept. Those navigation events are invisible to Cloudflare — we only see
-  that you visited `/guides/spanish`, not which specific guides you opened.
-  This is a documented, accepted limitation for this phase.
+## Within-collection navigation
+
+When you move between guides inside a collection (e.g. from Spanish Guide 1 to
+Guide 2), the URL hash updates via `history.pushState`. Cloudflare Web
+Analytics observes the navigation and records each guide visit. The Back and
+Forward buttons walk through the in-collection history and are also recorded.
+What's logged is still only the URL — the hash fragment counts as part of the
+path here, no extra metadata.
 
 ## Fonts
 

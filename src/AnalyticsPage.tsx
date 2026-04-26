@@ -123,16 +123,19 @@ export function AnalyticsPage(): ReactElement {
             <Term term="No ad targeting">
               The data is never used for advertising or sold to third parties.
             </Term>
-            <Term term="Within-collection guide navigation">
-              When you move between individual guides inside a collection (e.g.
-              from Spanish Guide 1 to Guide 2), the URL hash updates via{' '}
-              <code>history.replaceState</code>, which SPA analytics beacons do
-              not intercept. Those navigation events are invisible to Cloudflare
-              — we only see that you visited <code>/guides/spanish</code>, not
-              which specific guides you opened. This is a documented, accepted
-              limitation.
-            </Term>
           </dl>
+        </Section>
+
+        <Section title="Within-collection navigation">
+          <p>
+            When you move between guides inside a collection (e.g. from Spanish
+            Guide 1 to Guide 2), the URL hash updates via{' '}
+            <code>history.pushState</code>. Cloudflare Web Analytics observes
+            the navigation and records each guide visit. The Back and Forward
+            buttons walk through the in-collection history and are also
+            recorded. What's logged is still only the URL — the hash fragment
+            counts as part of the path here, no extra metadata.
+          </p>
         </Section>
 
         <Section title="Fonts">
