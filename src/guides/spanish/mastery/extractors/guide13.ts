@@ -15,15 +15,14 @@
 import type { ReviewCard } from '../../../../mastery/cards';
 import { adjs, nouns } from '../../guides/data13';
 import type { FormKey } from '../../guides/data13';
+import { slugifySpanish } from '../util';
 
 const formKeys: FormKey[] = ['ms', 'fs', 'mp', 'fp'];
 
+// Guide13 adjective base forms may contain "/" (e.g. "masc/fem") — pass it
+// through as an extra separator so it becomes a hyphen in the slug.
 function slug(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[áéíóú]/g, c => ({ á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u' }[c] ?? c))
-    .replace(/\//g, '-');
+  return slugifySpanish(s, '/');
 }
 
 export function extract(): ReviewCard[] {

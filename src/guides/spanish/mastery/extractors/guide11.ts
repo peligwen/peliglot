@@ -16,12 +16,10 @@
 
 import type { ReviewCard } from '../../../../mastery/cards';
 import { quizItems, genderRules } from '../../guides/data11';
+import { slugifySpanish } from '../util';
 
 function nounSlug(noun: string): string {
-  return noun
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[áéíóú]/g, c => ({ á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u' }[c] ?? c));
+  return slugifySpanish(noun);
 }
 
 export function extract(): ReviewCard[] {
@@ -51,8 +49,8 @@ export function extract(): ReviewCard[] {
     const gender = rule.g === 'M' ? 'masculine' : 'feminine';
     const article = rule.g === 'M' ? 'el' : 'la';
     for (const exc of rule.exc) {
-      // Exception entries are formatted as "el/la noun" — strip the article
-      const bare = exc.replace(/^(el|la)\s+/, '');
+      // Exception entries are formatted as "el/la/los/las noun" — strip the article
+      const bare = exc.replace(/^(el|la|los|las)\s+/, '');
       const slug = nounSlug(bare);
       const id = `spanish-11-exc-${slug}`;
       if (seen.has(id)) continue;
