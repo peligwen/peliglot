@@ -38,6 +38,16 @@ const mockVerbCard: ReviewCard = {
   speakText: 'hablo',
 };
 
+const mockNounGenderCard: ReviewCard = {
+  cardId: 'test-noun-gender-1',
+  guideId: 11,
+  guideSlug: 'spanish',
+  kind: 'noun-gender',
+  prompt: { kind: 'noun-gender', noun: 'libro', meaning: 'book' },
+  answer: 'el (masculine)',
+  speakText: 'libro',
+};
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -216,8 +226,9 @@ describe('Practice surface', () => {
     // With seed 20260115, first card is mockVerbCard — verb conjugation prompt.
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
 
-    // Reveal the answer for the verb card.
-    fireEvent.click(screen.getByRole('button', { name: /show answer/i }));
+    // Verb card is typing-eligible: input and Submit button render.
+    // Use "Show Answer" escape hatch to get to the rating buttons.
+    fireEvent.click(screen.getByRole('button', { name: /show answer without typing/i }));
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /good/i }));
@@ -226,6 +237,173 @@ describe('Practice surface', () => {
     // After the advance delay, the second card (mockCard, letter "A") should be shown.
     await waitFor(() => {
       expect(screen.getByText('A')).toBeInTheDocument();
+    }, { timeout: 2000 });
+  });
+
+  // -------------------------------------------------------------------------
+  // Typed-answer flow — verb-conjugation (typing-eligible)
+  // -------------------------------------------------------------------------
+
+  it('renders an input field for typing-eligible cards (verb-conjugation)', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    // Input field should be present
+    expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument();
+    // Submit button should be present
+    expect(screen.getByRole('button', { name: /submit answer/i })).toBeInTheDocument();
+    // Show Answer escape hatch should be present
+    expect(screen.getByRole('button', { name: /show answer without typing/i })).toBeInTheDocument();
+  });
+
+  it('shows correct feedback when the typed answer is right', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    const input = screen.getByRole('textbox', { name: /type your answer/i });
+    fireEvent.change(input, { target: { value: 'hablo' } });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
+    // Rating buttons appear after submission
+    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+  });
+
+  it('shows close feedback when the typed answer is missing only a diacritic', async () => {
+    // Use a card whose answer has a diacritic
+    const accentCard: ReviewCard = {
+      cardId: 'test-accent-card',
+      guideId: 4,
+      guideSlug: 'spanish',
+      kind: 'verb-conjugation',
+      prompt: { kind: 'verb-conjugation', verb: 'ir', pronoun: 'vosotros' },
+      answer: 'váis',
+      speakText: 'váis',
+    };
+    renderPractice(adapter, [accentCard]);
+    await waitFor(() => expect(screen.getByText(/ir/i)).toBeInTheDocument());
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: 'vais' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/close/i);
+    expect(screen.getByRole('button', { name: /again/i })).toBeInTheDocument();
+  });
+
+  it('shows incorrect feedback when the typed answer is wrong', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: 'hablamos' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct answer/i);
+    // All 4 rating buttons appear even for incorrect
+    expect(screen.getByRole('button', { name: /again/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+  });
+
+  it('accepts Enter key to submit the typed answer', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    const input = screen.getByRole('textbox', { name: /type your answer/i });
+    fireEvent.change(input, { target: { value: 'hablo' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
+  });
+
+  it('Show Answer escape hatch on verb card skips to canonical answer + ratings', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    // Click Show Answer (escape hatch, not Submit)
+    fireEvent.click(screen.getByRole('button', { name: /show answer without typing/i }));
+
+    // The canonical answer block should appear (not the match feedback)
+    await waitFor(() => {
+      expect(screen.getByText('hablo')).toBeInTheDocument();
+    });
+    // Match feedback should NOT appear (no scoring on escape-hatch path)
+    expect(screen.queryByTestId('answer-feedback')).not.toBeInTheDocument();
+    // Rating buttons appear
+    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------------------------------
+  // Self-rate-only path — letter-sound
+  // -------------------------------------------------------------------------
+
+  it('does NOT render an input field for self-rate-only cards (letter-sound)', async () => {
+    renderPractice(adapter, [mockCard]);
+    await waitFor(() => expect(screen.getByText('A')).toBeInTheDocument());
+
+    // No input field
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    // Show Answer is the primary button
+    expect(screen.getByRole('button', { name: /show answer/i })).toBeInTheDocument();
+    // Hint text for self-rate mode
+    expect(screen.getByText(/rate yourself when ready/i)).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------------------------------
+  // Noun-gender typing with short-form acceptable answers (el / masculine)
+  // -------------------------------------------------------------------------
+
+  it('accepts short form "el" as correct for noun-gender card', async () => {
+    renderPractice(adapter, [mockNounGenderCard]);
+    await waitFor(() => expect(screen.getByText(/libro/i)).toBeInTheDocument());
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: 'el' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
+  });
+
+  // -------------------------------------------------------------------------
+  // XP indicator in header
+  // -------------------------------------------------------------------------
+
+  it('shows XP indicator in header after reviewing a card', async () => {
+    renderPractice(adapter, [mockVerbCard]);
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    // Submit a correct answer to earn XP
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: 'hablo' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument());
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /good/i }));
+    });
+
+    // After rating, XP today should appear in header (value > 0)
+    await waitFor(() => {
+      expect(screen.getByLabelText(/xp today/i)).toBeInTheDocument();
     }, { timeout: 2000 });
   });
 });
