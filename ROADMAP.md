@@ -2,6 +2,9 @@
 
 A practical plan for improving the project, organized by effort and impact.
 
+> **Looking forward?** The 10-year strategic arc lives in [VISION.md](./VISION.md).
+> This file is the historical work log of completed phases.
+
 ---
 
 ## Quality Review
