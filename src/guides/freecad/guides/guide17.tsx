@@ -11,7 +11,7 @@ export function Guide17(){
   ];
   const info=infos[mode];
   return(<div>
-    <DarkBox title="LOFT &amp; ADDITIVE PIPE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="LOFT & ADDITIVE PIPE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#e67e22"}}>Loft</strong> interpolates between two or more profiles on different planes — great for organic handles, morphing adapters, bottle-to-spout transitions. <strong style={{color:"#e67e22"}}>Additive Pipe</strong> sweeps a profile along a spine path — great for cable channels, tubing, curved pipes.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>

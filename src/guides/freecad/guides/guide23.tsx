@@ -13,7 +13,7 @@ export function Guide23(){
   ];
   const m=modes[mode];
   return(<div>
-    <DarkBox title="DATUM PLANES &amp; AXES"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="DATUM PLANES & AXES"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#9b59b6"}}>Datums</strong> are reference geometry — planes, axes, points — that don&apos;t become part of the solid but give you stable places to sketch and reference. <strong style={{color:"#e67e22"}}>Always prefer datums over raw faces</strong> for any sketch you&apos;ll reference from later features.
     </div></DarkBox>
     <div style={{display:"flex",gap:5,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>

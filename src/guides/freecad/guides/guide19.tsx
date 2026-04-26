@@ -9,7 +9,7 @@ export function Guide19(){
   const px=80;const py=80;const bx=240;const by=180;
   const sc=r*8;
   return(<div>
-    <DarkBox title="FILLET &amp; CHAMFER"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="FILLET & CHAMFER"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#e67e22"}}>Fillet</strong> rounds an edge; <strong style={{color:"#e67e22"}}>Chamfer</strong> bevels it. For 3D printing, <strong style={{color:"#f39c12"}}>chamfers print better</strong> than fillets on internal-corner and vertical-to-horizontal transitions — they produce no overhangs requiring support.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>

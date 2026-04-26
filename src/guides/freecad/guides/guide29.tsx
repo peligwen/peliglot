@@ -19,7 +19,7 @@ export function Guide29(){
     "Or use Mesh workbench > Mesh from Shape for more control",
   ];
   return(<div>
-    <DarkBox title="STL EXPORT &amp; ORIENTATION"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="STL EXPORT & ORIENTATION"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       Export to STL when ready to slice. FreeCAD&apos;s STL dialog has two parameters — <strong style={{color:"#e74c3c"}}>Linear deflection</strong> (max edge length) and <strong style={{color:"#e74c3c"}}>Angular deflection</strong> (degrees). There are no preset names; the labels below are <em>values you&apos;d enter</em> for each quality level.
     </div></DarkBox>
     <div style={{fontSize:11,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6,textAlign:"center"}}>Mesh refinement (values to enter)</div>

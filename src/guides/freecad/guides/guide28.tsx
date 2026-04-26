@@ -18,7 +18,7 @@ export function Guide28(){
     ["FDM hole shrinkage","Typical FDM with 0.4mm nozzle: holes shrink 0.1–0.3mm from nominal"],
   ];
   return(<div>
-    <DarkBox title="TOLERANCES &amp; CLEARANCE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="TOLERANCES & CLEARANCE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       3D-printed holes <strong style={{color:"#e74c3c"}}>shrink</strong> (0.1–0.3mm typical for FDM). Shafts and pegs grow by similar amounts. Design with <strong style={{color:"#e67e22"}}>fit classes</strong> in mind — interference, slip, or loose — rather than relying on nominal dimensions.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>

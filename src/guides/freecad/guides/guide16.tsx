@@ -16,7 +16,7 @@ export function Guide16(){
   const se=sweepEnd;
   const ex2=cx+sweepR*Math.cos(se);const ey2=110+sweepR*Math.sin(se);
   return(<div>
-    <DarkBox title="REVOLUTION &amp; GROOVE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="REVOLUTION & GROOVE"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#e67e22"}}>Revolution</strong> spins a 2D profile around an axis to create round parts — bottles, turned spindles, cylindrical fittings. <strong style={{color:"#e67e22"}}>Groove</strong> is the subtractive version: carves a revolved cut out of solid. The workflow is identical; Revolution adds material, Groove removes it.
     </div></DarkBox>
     <div style={{marginBottom:8}}>

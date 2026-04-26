@@ -15,7 +15,7 @@ export function Guide26(){
   ];
   const m=modes[mode];
   return(<div>
-    <DarkBox title="STEP &amp; MESH IMPORT"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="STEP & MESH IMPORT"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       Two completely different import workflows. <strong style={{color:"#27ae60"}}>STEP</strong> preserves solid geometry — proper parametric-ish exchange format. <strong style={{color:"#e74c3c"}}>STL/mesh</strong> is a tessellated surface — conversion to solid is lossy, slow, and often fails.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
