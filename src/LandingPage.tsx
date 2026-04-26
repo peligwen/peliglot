@@ -350,25 +350,51 @@ export function LandingPage(): ReactElement {
                   </div>
                 </div>
               ) : (
-                <Link key={g.slug} to={`/guides/${g.slug}`} className="guide-card" aria-label={`${g.title} — ${g.count}`}>
-                  <div className="card-accent" style={{ background: g.accent }} />
-                  <div className="card-body">
-                    <div className="card-icon">{g.icon}</div>
-                    <div className="card-text">
-                      <div className="card-title">{g.title}</div>
-                      <div className="card-sub">{g.sub}</div>
-                    </div>
-                    {progress > 0 ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                        <ProgressRing progress={progress} size={32} strokeWidth={3} color={accentColor} />
-                        <span style={{ fontSize: 11, fontWeight: 700, color: accentColor }}>{visited}/{g.total}</span>
+                <div key={g.slug}>
+                  <Link to={`/guides/${g.slug}`} className="guide-card" aria-label={`${g.title} — ${g.count}`}>
+                    <div className="card-accent" style={{ background: g.accent }} />
+                    <div className="card-body">
+                      <div className="card-icon">{g.icon}</div>
+                      <div className="card-text">
+                        <div className="card-title">{g.title}</div>
+                        <div className="card-sub">{g.sub}</div>
                       </div>
-                    ) : (
-                      <div className="card-count">{g.count}</div>
-                    )}
-                    <div className="card-arrow">{'→'}</div>
-                  </div>
-                </Link>
+                      {progress > 0 ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                          <ProgressRing progress={progress} size={32} strokeWidth={3} color={accentColor} />
+                          <span style={{ fontSize: 11, fontWeight: 700, color: accentColor }}>{visited}/{g.total}</span>
+                        </div>
+                      ) : (
+                        <div className="card-count">{g.count}</div>
+                      )}
+                      <div className="card-arrow">{'→'}</div>
+                    </div>
+                  </Link>
+                  {g.slug === 'spanish' && (
+                    <div style={{ padding: '0 0 4px 0', display: 'flex', justifyContent: 'flex-end' }}>
+                      <Link
+                        to="/guides/spanish/practice"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: '#C62828',
+                          textDecoration: 'none',
+                          background: '#fff0f0',
+                          border: '1px solid #f5c6c6',
+                          borderRadius: 20,
+                          padding: '4px 12px',
+                          letterSpacing: 0.3,
+                        }}
+                        aria-label="Practice Spanish with spaced repetition"
+                      >
+                        <span aria-hidden="true">{'🎴'}</span> Practice
+                      </Link>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
