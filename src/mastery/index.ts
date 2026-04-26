@@ -27,8 +27,11 @@ export const defaultMasteryAdapter: MasteryStorageAdapter =
 // ---------------------------------------------------------------------------
 
 export type { MasteryStorageAdapter } from './adapter';
-export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult } from './types';
+export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult, XpState } from './types';
 export { Rating } from './types';
 export type { SchedulerCard } from './types';
 export { createCard, rateCard } from './scheduler';
 export type { ReviewCard, CardKind, PromptShape } from './cards';
+export { computeXp } from './xp';
+export { getRecommendation } from './recommendation';
+export type { Recommendation, RecommendationInput, RecommendationKind } from './recommendation';
