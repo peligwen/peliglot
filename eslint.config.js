@@ -2,10 +2,12 @@ import js from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    files: ['src/**/*.{js,jsx}'],
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
     ...js.configs.recommended,
     plugins: {
       react,
@@ -44,6 +46,24 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'no-prototype-builtins': 'off',
+    },
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: { '@typescript-eslint': tseslint },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      // Disable base rule in favour of TS-aware version (avoids double-reporting)
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
   {
