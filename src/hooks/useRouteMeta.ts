@@ -9,7 +9,13 @@ export interface RouteMetaProps {
   ogImage?: string;
   /** Canonical URL path (no origin). Defaults to current pathname. */
   canonical?: string;
-  /** JSON-LD structured data. One or many objects — each emits its own <script>. */
+  /**
+   * JSON-LD structured data. One or many objects — each emits its own <script>.
+   *
+   * Caller contract: pass a stable reference (memoize with `useMemo` if the
+   * value is computed inside the component). The hook compares by identity,
+   * not by content, to avoid re-stringifying large payloads on every render.
+   */
   jsonLd?: object | object[];
   /** og:type. Defaults to 'website'. */
   type?: 'website' | 'article';
@@ -33,16 +39,8 @@ function ensureMeta(selector: string, attrName: string, attrValue: string): HTML
   return el;
 }
 
-function getMetaContent(selector: string): string {
-  return getMeta(selector)?.getAttribute('content') ?? '';
-}
-
 function setMetaContent(selector: string, attrName: string, attrValue: string, content: string): void {
   ensureMeta(selector, attrName, attrValue).setAttribute('content', content);
-}
-
-function getCanonicalHref(): string {
-  return document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.getAttribute('href') ?? '';
 }
 
 function setCanonical(href: string): void {
@@ -64,8 +62,14 @@ function setCanonical(href: string): void {
  *
  * - Sets <title>, description, OG tags, Twitter card tags, and canonical link.
  * - Injects JSON-LD <script> tags tagged with data-route-meta-jsonld="1".
- * - On unmount (or dep change), restores the previous values.
- * - Does NOT react to hash changes — only to prop changes.
+ *
+ * Cleanup contract: only the JSON-LD scripts this effect inserted are removed
+ * on unmount or dep change. Title and meta values are NOT restored — they're
+ * overwritten by the next route's effect. Every route is therefore expected
+ * to call useRouteMeta; the catch-all 404 route fulfills this for unmatched
+ * paths. (We deliberately dropped restore-on-cleanup to avoid the snapshot
+ * race that occurs if two consumers ever mount simultaneously, e.g. a route +
+ * a portal modal.)
  */
 export function useRouteMeta({
   title,
@@ -80,29 +84,7 @@ export function useRouteMeta({
     ? `${SITE_URL}${canonical}`
     : `${SITE_URL}${pathname}`;
 
-  // Stable JSON-LD dep — avoids infinite re-run if callers pass fresh object literals.
-  const jsonLdKey = jsonLd != null ? JSON.stringify(jsonLd) : '';
-
   useEffect(() => {
-    // -----------------------------------------------------------------------
-    // Capture previous values before mutating
-    // -----------------------------------------------------------------------
-    const prevTitle = document.title;
-    const prevDesc = getMetaContent('meta[name="description"]');
-    const prevOgTitle = getMetaContent('meta[property="og:title"]');
-    const prevOgDesc = getMetaContent('meta[property="og:description"]');
-    const prevOgType = getMetaContent('meta[property="og:type"]');
-    const prevOgUrl = getMetaContent('meta[property="og:url"]');
-    const prevOgImage = getMetaContent('meta[property="og:image"]');
-    const prevTwCard = getMetaContent('meta[name="twitter:card"]');
-    const prevTwTitle = getMetaContent('meta[name="twitter:title"]');
-    const prevTwDesc = getMetaContent('meta[name="twitter:description"]');
-    const prevTwImage = getMetaContent('meta[name="twitter:image"]');
-    const prevCanonical = getCanonicalHref();
-
-    // -----------------------------------------------------------------------
-    // Apply new values
-    // -----------------------------------------------------------------------
     document.title = title;
 
     setMetaContent('meta[name="description"]', 'name', 'description', description);
@@ -125,7 +107,15 @@ export function useRouteMeta({
     setCanonical(canonicalHref);
 
     // -----------------------------------------------------------------------
-    // JSON-LD: inject one <script> per item, tagged for cleanup
+    // JSON-LD: inject one <script> per item, tagged for cleanup.
+    //
+    // SECURITY: must use textContent (NOT innerHTML). With textContent the
+    // browser stores the JSON as character data, so any "</script>" inside a
+    // string value cannot terminate the script tag. If you switch to
+    // innerHTML, also add a sanitizer like
+    //   .replace(/<\/script/gi, '<\\/script')
+    // before assignment, otherwise JSON-LD becomes an XSS vector the moment
+    // any string field is sourced from user input.
     // -----------------------------------------------------------------------
     const insertedScripts: HTMLScriptElement[] = [];
     if (jsonLd != null) {
@@ -140,39 +130,12 @@ export function useRouteMeta({
       }
     }
 
-    // -----------------------------------------------------------------------
-    // Cleanup: restore previous values when deps change or component unmounts
-    // -----------------------------------------------------------------------
     return () => {
-      document.title = prevTitle;
-
-      setMetaContent('meta[name="description"]', 'name', 'description', prevDesc);
-
-      setMetaContent('meta[property="og:title"]', 'property', 'og:title', prevOgTitle);
-      setMetaContent('meta[property="og:description"]', 'property', 'og:description', prevOgDesc);
-      setMetaContent('meta[property="og:type"]', 'property', 'og:type', prevOgType);
-      setMetaContent('meta[property="og:url"]', 'property', 'og:url', prevOgUrl);
-
-      setMetaContent('meta[name="twitter:card"]', 'name', 'twitter:card', prevTwCard);
-      setMetaContent('meta[name="twitter:title"]', 'name', 'twitter:title', prevTwTitle);
-      setMetaContent('meta[name="twitter:description"]', 'name', 'twitter:description', prevTwDesc);
-
-      if (prevOgImage) {
-        setMetaContent('meta[property="og:image"]', 'property', 'og:image', prevOgImage);
-      }
-      if (prevTwImage) {
-        setMetaContent('meta[name="twitter:image"]', 'name', 'twitter:image', prevTwImage);
-      }
-
-      if (prevCanonical) {
-        setCanonical(prevCanonical);
-      }
-
-      // Remove only the scripts WE inserted — don't broad-sweep the DOM
+      // Only clean up JSON-LD scripts we added — meta tags persist until the
+      // next route overwrites them. See cleanup contract above.
       for (const script of insertedScripts) {
         script.parentNode?.removeChild(script);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, description, ogImage, canonicalHref, type, jsonLdKey]);
+  }, [title, description, ogImage, canonicalHref, type, jsonLd]);
 }

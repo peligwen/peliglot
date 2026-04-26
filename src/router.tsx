@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { LandingPage } from './LandingPage';
 import { SupportersPage } from './SupportersPage';
 import { AnalyticsPage } from './AnalyticsPage';
+import { NotFoundPage } from './NotFoundPage';
 
 const guideSlugs: string[] = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
@@ -74,4 +75,11 @@ export const router = createBrowserRouter([
     path: `/guides/${slug}.html`,
     loader: () => redirect(`/guides/${slug}`),
   })),
+  // Catch-all 404. Required so every route sets its own meta — useRouteMeta
+  // no longer restores previous values on cleanup.
+  {
+    path: '*',
+    element: <NotFoundPage />,
+    errorElement: <RouteError />,
+  },
 ]);
