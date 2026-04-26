@@ -29,7 +29,7 @@ export const siteTagline =
  * Used as the lead on the landing page.
  */
 export const siteHeroPitch =
-  'Ten collections. Over 300 guides. Built by one person who wanted to learn, not to be marketed to.';
+  'Ten subjects. Over 300 interactive guides.';
 
 /**
  * Who this is for.
@@ -57,7 +57,7 @@ export const sectionIntros: { Languages: string; BeyondLanguage: string } = {
   Languages:
     'Five languages, each with its own dialect notes, cultural context, and audio.',
   BeyondLanguage:
-    'The same hands that wrote the Spanish guides also built music theory, jazz guitar, and FreeCAD.',
+    'Music theory, jazz guitar, math, AI, and FreeCAD — same interactive style, different subjects.',
 };
 
 /**
