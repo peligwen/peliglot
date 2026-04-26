@@ -1,15 +1,8 @@
 import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
-import { pronouns6, pronounsShort } from './_helpers';
-
-const stemTypes=[
-  {id:"e-ie",label:"E → IE",color:"#C62828",model:{verb:"pensar",forms:["pienso","piensas","piensa","pensamos","pensáis","piensan"]},verbs:["pensar","querer","preferir","sentir","cerrar","entender"]},
-  {id:"o-ue",label:"O → UE",color:"#1565C0",model:{verb:"poder",forms:["puedo","puedes","puede","podemos","podéis","pueden"]},verbs:["poder","dormir","volver","encontrar","recordar","almorzar"]},
-  {id:"e-i",label:"E → I",color:"#2E7D32",model:{verb:"pedir",forms:["pido","pides","pide","pedimos","pedís","piden"]},verbs:["pedir","servir","repetir","seguir","vestirse","reír"]},
-  {id:"u-ue",label:"U → UE",color:"#6A1B9A",model:{verb:"jugar",forms:["juego","juegas","juega","jugamos","jugáis","juegan"]},verbs:["jugar"]},
-];
-const bootPattern=[true,true,true,false,false,true];
+import { pronounsShort } from './_helpers';
+import { stemTypes, bootPattern, pronouns6 } from './data9';
 
 export function Guide9(){
   const [ac,setAc]=useState("e-ie");const ch=stemTypes.find(c=>c.id===ac)!;
