@@ -279,6 +279,12 @@ export function SupportersPage(): ReactElement {
           </Link>
         </p>
         <p style={{ marginTop: spacing.sm }}>Built with care. All content is free to use.</p>
+        <p style={{ marginTop: spacing.sm }}>
+          We use privacy-respecting analytics (Cloudflare Web Analytics) —{' '}
+          <Link to="/analytics" style={{ color: colors.text.tertiary }}>
+            details
+          </Link>
+        </p>
       </footer>
     </div>
   );

@@ -51,7 +51,7 @@ All five workstreams complete, with `npm run check` passing and zero visual/UX r
 - [x] Phase 3: Per-route OG card images — site + 10 collection PNGs (1200x630), Hawaiian/Arabic with proper orthography, content-hash cached, validator extended
 - [x] Phase 4: Donation flow + Supporters page — Ko-fi outbound link CTA, /support route, tier-grouped supporter list, no third-party script on idle
 - [x] Phase 5: Cross-collection audit + targeted improvements — audit doc, 7 "no change" + 3 improvements (german particles, ai-interaction titles, freecad entity sweep across 13 guides)
-- [ ] Phase 6: Privacy-respecting analytics (depends on 1, 2, 3, 4, 5)
+- [x] Phase 6: Privacy-respecting analytics — Cloudflare Web Analytics beacon (build-only, env-gated), /analytics transparency page, e2e privacy assertions
 
 ## Director decisions (defaults applied where deferred)
 

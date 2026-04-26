@@ -83,6 +83,12 @@ if (!fs.existsSync(sitemapPath)) {
       errors++;
     }
 
+    // Check that /analytics URL is present
+    if (!sitemapContent.includes('/analytics')) {
+      console.error('ERROR: dist/sitemap.xml missing URL for /analytics');
+      errors++;
+    }
+
     // Check that each active slug has at least one <url> entry
     var missingSlug = false;
     for (var i = 0; i < slugs.length; i++) {
@@ -100,7 +106,7 @@ if (!fs.existsSync(sitemapPath)) {
       console.error('ERROR: dist/sitemap.xml contains no <url> elements.');
       errors++;
     } else if (!missingSlug) {
-      console.log('sitemap.xml OK (' + urlCount + ' URLs, ' + slugs.length + ' slugs covered, /support included)');
+      console.log('sitemap.xml OK (' + urlCount + ' URLs, ' + slugs.length + ' slugs covered, /support and /analytics included)');
     }
   }
 }

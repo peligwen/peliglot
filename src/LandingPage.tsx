@@ -382,6 +382,8 @@ export function LandingPage(): ReactElement {
           <a href="https://github.com/peligwen/peliglot">View on GitHub</a>
           <span style={{ margin: '0 8px', color: '#ccc' }}>·</span>
           <Link to="/support" style={{ color: '#999', textDecoration: 'none' }}>Support Peliglot</Link>
+          <span style={{ margin: '0 8px', color: '#ccc' }}>·</span>
+          <Link to="/analytics" style={{ color: '#999', textDecoration: 'none' }}>Privacy-respecting analytics</Link>
         </p>
       </footer>
 
