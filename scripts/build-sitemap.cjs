@@ -75,6 +75,9 @@ var entries = [];
 // Landing page
 entries.push(urlEntry(BASE_URL + '/'));
 
+// Supporters / donation page
+entries.push(urlEntry(BASE_URL + '/support'));
+
 // Each collection page + per-guide hash URLs
 for (var i = 0; i < slugs.length; i++) {
   var slug = slugs[i];

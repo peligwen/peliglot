@@ -77,6 +77,12 @@ if (!fs.existsSync(sitemapPath)) {
     console.error('ERROR: dist/sitemap.xml does not appear to be valid XML.');
     errors++;
   } else {
+    // Check that /support URL is present
+    if (!sitemapContent.includes('/support')) {
+      console.error('ERROR: dist/sitemap.xml missing URL for /support');
+      errors++;
+    }
+
     // Check that each active slug has at least one <url> entry
     var missingSlug = false;
     for (var i = 0; i < slugs.length; i++) {
@@ -94,7 +100,7 @@ if (!fs.existsSync(sitemapPath)) {
       console.error('ERROR: dist/sitemap.xml contains no <url> elements.');
       errors++;
     } else if (!missingSlug) {
-      console.log('sitemap.xml OK (' + urlCount + ' URLs, ' + slugs.length + ' slugs covered)');
+      console.log('sitemap.xml OK (' + urlCount + ' URLs, ' + slugs.length + ' slugs covered, /support included)');
     }
   }
 }

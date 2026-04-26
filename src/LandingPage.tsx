@@ -377,8 +377,12 @@ export function LandingPage(): ReactElement {
       </main>
 
       <footer className="footer" role="contentinfo">
-        <p>Built with care. All content is free to use.</p>
-        <p style={{ marginTop: 8 }}><a href="https://github.com/peligwen/peliglot">View on GitHub</a></p>
+        <p>Built with care. All content is free to use. No accounts, no tracking.</p>
+        <p style={{ marginTop: 8 }}>
+          <a href="https://github.com/peligwen/peliglot">View on GitHub</a>
+          <span style={{ margin: '0 8px', color: '#ccc' }}>·</span>
+          <Link to="/support" style={{ color: '#999', textDecoration: 'none' }}>Support Peliglot</Link>
+        </p>
       </footer>
 
       <ResumeToast />

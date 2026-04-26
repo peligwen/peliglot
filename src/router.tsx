@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect, useRouteError } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { LandingPage } from './LandingPage';
+import { SupportersPage } from './SupportersPage';
 
 const guideSlugs: string[] = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
@@ -54,6 +55,11 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <LandingPage />,
+    errorElement: <RouteError />,
+  },
+  {
+    path: '/support',
+    element: <SupportersPage />,
     errorElement: <RouteError />,
   },
   ...guideRoutes,
