@@ -7,7 +7,7 @@ export const SITE_URL = 'https://peliglot.com';
 // or preview deployments. The env value is sanitized to the character class
 // Ko-fi accepts in usernames; anything else falls back to the default and dev
 // builds emit a warning so the typo is visible.
-const KOFI_USERNAME_DEFAULT = 'peliglot';
+const KOFI_USERNAME_DEFAULT = 'peligwen';
 const KOFI_USERNAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 
 function resolveKofiUsername(): string {
