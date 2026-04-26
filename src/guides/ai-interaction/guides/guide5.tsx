@@ -17,7 +17,7 @@ export function Guide5() {
   const [active, setActive] = useState<number | null>(null);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Patterns all the way down">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           LLMs don't "think" like humans. They transform sequences of numbers through layers of math.
           But the result <em>looks</em> like reasoning because the patterns they learned are incredibly rich.

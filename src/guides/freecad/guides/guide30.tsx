@@ -11,7 +11,7 @@ export function Guide30(){
     {name:"Jagged STL curves",color:"#e74c3c",symptom:"Exported STL has visible faceting even though the model looks smooth in FreeCAD",recovery:"Re-export with finer mesh settings: reduce Angular deviation (5° or less) and Max edge length (0.1mm). Or use Mesh workbench > Mesh from Shape for explicit control."},
   ];
   return(<div>
-    <DarkBox title="PITFALLS &amp; RECOVERY"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="PITFALLS & RECOVERY"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       FreeCAD is powerful but has <strong style={{color:"#e74c3c"}}>sharp edges</strong>. These six pitfalls account for most lost hours. Knowing the symptom before you hit it means you spend 5 minutes recovering, not 2 hours confused.
     </div></DarkBox>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>

@@ -7,7 +7,7 @@ import { PromptBox, Tip } from './_helpers';
 export function Guide8() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Set the stage before you start">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           A <strong>system prompt</strong> is a set of instructions given to the model before the conversation starts.
           It shapes the model's personality, rules, and capabilities for the entire session.

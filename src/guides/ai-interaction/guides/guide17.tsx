@@ -14,7 +14,7 @@ const spectrum = [
 export function Guide17() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Know when to double-check">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           The most effective AI systems keep <strong>humans in the loop</strong> — not because AI can't act alone,
           but because the cost of AI mistakes varies widely, and humans add judgment AI lacks.

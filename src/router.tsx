@@ -2,6 +2,9 @@ import { createBrowserRouter, redirect, useRouteError } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { LandingPage } from './LandingPage';
+import { SupportersPage } from './SupportersPage';
+import { AnalyticsPage } from './AnalyticsPage';
+import { NotFoundPage } from './NotFoundPage';
 
 const guideSlugs: string[] = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
@@ -56,10 +59,27 @@ export const router = createBrowserRouter([
     element: <LandingPage />,
     errorElement: <RouteError />,
   },
+  {
+    path: '/support',
+    element: <SupportersPage />,
+    errorElement: <RouteError />,
+  },
+  {
+    path: '/analytics',
+    element: <AnalyticsPage />,
+    errorElement: <RouteError />,
+  },
   ...guideRoutes,
   // Redirect old .html URLs
   ...guideSlugs.map((slug): RouteObject => ({
     path: `/guides/${slug}.html`,
     loader: () => redirect(`/guides/${slug}`),
   })),
+  // Catch-all 404. Required so every route sets its own meta — useRouteMeta
+  // no longer restores previous values on cleanup.
+  {
+    path: '*',
+    element: <NotFoundPage />,
+    errorElement: <RouteError />,
+  },
 ]);

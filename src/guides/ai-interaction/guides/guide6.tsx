@@ -6,7 +6,7 @@ import { PromptBox, Tip } from './_helpers';
 export function Guide6() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Specificity wins">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           The single most important prompting skill: <strong>be specific</strong>.
           Vague prompts get vague results. Clear prompts get useful results.

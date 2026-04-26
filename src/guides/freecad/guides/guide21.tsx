@@ -15,7 +15,7 @@ export function Guide21(){
   const polarR=65;const polarCx=160;const polarCy=110;
   const polarDots=Array.from({length:6},(_, i)=>{const a=i*(Math.PI/3);return[polarCx+polarR*Math.cos(a),polarCy+polarR*Math.sin(a)];});
   return(<div>
-    <DarkBox title="LINEAR, POLAR &amp; MIRROR PATTERNS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="LINEAR, POLAR & MIRROR PATTERNS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       <strong style={{color:"#e67e22"}}>Pattern features</strong> duplicate one or more features parametrically. These three types cover 95% of pattern needs. You&apos;re patterning the <strong style={{color:"#f39c12"}}>feature itself</strong> (Pocket, Hole, Pad) — not copying the sketch.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>

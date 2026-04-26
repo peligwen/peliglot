@@ -17,7 +17,7 @@ export function Guide14() {
   const [active, setActive] = useState(0);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Think, act, observe, repeat">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           An <strong>agentic loop</strong> is when an AI model works autonomously through a task:
           thinking, acting, observing results, and iterating. This is what makes AI agents different from simple chatbots.

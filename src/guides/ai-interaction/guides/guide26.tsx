@@ -57,7 +57,7 @@ export function Guide26() {
 
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Plausible is not the same as true">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Hallucination</strong> is when a model generates plausible-sounding text that isn't grounded in fact.
           It's not lying — it's the inevitable consequence of predicting tokens without a built-in fact-checker.

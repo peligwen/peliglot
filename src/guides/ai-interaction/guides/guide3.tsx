@@ -14,7 +14,7 @@ export function Guide3() {
   const [show, setShow] = useState(false);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Working memory, measured in tokens">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           The <strong>context window</strong> is the model's working memory.
           Everything it can "see" — your prompt, the conversation history, any documents — must fit inside this window, measured in tokens.

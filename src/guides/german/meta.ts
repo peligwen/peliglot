@@ -31,7 +31,7 @@ export const guidesMeta: GuideMeta[] = [
   {id:28,title:"Fragen & Negation",subtitle:"Nicht vs Kein",cat:"Word Order",color:"#2E7D32",icon:"❓"},
   {id:29,title:"Zahlen & Zeit",subtitle:"Numbers, Time & Dates",cat:"Practical",color:"#E65100",icon:"🔢"},
   {id:30,title:"Verben + Präpositionen",subtitle:"Fixed Preposition Combos",cat:"Practical",color:"#6A1B9A",icon:"🔗"},
-  {id:31,title:"Modalpartikeln",subtitle:"Doch, Mal, Ja, Halt...",cat:"Practical",color:"#880E4F",icon:"✨"},
+  {id:31,title:"Modalpartikeln",subtitle:"Doch, Mal, Ja, Halt, Denn, Wohl, Schon, Bloß",cat:"Practical",color:"#880E4F",icon:"✨"},
   {id:32,title:"Falsche Freunde",subtitle:"False Friends & Common Errors",cat:"Practical",color:"#C62828",icon:"⚠"},
   {id:33,title:"Formell & Informell",subtitle:"Register, Email & Directness",cat:"Practical",color:"#1a1a1a",icon:"🎩"},
 ];

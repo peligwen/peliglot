@@ -16,7 +16,7 @@ export function Guide27(){
   const w=walls[wallIdx];
   const wallPx=Math.max(8,w.mm*20);
   return(<div>
-    <DarkBox title="WALLS &amp; OVERHANGS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="WALLS & OVERHANGS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       FDM has two physical limits that shape every design: <strong style={{color:"#e74c3c"}}>minimum wall thickness</strong> and <strong style={{color:"#e74c3c"}}>maximum overhang angle</strong>. Ignore either and your prints will fail, delaminate, or need excessive supports.
     </div></DarkBox>
     <div style={{fontSize:11,color:"#607387",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6,textAlign:"center"}}>Wall thickness</div>

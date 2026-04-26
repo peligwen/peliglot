@@ -39,7 +39,7 @@ export function Guide4() {
 
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="The randomness dial">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Temperature</strong> controls how random the model's choices are.
           Low temperature = predictable and safe. High temperature = creative and risky.

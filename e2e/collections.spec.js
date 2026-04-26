@@ -9,9 +9,9 @@ import { test, expect } from '@playwright/test';
  *  3. Asserts the sidebar shows the expected sidebarTitle
  *  4. Clicks the second guide button in the sidebar list
  *  5. Asserts the URL hash changed to #1
- *     — useGuideNavigation calls history.replaceState(null, null, '#' + page),
- *       so clicking guide 2 (index 1) always updates the hash to #1.
- *       The URL path does NOT change; only the hash changes.
+ *     — useGuideNavigation calls history.pushState(null, null, '#' + page) on
+ *       user-initiated navs, so clicking guide 2 (index 1) updates the hash
+ *       to #1. The URL path does NOT change; only the hash changes.
  */
 
 const collections = [
@@ -54,12 +54,30 @@ for (const { slug, sidebarTitle } of collections) {
     // So every sidebar button is a guide-list item: nth(0) = guide 1, nth(1) = guide 2.
     await sidebar.getByRole('button').nth(1).click();
 
-    // After clicking guide 2, the hook calls history.replaceState to '#1'
+    // After clicking guide 2, the hook calls history.pushState to '#1'
     // and closes the sidebar. Assert the URL hash is now #1.
     await expect(page).toHaveURL(/#1$/);
 
     // Also assert the page counter in the top bar updated to "2/N"
     // (the aria-label on the guide counter badge updates to "Guide 2 of N guides")
     await expect(page.getByLabel(/Guide 2 of \d+ guides/)).toBeVisible();
+
+    // Assert per-route <title> contains both the collection name and "Peliglot"
+    await expect(page).toHaveTitle(new RegExp(sidebarTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    await expect(page).toHaveTitle(/Peliglot/);
   });
 }
+
+// ---------------------------------------------------------------------------
+// Landing page meta checks
+// ---------------------------------------------------------------------------
+test('landing page: <title> and <meta description> are set correctly', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page).toHaveTitle(/Peliglot/);
+  await expect(page).toHaveTitle(/Hand-crafted/);
+
+  const description = await page.locator('meta[name="description"]').getAttribute('content');
+  expect(description).toContain('No ads, no accounts');
+});

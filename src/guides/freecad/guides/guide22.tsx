@@ -34,7 +34,7 @@ export function Guide22(){
     {key:"Right-click feature","action":"\"Set tip\" — what gets exported to STL"},
   ];
   return(<div>
-    <DarkBox title="BODY &amp; PART CONTAINERS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="BODY & PART CONTAINERS"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       Every Part Design feature lives inside a <strong style={{color:"#9b59b6"}}>Body</strong>. The Body holds the currently-active &quot;Tip&quot; — the solid you&apos;ll export. Multi-part assemblies use a <strong style={{color:"#9b59b6"}}>Part container</strong> holding multiple Bodies. One Body = one printable part.
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center"}}>

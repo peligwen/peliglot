@@ -21,6 +21,7 @@ const catColors = { Basics: '#1B5E20', Phrases: '#E65100' };
 
 function renderShell(props = {}) {
   const defaults = {
+    slug: 'spanish' as const,
     guidesMeta,
     guideComponents,
     categories,

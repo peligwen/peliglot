@@ -14,7 +14,7 @@ const workflows = [
 export function Guide18() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Different tools for different tasks">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           AI coding assistants are the most mature form of agentic AI today.
           Understanding their <strong>different modes</strong> helps you pick the right tool for each task.

@@ -22,7 +22,7 @@ export function Guide25(){
     ]},
   ];
   return(<div>
-    <DarkBox title="SHAPEBINDERS &amp; EXTERNAL GEO"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
+    <DarkBox title="SHAPEBINDERS & EXTERNAL GEO"><div style={{fontSize:14,lineHeight:1.6,color:"#e8ecf0"}}>
       When a sketch in one body needs to reference geometry from another body, you have two options: <strong style={{color:"#e74c3c"}}>External Geometry</strong> (fragile, breaks easily) and <strong style={{color:"#27ae60"}}>ShapeBinder</strong> (stable, the right answer for any serious model).
     </div></DarkBox>
     <div style={{display:"flex",gap:6,marginBottom:12,justifyContent:"center",flexWrap:"wrap"}}>
