@@ -142,7 +142,12 @@ function ResumeToast(): ReactElement | null {
     setRecent(activity);
     if (!activity) return;
     const timer = setTimeout(() => setDismissed(true), 8000);
-    return () => clearTimeout(timer);
+    const onScroll = () => setDismissed(true);
+    window.addEventListener('scroll', onScroll, { once: true, passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   if (!recent || dismissed) return null;
