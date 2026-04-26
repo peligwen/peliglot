@@ -12,11 +12,11 @@ const SRC = path.join(ROOT, 'src');
 let errors = 0;
 const results = [];
 
-// Extract guideSlugs from router.jsx (supports single and double quotes)
-const routerContent = fs.readFileSync(path.join(SRC, 'router.jsx'), 'utf-8');
-const slugMatch = routerContent.match(/const guideSlugs\s*=\s*\[([\s\S]*?)\]/);
+// Extract guideSlugs from router.tsx (supports single and double quotes)
+const routerContent = fs.readFileSync(path.join(SRC, 'router.tsx'), 'utf-8');
+const slugMatch = routerContent.match(/const guideSlugs\s*(?::[^=]+)?\s*=\s*\[([\s\S]*?)\]/);
 if (!slugMatch) {
-  console.error('ERROR: Could not parse guideSlugs from src/router.jsx');
+  console.error('ERROR: Could not parse guideSlugs from src/router.tsx');
   process.exit(1);
 }
 
@@ -33,7 +33,7 @@ if (slugs.length === 0) {
 }
 
 // Check LandingPage references
-const landingContent = fs.readFileSync(path.join(SRC, 'LandingPage.jsx'), 'utf-8');
+const landingContent = fs.readFileSync(path.join(SRC, 'LandingPage.tsx'), 'utf-8');
 
 for (const slug of slugs) {
   const dir = path.join(SRC, 'guides', slug);
@@ -48,8 +48,10 @@ for (const slug of slugs) {
     continue;
   }
 
-  // Check meta.js — use same regex pattern as CI: { *id:
-  const metaPath = path.join(dir, 'meta.js');
+  // Check meta.js / meta.ts — use same regex pattern as CI: { *id:
+  const metaPath = fs.existsSync(path.join(dir, 'meta.ts'))
+    ? path.join(dir, 'meta.ts')
+    : path.join(dir, 'meta.js');
   if (fs.existsSync(metaPath)) {
     const metaContent = fs.readFileSync(metaPath, 'utf-8');
     const matches = metaContent.match(/\{ *id:/g);
@@ -62,12 +64,14 @@ for (const slug of slugs) {
     errors++;
   }
 
-  // Check index.jsx
-  row.index = fs.existsSync(path.join(dir, 'index.jsx')) ? '✓' : '✗';
+  // Check index.jsx / index.tsx
+  row.index = (fs.existsSync(path.join(dir, 'index.jsx')) || fs.existsSync(path.join(dir, 'index.tsx'))) ? '✓' : '✗';
   if (row.index === '✗') { row.ok = false; errors++; }
 
-  // Check components.jsx (barrel) and count its imports
-  const barrelPath = path.join(dir, 'components.jsx');
+  // Check components.jsx / components.tsx (barrel) and count its imports
+  const barrelPath = fs.existsSync(path.join(dir, 'components.tsx'))
+    ? path.join(dir, 'components.tsx')
+    : path.join(dir, 'components.jsx');
   if (fs.existsSync(barrelPath)) {
     row.barrel = '✓';
     const barrelContent = fs.readFileSync(barrelPath, 'utf-8');
@@ -79,10 +83,13 @@ for (const slug of slugs) {
     errors++;
   }
 
-  // Count guide files in guides/ subdirectory
+  // Count guide files in guides/ subdirectory (accept .jsx and .tsx)
   const guidesDir = path.join(dir, 'guides');
   if (fs.existsSync(guidesDir)) {
-    const files = fs.readdirSync(guidesDir).filter(f => f.endsWith('.jsx') && f !== '_helpers.jsx');
+    const files = fs.readdirSync(guidesDir).filter(f =>
+      (f.endsWith('.jsx') || f.endsWith('.tsx')) &&
+      f !== '_helpers.jsx' && f !== '_helpers.tsx'
+    );
     row.fileCount = files.length;
   }
 

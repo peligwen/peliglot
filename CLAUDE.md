@@ -6,40 +6,42 @@ Interactive language learning guides built with React 18 + Vite. Each guide coll
 
 ## Guide Generation Workflow
 
-Generate guides **one at a time** using the per-guide file structure. Never try to generate an entire `components.jsx` monolith in one shot — it will time out.
+Generate guides **one at a time** using the per-guide file structure. Never try to generate an entire `components.tsx` monolith in one shot — it will time out.
 
 ### Step 1: Create the directory structure
 
 ```
 src/guides/{slug}/
-  meta.js
-  index.jsx
-  components.jsx          (barrel file)
+  meta.ts
+  index.tsx
+  components.tsx          (barrel file)
   guides/
-    _helpers.jsx           (language-specific helper components)
-    guide1.jsx             (one file per guide)
-    guide2.jsx
+    _helpers.tsx           (language-specific helper components)
+    guide1.tsx             (one file per guide)
+    guide2.tsx
     ...
 ```
 
-### Step 2: Generate `meta.js`
+### Step 2: Generate `meta.ts`
 
 Small file (~30-50 lines). Contains `guidesMeta` array, `categories`, and `catColors`.
 
-```js
-export const guidesMeta = [
+```ts
+import type { GuideMeta, CategoryColors } from '../../types/guide';
+
+export const guidesMeta: GuideMeta[] = [
   { id: 1, title: "Title", subtitle: "Subtitle", cat: "Category", color: "#hex", icon: "emoji" },
   // ...
 ];
-export const categories = ["Cat1", "Cat2", ...];
-export const catColors = { Cat1: "#hex", Cat2: "#hex", ... };
+export const categories: string[] = ["Cat1", "Cat2", ...];
+export const catColors: CategoryColors = { Cat1: "#hex", Cat2: "#hex", ... };
 ```
 
-### Step 3: Generate `index.jsx` (boilerplate)
+### Step 3: Generate `index.tsx` (boilerplate)
 
 Copy from any existing guide and change: storageKey, sidebarTitle, sidebarSubtitle, theme.
 
-```jsx
+```tsx
 import { GuideShell } from '../../components/GuideShell';
 import { lightTheme } from '../../styles/themes';
 import { guidesMeta, categories, catColors } from './meta';
@@ -61,18 +63,20 @@ export function Component() {
 }
 ```
 
-### Step 4: Generate `guides/_helpers.jsx`
+### Step 4: Generate `guides/_helpers.tsx`
 
 Language-specific helper components shared across multiple guides. Examples:
 - Custom `Insight` wrapper with language-specific emoji
 - `CultureNote`, `Trampa`, `Chatt` components
 - Shared data constants (pronoun arrays, color maps)
 
+Type all props explicitly; use `interface XProps { ... }` patterns. If a helper takes children, declare `children: ReactNode`.
+
 ### Step 5: Generate each guide file individually
 
-Each `guides/guideN.jsx` is a standalone file (~20-80 lines):
+Each `guides/guideN.tsx` is a standalone file (~20-80 lines):
 
-```jsx
+```tsx
 import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
@@ -87,20 +91,22 @@ export function GuideN() {
 }
 ```
 
-### Step 6: Update barrel `components.jsx` after each guide
+### Step 6: Update barrel `components.tsx` after each guide
 
-```jsx
+```tsx
+import type { GuideComponents } from '../../types/guide';
 import { Guide1 } from './guides/guide1';
 import { Guide2 } from './guides/guide2';
 // ... add new imports as guides are created
-export const guideComponents = [Guide1, Guide2, ...];
+export const guideComponents: GuideComponents = [Guide1, Guide2, ...];
 ```
 
 ### Step 7: Register in router and landing page
 
-- Add slug to `guideSlugs` array in `src/router.jsx`
-- Add guide card to `src/LandingPage.jsx`
-- Add `speak{Language}` to `src/utils/speech.js` if needed
+- Add slug to `guideSlugs` array in `src/router.tsx`
+- Add an explicit entry to the `guideImports` map in `src/router.tsx` using `import('./guides/{slug}/index.tsx')`
+- Add guide card to `src/LandingPage.tsx`
+- Add `speak{Language}` to `src/utils/speech.ts` if needed
 
 ## Available Templates
 
@@ -110,7 +116,7 @@ Templates in `src/components/templates/` reduce boilerplate for common guide pat
 
 Interactive letter grid with filters and detail panel. Used for Guide1 in language guides.
 
-```jsx
+```tsx
 import { AlphabetGrid } from '../../../components/templates/AlphabetGrid';
 import { speakLanguage } from '../../../utils/speech';
 
@@ -151,7 +157,7 @@ export function Guide1() {
 
 Pronoun-based verb conjugation table. Supports full Card mode and compact mini-table mode.
 
-```jsx
+```tsx
 import { VerbConjugation } from '../../../components/templates/VerbConjugation';
 
 // Full mode — Card with title/subtitle
@@ -179,7 +185,7 @@ import { VerbConjugation } from '../../../components/templates/VerbConjugation';
 
 Multiple-choice quiz with scoring, visual feedback, and results screen.
 
-```jsx
+```tsx
 import { QuizSection } from '../../../components/templates/QuizSection';
 
 const items = [
@@ -218,7 +224,7 @@ All in `src/components/`:
 | `Insight` | Tip/hint callout with emoji | `<Insight text="tip text" emoji="emoji" />` |
 | `SimpleGuide` | Q&A list from data array | `<SimpleGuide items={[{h:"heading",b:"body"}]} />` |
 | `ExpandSection` | Collapsible section | `<ExpandSection title="Title" color="#hex">children</ExpandSection>` |
-| `GuideShell` | Navigation wrapper (used in index.jsx only) | See Step 3 above |
+| `GuideShell` | Navigation wrapper (used in index.tsx only) | See Step 3 above |
 
 ## Conventions
 
@@ -232,7 +238,7 @@ All in `src/components/`:
 ## CI Constraints
 
 - Bundle size: each JS asset must be < 500KB
-- Guide count: `meta.js` must have entries matching `{ *id:` pattern
+- Guide count: `meta.ts` must have entries matching `{ *id:` pattern
 - Build must produce `dist/index.html`
 
 ## Quick Validation Commands
@@ -249,14 +255,14 @@ All in `src/components/`:
 - After build, check sizes: `ls -lh dist/assets/*.js`
 - Each JS asset must be < 500KB (enforced by CI)
 - Each guide collection lazy-loads independently via React Router, so adding guides to one collection doesn't affect other chunks
-- `react-vendor` chunk is split out in `vite.config.js` via `manualChunks`
+- `react-vendor` chunk is split out in `vite.config.ts` via `manualChunks`
 - If a chunk is too large, check for oversized inline data arrays or unnecessary imports in that guide's files
 
 ## Common Pitfalls
 
-- `guideComponents` array in `components.jsx` must match `guidesMeta` order in `meta.js` (indexed by page number)
-- After adding a new guide file, update **both** `components.jsx` (barrel import) and `meta.js` (metadata entry)
-- New guide collections need entries in three places: `src/router.jsx` (`guideSlugs`), `src/LandingPage.jsx`, and optionally `src/utils/speech.js`
+- `guideComponents` array in `components.tsx` must match `guidesMeta` order in `meta.ts` (indexed by page number)
+- After adding a new guide file, update **both** `components.tsx` (barrel import) and `meta.ts` (metadata entry)
+- New guide collections need entries in three places: `src/router.tsx` (`guideSlugs`), `src/LandingPage.tsx`, and optionally `src/utils/speech.ts`
 - All styles are inline — no CSS files, no Tailwind, no CSS modules
 - Speech functions use the Web Speech API; available voices vary by platform
 
@@ -269,14 +275,16 @@ Run `npm run check` before considering any change complete. This catches:
 
 ## Shared Component Contracts
 
+> **Authoritative source:** As of Phase 3 of the foundations plan, prop contracts are defined as TypeScript interfaces in the `.tsx` component files. The signatures below remain accurate but the `.tsx` source is the canonical type definition.
+
 The authoritative source of truth is always the component file itself. This section is a
 quick-reference for anyone generating new guide content.
 
 ### `Card({ color, title, children })`
 
-`src/components/Card.jsx` — a content section with a colored header bar.
+`src/components/Card.tsx` — a content section with a colored header bar.
 
-```jsx
+```tsx
 <Card color="#1B5E20" title="Section Title">
   {/* body content */}
 </Card>
@@ -290,24 +298,24 @@ quick-reference for anyone generating new guide content.
 
 ### `DarkBox({ title, children })`
 
-`src/components/DarkBox.jsx` — a dark-background concept callout used at the top of a guide.
+`src/components/DarkBox.tsx` — a dark-background concept callout used at the top of a guide.
 
-```jsx
+```tsx
 <DarkBox title="Key Concept">
   <p>Explanation text…</p>
 </DarkBox>
 ```
 
-- `title` (string, required) — callout heading.
+- `title` (string, optional) — callout heading. Omit for an untitled callout.
 - `children` — body content.
 
 ---
 
 ### `Insight({ text, emoji })`
 
-`src/components/Insight.jsx` — a tip/hint callout with an emoji.
+`src/components/Insight.tsx` — a tip/hint callout with an emoji.
 
-```jsx
+```tsx
 <Insight text="Remember: adjective agrees in gender." emoji="💡" />
 ```
 
@@ -318,9 +326,9 @@ quick-reference for anyone generating new guide content.
 
 ### `SimpleGuide({ items })`
 
-`src/components/SimpleGuide.jsx` — a Q&A / definition list from a data array.
+`src/components/SimpleGuide.tsx` — a Q&A / definition list from a data array.
 
-```jsx
+```tsx
 <SimpleGuide items={[
   { h: "¿Cómo estás?", b: "How are you?" },
 ]} />
@@ -332,12 +340,12 @@ quick-reference for anyone generating new guide content.
 
 ### `ExpandSection({ title, color, children })`
 
-`src/components/ExpandSection.jsx` — a collapsible section with a toggle button.
+`src/components/ExpandSection.tsx` — a collapsible section with a toggle button.
 
 > **Note:** The prop was renamed from `label` → `title` (Phase 1 infrastructure commit).
 > If you encounter old code using `label=`, rename it.
 
-```jsx
+```tsx
 <ExpandSection title="Advanced Notes" color="#1B5E20">
   {/* hidden content */}
 </ExpandSection>
@@ -351,13 +359,13 @@ quick-reference for anyone generating new guide content.
 
 ### `GuideShell({ guidesMeta, guideComponents, categories, catColors, theme, storageKey, sidebarTitle, sidebarSubtitle })`
 
-`src/components/GuideShell.jsx` — the full navigation wrapper. Used only in `index.jsx` files; never inside guide components.
+`src/components/GuideShell.tsx` — the full navigation wrapper. Used only in `index.tsx` files; never inside guide components.
 
-- `guidesMeta` (array) — from `meta.js`; see Step 2.
-- `guideComponents` (array) — from `components.jsx`; must be same order as `guidesMeta`.
-- `categories` (array of strings) — from `meta.js`.
-- `catColors` (object `{ [cat]: "#hex" }`) — from `meta.js`.
-- `theme` (object) — from `src/styles/themes.js`; default `lightTheme`.
+- `guidesMeta` (array) — from `meta.ts`; see Step 2.
+- `guideComponents` (array) — from `components.tsx`; must be same order as `guidesMeta`.
+- `categories` (array of strings) — from `meta.ts`.
+- `catColors` (object `{ [cat]: "#hex" }`) — from `meta.ts`.
+- `theme` (object) — from `src/styles/themes.ts`; default `lightTheme`.
 - `storageKey` (string) — e.g. `"peliglot-spanish"`.
 - `sidebarTitle` (string) — collection name shown in sidebar header.
 - `sidebarSubtitle` (string) — e.g. `"30 Interactive Guides"`.
@@ -366,7 +374,7 @@ quick-reference for anyone generating new guide content.
 
 ### `AlphabetGrid({ letters, letterKey?, nameKey?, filterGroups, detailFields, primaryColor, speakFn?, introTitle, introContent, renderDetail?, borderFn?, badgeFn?, gridProps?, ... })`
 
-`src/components/templates/AlphabetGrid.jsx` — interactive letter grid with filter buttons and a detail panel.
+`src/components/templates/AlphabetGrid.tsx` — interactive letter grid with filter buttons and a detail panel.
 
 - `letters` (array, required) — letter objects (any shape).
 - `letterKey` (string, default `"l"`) — field for the displayed glyph.
@@ -386,9 +394,9 @@ quick-reference for anyone generating new guide content.
 
 ### `VerbConjugation({ pronouns, stem, endings, verb?, meaning?, color, title?, compact? })`
 
-`src/components/templates/VerbConjugation.jsx` — pronoun-based conjugation table.
+`src/components/templates/VerbConjugation.tsx` — pronoun-based conjugation table.
 
-```jsx
+```tsx
 // Full Card mode
 <VerbConjugation pronouns={["yo","tú","él"]} stem="habl" endings={["o","as","a"]}
   verb="hablar" meaning="to speak" color="#D84315" />
@@ -410,12 +418,12 @@ quick-reference for anyone generating new guide content.
 
 ### `QuizSection({ items, answerKey?, renderQuestion, optionCount?, color, resultMessages? })`
 
-`src/components/templates/QuizSection.jsx` — multiple-choice quiz with scoring.
+`src/components/templates/QuizSection.tsx` — multiple-choice quiz with scoring.
 
 > **Always pass `resultMessages`** for non-English collections so the result text
 > matches the collection language or is at least appropriate.
 
-```jsx
+```tsx
 <QuizSection
   items={items}
   answerKey="answer"
@@ -437,9 +445,9 @@ quick-reference for anyone generating new guide content.
 
 ### `FlashcardDeck({ items, color?, title?, speakFn?, speakKey? })`
 
-`src/components/templates/FlashcardDeck.jsx` — swipeable flashcard deck with got-it / again flow.
+`src/components/templates/FlashcardDeck.tsx` — swipeable flashcard deck with got-it / again flow.
 
-```jsx
+```tsx
 <FlashcardDeck items={[{ front: "hola", back: "hello" }]} color="#1565C0" />
 ```
 
@@ -453,9 +461,9 @@ quick-reference for anyone generating new guide content.
 
 ### `ProgressRing({ progress, size?, strokeWidth?, color? })`
 
-`src/components/ProgressRing.jsx` — circular SVG progress indicator.
+`src/components/ProgressRing.tsx` — circular SVG progress indicator.
 
-```jsx
+```tsx
 <ProgressRing progress={0.75} size={48} color="#2E7D32" />
 ```
 

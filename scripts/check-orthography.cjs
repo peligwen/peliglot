@@ -64,15 +64,17 @@ function getTargetFiles() {
     const dir = path.join(guidesRoot, slug);
     if (!fs.existsSync(dir)) continue;
 
-    // meta.js
-    const metaFile = path.join(dir, 'meta.js');
-    if (fs.existsSync(metaFile)) targets.push({ file: metaFile, charClass, slug });
+    // meta.js / meta.ts
+    for (const metaName of ['meta.ts', 'meta.js']) {
+      const metaFile = path.join(dir, metaName);
+      if (fs.existsSync(metaFile)) { targets.push({ file: metaFile, charClass, slug }); break; }
+    }
 
-    // guides/*.jsx
+    // guides/*.jsx / *.tsx / *.js / *.ts
     const guidesDir = path.join(dir, 'guides');
     if (fs.existsSync(guidesDir)) {
       for (const f of fs.readdirSync(guidesDir)) {
-        if (f.endsWith('.jsx') || f.endsWith('.js')) {
+        if (f.endsWith('.jsx') || f.endsWith('.tsx') || f.endsWith('.js') || f.endsWith('.ts')) {
           targets.push({ file: path.join(guidesDir, f), charClass, slug });
         }
       }
