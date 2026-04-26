@@ -142,17 +142,23 @@ function parseSlugs() {
 }
 
 // ---------------------------------------------------------------------------
-// Parse guide ids + titles from meta.ts (for per-guide cards)
+// Parse guide ids + titles from meta.ts (for per-guide cards).
+//
+// Backreference matches the opening delimiter so titles containing the OTHER
+// quote characters survive. Without this, titles like "FreeCAD's Spreadsheet"
+// truncated at the apostrophe — silent because per-guide cards are gated off
+// by default. The escaped-character branch (\\.) lets a title use \" or \\
+// inside a single- or backtick-delimited string.
 // ---------------------------------------------------------------------------
 function parseGuideMeta(slug) {
   var metaPath = path.join(SRC, 'guides', slug, 'meta.ts');
   if (!fs.existsSync(metaPath)) return [];
   var content = fs.readFileSync(metaPath, 'utf-8');
   var results = [];
-  var re = /\{\s*id:\s*(\d+)[^}]*title:\s*['"`]([^'"`]+)['"`]/g;
+  var re = /\{\s*id:\s*(\d+)[^}]*title:\s*(['"`])((?:\\.|(?!\2).)*)\2/g;
   var m;
   while ((m = re.exec(content)) !== null) {
-    results.push({ id: parseInt(m[1], 10), title: m[2] });
+    results.push({ id: parseInt(m[1], 10), title: m[3] });
   }
   return results;
 }
@@ -170,11 +176,15 @@ function parseOneLiners() {
   for (var i = 0; i < slugs.length; i++) {
     var slug = slugs[i];
     var escapedSlug = slug.replace(/-/g, '[-]');
-    // Keys may be unquoted (spanish:) or single/double quoted ('jazz-guitar':)
-    var re = new RegExp("(?:['\"]" + escapedSlug + "['\"]|" + escapedSlug + ")\\s*:\\s*['\"]([\\s\\S]*?)['\"]\\s*[,}]");
+    // Keys may be unquoted (spanish:) or single/double quoted ('jazz-guitar':).
+    // Capture the opening value-delimiter as a backreference so quotes inside
+    // the value (e.g. "FreeCAD's") don't truncate the match.
+    var re = new RegExp(
+      "(?:['\"]" + escapedSlug + "['\"]|" + escapedSlug + ")\\s*:\\s*(['\"])((?:\\\\.|(?!\\1)[\\s\\S])*)\\1\\s*[,}]"
+    );
     var m = content.match(re);
     if (m) {
-      result[slug] = m[1].replace(/\s+/g, ' ').trim();
+      result[slug] = m[2].replace(/\s+/g, ' ').trim();
     }
   }
   return result;
