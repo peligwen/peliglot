@@ -15,6 +15,14 @@ import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
 import { guidesMeta as freecadMeta } from './guides/freecad/meta';
 import './styles/landing.css';
 import type { GuideMeta } from './types/guide';
+import {
+  siteTagline,
+  siteHeroPitch,
+  siteFor,
+  siteIsNot,
+  sectionIntros,
+  collectionOneLiners,
+} from './copy/positioning';
 
 interface CollectionEntry {
   slug: string;
@@ -84,19 +92,19 @@ interface GuideSection {
 
 const guides: GuideSection[] = [
   { section: 'Languages', items: [
-    { slug: 'spanish', accent: '#C62828', icon: '\u{1F1EA}\u{1F1F8}', title: 'Español', sub: 'Spanish grammar from pronunciation to false cognates. Mexican/US Spanish when applicable.', count: '33 guides', total: 33 },
-    { slug: 'arabic', accent: '#1B5E20', icon: '\u{1F1F5}\u{1F1F8}', title: 'العربية', sub: 'Arabic writing system, grammar, and verb forms. Palestinian dialect notes throughout.', count: '30 guides', total: 30 },
-    { slug: 'english', accent: '#1565C0', icon: '\u{1F1FA}\u{1F1F8}', title: 'American English', sub: 'Inglés americano para hispanohablantes. Sonidos, verbos, artículos, phrasal verbs. Notas de Chattanooga.', count: '35 guías', total: 35 },
-    { slug: 'german', accent: '#1a1a1a', icon: '\u{1F1E9}\u{1F1EA}', title: 'Deutsch', sub: 'Cases, gender, word order, verb brackets, compound nouns, adjective endings, and modal particles.', count: '33 guides', total: 33 },
-    { slug: 'hawaiian', accent: '#00695C', icon: '\u{1F33A}', title: 'ʻOlelo Hawaiʻi', sub: 'Hawaiian sounds, sentence patterns, possessives, and cultural context. With language revival notes.', count: '30 guides', total: 30 },
+    { slug: 'spanish', accent: '#C62828', icon: '\u{1F1EA}\u{1F1F8}', title: 'Español', sub: collectionOneLiners.spanish, count: '33 guides', total: 33 },
+    { slug: 'arabic', accent: '#1B5E20', icon: '\u{1F1F5}\u{1F1F8}', title: 'العربية', sub: collectionOneLiners.arabic, count: '30 guides', total: 30 },
+    { slug: 'english', accent: '#1565C0', icon: '\u{1F1FA}\u{1F1F8}', title: 'American English', sub: collectionOneLiners.english, count: '35 guías', total: 35 },
+    { slug: 'german', accent: '#1a1a1a', icon: '\u{1F1E9}\u{1F1EA}', title: 'Deutsch', sub: collectionOneLiners.german, count: '33 guides', total: 33 },
+    { slug: 'hawaiian', accent: '#00695C', icon: '\u{1F33A}', title: 'ʻOlelo Hawaiʻi', sub: collectionOneLiners.hawaiian, count: '30 guides', total: 30 },
     { slug: 'portuguese', accent: '#00695C', icon: '\u{1F1E7}\u{1F1F7}', title: 'Português', sub: 'Brazilian Portuguese pronunciation, grammar, and verb tenses — with Spanish comparison notes throughout.', count: 'Coming soon', soon: true },
   ]},
   { section: 'Beyond Language', items: [
-    { slug: 'music', accent: 'linear-gradient(180deg, #C62828, #1565C0)', icon: '\u{1F3B9}', title: 'Music Theory', sub: 'Notes, scales, chords, rhythm, progressions, melody, and genre — with interactive piano and playable audio.', count: '30 guides', total: 30 },
-    { slug: 'jazz-guitar', accent: 'linear-gradient(180deg, #8D6E63, #3E2723)', icon: '\u{1F3B8}', title: 'Jazz Guitar', sub: 'Voice leading, chord voicings, comping, improvisation, and jazz standards — for experienced musicians.', count: '30 guides', total: 30 },
-    { slug: 'math', accent: 'linear-gradient(180deg, #1565C0, #2E7D32)', icon: '\u{1F9EE}', title: 'Math', sub: 'Number sense, algebra, geometry, growth, data, and personal finance — 32 interactive guides.', count: '32 guides', total: 32 },
-    { slug: 'ai-interaction', accent: 'linear-gradient(180deg, #1565C0, #6A1B9A)', icon: '\u{1F916}', title: 'AI Interaction', sub: 'Prompt engineering, tokens, agents, ethics, and practical skills for working with AI — 28 interactive guides.', count: '28 guides', total: 28 },
-    { slug: 'freecad', accent: 'linear-gradient(180deg, #0d1b2a, #e67e22)', icon: '\u{1F4D0}', title: 'FreeCAD', sub: 'Sketches, constraints, Part Design features, and 3D-printing workflow — a daily-session cheat sheet.', count: '30 guides', total: 30 },
+    { slug: 'music', accent: 'linear-gradient(180deg, #C62828, #1565C0)', icon: '\u{1F3B9}', title: 'Music Theory', sub: collectionOneLiners.music, count: '30 guides', total: 30 },
+    { slug: 'jazz-guitar', accent: 'linear-gradient(180deg, #8D6E63, #3E2723)', icon: '\u{1F3B8}', title: 'Jazz Guitar', sub: collectionOneLiners['jazz-guitar'], count: '30 guides', total: 30 },
+    { slug: 'math', accent: 'linear-gradient(180deg, #1565C0, #2E7D32)', icon: '\u{1F9EE}', title: 'Math', sub: collectionOneLiners.math, count: '32 guides', total: 32 },
+    { slug: 'ai-interaction', accent: 'linear-gradient(180deg, #1565C0, #6A1B9A)', icon: '\u{1F916}', title: 'AI Interaction', sub: collectionOneLiners['ai-interaction'], count: '28 guides', total: 28 },
+    { slug: 'freecad', accent: 'linear-gradient(180deg, #0d1b2a, #e67e22)', icon: '\u{1F4D0}', title: 'FreeCAD', sub: collectionOneLiners.freecad, count: '30 guides', total: 30 },
     { slug: 'music2', accent: 'linear-gradient(180deg, #7B1FA2, #1565C0)', icon: '\u{1F3BC}', title: 'Music Theory II', sub: 'Extended harmony, modulation, counterpoint, form analysis, orchestration, and 20th-century techniques — with playable audio.', count: 'Coming soon', soon: true },
   ]},
 ];
@@ -252,19 +260,42 @@ export function LandingPage(): ReactElement {
       <a href="#guides" className="skip-link">Skip to content</a>
       <header role="banner" className="hero">
         <div className="logo">Peliglot</div>
-        <h1>Learn <em>visually</em></h1>
-        <p className="subtitle">
-          Interactive guides for languages and more.
-          No accounts, no ads, no tracking. Just open and learn.
-        </p>
+        <h1>{siteHeroPitch}</h1>
+        <p className="subtitle">{siteTagline}</p>
         <GlobalSearch />
-        <span className="tag" style={{ marginTop: 12 }}>Free & Open Source</span>
+        <span className="tag" style={{ marginTop: 12 }}>Free &amp; Open Source</span>
       </header>
+
+      <div className="for-block" role="complementary" aria-label="Who this is for">
+        <div className="for-col">
+          <div className="for-heading">For people who</div>
+          <ul className="for-list">
+            {siteFor.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="for-col">
+          <div className="for-heading">Not a</div>
+          <ul className="for-list">
+            {siteIsNot.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
       <main id="guides" role="main" className="guides">
         {guides.map(section => (
           <div key={section.section}>
-            <h2 className="section-label">{section.section}</h2>
+            <div className="section-header">
+              <h2 className="section-label">{section.section}</h2>
+              <p className="section-intro">
+                {section.section === 'Languages'
+                  ? sectionIntros.Languages
+                  : sectionIntros.BeyondLanguage}
+              </p>
+            </div>
             {section.items.map(g => {
               const visited = g.total ? (visitedCounts[g.slug] || 0) : 0;
               const progress = g.total ? visited / g.total : 0;
