@@ -64,6 +64,14 @@ function mulberry32(seed: number): () => number {
   };
 }
 
+// `seededShuffle` + `todaySeed` work together to produce a shuffle that is:
+//   - Consistent within a session: the same seed is used for the whole day,
+//     so the queue order does not change between the "due cards" computation
+//     and subsequent re-renders during a session.
+//   - Varied day-to-day: the YYYYMMDD integer changes at midnight (local time),
+//     giving a fresh order each day without any server involvement.
+// Do not replace the seed source with Math.random() — that would reshuffle on
+// every hydration and destroy queue stability within a session.
 function seededShuffle<T>(arr: T[], seed: number): T[] {
   const out = [...arr];
   const rand = mulberry32(seed);
@@ -293,10 +301,10 @@ function RatingButtons({
             transition: 'opacity 0.15s',
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = '0.85';
+            e.currentTarget.style.opacity = '0.85';
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+            e.currentTarget.style.opacity = '1';
           }}
         >
           {label}
@@ -403,6 +411,27 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
+  // Track mounted state so the advance callback is skipped if the component
+  // unmounts during the NEXT_DUE_DISPLAY_MS delay (prevents React unmount warnings).
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // Pending advance timeout — cancelled on unmount to prevent state updates
+  // after the component is gone.
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current !== null) {
+        clearTimeout(advanceTimerRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (!revealed) return;
     if (!autoPlayedRef.current && KINDS_AUTO_PLAY_ON_REVEAL.has(card.kind)) {
@@ -425,11 +454,17 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
       setRated(true);
       try {
         const newState = await onRate(r);
+        if (!mountedRef.current) return;
         // Show the next-due message immediately after rating resolves.
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
         // Wait the display duration, then tell the parent to advance.
-        await new Promise<void>(resolve => setTimeout(resolve, NEXT_DUE_DISPLAY_MS));
-        onAdvance(card.cardId);
+        // Store the timer ID so it can be cancelled on unmount.
+        await new Promise<void>(resolve => {
+          advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
+        });
+        if (mountedRef.current) {
+          onAdvance(card.cardId);
+        }
       } catch {
         // Swallow: parent already handles error propagation
       }

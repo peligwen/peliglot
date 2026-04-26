@@ -6,7 +6,7 @@
  * provides an in-memory backend that mirrors the localStorage adapter's contract.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Practice } from './index';
@@ -42,11 +42,19 @@ const mockVerbCard: ReviewCard = {
 // Helpers
 // ---------------------------------------------------------------------------
 
+// `getCards` is defined outside `renderPractice` so the function reference is
+// stable across re-renders. An arrow defined inside the helper would allocate
+// a new function on each call, making the `useMemo` in Practice re-run on
+// every test render — a brittleness source, not a bug.
+function makeGetCards(cards: ReviewCard[]) {
+  return () => cards;
+}
+
 function renderPractice(
   adapter: StubRemoteAdapter,
   cards: ReviewCard[],
 ) {
-  const getCards = () => cards;
+  const getCards = makeGetCards(cards);
   return render(
     <MemoryRouter>
       <Practice adapter={adapter} getCards={getCards} />
@@ -64,6 +72,16 @@ describe('Practice surface', () => {
   beforeEach(() => {
     adapter = new StubRemoteAdapter();
     vi.clearAllMocks();
+    // Pin the Date to 2026-01-15 so todaySeed() returns the deterministic value
+    // 20260115, making seededShuffle produce a stable card order across all runs.
+    // Using toFake: ['Date'] mocks only the Date constructor/methods, leaving
+    // setTimeout/setInterval/Promise resolution untouched.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-01-15T10:00:00'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   // -------------------------------------------------------------------------
@@ -185,26 +203,29 @@ describe('Practice surface', () => {
 
   // -------------------------------------------------------------------------
   // Multiple cards — advances to next card after rating
+  //
+  // With the pinned date seed 20260115, seededShuffle([mockCard, mockVerbCard])
+  // produces [mockVerbCard, mockCard]. So the first prompt is the verb card
+  // (showing "hablar"), and after rating it the second card (letter-sound "A")
+  // should appear. This seed is computed in the test suite setup (beforeEach).
   // -------------------------------------------------------------------------
 
   it('advances to the next card after rating', async () => {
     renderPractice(adapter, [mockCard, mockVerbCard]);
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /show answer/i })).toBeInTheDocument());
+    // With seed 20260115, first card is mockVerbCard — verb conjugation prompt.
+    await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
+
+    // Reveal the answer for the verb card.
     fireEvent.click(screen.getByRole('button', { name: /show answer/i }));
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /good/i }));
     });
 
-    // After rating the first card, either:
-    // - The second card prompt is visible (if queue size 2 and index 1 is valid)
-    // - OR the empty state (if queue was [card1, card2] but card1 just got scheduled away)
-    // Either way, /a/ (the first answer) should no longer be the active answer
+    // After the advance delay, the second card (mockCard, letter "A") should be shown.
     await waitFor(() => {
-      const hasNextCard = screen.queryByText(/hablar/i) !== null;
-      const hasEmptyState = screen.queryByText(/all caught up/i) !== null;
-      expect(hasNextCard || hasEmptyState).toBe(true);
-    });
+      expect(screen.getByText('A')).toBeInTheDocument();
+    }, { timeout: 2000 });
   });
 });
