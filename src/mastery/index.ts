@@ -31,3 +31,4 @@ export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult } 
 export { Rating } from './types';
 export type { SchedulerCard } from './types';
 export { createCard, rateCard } from './scheduler';
+export type { ReviewCard, CardKind, PromptShape } from './cards';
