@@ -182,12 +182,12 @@ jazz guitar). That decision happens when Phase 2d closes.
 
 ## Status
 
-- [ ] Phase 2a: Local FSRS mastery foundation
-  - [x] 2a.1 — FSRS scheduler + MasteryStorageAdapter contract + localStorage adapter (Opus reviewer pass; non-blocking notes deferred to 2a.5 polish: bulkExport deep-copy, loadFromStorage warn-on-parse-error, bulkImport-migrate at network boundary in 2d)
-  - [x] 2a.2 — useMastery hook + streak + daily goal (Opus reviewer pass; non-blocking notes for 2a.4: dueCards at render-time may want a 1-min refresh tick, rateCard callback identity changes on cache/streak update, no batch-rate semantics — fine for solo use)
-  - [x] 2a.3 — Card extractors for the 9 Spanish guides (Opus reviewer pass; 247 cards across 9 guides; non-blocking notes for 2a.5: guide11 article-strip regex pluralization, slugify duplication candidate for shared util, audit-trail accuracy)
-  - [x] 2a.4 — Practice route + UI (Opus reviewer pass; 47KB lazy chunk; non-blocking polish notes consolidated for 2a.5)
-  - [ ] 2a.5 — Architecture doc, CLAUDE.md update, polish, PR prep
+- [x] Phase 2a: Local FSRS mastery foundation — **PR #19 open, awaiting director merge**
+  - [x] 2a.1 — FSRS scheduler + MasteryStorageAdapter contract + localStorage adapter
+  - [x] 2a.2 — useMastery hook + streak + daily goal
+  - [x] 2a.3 — Card extractors for the 9 Spanish guides (247 cards)
+  - [x] 2a.4 — Practice route + UI (47KB lazy chunk)
+  - [x] 2a.5 — ARCHITECTURE.md, CLAUDE.md update, polish, PR — final holistic Opus review pass
 - [ ] Phase 2b: XP + recommendation surface (gated on 2a merge + director go-ahead)
 - [ ] Phase 2c: Spanish content build-out (gated on 2b + director go-ahead)
 - [ ] Phase 2d: Cloud + auth (gated on explicit director decision; deferred)
