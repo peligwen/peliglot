@@ -5,13 +5,7 @@ import { siteSupportPitch } from './copy/positioning';
 import { supporters } from './data/supporters';
 import type { Supporter } from './data/supporters';
 import { colors, spacing, radii, typography } from './styles/tokens';
-import { SITE_URL } from './config/site';
-
-// ---------------------------------------------------------------------------
-// Ko-fi config — VITE_KOFI_USERNAME overrides the default for staging/preview.
-// ---------------------------------------------------------------------------
-const kofiUsername: string =
-  (import.meta.env.VITE_KOFI_USERNAME as string | undefined) ?? 'peliglot';
+import { SITE_URL, KOFI_URL } from './config/site';
 
 // ---------------------------------------------------------------------------
 // Tier display config
@@ -189,7 +183,7 @@ export function SupportersPage(): ReactElement {
 
         {/* Donate CTA */}
         <a
-          href={`https://ko-fi.com/${kofiUsername}`}
+          href={KOFI_URL}
           target="_blank"
           rel="noopener noreferrer"
           style={{

@@ -33,3 +33,21 @@ export const supporters: Supporter[] = [
     tier: 'friend',
   },
 ];
+
+// Dev-only sanity check — catches the inevitable date typo at the moment a
+// contributor adds an entry. Skipped in production builds.
+if (import.meta.env.DEV) {
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  for (const s of supporters) {
+    if (!ISO_DATE.test(s.date)) {
+      console.warn(
+        `[supporters] Bad date format for "${s.name}": ${JSON.stringify(s.date)} — expected YYYY-MM-DD.`,
+      );
+    }
+    if (s.message && s.message.length > 140) {
+      console.warn(
+        `[supporters] Message for "${s.name}" is ${s.message.length} chars — trim to 140.`,
+      );
+    }
+  }
+}

@@ -8,6 +8,13 @@
   <meta property="og:title" content="Peliglot — Hand-crafted interactive learning guides">
   <meta property="og:description" content="Hand-crafted interactive guides for languages and more. No ads, no accounts.">
   <meta property="og:type" content="website">
+  <!--
+    The og:url and canonical hrefs hardcode peliglot.com because index.html is
+    static. Runtime navigation overwrites these via src/hooks/useRouteMeta. If
+    SITE_URL ever changes, update both the constant in src/config/site.ts and
+    these two attributes — they're the pre-React fallback for crawlers and
+    social cards that don't run JS.
+  -->
   <meta property="og:url" content="https://peliglot.com/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Peliglot — Hand-crafted interactive learning guides">
