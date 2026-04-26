@@ -14,7 +14,7 @@ const strategies = [
 export function Guide15() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Break it down, then combine">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           Complex tasks require <strong>multi-step reasoning</strong> — the ability to break problems into smaller pieces,
           solve each piece, and combine the results. This is where AI agents really shine.

@@ -16,7 +16,7 @@ export function Guide19() {
   const [sel, setSel] = useState<number | null>(null);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="One call is a tool; chained calls are a system">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Orchestration</strong> is the art of chaining multiple AI calls into a workflow.
           One model call is a tool; orchestrated calls are a system.

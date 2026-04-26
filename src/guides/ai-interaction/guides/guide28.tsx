@@ -49,7 +49,7 @@ export function Guide28() {
 
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Confident, but frozen in time">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           Every LLM has a <strong>training cutoff</strong> — the date beyond which it has no direct knowledge.
           The model will answer confidently about events after its cutoff, but it's generating plausible text, not recalling facts.

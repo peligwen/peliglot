@@ -18,7 +18,7 @@ export function Guide2() {
   const ex = examples[sel];
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Text as chunks, not letters">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           LLMs don't read letters or words — they read <Term color="#90CAF9">tokens</Term>.
           A token is a chunk of text, usually a common word or word-piece. Understanding tokens helps you understand costs, limits, and quirks.

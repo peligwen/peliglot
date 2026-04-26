@@ -7,7 +7,7 @@ import { Tip } from './_helpers';
 export function Guide16() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="USB for AI">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>MCP (Model Context Protocol)</strong> is an open standard that lets AI models connect to external tools and data sources
           through a unified interface — like USB for AI.

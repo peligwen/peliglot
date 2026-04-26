@@ -64,7 +64,7 @@ export function Guide27() {
 
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Attach the knowledge the model lacks">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Retrieval-Augmented Generation (RAG)</strong> solves the core problem with pure LLMs:
           they only know what was in their training data. RAG lets you attach any knowledge base —

@@ -14,7 +14,7 @@ const concepts = [
 export function Guide1() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="One prediction, repeated">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           A <Term color="#90CAF9">Large Language Model</Term> is a program that predicts the next word.
           That's it. But from this simple idea emerges the ability to write, reason, translate, code, and converse.

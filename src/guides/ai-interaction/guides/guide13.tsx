@@ -16,7 +16,7 @@ export function Guide13() {
   const [sel, setSel] = useState<number | null>(null);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Text only gets you so far">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           By itself, an LLM can only generate text. <strong>Tool use</strong> gives models the ability to take actions:
           search the web, run code, read files, call APIs. This is what makes AI truly useful.

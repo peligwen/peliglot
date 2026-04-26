@@ -14,7 +14,7 @@ const sources = [
 export function Guide20() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Training data carries its biases forward">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           AI models reflect the <strong>biases in their training data</strong> and design choices.
           Understanding where bias enters helps you spot it, mitigate it, and use AI more responsibly.

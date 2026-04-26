@@ -6,7 +6,7 @@ import { PromptBox, Tip } from './_helpers';
 export function Guide7() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Show, don't explain">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Few-shot prompting</strong> means showing the model examples of what you want before asking it to perform.
           Instead of explaining the pattern, you demonstrate it.

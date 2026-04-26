@@ -35,7 +35,7 @@ const patterns = [
 export function Guide11() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Reusable templates for common tasks">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Prompt patterns</strong> are reusable templates for common tasks.
           Like design patterns in programming, they give you a reliable starting point.

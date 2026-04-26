@@ -6,7 +6,7 @@ import { PromptBox, Tip } from './_helpers';
 export function Guide10() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Ask for shape, not just content">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           LLMs can output data in any format you ask for — JSON, CSV, Markdown tables, XML, YAML.
           <strong> Structured output</strong> makes AI responses machine-readable and predictable.

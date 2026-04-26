@@ -7,7 +7,7 @@ import { Tip } from './_helpers';
 export function Guide23() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Uneven effects, real stakes">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           AI is reshaping <strong>jobs, education, creativity, and how we relate to information</strong>.
           The effects are uneven — some fields transform faster than others, and not everyone benefits equally.

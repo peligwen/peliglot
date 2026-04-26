@@ -64,8 +64,8 @@ export function Guide20(){
       <div style={{padding:"7px 14px",background:"#1e3a56",fontSize:10,fontWeight:700,color:"#607387",letterSpacing:1.5,textTransform:"uppercase"}}>Installation</div>
       {[
         ["1.","Print the hole as a Pocket — straight bore, no taper, depth = insert length + 0.5mm slack at the bottom for displaced plastic."],
-        ["2.","Set a soldering iron to ~245–260 °C (PLA) or ~280 °C (PETG/ABS). Use a tip approximately the insert&apos;s thread diameter."],
-        ["3.","Place the insert flush with the hole, knurled end down. Press straight down with the iron tip in the insert&apos;s thread — let the heat melt plastic, don&apos;t force it."],
+        ["2.","Set a soldering iron to ~245–260 °C (PLA) or ~280 °C (PETG/ABS). Use a tip approximately the insert's thread diameter."],
+        ["3.","Place the insert flush with the hole, knurled end down. Press straight down with the iron tip in the insert's thread — let the heat melt plastic, don't force it."],
         ["4.","Stop when the insert is flush with the surface or 0.1–0.2mm below. Hold for ~2 seconds without pressure so the plastic re-solidifies around it."],
         ["5.","Let it cool for 10 seconds before removing the iron. Done."],
       ].map(([n,desc],i)=>(<div key={i} style={{padding:"7px 14px",borderTop:"1px solid #1e3a56",display:"flex",gap:10}}>
@@ -76,6 +76,6 @@ export function Guide20(){
     <div style={{background:"#162a3d",borderRadius:10,padding:"10px 14px",border:"1px solid #243a52",marginBottom:14,fontSize:12,color:"#8fa3b8",lineHeight:1.5}}>
       <strong style={{color:"#e8ecf0"}}>When NOT to use:</strong> single-use assembly with no disassembly (just self-tap), parts with walls thinner than insert OD + 1.5mm (will split), or where you can use a captive nut pocket (cheaper, no installation step). Heat-set is for repeatedly-assembled functional parts.
     </div>
-    <Insight text="The brass insert is the difference between &quot;hobby print&quot; and &quot;real product.&quot; Print a Ø4.0mm × 4.0mm-deep pocket for an M3, push the insert in with a 250 °C soldering iron, and the printed plastic now holds an M3 cap screw with metal-on-metal thread strength — through dozens of assembly cycles." />
+    <Insight text={'The brass insert is the difference between "hobby print" and "real product." Print a Ø4.0mm × 4.0mm-deep pocket for an M3, push the insert in with a 250 °C soldering iron, and the printed plastic now holds an M3 cap screw with metal-on-metal thread strength — through dozens of assembly cycles.'} />
   </div>);
 }

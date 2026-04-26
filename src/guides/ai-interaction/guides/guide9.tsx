@@ -6,7 +6,7 @@ import { PromptBox, Tip } from './_helpers';
 export function Guide9() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="Show your work — it helps">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           <strong>Chain of Thought (CoT)</strong> prompting asks the model to show its reasoning step by step.
           This simple technique dramatically improves accuracy on math, logic, and complex tasks.

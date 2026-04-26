@@ -16,7 +16,7 @@ export function Guide24() {
   const [sel, setSel] = useState<number | null>(null);
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="No single best model">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           There's no single "best" model. The right choice depends on your <strong>task, budget, speed needs, and privacy requirements</strong>.
           Knowing the trade-offs helps you pick wisely.

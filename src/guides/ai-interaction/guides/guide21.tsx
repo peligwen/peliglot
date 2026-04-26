@@ -8,7 +8,7 @@ import { Tip } from './_helpers';
 export function Guide21() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="The law hasn't caught up yet">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           When AI generates text, code, or images, <strong>who owns it?</strong> Copyright law is still catching up to AI,
           and the answers depend on where you are and how the AI was trained.

@@ -13,7 +13,7 @@ const costs = [
 export function Guide22() {
   return (
     <div>
-      <DarkBox title="THE BIG IDEA">
+      <DarkBox title="AI has a carbon footprint">
         <div style={{ fontSize: 15, lineHeight: 1.7 }}>
           AI has a <strong>carbon footprint</strong>. Training large models and serving billions of queries requires
           significant energy, water, and hardware. Understanding the costs helps you use AI more thoughtfully.
