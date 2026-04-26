@@ -124,7 +124,6 @@ describe('Practice surface', () => {
   // -------------------------------------------------------------------------
 
   it('calls rateCard with the correct cardId and Rating.Good when Good is clicked', async () => {
-    const rateSpy = vi.spyOn(adapter, 'write');
     renderPractice(adapter, [mockCard]);
 
     await waitFor(() => expect(screen.getByRole('button', { name: /show answer/i })).toBeInTheDocument());
@@ -134,10 +133,17 @@ describe('Practice surface', () => {
       fireEvent.click(screen.getByRole('button', { name: /good/i }));
     });
 
+    // After a "Good" rating, the card state should be persisted. Good (3) schedules
+    // well into the future — not the same-minute re-queue that "Again" (1) produces.
+    // A non-null lastReview and a due date at least a few minutes out confirms the
+    // correct rating path was taken through the FSRS scheduler.
     await waitFor(() => {
-      expect(rateSpy).toHaveBeenCalledWith('test-card-1', expect.objectContaining({
-        cardId: 'test-card-1',
-      }));
+      const persisted = adapter.peek('test-card-1');
+      expect(persisted).toBeDefined();
+      expect(persisted?.lastReview).not.toBeNull();
+      // Good/Easy always schedules at least 60 s out; Again may be as short as 1 min
+      // but Good for a new card is typically 1+ day. Check it's at least 60 seconds.
+      expect(persisted?.due).toBeGreaterThan(Date.now() + 60_000);
     });
   });
 
@@ -155,13 +161,12 @@ describe('Practice surface', () => {
       fireEvent.click(screen.getByRole('button', { name: /good/i }));
     });
 
-    // After rating, either next card or empty state should appear
-    // (this card was the only one; after rating it moves to sessionIndex 1 → empty)
+    // The "Next review: …" message must appear (via data-testid) BEFORE the card
+    // is unmounted. The NEXT_DUE_DISPLAY_MS delay (800ms) keeps it visible briefly.
     await waitFor(() => {
-      const hasNextReview = screen.queryByText(/next review/i) !== null;
-      const hasAllCaughtUp = screen.queryByText(/all caught up/i) !== null;
-      expect(hasNextReview || hasAllCaughtUp).toBe(true);
-    });
+      expect(screen.getByTestId('next-due-message')).toBeInTheDocument();
+    }, { timeout: 2000 });
+    expect(screen.getByTestId('next-due-message').textContent).toMatch(/next review/i);
   });
 
   // -------------------------------------------------------------------------

@@ -10,11 +10,13 @@
  *
  * Queue logic:
  * - Gets the full card pool from `getCards()` (default: `getAllSpanishCards`).
- * - For each card, checks `getCardState(cardId)`:
- *     undefined → brand new, always due
- *     state.due <= Date.now() → due for review
- * - Shuffles with a day-stable seed so order is consistent within a session
- *   but varies from day to day.
+ * - Builds a shuffled snapshot on session start (when isHydrated first becomes true).
+ * - Tracks rated card IDs in a Set; displayed queue = snapshot minus rated.
+ * - This keeps order stable within a session: rating card A does not reshuffle B–Z.
+ *
+ * Advance logic:
+ * - After rating, shows "Next review: …" message for 800ms, then advances.
+ * - Prevents spoiler-flash of the next card's answer.
  */
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -43,6 +45,9 @@ const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
   'verb-conjugation',
   'verb-conjugation-stem-change',
 ]);
+
+// How long (ms) to display the "Next review: …" message before advancing
+const NEXT_DUE_DISPLAY_MS = 800;
 
 // ---------------------------------------------------------------------------
 // Seeded shuffle — Mulberry32, seeded by local YYYYMMDD date integer
@@ -170,19 +175,17 @@ function SpeakerButton({ text, label = 'Speak' }: { text: string; label?: string
 // HeaderStrip — always visible: streak, goal progress, due count, back link
 // ---------------------------------------------------------------------------
 
-interface HeaderStripProps {
-  streak: number;
-  todaysReviewCount: number;
-  dailyGoal: number;
-  dueCount: number;
-}
-
 function HeaderStrip({
   streak,
   todaysReviewCount,
   dailyGoal,
   dueCount,
-}: HeaderStripProps): ReactElement {
+}: {
+  streak: number;
+  todaysReviewCount: number;
+  dailyGoal: number;
+  dueCount: number;
+}): ReactElement {
   return (
     <div
       style={{
@@ -383,21 +386,20 @@ function EmptyState({
 
 interface CardReviewerProps {
   card: ReviewCard;
-  /** Returns the new CardState so we can display the next-due info. */
+  /**
+   * Rates the card and returns the new CardState (quickly — no advance delay).
+   * The caller (CardReviewer) is responsible for showing the next-due message
+   * and then calling onAdvance after NEXT_DUE_DISPLAY_MS.
+   */
   onRate: (rating: Rating) => Promise<CardState>;
-  queueIndex: number;
-  queueTotal: number;
+  /** Called after the next-due message has been displayed. Advances the queue. */
+  onAdvance: (cardId: string) => void;
 }
 
-function CardReviewer({
-  card,
-  onRate,
-  queueIndex,
-  queueTotal,
-}: CardReviewerProps): ReactElement {
+function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElement {
   const [revealed, setRevealed] = useState(false);
   const [nextDue, setNextDue] = useState<string | null>(null);
-  const [rating, setRating] = useState(false);
+  const [rated, setRated] = useState(false);
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
@@ -413,22 +415,26 @@ function CardReviewer({
   useEffect(() => {
     setRevealed(false);
     setNextDue(null);
-    setRating(false);
+    setRated(false);
     autoPlayedRef.current = false;
   }, [card.cardId]);
 
   const handleRate = useCallback(
     async (r: Rating) => {
-      if (rating) return; // prevent double-tap
-      setRating(true);
+      if (rated) return; // prevent double-tap
+      setRated(true);
       try {
         const newState = await onRate(r);
+        // Show the next-due message immediately after rating resolves.
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
+        // Wait the display duration, then tell the parent to advance.
+        await new Promise<void>(resolve => setTimeout(resolve, NEXT_DUE_DISPLAY_MS));
+        onAdvance(card.cardId);
       } catch {
-        // Swallow errors — the parent already handles the rating
+        // Swallow: parent already handles error propagation
       }
     },
-    [onRate, rating],
+    [onRate, onAdvance, card.cardId, rated],
   );
 
   const promptLetter =
@@ -437,19 +443,6 @@ function CardReviewer({
 
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 16px' }}>
-      {/* Progress indicator */}
-      <div
-        style={{
-          textAlign: 'center',
-          fontSize: 12,
-          color: '#aaa',
-          marginBottom: 20,
-          fontFamily: "system-ui,'Segoe UI',sans-serif",
-        }}
-      >
-        {queueIndex + 1} / {queueTotal}
-      </div>
-
       {/* Prompt card */}
       <div
         style={{
@@ -549,9 +542,10 @@ function CardReviewer({
             </div>
           </div>
 
-          {/* Next-due preview (shows after rating) */}
+          {/* Next-due preview (shows after rating, before advance) */}
           {nextDue && (
             <div
+              data-testid="next-due-message"
               style={{
                 textAlign: 'center',
                 fontSize: 13,
@@ -564,8 +558,8 @@ function CardReviewer({
             </div>
           )}
 
-          {/* Rating buttons (hidden after rating to prevent double-tap) */}
-          {!rating && <RatingButtons onRate={handleRate} />}
+          {/* Rating buttons — hidden after rating to prevent double-tap */}
+          {!rated && <RatingButtons onRate={handleRate} />}
         </div>
       )}
     </div>
@@ -598,45 +592,50 @@ export function Practice({
   // Full card pool (stable across renders unless getCards reference changes)
   const allCards = useMemo(() => getCards(), [getCards]);
 
-  // Build the shuffled due queue; only recomputed after hydration or cache changes
-  const dueQueue = useMemo<ReviewCard[]>(() => {
-    if (!isHydrated) return [];
+  // Session snapshot: built once when hydration completes. Stable for the session.
+  // Cards are shuffled with a day seed for variety but consistent within a session.
+  // Stored in state (not a ref) so that useMemo for displayQueue can depend on it
+  // honestly — the memo re-runs exactly when the snapshot is first set.
+  const [sessionSnapshot, setSessionSnapshot] = useState<ReadonlyArray<ReviewCard> | null>(null);
+
+  useEffect(() => {
+    if (!isHydrated || sessionSnapshot !== null) return;
     const now = Date.now();
     const due = allCards.filter(card => {
       const state = getCardState(card.cardId);
       return state === undefined || state.due <= now;
     });
-    return seededShuffle(due, todaySeed());
-  }, [isHydrated, allCards, getCardState]);
+    setSessionSnapshot(seededShuffle(due, todaySeed()));
+  }, [isHydrated, sessionSnapshot, allCards, getCardState]);
 
-  // Session pointer — advances on each rating
-  const [sessionIndex, setSessionIndex] = useState(0);
+  // Track rated card IDs — the displayed queue = snapshot minus rated
+  const [ratedIds, setRatedIds] = useState<ReadonlySet<string>>(new Set());
 
-  // Clamp session index if queue shrinks (shouldn't happen normally, but safety net)
-  const prevQueueLenRef = useRef(dueQueue.length);
-  useEffect(() => {
-    if (dueQueue.length < prevQueueLenRef.current) {
-      setSessionIndex(prev => Math.min(prev, Math.max(0, dueQueue.length - 1)));
-    }
-    prevQueueLenRef.current = dueQueue.length;
-  }, [dueQueue.length]);
-
-  // Rate the current card and advance the session pointer
-  const handleRate = useCallback(
-    async (r: Rating): Promise<CardState> => {
-      const card = dueQueue[sessionIndex];
-      if (!card) {
-        throw new Error('No card to rate');
-      }
-      const newState = await rateCard(card.cardId, r);
-      setSessionIndex(prev => prev + 1);
-      return newState;
-    },
-    [dueQueue, sessionIndex, rateCard],
+  const displayQueue = useMemo(
+    () => (sessionSnapshot ?? []).filter(c => !ratedIds.has(c.cardId)),
+    [sessionSnapshot, ratedIds],
   );
 
-  const currentCard = dueQueue[sessionIndex];
-  const dueCount = Math.max(0, dueQueue.length - sessionIndex);
+  const currentCard = displayQueue[0];
+  const dueCount = displayQueue.length;
+
+  // Rate the current card. Returns the new CardState immediately (no advance delay).
+  // CardReviewer is responsible for showing the next-due message, then calling onAdvance.
+  const handleRate = useCallback(
+    async (r: Rating): Promise<CardState> => {
+      if (!currentCard) throw new Error('No card to rate');
+      return rateCard(currentCard.cardId, r);
+    },
+    [currentCard, rateCard],
+  );
+
+  // Advance the queue: remove the rated card so the next one shows.
+  const handleAdvance = useCallback(
+    (cardId: string) => {
+      setRatedIds(prev => new Set([...prev, cardId]));
+    },
+    [],
+  );
 
   // ---------------------------------------------------------------------------
   // Render
@@ -683,10 +682,10 @@ export function Practice({
           />
         ) : (
           <CardReviewer
+            key={currentCard.cardId}
             card={currentCard}
             onRate={handleRate}
-            queueIndex={sessionIndex}
-            queueTotal={dueQueue.length}
+            onAdvance={handleAdvance}
           />
         )}
       </main>
