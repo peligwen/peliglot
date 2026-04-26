@@ -68,7 +68,11 @@ interface MasteryStorageAdapter {
   listDue(now: number): Promise<Array<{ cardId: string; state: CardState }>>;
   bulkExport(): Promise<MasteryExport>;
   bulkImport(snapshot: MasteryExport): Promise<MergeReport>;
-  writeMeta(meta: { streak?: StreakState; settings?: { dailyGoal?: number } }): Promise<void>;
+  writeMeta(meta: {
+    streak?: StreakState;
+    settings?: { dailyGoal?: number };
+    xp?: XpState;           // Phase 2b.1
+  }): Promise<void>;
 }
 ```
 
@@ -120,8 +124,8 @@ overwritten; omitted fields leave existing values intact.
 - `writeMeta({ streak })` does NOT clobber a previously-written `dailyGoal`.
 - `writeMeta({ settings })` does NOT clobber the streak.
 
-Called by `useMastery` on every `rateCard` (streak update) and every
-`setDailyGoal`. Using a dedicated method avoids the full
+Called by `useMastery` on every `rateCard` (streak + XP update, in a single
+call) and every `setDailyGoal`. Using a dedicated method avoids the full
 `bulkExport → bulkImport` round-trip.
 
 ### LWW rule — full statement
@@ -214,8 +218,27 @@ interface MasteryExport {
   cards: Record<string, CardState>;  // keyed by cardId
   streak?: StreakState;              // absent if no reviews ever recorded
   settings?: { dailyGoal?: number }; // absent if user hasn't changed defaults
+  xp?: XpState;                      // absent in snapshots from before Phase 2b.1
 }
 ```
+
+### `XpState`
+
+```ts
+interface XpState {
+  allTime: number;       // monotonic total XP; never decreases
+  today: number;         // XP earned in the current local day; resets at midnight
+  dayKey: string | null; // YYYY-MM-DD local-date string used to detect day rollover;
+                         // null before the first ever review
+}
+```
+
+XP is computed by `computeXp(rating, difficulty)` in `src/mastery/xp.ts`.
+Day rollover is detected in two places: at hydration time (user opens app on a
+new day) and inside `rateCard` (in-session midnight crossing). Both paths
+persist the updated `XpState` via `writeMeta({ xp })`.
+`xp` is backward-compatible: existing snapshots that lack the field default to
+`{ allTime: 0, today: 0, dayKey: null }` on hydration.
 
 ### `StreakState`
 
