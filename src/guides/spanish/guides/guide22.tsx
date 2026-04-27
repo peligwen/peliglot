@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
+import { irregs } from './data22';
 
 export function Guide22(){
   const [mode,setMode]=useState("comp");
@@ -15,7 +16,6 @@ export function Guide22(){
   ];
   const [compSel,setCompSel]=useState("more");
   const comp=compTypes.find(c=>c.id===compSel)!;
-  const irregs=[{reg:"bueno",comp:"mejor",sup:"el/la mejor",en:"good → better → best"},{reg:"malo",comp:"peor",sup:"el/la peor",en:"bad → worse → worst"},{reg:"grande",comp:"más grande / mayor",sup:"el/la más grande / mayor",en:"big → bigger → biggest; mayor specializes for age/importance"},{reg:"pequeño",comp:"más pequeño / menor",sup:"el/la más pequeño / menor",en:"small → smaller → smallest; menor specializes for age"}];
   return(<div>
     <div style={{display:"flex",gap:8,marginBottom:16,justifyContent:"center"}}>
       {[{k:"comp",l:"Comparatives"},{k:"super",l:"Superlatives"}].map(m=>(<button key={m.k} onClick={()=>setMode(m.k)} style={{flex:1,maxWidth:180,padding:"10px",borderRadius:10,border:mode===m.k?"2.5px solid #C62828":"1.5px solid #ddd",background:mode===m.k?"#C62828":"#fff",color:mode===m.k?"#fff":"#666",cursor:"pointer",fontWeight:700,fontSize:14}}>{m.l}</button>))}
