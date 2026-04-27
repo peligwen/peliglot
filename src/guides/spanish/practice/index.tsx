@@ -540,7 +540,7 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
   //   'awaiting-input' → 'shown-answer' → 'rated'
   // For self-rate-only kinds it collapses to:
   //   'awaiting-input' (= not revealed) → 'shown-answer' → 'rated'
-  const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind as CardKind);
+  const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind);
 
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
