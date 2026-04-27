@@ -554,6 +554,141 @@ describe('useMastery — todaysReviewCount', () => {
 });
 
 // ---------------------------------------------------------------------------
+// XP tracking
+// ---------------------------------------------------------------------------
+
+describe('useMastery — XP tracking', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('rateCard increments xpToday and xpAllTime', async () => {
+    vi.setSystemTime(localDate(2026, 4, 26, 10));
+
+    const adapter = new StubRemoteAdapter();
+    // Seed a card with known difficulty=5 (average) so XP is predictable.
+    adapter.seed('card-xp', {
+      ...makeCard('card-xp', 1),
+      difficulty: 5,
+    });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.xpToday).toBe(0);
+    expect(result.current.xpAllTime).toBe(0);
+
+    // Rating.Good at difficulty 5 → base=8, mult=1.0 → 8 XP
+    await act(async () => {
+      await result.current.rateCard('card-xp', Rating.Good);
+    });
+
+    expect(result.current.xpToday).toBe(8);
+    expect(result.current.xpAllTime).toBe(8);
+  });
+
+  it('xpToday accumulates across multiple reviews on the same day', async () => {
+    vi.setSystemTime(localDate(2026, 4, 26, 10));
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('c1', { ...makeCard('c1', 1), difficulty: 5 });
+    adapter.seed('c2', { ...makeCard('c2', 2), difficulty: 5 });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    // Good at diff=5 → 8 XP each
+    await act(async () => { await result.current.rateCard('c1', Rating.Good); });
+    await act(async () => { await result.current.rateCard('c2', Rating.Good); });
+
+    expect(result.current.xpToday).toBe(16);
+    expect(result.current.xpAllTime).toBe(16);
+  });
+
+  it('xpToday resets on day rollover (rateCard path); xpAllTime preserved', async () => {
+    vi.setSystemTime(localDate(2026, 4, 26, 10));
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('card-xp', { ...makeCard('card-xp', 1), difficulty: 5 });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    // Day 1: earn XP
+    await act(async () => {
+      await result.current.rateCard('card-xp', Rating.Good); // 8 XP
+    });
+    expect(result.current.xpToday).toBe(8);
+    expect(result.current.xpAllTime).toBe(8);
+
+    // Advance to next day
+    vi.setSystemTime(localDate(2026, 4, 27, 10));
+
+    // Day 2: rateCard should detect rollover and reset xpToday
+    await act(async () => {
+      await result.current.rateCard('card-xp', Rating.Good); // 8 more XP
+    });
+
+    // xpToday should be only the day-2 amount (rollover detected in rateCard)
+    expect(result.current.xpToday).toBe(8);
+    // xpAllTime should be cumulative
+    expect(result.current.xpAllTime).toBe(16);
+  });
+
+  it('xpToday resets on day rollover (hydration path); xpAllTime preserved', async () => {
+    // Instance A earns XP on day 1
+    vi.setSystemTime(localDate(2026, 4, 26, 10));
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('card-xp', { ...makeCard('card-xp', 1), difficulty: 5 });
+
+    const { result: rA } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(rA.current.isHydrated).toBe(true));
+
+    await act(async () => {
+      await rA.current.rateCard('card-xp', Rating.Good); // 8 XP, dayKey=2026-04-26
+    });
+    expect(rA.current.xpAllTime).toBe(8);
+
+    // Advance to next day BEFORE mounting instance B
+    vi.setSystemTime(localDate(2026, 4, 27, 10));
+
+    // Instance B hydrates — should detect day rollover and reset xpToday
+    const { result: rB } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(rB.current.isHydrated).toBe(true));
+
+    expect(rB.current.xpToday).toBe(0);
+    expect(rB.current.xpAllTime).toBe(8); // preserved
+  });
+
+  it('XP persists across hook instances (instance B sees A\'s writes)', async () => {
+    vi.setSystemTime(localDate(2026, 4, 26, 10));
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('card-xp', { ...makeCard('card-xp', 1), difficulty: 5 });
+
+    // Instance A
+    const { result: rA } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(rA.current.isHydrated).toBe(true));
+    await act(async () => {
+      await rA.current.rateCard('card-xp', Rating.Easy); // 10 XP at diff=5
+    });
+    expect(rA.current.xpAllTime).toBe(10);
+
+    // Instance B — same adapter
+    const { result: rB } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(rB.current.isHydrated).toBe(true));
+
+    expect(rB.current.xpAllTime).toBe(10);
+    expect(rB.current.xpToday).toBe(10);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Persistence across hook instances
 // ---------------------------------------------------------------------------
 

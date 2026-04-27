@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ProgressRing } from './components/ProgressRing';
 import { readVisited } from './hooks/useProgress';
 import { useRouteMeta } from './hooks/useRouteMeta';
+import { useMastery } from './hooks/useMastery';
 import { guidesMeta as spanishMeta } from './guides/spanish/meta';
 import { guidesMeta as arabicMeta } from './guides/arabic/meta';
 import { guidesMeta as englishMeta } from './guides/english/meta';
@@ -14,6 +15,8 @@ import { guidesMeta as jazzGuitarMeta } from './guides/jazz-guitar/meta';
 import { guidesMeta as mathMeta } from './guides/math/meta';
 import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
 import { guidesMeta as freecadMeta } from './guides/freecad/meta';
+import { getAllSpanishCards } from './guides/spanish/mastery/index';
+import { getRecommendation } from './mastery/recommendation';
 import './styles/landing.css';
 import type { GuideMeta } from './types/guide';
 import { SITE_URL } from './config/site';
@@ -133,6 +136,96 @@ function getRecentActivity(): RecentActivity | null {
   } catch { return null; }
 }
 
+// ---------------------------------------------------------------------------
+// SpanishRecommendationCTA — context-aware practice affordance for the
+// Spanish card only. Isolated in its own subcomponent so useMastery runs
+// in this subtree, not in the root LandingPage render.
+// ---------------------------------------------------------------------------
+
+const SPANISH_CARD_COUNT = getAllSpanishCards().length;
+
+function SpanishRecommendationCTA(): ReactElement {
+  const { dueCards, todaysReviewCount, isHydrated } = useMastery();
+
+  // Before hydration finishes we don't have reliable counts. Show the
+  // static "Practice" fallback so the link is always present.
+  if (!isHydrated) {
+    return (
+      <Link
+        to="/guides/spanish/practice"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 5,
+          fontSize: 12,
+          fontWeight: 700,
+          color: '#C62828',
+          textDecoration: 'none',
+          background: '#fff0f0',
+          border: '1px solid #f5c6c6',
+          borderRadius: 20,
+          padding: '4px 12px',
+          letterSpacing: 0.3,
+        }}
+        aria-label="Practice Spanish with spaced repetition"
+      >
+        <span aria-hidden="true">{'🎴'}</span> Practice
+      </Link>
+    );
+  }
+
+  const rec = getRecommendation({
+    cardCount: SPANISH_CARD_COUNT,
+    dueCount: dueCards.length,
+    reviewedToday: todaysReviewCount,
+  });
+
+  if (rec.kind === 'caught-up') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 11, color: '#2E7D32', fontWeight: 600 }}>
+          {'✓'} {rec.message}
+        </span>
+        <Link
+          to={rec.ctaTarget}
+          style={{
+            fontSize: 11,
+            color: '#888',
+            textDecoration: 'underline',
+            fontFamily: "system-ui,'Segoe UI',sans-serif",
+          }}
+        >
+          Open practice anyway
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      to={rec.ctaTarget}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        fontSize: 12,
+        fontWeight: 700,
+        color: '#C62828',
+        textDecoration: 'none',
+        background: '#fff0f0',
+        border: '1px solid #f5c6c6',
+        borderRadius: 20,
+        padding: '4px 12px',
+        letterSpacing: 0.3,
+      }}
+      aria-label="Practice Spanish with spaced repetition"
+    >
+      <span aria-hidden="true">{'🎴'}</span>{' '}
+      {rec.kind === 'cold-start' ? 'Practice' : rec.message}
+    </Link>
+  );
+}
+
 function ResumeToast(): ReactElement | null {
   const [recent, setRecent] = useState<RecentActivity | null>(null);
   const [dismissed, setDismissed] = useState<boolean>(false);
@@ -142,7 +235,12 @@ function ResumeToast(): ReactElement | null {
     setRecent(activity);
     if (!activity) return;
     const timer = setTimeout(() => setDismissed(true), 8000);
-    return () => clearTimeout(timer);
+    const onScroll = () => setDismissed(true);
+    window.addEventListener('scroll', onScroll, { once: true, passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   if (!recent || dismissed) return null;
@@ -372,26 +470,7 @@ export function LandingPage(): ReactElement {
                   </Link>
                   {g.slug === 'spanish' && (
                     <div style={{ padding: '0 0 4px 0', display: 'flex', justifyContent: 'flex-end' }}>
-                      <Link
-                        to="/guides/spanish/practice"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 5,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: '#C62828',
-                          textDecoration: 'none',
-                          background: '#fff0f0',
-                          border: '1px solid #f5c6c6',
-                          borderRadius: 20,
-                          padding: '4px 12px',
-                          letterSpacing: 0.3,
-                        }}
-                        aria-label="Practice Spanish with spaced repetition"
-                      >
-                        <span aria-hidden="true">{'🎴'}</span> Practice
-                      </Link>
+                      <SpanishRecommendationCTA />
                     </div>
                   )}
                 </div>

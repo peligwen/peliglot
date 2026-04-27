@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LocalStorageMasteryAdapter } from './adapters/localStorage';
+import { StubRemoteAdapter } from './adapters/stubRemote';
 import type { CardState } from './types';
 
 // ---------------------------------------------------------------------------
@@ -224,5 +225,35 @@ describe('LocalStorageMasteryAdapter', () => {
     const exported = await adapter.bulkExport();
     expect(exported.streak?.current).toBe(4);
     expect(exported.settings?.dailyGoal).toBe(7);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// StubRemoteAdapter — mutation-isolation (deep copy contract)
+// ---------------------------------------------------------------------------
+
+describe('StubRemoteAdapter — bulkExport deep copy', () => {
+  it('bulkExport returns a copy — adding a key does not affect adapter', async () => {
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('c1', makeCard('c1', 1, Date.now()));
+    const exported = await adapter.bulkExport();
+    // Mutate the export.
+    exported.cards['injected'] = makeCard('injected', 999, Date.now());
+    // Adapter should not be affected.
+    const after = await adapter.bulkExport();
+    expect(Object.keys(after.cards)).not.toContain('injected');
+  });
+
+  it('bulkExport deep copy — mutating a card field does not corrupt adapter snapshot', async () => {
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('c1', makeCard('c1', 1, Date.now()));
+    const exported = await adapter.bulkExport();
+    const originalReps = exported.cards['c1']!.reps;
+    // Mutate a field on the exported card object.
+    exported.cards['c1']!.reps = 9999;
+    // Adapter's internal state must be unchanged.
+    const after = await adapter.bulkExport();
+    expect(after.cards['c1']!.reps).toBe(originalReps);
+    expect(after.cards['c1']!.reps).not.toBe(9999);
   });
 });

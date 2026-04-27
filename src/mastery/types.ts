@@ -64,6 +64,31 @@ export interface CardState extends SchedulerCard {
 }
 
 // ---------------------------------------------------------------------------
+// XP state (Phase 2b.1)
+// ---------------------------------------------------------------------------
+
+/**
+ * Accumulated XP for the learner.
+ *
+ * `allTime` is monotonic — it never decreases.
+ * `today` resets to 0 at each local day boundary (detected via `dayKey`).
+ * `dayKey` is a YYYY-MM-DD local-date string (same convention as
+ * `StreakState.lastReviewDate`). A `null` dayKey means no card has ever been
+ * reviewed.
+ */
+export interface XpState {
+  /** Monotonic total XP across all time. Never decreases. */
+  allTime: number;
+  /** XP earned in the current local day. Resets at midnight (local time). */
+  today: number;
+  /**
+   * YYYY-MM-DD local-date string of the day `today` was last counted.
+   * Used to detect rollover. Null before the first ever review.
+   */
+  dayKey: string | null;
+}
+
+// ---------------------------------------------------------------------------
 // Streak and settings (populated in Phase 2a.2; fields optional now)
 // ---------------------------------------------------------------------------
 
@@ -101,6 +126,8 @@ export interface MasteryExport {
   settings?: {
     dailyGoal?: number;
   };
+  /** Populated in Phase 2b.1. Optional for backward-compat with existing snapshots. */
+  xp?: XpState;
 }
 
 // ---------------------------------------------------------------------------

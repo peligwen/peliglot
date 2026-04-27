@@ -11,12 +11,12 @@
  */
 
 import type { MasteryStorageAdapter, WriteResult, MergeReport } from '../adapter';
-import type { CardState, MasteryExport, StreakState } from '../types';
+import type { CardState, MasteryExport, StreakState, XpState } from '../types';
 import { CURRENT_SCHEMA_VERSION } from '../migrations';
 
 export class StubRemoteAdapter implements MasteryStorageAdapter {
   private cards: Map<string, CardState> = new Map();
-  private meta: { streak?: StreakState; settings?: { dailyGoal?: number } } = {};
+  private meta: { streak?: StreakState; settings?: { dailyGoal?: number }; xp?: XpState } = {};
 
   /** Seed the adapter with initial card state for test setup. */
   seed(cardId: string, state: CardState): void {
@@ -58,21 +58,26 @@ export class StubRemoteAdapter implements MasteryStorageAdapter {
   }
 
   async bulkExport(): Promise<MasteryExport> {
+    // Deep copy: each card value is spread into a new object so external
+    // mutations cannot corrupt the adapter's internal Map entries.
+    // This mirrors the contract enforced by LocalStorageMasteryAdapter.
     const cards: Record<string, CardState> = {};
     for (const [cardId, state] of this.cards) {
-      cards[cardId] = state;
+      cards[cardId] = { ...state };
     }
     return {
       schemaVersion: CURRENT_SCHEMA_VERSION,
       cards,
       ...(this.meta.streak !== undefined && { streak: { ...this.meta.streak } }),
       ...(this.meta.settings !== undefined && { settings: { ...this.meta.settings } }),
+      ...(this.meta.xp !== undefined && { xp: { ...this.meta.xp } }),
     };
   }
 
   async writeMeta(meta: {
     streak?: StreakState;
     settings?: { dailyGoal?: number };
+    xp?: XpState;
   }): Promise<void> {
     // Partial merge: only overwrite present fields; leave absent ones intact.
     if (meta.streak !== undefined) {
@@ -83,6 +88,9 @@ export class StubRemoteAdapter implements MasteryStorageAdapter {
         ...this.meta,
         settings: { ...this.meta.settings, ...meta.settings },
       };
+    }
+    if (meta.xp !== undefined) {
+      this.meta = { ...this.meta, xp: { ...meta.xp } };
     }
   }
 

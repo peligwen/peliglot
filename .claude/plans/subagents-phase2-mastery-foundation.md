@@ -182,13 +182,19 @@ jazz guitar). That decision happens when Phase 2d closes.
 
 ## Status
 
-- [ ] Phase 2a: Local FSRS mastery foundation
-  - [x] 2a.1 — FSRS scheduler + MasteryStorageAdapter contract + localStorage adapter (Opus reviewer pass; non-blocking notes deferred to 2a.5 polish: bulkExport deep-copy, loadFromStorage warn-on-parse-error, bulkImport-migrate at network boundary in 2d)
-  - [x] 2a.2 — useMastery hook + streak + daily goal (Opus reviewer pass; non-blocking notes for 2a.4: dueCards at render-time may want a 1-min refresh tick, rateCard callback identity changes on cache/streak update, no batch-rate semantics — fine for solo use)
-  - [x] 2a.3 — Card extractors for the 9 Spanish guides (Opus reviewer pass; 247 cards across 9 guides; non-blocking notes for 2a.5: guide11 article-strip regex pluralization, slugify duplication candidate for shared util, audit-trail accuracy)
-  - [x] 2a.4 — Practice route + UI (Opus reviewer pass; 47KB lazy chunk; non-blocking polish notes consolidated for 2a.5)
-  - [ ] 2a.5 — Architecture doc, CLAUDE.md update, polish, PR prep
-- [ ] Phase 2b: XP + recommendation surface (gated on 2a merge + director go-ahead)
+- [x] Phase 2a: Local FSRS mastery foundation — **shipped via PR #19 (merge commit 4c0acea)**
+  - [x] 2a.1 — FSRS scheduler + MasteryStorageAdapter contract + localStorage adapter
+  - [x] 2a.2 — useMastery hook + streak + daily goal
+  - [x] 2a.3 — Card extractors for the 9 Spanish guides (247 cards)
+  - [x] 2a.4 — Practice route + UI (47KB lazy chunk)
+  - [x] 2a.5 — ARCHITECTURE.md, CLAUDE.md update, polish, PR
+- [x] Phase 2b: XP + recommendation surface + tester-feedback fixes — **PR open (phase-2b-xp-recommendation)**
+  - [x] 2b.1 — Data layer (XP formula, recommendation function, hook extension, stub adapter symmetry)
+  - [x] 2b.2 — Tester-feedback bug fixes + UI integration + e2e + PR
+    - [x] Bug 1: ResumeToast covers footer when scrolled to bottom — dismiss on scroll
+    - [x] Bug 2: practice mode has no text input — per-kind typed-answer flow with self-rate fallback
+    - [x] XP indicator in practice header
+    - [x] Spanish landing card: context-aware recommendation CTA
 - [ ] Phase 2c: Spanish content build-out (gated on 2b + director go-ahead)
 - [ ] Phase 2d: Cloud + auth (gated on explicit director decision; deferred)
 - [ ] Phase 2e: Other-collection mastery decisions (Phase 3 boundary)

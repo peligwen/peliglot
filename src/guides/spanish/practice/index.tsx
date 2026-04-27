@@ -19,15 +19,17 @@
  * - Prevents spoiler-flash of the next card's answer.
  */
 
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import type { ReactElement, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useMastery } from '../../../hooks/useMastery';
 import { Rating } from '../../../mastery';
 import type { MasteryStorageAdapter, CardState } from '../../../mastery';
-import type { ReviewCard } from '../../../mastery/cards';
+import type { CardKind, ReviewCard } from '../../../mastery/cards';
 import { getAllSpanishCards } from '../mastery/index';
 import { speakSpanish } from '../../../utils/speech';
+import { checkAnswer } from '../mastery/util';
+import type { AnswerMatch } from '../mastery/util';
 import { PromptRenderer } from './renderers';
 
 // ---------------------------------------------------------------------------
@@ -44,6 +46,18 @@ const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
   'letter-sound',
   'verb-conjugation',
   'verb-conjugation-stem-change',
+]);
+
+// Kinds that support typed-answer input as the primary interaction.
+// letter-sound and word-stress remain self-rate-only (IPA / rule-based).
+const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+  'verb-conjugation',
+  'verb-conjugation-stem-change',
+  'noun-gender',
+  'noun-plural',
+  'noun-adj-agreement',
+  'english-to-pronoun',
+  'ser-vs-estar',
 ]);
 
 // How long (ms) to display the "Next review: …" message before advancing
@@ -188,11 +202,13 @@ function HeaderStrip({
   todaysReviewCount,
   dailyGoal,
   dueCount,
+  xpToday,
 }: {
   streak: number;
   todaysReviewCount: number;
   dailyGoal: number;
   dueCount: number;
+  xpToday: number;
 }): ReactElement {
   return (
     <div
@@ -253,6 +269,15 @@ function HeaderStrip({
         </span>{' '}
         due
       </div>
+
+      {xpToday > 0 && (
+        <div
+          aria-label={`${xpToday} XP today`}
+          style={{ color: '#7B6F00', fontWeight: 600 }}
+        >
+          {xpToday} XP
+        </div>
+      )}
     </div>
   );
 }
@@ -270,8 +295,12 @@ const RATINGS: Array<{ rating: Rating; label: string; color: string; bg: string 
 
 function RatingButtons({
   onRate,
+  goodButtonRef,
+  hardButtonRef,
 }: {
   onRate: (rating: Rating) => void;
+  goodButtonRef?: React.RefObject<HTMLButtonElement | null>;
+  hardButtonRef?: React.RefObject<HTMLButtonElement | null>;
 }): ReactElement {
   return (
     <div
@@ -283,33 +312,40 @@ function RatingButtons({
         marginTop: 20,
       }}
     >
-      {RATINGS.map(({ rating, label, color, bg }) => (
-        <button
-          key={label}
-          onClick={() => onRate(rating)}
-          style={{
-            background: bg,
-            color,
-            border: 'none',
-            borderRadius: 10,
-            padding: '10px 22px',
-            fontSize: 14,
-            fontWeight: 700,
-            cursor: 'pointer',
-            fontFamily: "system-ui,'Segoe UI',sans-serif",
-            minWidth: 72,
-            transition: 'opacity 0.15s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.opacity = '0.85';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.opacity = '1';
-          }}
-        >
-          {label}
-        </button>
-      ))}
+      {RATINGS.map(({ rating, label, color, bg }) => {
+        const ref =
+          label === 'Good' ? goodButtonRef :
+          label === 'Hard' ? hardButtonRef :
+          undefined;
+        return (
+          <button
+            key={label}
+            ref={ref as React.RefObject<HTMLButtonElement> | undefined}
+            onClick={() => onRate(rating)}
+            style={{
+              background: bg,
+              color,
+              border: 'none',
+              borderRadius: 10,
+              padding: '10px 22px',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              fontFamily: "system-ui,'Segoe UI',sans-serif",
+              minWidth: 72,
+              transition: 'opacity 0.15s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.opacity = '0.85';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.opacity = '1';
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -389,6 +425,82 @@ function EmptyState({
 }
 
 // ---------------------------------------------------------------------------
+// MatchFeedback — shows correct / close / incorrect result under the input
+// ---------------------------------------------------------------------------
+
+function MatchFeedback({
+  result,
+  canonical,
+  typed,
+}: {
+  result: AnswerMatch;
+  canonical: string;
+  typed: string;
+}): ReactElement {
+  if (result === 'correct') {
+    return (
+      <div
+        data-testid="answer-feedback"
+        style={{
+          background: '#e8f5e9',
+          border: '1px solid #a5d6a7',
+          borderRadius: 10,
+          padding: '12px 16px',
+          marginBottom: 16,
+          fontFamily: "system-ui,'Segoe UI',sans-serif",
+        }}
+      >
+        <div style={{ fontWeight: 700, color: '#2E7D32', marginBottom: 2 }}>
+          {'✓'} Correct!{' '}
+          <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800 }}>{canonical}</span>
+        </div>
+      </div>
+    );
+  }
+  if (result === 'close') {
+    return (
+      <div
+        data-testid="answer-feedback"
+        style={{
+          background: '#fffde7',
+          border: '1px solid #ffe082',
+          borderRadius: 10,
+          padding: '12px 16px',
+          marginBottom: 16,
+          fontFamily: "system-ui,'Segoe UI',sans-serif",
+        }}
+      >
+        <div style={{ fontWeight: 700, color: '#7B6F00', marginBottom: 2 }}>
+          {'~'} Close — correct:{' '}
+          <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800 }}>{canonical}</span>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div
+      data-testid="answer-feedback"
+      style={{
+        background: '#ffebee',
+        border: '1px solid #ef9a9a',
+        borderRadius: 10,
+        padding: '12px 16px',
+        marginBottom: 16,
+        fontFamily: "system-ui,'Segoe UI',sans-serif",
+      }}
+    >
+      <div style={{ fontWeight: 700, color: '#B71C1C', marginBottom: 4 }}>
+        {'✗'} Correct answer:{' '}
+        <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800 }}>{canonical}</span>
+      </div>
+      <div style={{ fontSize: 12, color: '#888' }}>
+        You answered: <em>{typed}</em>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // CardReviewer — shows one card, manages reveal and rating
 // ---------------------------------------------------------------------------
 
@@ -404,10 +516,42 @@ interface CardReviewerProps {
   onAdvance: (cardId: string) => void;
 }
 
+/**
+ * Derive acceptable answers to pass to checkAnswer for kinds where the
+ * canonical answer is compound (e.g. "el (masculine)"). We allow the
+ * article alone and the gender word alone so casual typing still scores.
+ */
+function deriveAcceptable(card: ReviewCard): string[] {
+  const base = card.acceptableAnswers ? [...card.acceptableAnswers] : [];
+  if (card.kind === 'noun-gender') {
+    // canonical: "el (masculine)" or "la (feminine)"
+    const m = card.answer.match(/^(el|la)\s+\((\w+)\)$/);
+    if (m) {
+      const [, article, gender] = m;
+      if (article && !base.includes(article)) base.push(article);
+      if (gender && !base.includes(gender)) base.push(gender);
+    }
+  }
+  return base;
+}
+
 function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElement {
-  const [revealed, setRevealed] = useState(false);
+  // For typing-eligible kinds the state machine has an extra phase:
+  //   'awaiting-input' → 'shown-answer' → 'rated'
+  // For self-rate-only kinds it collapses to:
+  //   'awaiting-input' (= not revealed) → 'shown-answer' → 'rated'
+  const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind);
+
+  type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
+  const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
+  const [typedAnswer, setTypedAnswer] = useState<string>('');
+  const [matchResult, setMatchResult] = useState<AnswerMatch | null>(null);
   const [nextDue, setNextDue] = useState<string | null>(null);
-  const [rated, setRated] = useState(false);
+
+  // Refs for auto-focus management
+  const inputRef = useRef<HTMLInputElement>(null);
+  const goodButtonRef = useRef<HTMLButtonElement>(null);
+  const hardButtonRef = useRef<HTMLButtonElement>(null);
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
@@ -433,25 +577,45 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
   }, []);
 
   useEffect(() => {
-    if (!revealed) return;
+    if (reviewerState !== 'shown-answer') return;
     if (!autoPlayedRef.current && KINDS_AUTO_PLAY_ON_REVEAL.has(card.kind)) {
       autoPlayedRef.current = true;
       speakSpanish(card.speakText ?? card.answer);
     }
-  }, [revealed, card.kind, card.speakText, card.answer]);
+  }, [reviewerState, card.kind, card.speakText, card.answer]);
 
-  // Reset state when card changes
+  // Auto-focus the text input when a typing-eligible card first appears
   useEffect(() => {
-    setRevealed(false);
+    if (typingEnabled && reviewerState === 'awaiting-input') {
+      inputRef.current?.focus();
+    }
+  }, [typingEnabled, reviewerState]);
+
+  // After a typed submit, focus the default rating button
+  useEffect(() => {
+    if (reviewerState === 'shown-answer' && matchResult !== null) {
+      if (matchResult === 'correct') {
+        goodButtonRef.current?.focus();
+      } else if (matchResult === 'close') {
+        hardButtonRef.current?.focus();
+      }
+      // incorrect: leave focus where it is (no default)
+    }
+  }, [reviewerState, matchResult]);
+
+  // Reset all state when the card changes
+  useEffect(() => {
+    setReviewerState('awaiting-input');
+    setTypedAnswer('');
+    setMatchResult(null);
     setNextDue(null);
-    setRated(false);
     autoPlayedRef.current = false;
   }, [card.cardId]);
 
   const handleRate = useCallback(
     async (r: Rating) => {
-      if (rated) return; // prevent double-tap
-      setRated(true);
+      if (reviewerState === 'rated') return; // prevent double-tap
+      setReviewerState('rated');
       try {
         const newState = await onRate(r);
         if (!mountedRef.current) return;
@@ -469,7 +633,27 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
         // Swallow: parent already handles error propagation
       }
     },
-    [onRate, onAdvance, card.cardId, rated],
+    [onRate, onAdvance, card.cardId, reviewerState],
+  );
+
+  const handleSubmitTyped = useCallback(() => {
+    if (!typedAnswer.trim()) return;
+    const acceptable = deriveAcceptable(card);
+    const result = checkAnswer(typedAnswer, card.answer, acceptable);
+    setMatchResult(result);
+    setReviewerState('shown-answer');
+  }, [typedAnswer, card]);
+
+  const handleShowAnswer = useCallback(() => {
+    setMatchResult(null); // escape hatch — no typed scoring
+    setReviewerState('shown-answer');
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') handleSubmitTyped();
+    },
+    [handleSubmitTyped],
   );
 
   const promptLetter =
@@ -499,83 +683,179 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
         )}
       </div>
 
-      {/* Show Answer / Answer + Rating */}
-      {!revealed ? (
-        <div style={{ textAlign: 'center' }}>
-          <button
-            onClick={() => setRevealed(true)}
-            style={{
-              background: SPANISH_RED,
-              color: '#fff',
-              border: 'none',
-              borderRadius: 12,
-              padding: '14px 36px',
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: "system-ui,'Segoe UI',sans-serif",
-              width: '100%',
-              maxWidth: 320,
-            }}
-          >
-            Show Answer
-          </button>
-        </div>
-      ) : (
-        <div>
-          {/* Answer display */}
-          <div
-            style={{
-              background: ACCENT_LIGHT,
-              borderRadius: 14,
-              padding: '20px 24px',
-              marginBottom: 16,
-              textAlign: 'center',
-              border: `1px solid ${SPANISH_RED}30`,
-            }}
-          >
+      {/* Awaiting input phase */}
+      {reviewerState === 'awaiting-input' && (
+        typingEnabled ? (
+          /* Typed-answer path */
+          <div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'stretch', marginBottom: 10 }}>
+              <input
+                ref={inputRef}
+                type="text"
+                value={typedAnswer}
+                onChange={e => setTypedAnswer(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your answer in Spanish"
+                aria-label="Type your answer in Spanish"
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  fontSize: 16,
+                  borderRadius: 12,
+                  border: '2px solid #e0e0e0',
+                  fontFamily: 'Georgia, serif',
+                  outline: 'none',
+                  background: '#fff',
+                }}
+              />
+              <button
+                onClick={handleSubmitTyped}
+                disabled={!typedAnswer.trim()}
+                style={{
+                  background: typedAnswer.trim() ? SPANISH_RED : '#e0e0e0',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 12,
+                  padding: '12px 20px',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: typedAnswer.trim() ? 'pointer' : 'default',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  flexShrink: 0,
+                  transition: 'background 0.15s',
+                }}
+                aria-label="Submit answer"
+              >
+                Submit
+              </button>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <button
+                onClick={handleShowAnswer}
+                style={{
+                  background: 'none',
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  padding: '6px 16px',
+                  fontSize: 13,
+                  color: '#888',
+                  cursor: 'pointer',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                }}
+                aria-label="Show answer without typing"
+              >
+                Show Answer
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* Self-rate-only path */
+          <div style={{ textAlign: 'center' }}>
             <div
               style={{
                 fontSize: 12,
-                color: '#888',
-                textTransform: 'uppercase',
-                letterSpacing: 1.5,
-                marginBottom: 8,
-                fontWeight: 600,
+                color: '#aaa',
+                marginBottom: 10,
                 fontFamily: "system-ui,'Segoe UI',sans-serif",
               }}
             >
-              Answer
+              Rate yourself when ready
             </div>
-            <div
+            <button
+              onClick={handleShowAnswer}
               style={{
-                fontSize: 32,
-                fontWeight: 800,
-                color: SPANISH_RED,
-                fontFamily: 'Georgia, serif',
-                lineHeight: 1.2,
+                background: SPANISH_RED,
+                color: '#fff',
+                border: 'none',
+                borderRadius: 12,
+                padding: '14px 36px',
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: "system-ui,'Segoe UI',sans-serif",
+                width: '100%',
+                maxWidth: 320,
               }}
             >
-              {card.answer}
-            </div>
-            {card.acceptableAnswers && card.acceptableAnswers.length > 0 && (
+              Show Answer
+            </button>
+          </div>
+        )
+      )}
+
+      {/* Shown-answer / rated phase */}
+      {(reviewerState === 'shown-answer' || reviewerState === 'rated') && (
+        <div>
+          {/* Typed-answer match feedback (only when submitted via input) */}
+          {matchResult !== null && (
+            <MatchFeedback
+              result={matchResult}
+              canonical={card.answer}
+              typed={typedAnswer}
+            />
+          )}
+
+          {/* Canonical answer display (always shown on Show Answer; after typing too) */}
+          {matchResult === null && (
+            <div
+              style={{
+                background: ACCENT_LIGHT,
+                borderRadius: 14,
+                padding: '20px 24px',
+                marginBottom: 16,
+                textAlign: 'center',
+                border: `1px solid ${SPANISH_RED}30`,
+              }}
+            >
               <div
                 style={{
-                  fontSize: 13,
+                  fontSize: 12,
                   color: '#888',
-                  marginTop: 8,
-                  fontStyle: 'italic',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.5,
+                  marginBottom: 8,
+                  fontWeight: 600,
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                 }}
               >
-                Also: {card.acceptableAnswers.join(', ')}
+                Answer
               </div>
-            )}
+              <div
+                style={{
+                  fontSize: 32,
+                  fontWeight: 800,
+                  color: SPANISH_RED,
+                  fontFamily: 'Georgia, serif',
+                  lineHeight: 1.2,
+                }}
+              >
+                {card.answer}
+              </div>
+              {card.acceptableAnswers && card.acceptableAnswers.length > 0 && (
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: '#888',
+                    marginTop: 8,
+                    fontStyle: 'italic',
+                    fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  }}
+                >
+                  Also: {card.acceptableAnswers.join(', ')}
+                </div>
+              )}
+              <div style={{ marginTop: 12 }}>
+                <SpeakerButton text={speakText} label="Speak answer" />
+              </div>
+            </div>
+          )}
 
-            <div style={{ marginTop: 12 }}>
+          {/* Speaker for typed-answer path */}
+          {matchResult !== null && (
+            <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <SpeakerButton text={speakText} label="Speak answer" />
             </div>
-          </div>
+          )}
 
           {/* Next-due preview (shows after rating, before advance) */}
           {nextDue && (
@@ -594,7 +874,13 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
           )}
 
           {/* Rating buttons — hidden after rating to prevent double-tap */}
-          {!rated && <RatingButtons onRate={handleRate} />}
+          {reviewerState !== 'rated' && (
+            <RatingButtons
+              onRate={handleRate}
+              goodButtonRef={goodButtonRef}
+              hardButtonRef={hardButtonRef}
+            />
+          )}
         </div>
       )}
     </div>
@@ -614,7 +900,7 @@ export function Practice({
   adapter,
   getCards = getAllSpanishCards,
 }: PracticeProps): ReactElement {
-  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated } =
+  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated, xpToday } =
     useMastery(adapter);
 
   // Force a re-render every minute so newly-due cards surface without user action
@@ -706,6 +992,7 @@ export function Practice({
         todaysReviewCount={todaysReviewCount}
         dailyGoal={dailyGoal}
         dueCount={dueCount}
+        xpToday={xpToday}
       />
 
       <main style={{ padding: '32px 16px 64px', maxWidth: 600, margin: '0 auto' }}>

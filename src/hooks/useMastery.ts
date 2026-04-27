@@ -20,8 +20,9 @@ import {
   rateCard as schedulerRateCard,
   Rating,
   defaultMasteryAdapter,
+  computeXp,
 } from '../mastery';
-import type { MasteryStorageAdapter, CardState, StreakState } from '../mastery';
+import type { MasteryStorageAdapter, CardState, StreakState, XpState } from '../mastery';
 
 export type { Rating };
 
@@ -137,6 +138,18 @@ export interface UseMasteryReturn {
 
   /** False until the initial `bulkExport` resolves. */
   isHydrated: boolean;
+
+  /**
+   * XP earned today (local date). Resets to 0 at midnight.
+   * Initialized from persisted XpState on hydration with day-rollover
+   * detection — so opening the app on a new day immediately shows 0.
+   */
+  xpToday: number;
+
+  /**
+   * Monotonic all-time XP total. Never decreases.
+   */
+  xpAllTime: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +164,12 @@ const DEFAULT_STREAK: StreakState = {
   lastReviewDate: null,
 };
 
+const DEFAULT_XP: XpState = {
+  allTime: 0,
+  today: 0,
+  dayKey: null,
+};
+
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
@@ -162,6 +181,7 @@ export function useMastery(
   const [cache, setCache] = useState<Map<string, CardState>>(new Map());
   const [streak, setStreak] = useState<StreakState>(DEFAULT_STREAK);
   const [dailyGoal, setDailyGoalState] = useState<number>(DEFAULT_DAILY_GOAL);
+  const [xp, setXp] = useState<XpState>(DEFAULT_XP);
   const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
   // Store the hydration promise so mutators can await it before writing,
@@ -174,6 +194,7 @@ export function useMastery(
     setCache(new Map());
     setStreak(DEFAULT_STREAK);
     setDailyGoalState(DEFAULT_DAILY_GOAL);
+    setXp(DEFAULT_XP);
 
     const hydrationPromise = (async () => {
       const snapshot = await adapter.bulkExport();
@@ -185,6 +206,24 @@ export function useMastery(
       setCache(newCache);
       setStreak(snapshot.streak ?? DEFAULT_STREAK);
       setDailyGoalState(snapshot.settings?.dailyGoal ?? DEFAULT_DAILY_GOAL);
+
+      // Restore XP with day-rollover detection.
+      // If the stored dayKey is from a previous day, reset xpToday to 0.
+      // This ensures that opening the app on a new day immediately reflects
+      // the correct today-count without requiring a rateCard call.
+      const storedXp = snapshot.xp ?? { ...DEFAULT_XP };
+      const todayKey = toLocalDateString(new Date());
+      let hydratedXp: XpState;
+      if (storedXp.dayKey !== null && storedXp.dayKey !== todayKey) {
+        // Day rolled over since last persisted XP — reset today count.
+        hydratedXp = { allTime: storedXp.allTime, today: 0, dayKey: todayKey };
+        // Persist the rollover so future hydrations start clean.
+        await adapter.writeMeta({ xp: hydratedXp });
+      } else {
+        hydratedXp = storedXp;
+      }
+      setXp(hydratedXp);
+
       setIsHydrated(true);
     })();
 
@@ -239,10 +278,14 @@ export function useMastery(
       await hydrationPromiseRef.current;
 
       const reviewTime = Date.now();
+      const today = toLocalDateString(new Date(reviewTime));
 
       // Fetch or create the current scheduler state.
       const existing = cache.get(cardId);
       const baseCard = existing ?? createCard();
+
+      // Capture difficulty BEFORE the scheduler updates the card.
+      const difficultyAtReview = baseCard.difficulty;
 
       // Run the FSRS scheduler.
       const scheduled = schedulerRateCard(baseCard, rating, reviewTime);
@@ -256,24 +299,35 @@ export function useMastery(
       // Persist to adapter.
       await adapter.write(cardId, newState);
 
-      // Update streak and persist meta.
-      const today = toLocalDateString(new Date(reviewTime));
+      // Update streak.
       const newStreak = computeNewStreak(streak, today);
 
-      await adapter.writeMeta({ streak: newStreak });
+      // Compute XP with day-rollover detection (in-session midnight crossing).
+      // If the session has crossed midnight since the last review, reset today.
+      const xpEarned = computeXp(rating, difficultyAtReview);
+      const rolledOver = xp.dayKey !== null && xp.dayKey !== today;
+      const newXp: XpState = {
+        allTime: xp.allTime + xpEarned,
+        today: rolledOver ? xpEarned : xp.today + xpEarned,
+        dayKey: today,
+      };
 
-      // Write-through: update local cache and streak.
+      // Persist streak + XP in a single writeMeta call.
+      await adapter.writeMeta({ streak: newStreak, xp: newXp });
+
+      // Write-through: update local cache, streak, and XP.
       setCache(prev => {
         const next = new Map(prev);
         next.set(cardId, newState);
         return next;
       });
       setStreak(newStreak);
+      setXp(newXp);
 
       return newState;
     },
-    // streak must be in deps so computeNewStreak sees the latest value.
-    [adapter, cache, streak],
+    // streak and xp must be in deps so computeNewStreak and XP accumulation see latest values.
+    [adapter, cache, streak, xp],
   );
 
   const setDailyGoal = useCallback(
@@ -295,5 +349,7 @@ export function useMastery(
     dailyGoal,
     setDailyGoal,
     isHydrated,
+    xpToday: xp.today,
+    xpAllTime: xp.allTime,
   };
 }

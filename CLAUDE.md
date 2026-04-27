@@ -275,8 +275,10 @@ The spaced-repetition engine. Full contract in `src/mastery/ARCHITECTURE.md`.
 ```ts
 import { useMastery } from '../../hooks/useMastery';
 
-const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated } =
-  useMastery(adapter); // adapter is optional; defaults to defaultMasteryAdapter
+const {
+  getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated,
+  xpToday, xpAllTime,
+} = useMastery(adapter); // adapter is optional; defaults to defaultMasteryAdapter
 ```
 
 - `getCardState(cardId)` — synchronous read from in-memory cache; returns `CardState | undefined`.
@@ -285,6 +287,16 @@ const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated
 - `todaysReviewCount` — count of cards reviewed today (local date).
 - `dailyGoal` — configurable via `setDailyGoal(n)`.
 - `isHydrated` — false until the initial `bulkExport()` resolves; gates render.
+- `xpToday` — XP earned in the current local day; resets to 0 at midnight. Rollover
+  is detected both on hydration (user opens app next day) and inside `rateCard` (in-session
+  midnight crossing).
+- `xpAllTime` — monotonic total XP; never decreases.
+
+XP formula lives in `src/mastery/xp.ts` — see `computeXp(rating, difficulty)`. Base XP:
+Again=1, Hard=4, Good=8, Easy=10; multiplied by `clamp(difficulty/5, 0.5, 2.0)`; minimum 1.
+
+**Components never read XP off the adapter directly.** Always use `xpToday` / `xpAllTime`
+from the hook return. See the hard rule below.
 
 **When to use:** any component or route that needs to display or update mastery
 state. Currently only the Spanish practice route (`/guides/spanish/practice`)
@@ -301,6 +313,22 @@ See `src/mastery/ARCHITECTURE.md` for the full contract, LWW semantics, and
 sign-in migration story. **Do not import the adapter concrete class directly in
 components.** Always go through `useMastery`.
 
+### Pure recommendation function — `src/mastery/recommendation.ts`
+
+A pure, side-effect-free function for use by landing-page widgets (Phase 2b.2):
+
+```ts
+import { getRecommendation } from '../mastery';
+// or from '../mastery/recommendation' if importing from inside src/mastery/
+
+const rec = getRecommendation({ cardCount, dueCount, reviewedToday });
+// rec.kind: 'cold-start' | 'has-due' | 'caught-up'
+// rec.message, rec.ctaLabel, rec.ctaTarget
+```
+
+Zero React imports, zero adapter imports, zero clock reads. The caller supplies
+all inputs. Priority: cold-start (cardCount=0) → has-due (dueCount>0) → caught-up.
+
 ### Hard rule: components never touch the adapter directly
 
 The `defaultMasteryAdapter` singleton lives in `src/mastery/index.ts`.
@@ -308,6 +336,10 @@ The `defaultMasteryAdapter` singleton lives in `src/mastery/index.ts`.
 **No component, guide, or extractor should import `LocalStorageMasteryAdapter`
 or any concrete adapter class.** This ensures Phase 2d's cloud-swap is one
 file, not a codebase-wide hunt.
+
+XP is persisted via `writeMeta({ xp })` (same adapter method that streak uses).
+Components read XP only from `xpToday` / `xpAllTime` on the hook return — never
+from `adapter.bulkExport()` directly.
 
 ### `ReviewCard` extraction pattern
 

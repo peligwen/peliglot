@@ -22,9 +22,10 @@ import type {
   MergeReport,
   StreakState,
   WriteResult,
+  XpState,
 } from './types';
 
-export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult };
+export type { CardState, MasteryExport, MergeReport, StreakState, WriteResult, XpState };
 
 /**
  * The adapter interface every storage backend must satisfy.
@@ -89,5 +90,6 @@ export interface MasteryStorageAdapter {
   writeMeta(meta: {
     streak?: StreakState;
     settings?: { dailyGoal?: number };
+    xp?: XpState;
   }): Promise<void>;
 }
