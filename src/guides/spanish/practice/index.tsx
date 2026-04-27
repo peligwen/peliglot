@@ -249,11 +249,11 @@ function HeaderStrip({
       <Link
         to="/"
         style={{
-          color: '#aaa',
+          color: '#888',
           textDecoration: 'none',
-          fontWeight: 500,
-          fontSize: 11,
-          letterSpacing: 0.3,
+          fontWeight: 600,
+          fontSize: 12,
+          letterSpacing: 0.5,
           display: 'flex',
           alignItems: 'center',
           gap: 4,
@@ -659,17 +659,17 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     autoPlayedRef.current = false;
   }, [card.cardId]);
 
-  // Persist a rating for the Show Answer (self-rate) 4-button path.
-  // Sets state to 'rated' (hides buttons, prevents double-tap), shows next-due
-  // message, then schedules auto-advance after NEXT_DUE_DISPLAY_MS.
-  const handleRate = useCallback(
-    async (r: Rating) => {
-      if (reviewerState === 'rated') return; // prevent double-tap
-      setReviewerState('rated');
+  // Shared persistence + optional auto-advance for both rating paths.
+  // Calls onRate, shows the next-due message, and (if autoAdvance) schedules
+  // the parent advance after NEXT_DUE_DISPLAY_MS. The Continue button can
+  // cancel the timer via advanceTimerRef.
+  const persistAndMaybeAdvance = useCallback(
+    async (rating: Rating, autoAdvance: boolean) => {
       try {
-        const newState = await onRate(r);
+        const newState = await onRate(rating);
         if (!mountedRef.current) return;
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
+        if (!autoAdvance) return;
         await new Promise<void>(resolve => {
           advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
         });
@@ -680,12 +680,27 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
         // Swallow: parent already handles error propagation
       }
     },
-    [onRate, onAdvance, card.cardId, reviewerState],
+    [onRate, onAdvance, card.cardId],
+  );
+
+  // Show Answer (self-rate) 4-button path. Always auto-advances after display.
+  const handleRate = useCallback(
+    async (r: Rating) => {
+      if (reviewerState === 'rated') return; // prevent double-tap
+      setReviewerState('rated');
+      await persistAndMaybeAdvance(r, true);
+    },
+    [reviewerState, persistAndMaybeAdvance],
   );
 
   // Whether a typed submit has already been persisted (prevents double-submit).
   const typedRatedRef = useRef(false);
 
+  // Typed-answer path. Auto-rates based on match quality:
+  //   correct → Good, close → Hard, incorrect → Again
+  // UI stays in 'shown-answer' so the Continue button is visible. Correct/close
+  // auto-advance after 800ms (Continue can skip the wait); incorrect requires
+  // explicit Continue click so the user can absorb the right answer.
   const handleSubmitTyped = useCallback(() => {
     // Allow submit on empty input only if the card explicitly accepts empty
     // (guide 19 'none' bucket). For all other cards, require non-empty input.
@@ -698,32 +713,8 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     setMatchResult(result);
     setReviewerState('shown-answer');
 
-    // Auto-rate based on match quality:
-    //   correct → Good, close → Hard, incorrect → Again
-    // Persist asynchronously. Do NOT set reviewerState to 'rated' here — the UI
-    // remains in 'shown-answer' so the Continue button is visible.
-    // For correct/close: schedule 800ms auto-advance (Continue can skip it).
-    // For incorrect: NO auto-advance — Continue is the only path forward.
-    const rating = matchToRating(result);
-    void (async () => {
-      try {
-        const newState = await onRate(rating);
-        if (!mountedRef.current) return;
-        setNextDue(`Next review: ${formatRelative(newState.due)}`);
-        if (result !== 'incorrect') {
-          // Schedule auto-advance; Continue button will cancel this timer.
-          await new Promise<void>(resolve => {
-            advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
-          });
-          if (mountedRef.current) {
-            onAdvance(card.cardId);
-          }
-        }
-      } catch {
-        // Swallow
-      }
-    })();
-  }, [typedAnswer, card, acceptsEmpty, onRate, onAdvance]);
+    void persistAndMaybeAdvance(matchToRating(result), result !== 'incorrect');
+  }, [typedAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
 
   // Continue handler for the typed-answer path:
   // - Cancels any pending auto-advance timer (correct/close: user skips 800ms wait).
