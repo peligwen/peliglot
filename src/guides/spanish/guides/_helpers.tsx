@@ -43,10 +43,55 @@ interface MiniTableProps {
   color: string;
   stem: string;
   endings: string[];
+  /**
+   * Optional full pre-computed forms, indexed by pronoun position (0=yo … 5=ellos).
+   * When provided, a given position renders the override instead of stem+endings[i].
+   * Used by guide29 to display accented nosotros past-subjunctive forms
+   * (e.g. "tuviéramos" rather than "tuvie" + "ramos").
+   *
+   * Past-subjunctive rule: the nosotros form (index 3) always carries a
+   * written accent on the stem's final vowel — e.g. habláramos, comiéramos,
+   * tuviéramos, fuéramos. The accent cannot be reconstructed by concatenating
+   * stem + ending, so we store the full accented form in data29.nosotrosRa
+   * and pass it here via formOverrides[3].
+   */
+  formOverrides?: Partial<Record<number, string>>;
 }
 
-export function MiniTable({ title, color, stem, endings }: MiniTableProps): ReactElement {
-  return <VerbConjugation pronouns={pronounsShort} stem={stem} endings={endings} title={title} color={color} compact/>;
+export function MiniTable({ title, color, stem, endings, formOverrides }: MiniTableProps): ReactElement {
+  if (!formOverrides) {
+    return <VerbConjugation pronouns={pronounsShort} stem={stem} endings={endings} title={title} color={color} compact/>;
+  }
+  // Build endings array substituting overridden forms: override[i] = full form displayed with empty stem
+  const resolvedEndings = endings.map((e, i) =>
+    formOverrides[i] !== undefined ? formOverrides[i]! : e
+  );
+  const resolvedStem = stem;
+  // For overridden rows the stem portion is intentionally blank to avoid double-rendering.
+  // We render a custom layout rather than relying on VerbConjugation's stem+ending split.
+  return (
+    <div style={{ background: "#fff", borderRadius: 12, overflow: "hidden", border: "1px solid #eee" }}>
+      <div style={{ background: color, padding: "8px 12px", color: "#fff", fontSize: 13, fontWeight: 700 }}>{title}</div>
+      {pronounsShort.map((p, i) => {
+        const isOverride = formOverrides[i] !== undefined;
+        return (
+          <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px", height: 30, borderBottom: i < pronounsShort.length - 1 ? "1px solid #f5f3ef" : "none", fontSize: 12 }}>
+            <span style={{ color: "#aaa", width: 40 }}>{p}</span>
+            <span style={{ fontWeight: 700 }}>
+              {isOverride ? (
+                <span style={{ color }}>{resolvedEndings[i]}</span>
+              ) : (
+                <>
+                  <span style={{ color: "#999" }}>{resolvedStem}</span>
+                  <span style={{ color }}>{resolvedEndings[i]}</span>
+                </>
+              )}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 interface TriggerChipsProps {

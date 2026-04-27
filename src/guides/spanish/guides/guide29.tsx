@@ -21,7 +21,10 @@ export function Guide29(){
     <div style={{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginBottom:14}}>
       {verbs.map((vb,i)=>(<button key={vb.v} onClick={()=>setVerb(i)} style={{padding:"6px 14px",borderRadius:8,border:verb===i?"2px solid #1a1a1a":"1.5px solid #ddd",background:verb===i?"#4527A0":"#fff",color:verb===i?"#fff":"#666",fontSize:12,fontWeight:700,cursor:"pointer"}}>{vb.v}</button>))}
     </div>
-    <MiniTable title={v.v} color="#4527A0" stem={v.stem} endings={endings}/>
+    {/* Past-subjunctive nosotros form requires a written accent on the stem's
+        final vowel (e.g. tuviéramos, not tuvieramos). The stem+ending concat
+        cannot reproduce this, so we pass the full accented form from data29. */}
+    <MiniTable title={v.v} color="#4527A0" stem={v.stem} endings={endings} formOverrides={{ 3: v.nosotrosRa }}/>
     <Card color="#1a1a1a" title="Si Clauses — Three Patterns">
       {siClauses.map(c=>(<div key={c.type} style={{background:`${c.color}08`,borderRadius:10,padding:"10px 14px",marginBottom:8,borderLeft:`4px solid ${c.color}`}}>
         <div style={{fontSize:12,fontWeight:800,color:c.color,marginBottom:4}}>{c.type}</div>
