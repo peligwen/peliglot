@@ -211,6 +211,13 @@ describe('Practice surface', () => {
     expect(screen.getByText(/due/)).toBeInTheDocument();
   });
 
+  it('header strip renders an "All collections" link pointing to "/"', async () => {
+    renderPractice(adapter, [mockCard]);
+    await waitFor(() => screen.getByRole('link', { name: /all collections/i }));
+    const homeLink = screen.getByRole('link', { name: /all collections/i });
+    expect(homeLink).toHaveAttribute('href', '/');
+  });
+
   // -------------------------------------------------------------------------
   // Multiple cards — advances to next card after rating
   //

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { GuideSidebar } from './GuideSidebar';
 import type { Theme } from '../styles/themes';
 
@@ -29,7 +30,11 @@ function renderSidebar(props = {}) {
     sidebarTitle: 'Test Collection',
     sidebarSubtitle: '3 Interactive Guides',
   };
-  return render(<GuideSidebar {...defaults} {...props} />);
+  return render(
+    <MemoryRouter>
+      <GuideSidebar {...defaults} {...props} />
+    </MemoryRouter>
+  );
 }
 
 describe('GuideSidebar', () => {
@@ -135,5 +140,12 @@ describe('GuideSidebar', () => {
     renderSidebar({ open: true });
     const dialog = screen.getByRole('dialog', { name: 'Guide list' });
     expect(dialog.style.transform).toBe('translateX(0)');
+  });
+
+  it('renders an "All collections" home link pointing to "/"', () => {
+    renderSidebar();
+    const homeLink = screen.getByRole('link', { name: /all collections/i });
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink).toHaveAttribute('href', '/');
   });
 });

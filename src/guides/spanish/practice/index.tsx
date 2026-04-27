@@ -247,6 +247,22 @@ function HeaderStrip({
       }}
     >
       <Link
+        to="/"
+        style={{
+          color: '#aaa',
+          textDecoration: 'none',
+          fontWeight: 500,
+          fontSize: 11,
+          letterSpacing: 0.3,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
+        <span aria-hidden="true">{'←'}</span> All collections
+      </Link>
+
+      <Link
         to="/guides/spanish"
         style={{
           color: '#888',

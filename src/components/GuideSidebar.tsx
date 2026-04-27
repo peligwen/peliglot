@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { RefObject, ReactElement, KeyboardEvent } from 'react';
+import { Link } from 'react-router-dom';
 import type { GuideMeta, CategoryColors } from '../types/guide';
 import type { Theme } from '../styles/themes';
 import { colors, spacing, typography } from '../styles/tokens';
@@ -164,6 +165,19 @@ export function GuideSidebar({
       }}
     >
       <div style={{ padding: `${spacing.lg}px ${spacing.xl}px`, borderBottom: `1px solid ${theme.borderColor}`, flexShrink: 0 }}>
+        <Link
+          to="/"
+          style={{
+            display: 'inline-block',
+            fontSize: typography.fontSize.xs,
+            color: theme.textSecondary,
+            textDecoration: 'none',
+            marginBottom: spacing.xs,
+            letterSpacing: 0.3,
+          }}
+        >
+          {'← All collections'}
+        </Link>
         <div style={{ fontSize: typography.fontSize['3xl'], fontWeight: typography.fontWeight.extrabold, color: theme.textPrimary }}>{sidebarTitle}</div>
         <div style={{ fontSize: typography.fontSize.md, color: theme.textSecondary }}>{sidebarSubtitle}</div>
       </div>
