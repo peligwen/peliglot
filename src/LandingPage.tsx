@@ -15,7 +15,7 @@ import { guidesMeta as jazzGuitarMeta } from './guides/jazz-guitar/meta';
 import { guidesMeta as mathMeta } from './guides/math/meta';
 import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
 import { guidesMeta as freecadMeta } from './guides/freecad/meta';
-import { getAllSpanishCards } from './guides/spanish/mastery/index';
+import { SPANISH_CARD_COUNT } from './guides/spanish/mastery/index';
 import { getRecommendation } from './mastery/recommendation';
 import './styles/landing.css';
 import type { GuideMeta } from './types/guide';
@@ -142,7 +142,8 @@ function getRecentActivity(): RecentActivity | null {
 // in this subtree, not in the root LandingPage render.
 // ---------------------------------------------------------------------------
 
-const SPANISH_CARD_COUNT = getAllSpanishCards().length;
+// SPANISH_CARD_COUNT is imported as a plain constant so the landing page chunk
+// does not pull in the full extractor pool. Maintained in index.ts.
 
 function SpanishRecommendationCTA(): ReactElement {
   const { dueCards, todaysReviewCount, isHydrated } = useMastery();
