@@ -8,9 +8,11 @@ describe('getAllSpanishCards aggregator', () => {
   // Phase 2a extractors (guides 1,2,4,9,11,12,13,14,17): ~215 cards
   // Phase 2c.2 extractors (guides 5,6,8,10,28,29,30):
   //   guide5: 36, guide6: 12, guide8: 18, guide10: 96, guide28: 18, guide29: 30, guide30: 16 = 226 cards
-  // Expected total: ~441 cards. Tolerance band: >= 400 to allow minor future data changes.
-  it('returns at least 400 cards (Phase 2a ~215 + Phase 2c.2 ~226)', () => {
-    expect(cards.length).toBeGreaterThanOrEqual(400);
+  // Phase 2c.3 extractors (guides 3,18,19,20,21,22,24,25,31): ~98 cards
+  //   guide3: 17, guide18: 10, guide19: 23, guide20: 8, guide21: 8, guide22: 4, guide24: 8, guide25: 15, guide31: 5
+  // Expected total: ~539 cards. Tolerance band: >= 490 to allow minor future data changes.
+  it('returns at least 490 cards (Phase 2a ~215 + Phase 2c.2 ~226 + Phase 2c.3 ~98)', () => {
+    expect(cards.length).toBeGreaterThanOrEqual(490);
   });
 
   it('all cardIds are globally unique across all extractors', () => {
@@ -47,16 +49,17 @@ describe('getAllSpanishCards aggregator', () => {
     }
   });
 
-  it('covers all 16 expected guide IDs (Phase 2a + Phase 2c.2)', () => {
+  it('covers all 25 expected guide IDs (Phase 2a + Phase 2c.2 + Phase 2c.3)', () => {
     const guideIds = new Set(cards.map(c => c.guideId));
-    for (const id of [1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 17, 28, 29, 30]) {
+    for (const id of [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21, 22, 24, 25, 28, 29, 30, 31]) {
       expect(guideIds.has(id)).toBe(true);
     }
   });
 
-  it('covers all 11 expected card kinds (Phase 2a + Phase 2c.2)', () => {
+  it('covers all 20 expected card kinds (Phase 2a + Phase 2c.2 + Phase 2c.3)', () => {
     const kinds = new Set(cards.map(c => c.kind));
     const expectedKinds: CardKind[] = [
+      // Phase 2a
       'letter-sound',
       'word-stress',
       'verb-conjugation',
@@ -66,9 +69,19 @@ describe('getAllSpanishCards aggregator', () => {
       'noun-adj-agreement',
       'english-to-pronoun',
       'ser-vs-estar',
-      // Phase 2c.2 additions
+      // Phase 2c.2
       'verb-conjugation-tensed',
       'imperative-tu',
+      // Phase 2c.3
+      'verb-spelling-change',
+      'por-vs-para',
+      'verb-prep-pair',
+      'question-word',
+      'negation-translate',
+      'comparative-irregular',
+      'tu-vs-usted',
+      'false-cognate',
+      'reflexive-meaning-change',
     ];
     for (const kind of expectedKinds) {
       expect(kinds.has(kind)).toBe(true);
