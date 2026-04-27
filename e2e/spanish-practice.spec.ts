@@ -177,7 +177,7 @@ test('typing-eligible card (verb-conjugation) shows a text input', async ({ page
   expect(foundTypingCard || foundSelfRateCard).toBe(true);
 });
 
-test('typing a correct answer shows feedback then rating buttons', async ({ page }) => {
+test('typing an answer shows feedback then a single Continue button (no rating buttons)', async ({ page }) => {
   await page.goto('/guides/spanish/practice');
   await page.waitForLoadState('networkidle');
 
@@ -191,7 +191,7 @@ test('typing a correct answer shows feedback then rating buttons', async ({ page
       found = true;
       break;
     }
-    // Skip non-typing card
+    // Skip non-typing card via show-answer path
     const showAnswerBtn = page.getByRole('button', { name: /show answer/i });
     const isVisible = await showAnswerBtn.isVisible().catch(() => false);
     if (isVisible) {
@@ -213,9 +213,10 @@ test('typing a correct answer shows feedback then rating buttons', async ({ page
 
   // Feedback block should appear (correct / close / incorrect)
   await expect(page.getByTestId('answer-feedback')).toBeVisible({ timeout: 4000 });
-  // Rating buttons appear regardless of match result
-  await expect(page.getByRole('button', { name: /again/i })).toBeVisible({ timeout: 4000 });
-  await expect(page.getByRole('button', { name: /good/i })).toBeVisible({ timeout: 4000 });
+  // Typed path: only a Continue button — no 4-button rating UI
+  await expect(page.getByRole('button', { name: /continue/i })).toBeVisible({ timeout: 4000 });
+  await expect(page.getByRole('button', { name: /^good$/i })).not.toBeVisible();
+  await expect(page.getByRole('button', { name: /^again$/i })).not.toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
