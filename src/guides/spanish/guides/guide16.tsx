@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { QuizSection } from '../../../components/templates/QuizSection';
+import { quizItems } from './data16';
 
 const ios=["me","te","le","nos","les"];
 const enSubj=["I","you","he/she","we","they"];
@@ -17,19 +18,6 @@ const verbs=[
   {v:"faltar",m:"to lack / be missing",s:"falta",p:"faltan",exS:"un tenedor",exP:"dos sillas",exEn:["a fork","two chairs"]},
   {v:"parecer",m:"to seem",s:"parece",p:"parecen",exS:"buena idea",exP:"caros",exEn:["a good idea","expensive"]},
   {v:"quedar",m:"to have left / remaining",s:"queda",p:"quedan",exS:"un día",exP:"tres días",exEn:["one day","three days"]},
-];
-
-const quizItems=[
-  {question:"I like tacos. (gustar)",answer:"Me gustan los tacos."},
-  {question:"My head hurts. (doler)",answer:"Me duele la cabeza."},
-  {question:"My face itches. (picar)",answer:"Me pica la cara."},
-  {question:"She loves music. (encantar)",answer:"Le encanta la música."},
-  {question:"It doesn't matter to us. (importar)",answer:"No nos importa."},
-  {question:"We're missing two chairs. (faltar)",answer:"Nos faltan dos sillas."},
-  {question:"Mosquitoes bother me. (molestar)",answer:"Me molestan los mosquitos."},
-  {question:"They're interested in history. (interesar)",answer:"Les interesa la historia."},
-  {question:"My feet hurt. (doler)",answer:"Me duelen los pies."},
-  {question:"It seems like a good idea. (parecer)",answer:"Me parece buena idea."},
 ];
 
 export function Guide16(){
