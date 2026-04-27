@@ -191,15 +191,14 @@ jazz guitar). That decision happens when Phase 2d closes.
 - [x] Phase 2b: XP + recommendation surface + tester-feedback fixes — **shipped via PR #20 (merge commit c0b2a29)**
   - [x] 2b.1 — Data layer (XP formula, recommendation function, hook extension, stub adapter symmetry)
   - [x] 2b.2 — Bug 1 (ResumeToast scroll-dismiss) + Bug 2 (typed-answer flow) + XP header + landing recommendation CTA
-- [ ] Phase 2c: Spanish content build-out across remaining 24 guides — **in flight on phase-2c-content-buildout**
-  - **Audit complete:** 20 extract verdicts, 4 skip verdicts (guides 7, 15, 26, 33)
+- [x] Phase 2c: Spanish content build-out across remaining 24 guides — **shipped via PR (phase-2c-content-buildout)**
+  - **Audit complete:** 20 extract verdicts, 4 skip verdicts (guides 7, 15, 26, 33) — see docs/spanish-mastery-audit.md
   - **15 new CardKinds:** verb-spelling-change, verb-conjugation-tensed, gustar-pattern, por-vs-para, verb-prep-pair, question-word, negation-translate, comparative-irregular, number-spell, tu-vs-usted, false-cognate, weather-expression, imperative-tu, reflexive-meaning-change, idiom-meaning
-  - [ ] 2c.1 — Schema additions: 15 new CardKinds + PromptShapes + renderers + TYPING_ENABLED_KINDS
-  - [ ] 2c.2 — Verb-conjugation extractors: guides 5, 6, 8, 10, 28, 29, 30 (~274 cards)
-  - [ ] 2c.3 — Choice-discriminator extractors: guides 3, 18, 19, 20, 21, 22, 24, 25, 31 (~98 cards)
-  - [ ] 2c.4 — Phrase-translation extractors (16, 23, 27, 32) + LandingPage lazy-load polish + audit doc + PR (~83 cards)
-  - **Total: ~455 new cards across 17 newly-wired guides; ~702 cards in mastery pool**
-- [ ] Phase 2c: Spanish content build-out (gated on 2b + director go-ahead)
+  - [x] 2c.1 — Schema additions: 15 new CardKinds + PromptShapes + renderers + TYPING_ENABLED_KINDS
+  - [x] 2c.2 — Verb-conjugation extractors: guides 5, 6, 8, 10, 28, 29, 30 (226 cards)
+  - [x] 2c.3 — Choice-discriminator extractors: guides 3, 18, 19, 20, 21, 22, 24, 25, 31 (98 cards)
+  - [x] 2c.4 — Phrase-translation extractors (16, 23, 27, 32) + LandingPage lazy-load polish + audit doc + PR (84 cards)
+  - **Total: 408 new cards across 20 newly-wired guides; 662 cards in mastery pool (29/33 guides, 88% coverage)**
 - [ ] Phase 2d: Cloud + auth (gated on explicit director decision; deferred)
 - [ ] Phase 2e: Other-collection mastery decisions (Phase 3 boundary)
 
