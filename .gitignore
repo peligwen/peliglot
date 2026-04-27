@@ -26,6 +26,7 @@ Thumbs.db
 playwright-report/
 test-results/
 /playwright/.cache/
+.playwright-mcp/
 
 # Generated OG card images (regenerated at build time via prebuild script)
 # `git clone && npm ci && npm run build` produces all cards hermetically.

@@ -52,7 +52,7 @@ const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
 
 // Kinds that support typed-answer input as the primary interaction.
 // letter-sound and word-stress remain self-rate-only (IPA / rule-based).
-const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+export const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'verb-conjugation',
   'verb-conjugation-stem-change',
   'noun-gender',
@@ -60,7 +60,7 @@ const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'noun-adj-agreement',
   'english-to-pronoun',
   'ser-vs-estar',
-  // Phase 2c additions — all 15 new kinds are typing-eligible
+  // Phase 2c additions
   'verb-spelling-change',
   'verb-conjugation-tensed',
   'gustar-pattern',
@@ -71,16 +71,37 @@ const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'comparative-irregular',
   'number-spell',
   'tu-vs-usted',
-  'false-cognate',
   'weather-expression',
   'imperative-tu',
-  'reflexive-meaning-change',
-  'idiom-meaning',
   // Phase 2c.5 additions (PR #21 cleanup)
   'sentence-correction',
   'reflexive-daily-routine',
   'reciprocal-translate',
 ]);
+
+// Kinds that present 4-option multiple-choice instead of typed input.
+// Reserved for cards where many English phrasings of the same concept are all
+// reasonable answers — pinning down acceptableAnswers is brittle.
+// MCQ_KINDS and TYPING_ENABLED_KINDS must stay disjoint (asserted in tests).
+export const MCQ_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+  'idiom-meaning',
+  'false-cognate',
+  'reflexive-meaning-change',
+]);
+
+const MCQ_OPTION_COUNT = 4;
+
+// Kinds whose canonical answer is an English meaning (rather than a Spanish
+// form). Currently all such kinds happen to be MCQ — kept as a separate set
+// for the placeholderFor helper, in case a future English-answer kind is
+// added that uses typed input instead.
+export const ENGLISH_ANSWER_KINDS: ReadonlySet<CardKind> = new Set<CardKind>();
+
+export function placeholderFor(kind: CardKind): string {
+  return ENGLISH_ANSWER_KINDS.has(kind)
+    ? 'Type your answer in English'
+    : 'Type your answer in Spanish';
+}
 
 // How long (ms) to display the "Next review: …" message before advancing
 const NEXT_DUE_DISPLAY_MS = 800;
@@ -121,6 +142,17 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 function todaySeed(): number {
   const d = new Date();
   return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+
+// FNV-1a 32-bit hash. Used to derive a stable numeric seed from a cardId so
+// MCQ option order is stable for a given card but varies across cards.
+function stringHash(s: string): number {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -463,11 +495,11 @@ function EmptyState({
 function MatchFeedback({
   result,
   canonical,
-  typed,
+  userAnswer,
 }: {
   result: AnswerMatch;
   canonical: string;
-  typed: string;
+  userAnswer: string;
 }): ReactElement {
   if (result === 'correct') {
     return (
@@ -526,7 +558,7 @@ function MatchFeedback({
         <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800 }}>{canonical}</span>
       </div>
       <div style={{ fontSize: 12, color: '#888' }}>
-        You answered: <em>{typed}</em>
+        You answered: <em>{userAnswer}</em>
       </div>
     </div>
   );
@@ -546,6 +578,12 @@ interface CardReviewerProps {
   onRate: (rating: Rating) => Promise<CardState>;
   /** Called after the next-due message has been displayed. Advances the queue. */
   onAdvance: (cardId: string) => void;
+  /**
+   * Full card pool — only consulted for MCQ kinds, where it provides the
+   * distractor source. Defaults to an empty array; MCQ kinds with an empty
+   * pool degrade to a single-option ("correct only") card.
+   */
+  cardPool?: ReadonlyArray<ReviewCard>;
 }
 
 /** Map a typed-answer match result to the appropriate FSRS rating. */
@@ -585,25 +623,70 @@ function cardAcceptsEmptyInput(card: ReviewCard): boolean {
   return [card.answer, ...acceptable].some(a => normalizeAnswer(a) === '');
 }
 
-function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElement {
+/**
+ * Build an MCQ option list for a card: the correct answer plus distractors
+ * pulled from other cards of the same kind. Both the distractor pick and the
+ * final option order are seeded by `cardId`, so options are stable while a
+ * user looks at the card but vary across cards. Distractors are deduped by
+ * canonical answer text and exclude the current card's answer.
+ *
+ * If the pool is too small to provide `optionCount - 1` unique distractors,
+ * returns whatever options it can. No placeholder padding.
+ */
+export function getMcqOptions(
+  card: ReviewCard,
+  pool: ReadonlyArray<ReviewCard>,
+  optionCount: number,
+): string[] {
+  const seen = new Set<string>([card.answer]);
+  const distractors: string[] = [];
+  for (const other of pool) {
+    if (other.kind !== card.kind) continue;
+    if (other.cardId === card.cardId) continue;
+    if (seen.has(other.answer)) continue;
+    seen.add(other.answer);
+    distractors.push(other.answer);
+  }
+  const seed = stringHash(card.cardId);
+  const picked = seededShuffle(distractors, seed).slice(0, optionCount - 1);
+  // Use a different seed (any deterministic offset distinct from `seed`) so
+  // the final option order isn't just "correct first, then distractors in
+  // their picked order" — the second shuffle interleaves them.
+  return seededShuffle([card.answer, ...picked], seed + 1);
+}
+
+function CardReviewer({
+  card,
+  onRate,
+  onAdvance,
+  cardPool = [],
+}: CardReviewerProps): ReactElement {
   // For typing-eligible kinds the state machine has an extra phase:
   //   'awaiting-input' → 'shown-answer' → 'rated'
   // For self-rate-only kinds it collapses to:
   //   'awaiting-input' (= not revealed) → 'shown-answer' → 'rated'
   const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind);
+  const mcqEnabled = MCQ_KINDS.has(card.kind);
   // True for cards where leaving the input blank is itself a valid correct answer
   // (guide 19 'none' bucket: canonical '∅', acceptableAnswers includes '').
   const acceptsEmpty = cardAcceptsEmptyInput(card);
 
+  // MCQ options — recomputed only when the card changes.
+  const mcqOptions = useMemo(
+    () => (mcqEnabled ? getMcqOptions(card, cardPool, MCQ_OPTION_COUNT) : []),
+    [mcqEnabled, card, cardPool],
+  );
+
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
-  const [typedAnswer, setTypedAnswer] = useState<string>('');
+  const [userAnswer, setUserAnswer] = useState<string>('');
   const [matchResult, setMatchResult] = useState<AnswerMatch | null>(null);
   const [nextDue, setNextDue] = useState<string | null>(null);
 
   // Refs for auto-focus management
   const inputRef = useRef<HTMLInputElement>(null);
   const continueButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMcqOptionRef = useRef<HTMLButtonElement>(null);
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
@@ -643,21 +726,25 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     }
   }, [typingEnabled, reviewerState]);
 
-  // After a typed submit, focus the Continue button
+  // Auto-focus the first option when an MCQ card first appears, so keyboard
+  // users land on something actionable instead of having to Tab through chrome.
+  useEffect(() => {
+    if (mcqEnabled && reviewerState === 'awaiting-input') {
+      firstMcqOptionRef.current?.focus();
+    }
+  }, [mcqEnabled, reviewerState]);
+
+  // After a typed submit or MCQ option click, focus the Continue button so
+  // the user can advance with Enter / Space.
   useEffect(() => {
     if (reviewerState === 'shown-answer' && matchResult !== null) {
       continueButtonRef.current?.focus();
     }
   }, [reviewerState, matchResult]);
 
-  // Reset all state when the card changes
-  useEffect(() => {
-    setReviewerState('awaiting-input');
-    setTypedAnswer('');
-    setMatchResult(null);
-    setNextDue(null);
-    autoPlayedRef.current = false;
-  }, [card.cardId]);
+  // State resets on card change via `key={card.cardId}` on this component
+  // in the Practice parent — full unmount/remount returns useState to
+  // initial values, so no manual reset effect is needed here.
 
   // Shared persistence + optional auto-advance for both rating paths.
   // Calls onRate, shows the next-due message, and (if autoAdvance) schedules
@@ -693,8 +780,9 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     [reviewerState, persistAndMaybeAdvance],
   );
 
-  // Whether a typed submit has already been persisted (prevents double-submit).
-  const typedRatedRef = useRef(false);
+  // Whether a typed submit or MCQ option click has already been persisted —
+  // prevents double-submit on either input path.
+  const submittedRef = useRef(false);
 
   // Typed-answer path. Auto-rates based on match quality:
   //   correct → Good, close → Hard, incorrect → Again
@@ -704,17 +792,38 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
   const handleSubmitTyped = useCallback(() => {
     // Allow submit on empty input only if the card explicitly accepts empty
     // (guide 19 'none' bucket). For all other cards, require non-empty input.
-    if (!typedAnswer.trim() && !acceptsEmpty) return;
-    if (typedRatedRef.current) return; // prevent double-submit
-    typedRatedRef.current = true;
+    if (!userAnswer.trim() && !acceptsEmpty) return;
+    if (submittedRef.current) return; // prevent double-submit
+    submittedRef.current = true;
 
     const acceptable = deriveAcceptable(card);
-    const result = checkAnswer(typedAnswer, card.answer, acceptable);
+    const result = checkAnswer(userAnswer, card.answer, acceptable);
     setMatchResult(result);
     setReviewerState('shown-answer');
 
     void persistAndMaybeAdvance(matchToRating(result), result !== 'incorrect');
-  }, [typedAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
+  }, [userAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
+
+  // MCQ option click handler. Same auto-advance rules as typed input:
+  // correct → Good + auto-advance; incorrect → Again + wait for Continue.
+  const handleMcqSelect = useCallback(
+    (option: string) => {
+      if (submittedRef.current) return;
+      submittedRef.current = true;
+
+      const acceptable = deriveAcceptable(card);
+      const isCorrect = option === card.answer || acceptable.includes(option);
+      const result: AnswerMatch = isCorrect ? 'correct' : 'incorrect';
+      // Record the user's pick so MatchFeedback can show it under the
+      // canonical answer (same surface the typed-input path uses).
+      setUserAnswer(option);
+      setMatchResult(result);
+      setReviewerState('shown-answer');
+
+      void persistAndMaybeAdvance(isCorrect ? Rating.Good : Rating.Again, isCorrect);
+    },
+    [card, persistAndMaybeAdvance],
+  );
 
   // Continue handler for the typed-answer path:
   // - Cancels any pending auto-advance timer (correct/close: user skips 800ms wait).
@@ -775,11 +884,11 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
               <input
                 ref={inputRef}
                 type="text"
-                value={typedAnswer}
-                onChange={e => setTypedAnswer(e.target.value)}
+                value={userAnswer}
+                onChange={e => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your answer in Spanish"
-                aria-label="Type your answer in Spanish"
+                placeholder={placeholderFor(card.kind)}
+                aria-label={placeholderFor(card.kind)}
                 style={{
                   flex: 1,
                   padding: '12px 16px',
@@ -793,16 +902,16 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
               />
               <button
                 onClick={handleSubmitTyped}
-                disabled={!typedAnswer.trim() && !acceptsEmpty}
+                disabled={!userAnswer.trim() && !acceptsEmpty}
                 style={{
-                  background: (typedAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
+                  background: (userAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 12,
                   padding: '12px 20px',
                   fontSize: 15,
                   fontWeight: 700,
-                  cursor: (typedAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
+                  cursor: (userAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                   flexShrink: 0,
                   transition: 'background 0.15s',
@@ -826,6 +935,61 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                 }}
                 aria-label="Show answer without typing"
+              >
+                Show Answer
+              </button>
+            </div>
+          </div>
+        ) : mcqEnabled ? (
+          /* Multiple-choice path (e.g. idiom-meaning, where many English
+             phrasings of the same concept are all reasonable answers) */
+          <div role="group" aria-label="Choose the correct meaning">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {mcqOptions.map((option, i) => (
+                <button
+                  key={option}
+                  ref={i === 0 ? firstMcqOptionRef : undefined}
+                  onClick={() => handleMcqSelect(option)}
+                  style={{
+                    background: '#fff',
+                    color: '#1a1a1a',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: 12,
+                    padding: '14px 20px',
+                    fontSize: 16,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    fontFamily: 'Georgia, serif',
+                    textAlign: 'center',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = SPANISH_RED;
+                    e.currentTarget.style.background = ACCENT_LIGHT;
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = '#e0e0e0';
+                    e.currentTarget.style.background = '#fff';
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 14 }}>
+              <button
+                onClick={handleShowAnswer}
+                style={{
+                  background: 'none',
+                  border: '1px solid #ddd',
+                  borderRadius: 8,
+                  padding: '6px 16px',
+                  fontSize: 13,
+                  color: '#888',
+                  cursor: 'pointer',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                }}
+                aria-label="Show answer without choosing"
               >
                 Show Answer
               </button>
@@ -874,7 +1038,7 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
             <MatchFeedback
               result={matchResult}
               canonical={card.answer}
-              typed={typedAnswer}
+              userAnswer={userAnswer}
             />
           )}
 
@@ -1111,6 +1275,7 @@ export function Practice({
             card={currentCard}
             onRate={handleRate}
             onAdvance={handleAdvance}
+            cardPool={allCards}
           />
         )}
       </main>

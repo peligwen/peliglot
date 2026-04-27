@@ -9,7 +9,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { Practice } from './index';
+import {
+  Practice,
+  placeholderFor,
+  getMcqOptions,
+  TYPING_ENABLED_KINDS,
+  MCQ_KINDS,
+  ENGLISH_ANSWER_KINDS,
+} from './index';
 import { StubRemoteAdapter } from '../../../mastery/adapters/stubRemote';
 import type { ReviewCard } from '../../../mastery/cards';
 
@@ -47,6 +54,58 @@ const mockNounGenderCard: ReviewCard = {
   answer: 'el (masculine)',
   speakText: 'libro',
 };
+
+// MCQ fixture pool — 5 idiom cards so getMcqOptions has enough distractors
+// to fill 4 options (1 correct + 3 distractors).
+const mockIdiomCards: ReviewCard[] = [
+  {
+    cardId: 'spanish-32-tener-calor',
+    guideId: 32,
+    guideSlug: 'spanish',
+    kind: 'idiom-meaning',
+    prompt: { kind: 'idiom-meaning', idiom: 'tener calor', literal: 'to have heat' },
+    answer: 'to be hot',
+    speakText: 'tener calor',
+  },
+  {
+    cardId: 'spanish-32-tener-hambre',
+    guideId: 32,
+    guideSlug: 'spanish',
+    kind: 'idiom-meaning',
+    prompt: { kind: 'idiom-meaning', idiom: 'tener hambre', literal: 'to have hunger' },
+    answer: 'to be hungry',
+    speakText: 'tener hambre',
+  },
+  {
+    cardId: 'spanish-32-tener-sed',
+    guideId: 32,
+    guideSlug: 'spanish',
+    kind: 'idiom-meaning',
+    prompt: { kind: 'idiom-meaning', idiom: 'tener sed', literal: 'to have thirst' },
+    answer: 'to be thirsty',
+    speakText: 'tener sed',
+  },
+  {
+    cardId: 'spanish-32-tener-sueno',
+    guideId: 32,
+    guideSlug: 'spanish',
+    kind: 'idiom-meaning',
+    prompt: { kind: 'idiom-meaning', idiom: 'tener sueño', literal: 'to have sleep' },
+    answer: 'to be sleepy',
+    speakText: 'tener sueño',
+  },
+  {
+    cardId: 'spanish-32-tener-prisa',
+    guideId: 32,
+    guideSlug: 'spanish',
+    kind: 'idiom-meaning',
+    prompt: { kind: 'idiom-meaning', idiom: 'tener prisa', literal: 'to have hurry' },
+    answer: 'to be in a hurry',
+    speakText: 'tener prisa',
+  },
+];
+
+const firstIdiomCard = mockIdiomCards[0]!;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -532,5 +591,296 @@ describe('Practice surface', () => {
     await waitFor(() => {
       expect(screen.getByLabelText(/xp today/i)).toBeInTheDocument();
     }, { timeout: 2000 });
+  });
+
+  // -------------------------------------------------------------------------
+  // MCQ flow — idiom-meaning
+  //
+  // Idioms have many valid English phrasings, so the surface presents 4
+  // options instead of typed input. Distractors are pulled from other idiom
+  // cards in the pool. With 5 mock idioms in the pool, we always have enough
+  // to fill 4 options.
+  // -------------------------------------------------------------------------
+
+  it('auto-focuses the first MCQ option so keyboard users land on something actionable', async () => {
+    renderPractice(adapter, mockIdiomCards);
+    await waitFor(() =>
+      expect(screen.getByRole('group', { name: /choose the correct meaning/i })).toBeInTheDocument()
+    );
+    const optionButtons = screen.getAllByRole('button').filter(b => {
+      const txt = (b.textContent || '').trim();
+      return mockIdiomCards.some(c => c.answer === txt);
+    });
+    expect(optionButtons.length).toBeGreaterThan(0);
+    expect(document.activeElement).toBe(optionButtons[0]);
+  });
+
+  it('renders 4 option buttons (not a textbox) for idiom-meaning cards', async () => {
+    renderPractice(adapter, [firstIdiomCard, ...mockIdiomCards.slice(1)]);
+    await waitFor(() => expect(screen.getByText(/idiom/i)).toBeInTheDocument());
+
+    // No textbox / Submit
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /submit answer/i })).not.toBeInTheDocument();
+
+    // Option group is present
+    expect(screen.getByRole('group', { name: /choose the correct meaning/i })).toBeInTheDocument();
+    // The correct answer appears as one of the options
+    expect(screen.getByRole('button', { name: 'to be hot' })).toBeInTheDocument();
+  });
+
+  it('clicking the correct MCQ option shows correct feedback + Continue and persists Good', async () => {
+    renderPractice(adapter, mockIdiomCards);
+
+    // Wait for the first idiom card (whichever shuffles first) — the Show
+    // Answer escape-hatch label disambiguates the MCQ surface from rating UI.
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /show answer without choosing/i })).toBeInTheDocument()
+    );
+    // Determine which idiom rendered first via the prompt text
+    // Detect which idiom rendered first by literal substring match — avoids
+    // regex hazards when an idiom contains regex metacharacters (e.g. ".") or
+    // is empty.
+    const shownIdiom = mockIdiomCards.find(c =>
+      c.prompt.kind === 'idiom-meaning' && screen.queryByText(c.prompt.idiom) !== null
+    );
+    expect(shownIdiom).toBeDefined();
+
+    fireEvent.click(screen.getByRole('button', { name: shownIdiom!.answer }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    // No rating buttons in MCQ path
+    expect(screen.queryByRole('button', { name: /^good$/i })).not.toBeInTheDocument();
+
+    // Good rating persists — schedules well into the future
+    await waitFor(() => {
+      const persisted = adapter.peek(shownIdiom!.cardId);
+      expect(persisted).toBeDefined();
+      expect(persisted?.due).toBeGreaterThan(Date.now() + 60_000);
+    });
+  });
+
+  it('clicking a distractor shows incorrect feedback and persists Again', async () => {
+    renderPractice(adapter, mockIdiomCards);
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /show answer without choosing/i })).toBeInTheDocument()
+    );
+    // Detect which idiom rendered first by literal substring match — avoids
+    // regex hazards when an idiom contains regex metacharacters (e.g. ".") or
+    // is empty.
+    const shownIdiom = mockIdiomCards.find(c =>
+      c.prompt.kind === 'idiom-meaning' && screen.queryByText(c.prompt.idiom) !== null
+    );
+    expect(shownIdiom).toBeDefined();
+
+    // Pick any rendered option button whose label is NOT the correct answer.
+    // Iterating the actual on-screen options avoids the failure mode where
+    // a "wrong card" is chosen but its answer isn't among the picked distractors.
+    const allCandidates = mockIdiomCards
+      .filter(c => c.answer !== shownIdiom!.answer)
+      .map(c => screen.queryByRole('button', { name: c.answer }))
+      .filter((btn): btn is HTMLElement => btn !== null);
+    expect(allCandidates.length).toBeGreaterThan(0);
+    fireEvent.click(allCandidates[0]!);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct answer/i);
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+
+    // Again rating persists — due very soon (≤ ~10 minutes)
+    await waitFor(() => {
+      const persisted = adapter.peek(shownIdiom!.cardId);
+      expect(persisted).toBeDefined();
+      expect(persisted?.due).toBeLessThan(Date.now() + 10 * 60_000 + 5000);
+    });
+  });
+
+  it('renders MCQ for false-cognate cards (no text input)', async () => {
+    const falseCognateCards: ReviewCard[] = [
+      'embarazada/pregnant',
+      'constipado/having a cold',
+      'molestar/to bother or annoy',
+      'éxito/success',
+      'asistir/to attend',
+    ].map((pair, i) => {
+      const [spanish, english] = pair.split('/');
+      return {
+        cardId: `spanish-25-fc-${i}`,
+        guideId: 25,
+        guideSlug: 'spanish',
+        kind: 'false-cognate',
+        prompt: { kind: 'false-cognate', spanish: spanish!, falseFriend: 'distractor' },
+        answer: english!,
+        speakText: spanish!,
+      };
+    });
+    renderPractice(adapter, falseCognateCards);
+    await waitFor(() =>
+      expect(screen.getByRole('group', { name: /choose the correct meaning/i })).toBeInTheDocument()
+    );
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /submit answer/i })).not.toBeInTheDocument();
+  });
+
+  it('renders MCQ for reflexive-meaning-change cards', async () => {
+    const reflexiveCards: ReviewCard[] = [
+      ['ir', 'to leave/go away'],
+      ['dormir', 'to fall asleep'],
+      ['poner', 'to put on / become'],
+      ['llevar', 'to take away / get along'],
+      ['parecer', 'to resemble'],
+    ].map(([base, m2], i) => ({
+      cardId: `spanish-31-rmc-${i}`,
+      guideId: 31,
+      guideSlug: 'spanish',
+      kind: 'reflexive-meaning-change',
+      prompt: {
+        kind: 'reflexive-meaning-change',
+        reflexive: `${base}se`,
+        baseVerb: base!,
+        baseMeaning: 'placeholder',
+      },
+      answer: m2!,
+      speakText: `${base}se`,
+    }));
+    renderPractice(adapter, reflexiveCards);
+    await waitFor(() =>
+      expect(screen.getByRole('group', { name: /choose the correct meaning/i })).toBeInTheDocument()
+    );
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Pure-helper tests (no React rendering)
+// ---------------------------------------------------------------------------
+
+describe('placeholderFor', () => {
+  it('returns the Spanish placeholder for typing-eligible Spanish-answer kinds', () => {
+    expect(placeholderFor('verb-conjugation')).toBe('Type your answer in Spanish');
+    expect(placeholderFor('noun-gender')).toBe('Type your answer in Spanish');
+    expect(placeholderFor('weather-expression')).toBe('Type your answer in Spanish');
+    expect(placeholderFor('number-spell')).toBe('Type your answer in Spanish');
+  });
+
+  // ENGLISH_ANSWER_KINDS is currently empty — all English-answer kinds are MCQ.
+  // This test documents the round-trip so a future English-answer typed kind
+  // can be added with confidence.
+  it('honours ENGLISH_ANSWER_KINDS membership', () => {
+    for (const k of ENGLISH_ANSWER_KINDS) {
+      expect(placeholderFor(k)).toBe('Type your answer in English');
+    }
+  });
+});
+
+describe('CardKind classification sets', () => {
+  it('TYPING_ENABLED_KINDS and MCQ_KINDS are disjoint', () => {
+    const overlap = [...TYPING_ENABLED_KINDS].filter(k => MCQ_KINDS.has(k));
+    expect(overlap).toEqual([]);
+  });
+
+  it('ENGLISH_ANSWER_KINDS does not overlap with MCQ_KINDS', () => {
+    // Cards in MCQ_KINDS don't show the typed input at all, so an English
+    // placeholder for them would be dead code.
+    const overlap = [...ENGLISH_ANSWER_KINDS].filter(k => MCQ_KINDS.has(k));
+    expect(overlap).toEqual([]);
+  });
+
+  it('all three "many-phrasings" kinds are in MCQ_KINDS', () => {
+    expect(MCQ_KINDS.has('idiom-meaning')).toBe(true);
+    expect(MCQ_KINDS.has('false-cognate')).toBe(true);
+    expect(MCQ_KINDS.has('reflexive-meaning-change')).toBe(true);
+    expect(TYPING_ENABLED_KINDS.has('idiom-meaning')).toBe(false);
+    expect(TYPING_ENABLED_KINDS.has('false-cognate')).toBe(false);
+    expect(TYPING_ENABLED_KINDS.has('reflexive-meaning-change')).toBe(false);
+  });
+});
+
+describe('getMcqOptions', () => {
+  const idiomPool: ReviewCard[] = [
+    {
+      cardId: 'spanish-32-tener-calor', guideId: 32, guideSlug: 'spanish', kind: 'idiom-meaning',
+      prompt: { kind: 'idiom-meaning', idiom: 'tener calor', literal: 'to have heat' },
+      answer: 'to be hot', speakText: 'tener calor',
+    },
+    {
+      cardId: 'spanish-32-tener-hambre', guideId: 32, guideSlug: 'spanish', kind: 'idiom-meaning',
+      prompt: { kind: 'idiom-meaning', idiom: 'tener hambre', literal: 'to have hunger' },
+      answer: 'to be hungry', speakText: 'tener hambre',
+    },
+    {
+      cardId: 'spanish-32-tener-sed', guideId: 32, guideSlug: 'spanish', kind: 'idiom-meaning',
+      prompt: { kind: 'idiom-meaning', idiom: 'tener sed', literal: 'to have thirst' },
+      answer: 'to be thirsty', speakText: 'tener sed',
+    },
+    {
+      cardId: 'spanish-32-tener-sueno', guideId: 32, guideSlug: 'spanish', kind: 'idiom-meaning',
+      prompt: { kind: 'idiom-meaning', idiom: 'tener sueño', literal: 'to have sleep' },
+      answer: 'to be sleepy', speakText: 'tener sueño',
+    },
+    // Different kind — should NOT show up as a distractor
+    {
+      cardId: 'spanish-other-1', guideId: 1, guideSlug: 'spanish', kind: 'noun-gender',
+      prompt: { kind: 'noun-gender', noun: 'libro', meaning: 'book' },
+      answer: 'el (masculine)', speakText: 'libro',
+    },
+  ];
+
+  it('returns optionCount options including the correct answer', () => {
+    const card = idiomPool[0]!;
+    const options = getMcqOptions(card, idiomPool, 4);
+    expect(options).toHaveLength(4);
+    expect(options).toContain(card.answer);
+  });
+
+  it('excludes distractors from other kinds', () => {
+    const card = idiomPool[0]!;
+    const options = getMcqOptions(card, idiomPool, 4);
+    expect(options).not.toContain('el (masculine)');
+  });
+
+  it('produces deterministic output for the same cardId and pool', () => {
+    const card = idiomPool[0]!;
+    const a = getMcqOptions(card, idiomPool, 4);
+    const b = getMcqOptions(card, idiomPool, 4);
+    expect(a).toEqual(b);
+  });
+
+  it('produces different option order for different cards', () => {
+    // With distinct cardIds, the seeded shuffle should diverge for at least
+    // one of these card pairs.
+    const a = getMcqOptions(idiomPool[0]!, idiomPool, 4);
+    const b = getMcqOptions(idiomPool[1]!, idiomPool, 4);
+    const c = getMcqOptions(idiomPool[2]!, idiomPool, 4);
+    const allEqual = JSON.stringify(a) === JSON.stringify(b) && JSON.stringify(b) === JSON.stringify(c);
+    expect(allEqual).toBe(false);
+  });
+
+  it('degrades gracefully when pool is too small for full distractor set', () => {
+    const tinyPool = [idiomPool[0]!, idiomPool[1]!];
+    const options = getMcqOptions(idiomPool[0]!, tinyPool, 4);
+    // 1 correct + 1 distractor = 2 options total
+    expect(options).toHaveLength(2);
+    expect(options).toContain('to be hot');
+    expect(options).toContain('to be hungry');
+  });
+
+  it('does not duplicate the correct answer if pool contains a card with the same answer', () => {
+    const dupPool: ReviewCard[] = [
+      idiomPool[0]!,
+      // Two cards with identical answer text (different cardIds)
+      { ...idiomPool[1]!, cardId: 'spanish-32-dup', answer: 'to be hot' },
+      idiomPool[2]!,
+      idiomPool[3]!,
+    ];
+    const options = getMcqOptions(idiomPool[0]!, dupPool, 4);
+    const occurrences = options.filter(o => o === 'to be hot').length;
+    expect(occurrences).toBe(1);
   });
 });
