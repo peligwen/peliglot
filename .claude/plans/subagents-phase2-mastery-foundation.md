@@ -188,13 +188,17 @@ jazz guitar). That decision happens when Phase 2d closes.
   - [x] 2a.3 — Card extractors for the 9 Spanish guides (247 cards)
   - [x] 2a.4 — Practice route + UI (47KB lazy chunk)
   - [x] 2a.5 — ARCHITECTURE.md, CLAUDE.md update, polish, PR
-- [x] Phase 2b: XP + recommendation surface + tester-feedback fixes — **PR open (phase-2b-xp-recommendation)**
+- [x] Phase 2b: XP + recommendation surface + tester-feedback fixes — **shipped via PR #20 (merge commit c0b2a29)**
   - [x] 2b.1 — Data layer (XP formula, recommendation function, hook extension, stub adapter symmetry)
-  - [x] 2b.2 — Tester-feedback bug fixes + UI integration + e2e + PR
-    - [x] Bug 1: ResumeToast covers footer when scrolled to bottom — dismiss on scroll
-    - [x] Bug 2: practice mode has no text input — per-kind typed-answer flow with self-rate fallback
-    - [x] XP indicator in practice header
-    - [x] Spanish landing card: context-aware recommendation CTA
+  - [x] 2b.2 — Bug 1 (ResumeToast scroll-dismiss) + Bug 2 (typed-answer flow) + XP header + landing recommendation CTA
+- [ ] Phase 2c: Spanish content build-out across remaining 24 guides — **in flight on phase-2c-content-buildout**
+  - **Audit complete:** 20 extract verdicts, 4 skip verdicts (guides 7, 15, 26, 33)
+  - **15 new CardKinds:** verb-spelling-change, verb-conjugation-tensed, gustar-pattern, por-vs-para, verb-prep-pair, question-word, negation-translate, comparative-irregular, number-spell, tu-vs-usted, false-cognate, weather-expression, imperative-tu, reflexive-meaning-change, idiom-meaning
+  - [ ] 2c.1 — Schema additions: 15 new CardKinds + PromptShapes + renderers + TYPING_ENABLED_KINDS
+  - [ ] 2c.2 — Verb-conjugation extractors: guides 5, 6, 8, 10, 28, 29, 30 (~274 cards)
+  - [ ] 2c.3 — Choice-discriminator extractors: guides 3, 18, 19, 20, 21, 22, 24, 25, 31 (~98 cards)
+  - [ ] 2c.4 — Phrase-translation extractors (16, 23, 27, 32) + LandingPage lazy-load polish + audit doc + PR (~83 cards)
+  - **Total: ~455 new cards across 17 newly-wired guides; ~702 cards in mastery pool**
 - [ ] Phase 2c: Spanish content build-out (gated on 2b + director go-ahead)
 - [ ] Phase 2d: Cloud + auth (gated on explicit director decision; deferred)
 - [ ] Phase 2e: Other-collection mastery decisions (Phase 3 boundary)
