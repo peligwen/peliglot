@@ -46,6 +46,8 @@ const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
   'letter-sound',
   'verb-conjugation',
   'verb-conjugation-stem-change',
+  'verb-conjugation-tensed',
+  'imperative-tu',
 ]);
 
 // Kinds that support typed-answer input as the primary interaction.
@@ -58,6 +60,22 @@ const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'noun-adj-agreement',
   'english-to-pronoun',
   'ser-vs-estar',
+  // Phase 2c additions — all 15 new kinds are typing-eligible
+  'verb-spelling-change',
+  'verb-conjugation-tensed',
+  'gustar-pattern',
+  'por-vs-para',
+  'verb-prep-pair',
+  'question-word',
+  'negation-translate',
+  'comparative-irregular',
+  'number-spell',
+  'tu-vs-usted',
+  'false-cognate',
+  'weather-expression',
+  'imperative-tu',
+  'reflexive-meaning-change',
+  'idiom-meaning',
 ]);
 
 // How long (ms) to display the "Next review: …" message before advancing
@@ -673,7 +691,7 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
           boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
         }}
       >
-        <PromptRenderer prompt={card.prompt} />
+        <PromptRenderer prompt={card.prompt} revealed={reviewerState !== 'awaiting-input'} />
 
         {/* Speaker button on prompt for letter-sound kind */}
         {KINDS_WITH_PROMPT_SPEAK.has(card.kind) && promptLetter && (

@@ -11,7 +11,7 @@
  */
 
 import type { ReactElement, CSSProperties } from 'react';
-import type { PromptShape } from '../../../mastery/cards';
+import type { PromptShape, TensedConjugationTense } from '../../../mastery/cards';
 
 // ---------------------------------------------------------------------------
 // Shared style constants
@@ -281,10 +281,407 @@ export function SerVsEstarRenderer({
 }
 
 // ---------------------------------------------------------------------------
-// Dispatch — single entry-point for the practice page
+// Phase 2c renderers
 // ---------------------------------------------------------------------------
 
-export function PromptRenderer({ prompt }: { prompt: PromptShape }): ReactElement {
+// Friendly display labels for TensedConjugationTense values.
+// Record<TensedConjugationTense, string> is exhaustive — TS will catch missing keys.
+const TENSE_LABELS: Record<TensedConjugationTense, string> = {
+  'preterite': 'Preterite',
+  'imperfect': 'Imperfect',
+  'future': 'Future',
+  'conditional': 'Conditional',
+  'present-perfect': 'Present perfect',
+  'pluperfect': 'Pluperfect',
+  'present-subjunctive': 'Present subjunctive',
+  'past-subjunctive': 'Past subjunctive',
+  'present-perfect-subjunctive': 'Present perfect subjunctive',
+};
+
+// ---------------------------------------------------------------------------
+// verb-spelling-change
+// ---------------------------------------------------------------------------
+
+export function VerbSpellingChangeRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'verb-spelling-change' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Spelling-change verb — conjugate</div>
+      <div style={{ fontSize: 40, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.infinitive}
+      </div>
+      {prompt.meaning && (
+        <div style={{ fontSize: 15, color: '#888', marginBottom: 12, fontStyle: 'italic' }}>
+          {prompt.meaning}
+        </div>
+      )}
+      <div style={{ display: 'inline-block', background: '#fce4ec', border: '1px solid #f48fb1', borderRadius: 10, padding: '6px 18px', fontSize: 14, color: '#880E4F', fontWeight: 600 }}>
+        target: {prompt.target}
+      </div>
+      <div style={{ ...CONTEXT_TEXT, fontSize: 12, marginTop: 10 }}>Spelling may change to preserve pronunciation</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// verb-conjugation-tensed
+// ---------------------------------------------------------------------------
+
+export function VerbConjugationTensedRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'verb-conjugation-tensed' }>;
+}): ReactElement {
+  const tenseLabel = TENSE_LABELS[prompt.tense] ?? prompt.tense;
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Conjugate — {tenseLabel}</div>
+      <div style={{ fontSize: 28, fontWeight: 700, color: '#1a1a1a', marginBottom: 4 }}>
+        {prompt.verb}
+      </div>
+      {prompt.meaning && (
+        <div style={{ fontSize: 15, color: '#888', marginBottom: 12, fontStyle: 'italic' }}>
+          {prompt.meaning}
+        </div>
+      )}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f3e5f5', borderRadius: 10, padding: '8px 20px', border: '1px solid #ce93d8' }}>
+        <span style={{ fontSize: 20, fontWeight: 700, color: '#6A1B9A' }}>{prompt.pronoun}</span>
+        <span style={{ fontSize: 22, color: '#bbb' }}>{'→ ?'}</span>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// gustar-pattern
+// ---------------------------------------------------------------------------
+
+export function GustarPatternRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'gustar-pattern' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Translate using <em>{prompt.verb}</em></div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.4, maxWidth: 340, margin: '0 auto 12px' }}>
+        {prompt.english}
+      </div>
+      <div style={CONTEXT_TEXT}>Use the gustar-pattern construction</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// por-vs-para
+// ---------------------------------------------------------------------------
+
+export function PorVsParaRenderer({
+  prompt,
+  revealed = false,
+}: {
+  prompt: Extract<PromptShape, { kind: 'por-vs-para' }>;
+  revealed?: boolean;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Por or para?</div>
+      <div style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.5, maxWidth: 340, margin: '0 auto 16px', fontStyle: 'italic' }}>
+        {prompt.sentence}
+      </div>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+        <div style={{ background: '#e8f5e9', borderRadius: 10, padding: '8px 24px', fontSize: 20, fontWeight: 700, color: '#2E7D32' }}>por</div>
+        <div style={{ background: '#e3f2fd', borderRadius: 10, padding: '8px 24px', fontSize: 20, fontWeight: 700, color: '#1565C0' }}>para</div>
+      </div>
+      {revealed && prompt.reason && (
+        <div style={{ ...CONTEXT_TEXT, marginTop: 14, fontStyle: 'italic', color: '#555', maxWidth: 320, margin: '14px auto 0' }}>
+          Why: {prompt.reason}
+        </div>
+      )}
+      {!revealed && <div style={{ ...CONTEXT_TEXT, fontSize: 12 }}>Think first, then show the answer</div>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// verb-prep-pair
+// ---------------------------------------------------------------------------
+
+export function VerbPrepPairRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'verb-prep-pair' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>What preposition?</div>
+      <div style={{ fontSize: 40, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.verb}
+      </div>
+      <div style={{ fontSize: 16, color: '#888', fontStyle: 'italic', marginBottom: 16 }}>
+        ({prompt.meaning})
+      </div>
+      <div style={{ fontSize: 22, color: '#bbb' }}>
+        {prompt.verb} ___ + infinitive?
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// question-word
+// ---------------------------------------------------------------------------
+
+export function QuestionWordRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'question-word' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Which question word?</div>
+      <div style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.5, maxWidth: 340, margin: '0 auto 8px' }}>
+        {prompt.sentence}
+      </div>
+      <div style={{ fontSize: 14, color: '#888', fontStyle: 'italic', marginBottom: 4 }}>
+        {prompt.englishMeaning}
+      </div>
+      <div style={CONTEXT_TEXT}>Fill in the blank</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// negation-translate
+// ---------------------------------------------------------------------------
+
+export function NegationTranslateRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'negation-translate' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Translate (negation)</div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.4, maxWidth: 340, margin: '0 auto 12px' }}>
+        {prompt.english}
+      </div>
+      <div style={CONTEXT_TEXT}>Use Spanish double-negative construction</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// comparative-irregular
+// ---------------------------------------------------------------------------
+
+export function ComparativeIrregularRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'comparative-irregular' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Comparative form?</div>
+      <div style={{ fontSize: 48, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.positive}
+      </div>
+      <div style={{ fontSize: 16, color: '#888', fontStyle: 'italic', marginBottom: 16 }}>
+        {prompt.meaning}
+      </div>
+      <div style={{ fontSize: 22, color: '#bbb' }}>{'→ comparative?'}</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// number-spell
+// ---------------------------------------------------------------------------
+
+export function NumberSpellRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'number-spell' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Spell in Spanish</div>
+      <div style={{ fontSize: 80, fontWeight: 800, color: '#1a1a1a', lineHeight: 1.1, fontFamily: 'Georgia, serif', margin: '0 0 12px' }}>
+        {prompt.numeric}
+      </div>
+      <div style={CONTEXT_TEXT}>Write the number in Spanish words</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// tu-vs-usted
+// ---------------------------------------------------------------------------
+
+export function TuVsUstedRenderer({
+  prompt,
+  revealed = false,
+}: {
+  prompt: Extract<PromptShape, { kind: 'tu-vs-usted' }>;
+  revealed?: boolean;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Tú or usted?</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.5, maxWidth: 340, margin: '0 auto 16px' }}>
+        {prompt.situation}
+      </div>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+        <div style={{ background: '#e3f2fd', borderRadius: 10, padding: '8px 24px', fontSize: 20, fontWeight: 700, color: '#1565C0' }}>tú</div>
+        <div style={{ background: '#fce4ec', borderRadius: 10, padding: '8px 24px', fontSize: 20, fontWeight: 700, color: '#AD1457' }}>usted</div>
+      </div>
+      {revealed && prompt.reason && (
+        <div style={{ ...CONTEXT_TEXT, marginTop: 14, fontStyle: 'italic', color: '#555', maxWidth: 320, margin: '14px auto 0' }}>
+          Why: {prompt.reason}
+        </div>
+      )}
+      {!revealed && <div style={{ ...CONTEXT_TEXT, fontSize: 12 }}>Think first, then show the answer</div>}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// false-cognate
+// ---------------------------------------------------------------------------
+
+export function FalseCognateRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'false-cognate' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Actual meaning?</div>
+      <div style={{ fontSize: 48, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.spanish}
+      </div>
+      <div style={{ display: 'inline-block', background: '#fff3e0', border: '1px solid #ffcc80', borderRadius: 8, padding: '4px 14px', fontSize: 13, color: '#E65100', fontWeight: 600, marginBottom: 12 }}>
+        False friend: <em>{prompt.falseFriend}</em>
+      </div>
+      <div style={CONTEXT_TEXT}>What does this Spanish word actually mean?</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// weather-expression
+// ---------------------------------------------------------------------------
+
+export function WeatherExpressionRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'weather-expression' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Spanish?</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 12 }}>
+        <span style={{ fontSize: 56 }}>{prompt.icon}</span>
+        <span style={{ fontSize: 24, fontWeight: 700, color: '#1a1a1a' }}>{prompt.english}</span>
+      </div>
+      <div style={CONTEXT_TEXT}>How do you say this weather expression in Spanish?</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// imperative-tu
+// ---------------------------------------------------------------------------
+
+export function ImperativeTuRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'imperative-tu' }>;
+}): ReactElement {
+  const polarityLabel = prompt.polarity === 'negative' ? 'Negative command' : 'Affirmative command';
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Tú command — {polarityLabel}</div>
+      <div style={{ fontSize: 40, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.verb}
+      </div>
+      {prompt.meaning && (
+        <div style={{ fontSize: 15, color: '#888', fontStyle: 'italic', marginBottom: 12 }}>
+          {prompt.meaning}
+        </div>
+      )}
+      {prompt.polarity === 'negative' && (
+        <div style={{ display: 'inline-block', background: '#ffebee', border: '1px solid #ef9a9a', borderRadius: 8, padding: '4px 14px', fontSize: 13, color: '#B71C1C', fontWeight: 600 }}>
+          negative — include "no"
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// reflexive-meaning-change
+// ---------------------------------------------------------------------------
+
+export function ReflexiveMeaningChangeRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'reflexive-meaning-change' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Reflexive meaning?</div>
+      <div style={{ fontSize: 40, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif' }}>
+        {prompt.reflexive}
+      </div>
+      <div style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>
+        Base: <strong style={{ color: '#555' }}>{prompt.baseVerb}</strong> = {prompt.baseMeaning}
+      </div>
+      <div style={{ fontSize: 22, color: '#bbb' }}>→ reflexive meaning in English?</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// idiom-meaning
+// ---------------------------------------------------------------------------
+
+export function IdiomMeaningRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'idiom-meaning' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Actual meaning?</div>
+      <div style={{ fontSize: 32, fontWeight: 800, color: '#1a1a1a', marginBottom: 4, fontFamily: 'Georgia, serif', lineHeight: 1.3, maxWidth: 340, margin: '0 auto 4px' }}>
+        {prompt.idiom}
+      </div>
+      <div style={{ fontSize: 13, color: '#888', fontStyle: 'italic', marginBottom: 12 }}>
+        (literally: {prompt.literal})
+      </div>
+      <div style={CONTEXT_TEXT}>What does this idiom actually mean?</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Dispatch — single entry-point for the practice page
+//
+// `revealed` is passed through to the two kinds whose display changes after
+// the answer is shown (por-vs-para reason, tu-vs-usted reason).
+// ---------------------------------------------------------------------------
+
+export function PromptRenderer({
+  prompt,
+  revealed = false,
+}: {
+  prompt: PromptShape;
+  revealed?: boolean;
+}): ReactElement {
   switch (prompt.kind) {
     case 'letter-sound':
       return <LetterSoundRenderer prompt={prompt} />;
@@ -304,5 +701,36 @@ export function PromptRenderer({ prompt }: { prompt: PromptShape }): ReactElemen
       return <EnglishToPronounRenderer prompt={prompt} />;
     case 'ser-vs-estar':
       return <SerVsEstarRenderer prompt={prompt} />;
+    // Phase 2c additions
+    case 'verb-spelling-change':
+      return <VerbSpellingChangeRenderer prompt={prompt} />;
+    case 'verb-conjugation-tensed':
+      return <VerbConjugationTensedRenderer prompt={prompt} />;
+    case 'gustar-pattern':
+      return <GustarPatternRenderer prompt={prompt} />;
+    case 'por-vs-para':
+      return <PorVsParaRenderer prompt={prompt} revealed={revealed} />;
+    case 'verb-prep-pair':
+      return <VerbPrepPairRenderer prompt={prompt} />;
+    case 'question-word':
+      return <QuestionWordRenderer prompt={prompt} />;
+    case 'negation-translate':
+      return <NegationTranslateRenderer prompt={prompt} />;
+    case 'comparative-irregular':
+      return <ComparativeIrregularRenderer prompt={prompt} />;
+    case 'number-spell':
+      return <NumberSpellRenderer prompt={prompt} />;
+    case 'tu-vs-usted':
+      return <TuVsUstedRenderer prompt={prompt} revealed={revealed} />;
+    case 'false-cognate':
+      return <FalseCognateRenderer prompt={prompt} />;
+    case 'weather-expression':
+      return <WeatherExpressionRenderer prompt={prompt} />;
+    case 'imperative-tu':
+      return <ImperativeTuRenderer prompt={prompt} />;
+    case 'reflexive-meaning-change':
+      return <ReflexiveMeaningChangeRenderer prompt={prompt} />;
+    case 'idiom-meaning':
+      return <IdiomMeaningRenderer prompt={prompt} />;
   }
 }
