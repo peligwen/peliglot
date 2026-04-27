@@ -602,6 +602,19 @@ describe('Practice surface', () => {
   // to fill 4 options.
   // -------------------------------------------------------------------------
 
+  it('auto-focuses the first MCQ option so keyboard users land on something actionable', async () => {
+    renderPractice(adapter, mockIdiomCards);
+    await waitFor(() =>
+      expect(screen.getByRole('group', { name: /choose the correct meaning/i })).toBeInTheDocument()
+    );
+    const optionButtons = screen.getAllByRole('button').filter(b => {
+      const txt = (b.textContent || '').trim();
+      return mockIdiomCards.some(c => c.answer === txt);
+    });
+    expect(optionButtons.length).toBeGreaterThan(0);
+    expect(document.activeElement).toBe(optionButtons[0]);
+  });
+
   it('renders 4 option buttons (not a textbox) for idiom-meaning cards', async () => {
     renderPractice(adapter, [firstIdiomCard, ...mockIdiomCards.slice(1)]);
     await waitFor(() => expect(screen.getByText(/idiom/i)).toBeInTheDocument());
@@ -625,8 +638,11 @@ describe('Practice surface', () => {
       expect(screen.getByRole('button', { name: /show answer without choosing/i })).toBeInTheDocument()
     );
     // Determine which idiom rendered first via the prompt text
+    // Detect which idiom rendered first by literal substring match — avoids
+    // regex hazards when an idiom contains regex metacharacters (e.g. ".") or
+    // is empty.
     const shownIdiom = mockIdiomCards.find(c =>
-      screen.queryByText(new RegExp(c.prompt.kind === 'idiom-meaning' ? c.prompt.idiom : '', 'i'))
+      c.prompt.kind === 'idiom-meaning' && screen.queryByText(c.prompt.idiom) !== null
     );
     expect(shownIdiom).toBeDefined();
 
@@ -653,8 +669,11 @@ describe('Practice surface', () => {
     await waitFor(() =>
       expect(screen.getByRole('button', { name: /show answer without choosing/i })).toBeInTheDocument()
     );
+    // Detect which idiom rendered first by literal substring match — avoids
+    // regex hazards when an idiom contains regex metacharacters (e.g. ".") or
+    // is empty.
     const shownIdiom = mockIdiomCards.find(c =>
-      screen.queryByText(new RegExp(c.prompt.kind === 'idiom-meaning' ? c.prompt.idiom : '', 'i'))
+      c.prompt.kind === 'idiom-meaning' && screen.queryByText(c.prompt.idiom) !== null
     );
     expect(shownIdiom).toBeDefined();
 

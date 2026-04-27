@@ -28,9 +28,6 @@ test-results/
 /playwright/.cache/
 .playwright-mcp/
 
-# Local browser-walk screenshots (Playwright MCP visual verification artifacts)
-mcq-*.png
-
 # Generated OG card images (regenerated at build time via prebuild script)
 # `git clone && npm ci && npm run build` produces all cards hermetically.
 /public/og/

@@ -495,11 +495,11 @@ function EmptyState({
 function MatchFeedback({
   result,
   canonical,
-  typed,
+  userAnswer,
 }: {
   result: AnswerMatch;
   canonical: string;
-  typed: string;
+  userAnswer: string;
 }): ReactElement {
   if (result === 'correct') {
     return (
@@ -558,7 +558,7 @@ function MatchFeedback({
         <span style={{ fontFamily: 'Georgia, serif', fontWeight: 800 }}>{canonical}</span>
       </div>
       <div style={{ fontSize: 12, color: '#888' }}>
-        You answered: <em>{typed}</em>
+        You answered: <em>{userAnswer}</em>
       </div>
     </div>
   );
@@ -649,7 +649,9 @@ export function getMcqOptions(
   }
   const seed = stringHash(card.cardId);
   const picked = seededShuffle(distractors, seed).slice(0, optionCount - 1);
-  // +1 so option order isn't identical to distractor order.
+  // Use a different seed (any deterministic offset distinct from `seed`) so
+  // the final option order isn't just "correct first, then distractors in
+  // their picked order" — the second shuffle interleaves them.
   return seededShuffle([card.answer, ...picked], seed + 1);
 }
 
@@ -677,13 +679,14 @@ function CardReviewer({
 
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
-  const [typedAnswer, setTypedAnswer] = useState<string>('');
+  const [userAnswer, setUserAnswer] = useState<string>('');
   const [matchResult, setMatchResult] = useState<AnswerMatch | null>(null);
   const [nextDue, setNextDue] = useState<string | null>(null);
 
   // Refs for auto-focus management
   const inputRef = useRef<HTMLInputElement>(null);
   const continueButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMcqOptionRef = useRef<HTMLButtonElement>(null);
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
@@ -723,21 +726,25 @@ function CardReviewer({
     }
   }, [typingEnabled, reviewerState]);
 
-  // After a typed submit, focus the Continue button
+  // Auto-focus the first option when an MCQ card first appears, so keyboard
+  // users land on something actionable instead of having to Tab through chrome.
+  useEffect(() => {
+    if (mcqEnabled && reviewerState === 'awaiting-input') {
+      firstMcqOptionRef.current?.focus();
+    }
+  }, [mcqEnabled, reviewerState]);
+
+  // After a typed submit or MCQ option click, focus the Continue button so
+  // the user can advance with Enter / Space.
   useEffect(() => {
     if (reviewerState === 'shown-answer' && matchResult !== null) {
       continueButtonRef.current?.focus();
     }
   }, [reviewerState, matchResult]);
 
-  // Reset all state when the card changes
-  useEffect(() => {
-    setReviewerState('awaiting-input');
-    setTypedAnswer('');
-    setMatchResult(null);
-    setNextDue(null);
-    autoPlayedRef.current = false;
-  }, [card.cardId]);
+  // State resets on card change via `key={card.cardId}` on this component
+  // in the Practice parent — full unmount/remount returns useState to
+  // initial values, so no manual reset effect is needed here.
 
   // Shared persistence + optional auto-advance for both rating paths.
   // Calls onRate, shows the next-due message, and (if autoAdvance) schedules
@@ -785,17 +792,17 @@ function CardReviewer({
   const handleSubmitTyped = useCallback(() => {
     // Allow submit on empty input only if the card explicitly accepts empty
     // (guide 19 'none' bucket). For all other cards, require non-empty input.
-    if (!typedAnswer.trim() && !acceptsEmpty) return;
+    if (!userAnswer.trim() && !acceptsEmpty) return;
     if (submittedRef.current) return; // prevent double-submit
     submittedRef.current = true;
 
     const acceptable = deriveAcceptable(card);
-    const result = checkAnswer(typedAnswer, card.answer, acceptable);
+    const result = checkAnswer(userAnswer, card.answer, acceptable);
     setMatchResult(result);
     setReviewerState('shown-answer');
 
     void persistAndMaybeAdvance(matchToRating(result), result !== 'incorrect');
-  }, [typedAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
+  }, [userAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
 
   // MCQ option click handler. Same auto-advance rules as typed input:
   // correct → Good + auto-advance; incorrect → Again + wait for Continue.
@@ -807,9 +814,9 @@ function CardReviewer({
       const acceptable = deriveAcceptable(card);
       const isCorrect = option === card.answer || acceptable.includes(option);
       const result: AnswerMatch = isCorrect ? 'correct' : 'incorrect';
-      // Set typedAnswer so the existing MatchFeedback component can show the
-      // user's pick alongside the canonical answer.
-      setTypedAnswer(option);
+      // Record the user's pick so MatchFeedback can show it under the
+      // canonical answer (same surface the typed-input path uses).
+      setUserAnswer(option);
       setMatchResult(result);
       setReviewerState('shown-answer');
 
@@ -877,8 +884,8 @@ function CardReviewer({
               <input
                 ref={inputRef}
                 type="text"
-                value={typedAnswer}
-                onChange={e => setTypedAnswer(e.target.value)}
+                value={userAnswer}
+                onChange={e => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholderFor(card.kind)}
                 aria-label={placeholderFor(card.kind)}
@@ -895,16 +902,16 @@ function CardReviewer({
               />
               <button
                 onClick={handleSubmitTyped}
-                disabled={!typedAnswer.trim() && !acceptsEmpty}
+                disabled={!userAnswer.trim() && !acceptsEmpty}
                 style={{
-                  background: (typedAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
+                  background: (userAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 12,
                   padding: '12px 20px',
                   fontSize: 15,
                   fontWeight: 700,
-                  cursor: (typedAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
+                  cursor: (userAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                   flexShrink: 0,
                   transition: 'background 0.15s',
@@ -938,9 +945,10 @@ function CardReviewer({
              phrasings of the same concept are all reasonable answers) */
           <div role="group" aria-label="Choose the correct meaning">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {mcqOptions.map(option => (
+              {mcqOptions.map((option, i) => (
                 <button
                   key={option}
+                  ref={i === 0 ? firstMcqOptionRef : undefined}
                   onClick={() => handleMcqSelect(option)}
                   style={{
                     background: '#fff',
@@ -1030,7 +1038,7 @@ function CardReviewer({
             <MatchFeedback
               result={matchResult}
               canonical={card.answer}
-              typed={typedAnswer}
+              userAnswer={userAnswer}
             />
           )}
 
