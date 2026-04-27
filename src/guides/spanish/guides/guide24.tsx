@@ -2,28 +2,7 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
-
-const pairs=[
-  {ctx:"Greeting",inf:"¡Hola! ¿Qué onda?",for:"Buenos días. ¿Cómo está?"},
-  {ctx:"Asking name",inf:"¿Cómo te llamas?",for:"¿Cómo se llama usted?"},
-  {ctx:"Requesting",inf:"Pásame la sal.",for:"¿Me podría pasar la sal?"},
-  {ctx:"Commands",inf:"¡Siéntate!",for:"Siéntese, por favor."},
-  {ctx:"Goodbye",inf:"¡Nos vemos!",for:"Fue un placer. Que le vaya bien."},
-  {ctx:"Doctor's office",inf:"—",for:"¿Cómo se siente hoy?"},
-  {ctx:"Friend's parent",inf:"—",for:"Mucho gusto, señora."},
-  {ctx:"Store clerk",inf:"—",for:"Disculpe, ¿cuánto cuesta esto?"},
-];
-
-const scenarios=[
-  {sit:"Your best friend",answer:"tú",why:"Close personal relationship → always tú."},
-  {sit:"A police officer",answer:"usted",why:"Authority figure → usted shows respect."},
-  {sit:"Your professor",answer:"usted",why:"Formal setting → usted until they say otherwise."},
-  {sit:"A child you just met",answer:"tú",why:"Children are always addressed as tú."},
-  {sit:"A job interview",answer:"usted",why:"Professional/formal → usted is expected."},
-  {sit:"Your coworker (same age)",answer:"tú",why:"Peers often use tú, but follow their lead."},
-  {sit:"An elderly stranger",answer:"usted",why:"Age difference + stranger → usted."},
-  {sit:"A waiter at a casual restaurant",answer:"usted",why:"Service context → usted is standard in most Latin American countries; in Spain, tú is common in casual venues."},
-];
+import { pairs, scenarios } from './data24';
 
 export function Guide24(){
   const [mode,setMode]=useState("learn");
