@@ -3,8 +3,8 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
 import { pronouns6 } from './_helpers';
-
-const haberForms={pp:{l:"Presente Perfecto",f:["he","has","ha","hemos","habéis","han"],c:"#1B5E20",freq:"★★★"},plup:{l:"Pluscuamperfecto",f:["había","habías","había","habíamos","habíais","habían"],c:"#4A148C",freq:"★★★"},futP:{l:"Futuro Perfecto",f:["habré","habrás","habrá","habremos","habréis","habrán"],c:"#E65100",freq:"★☆☆"},condP:{l:"Condicional Perfecto",f:["habría","habrías","habría","habríamos","habríais","habrían"],c:"#01579B",freq:"★☆☆"},ppS:{l:"Perfecto Subjuntivo",f:["haya","hayas","haya","hayamos","hayáis","hayan"],c:"#880E4F",freq:"★★☆"},plupS:{l:"Pluscuamp. Subj.",f:["hubiera","hubieras","hubiera","hubiéramos","hubierais","hubieran"],c:"#3E2723",freq:"★★☆"}};
+import { haberForms } from './data8';
+import type { PerfectKey } from './data8';
 
 const perfectUses={
   pp:{use:"Actions with present relevance",ex:"He viajado a España.",en:"I have traveled to Spain.",tip:"Like English present perfect. Often with ya, todavía, nunca, alguna vez."},
@@ -16,7 +16,6 @@ const perfectUses={
 };
 
 export function Guide8(){
-  type PerfectKey = keyof typeof haberForms;
   const [at,setAt]=useState<PerfectKey>("pp");const t=haberForms[at];const u=perfectUses[at];
   return(<div>
     <DarkBox title="One Formula, Six Tenses"><div style={{fontSize:14}}>

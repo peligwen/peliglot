@@ -2,28 +2,7 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { QuizSection } from '../../../components/templates/QuizSection';
-
-const qWords=[
-  {w:"¿Qué?",m:"What?",ex:"¿Qué quieres? — What do you want?"},
-  {w:"¿Cuál(es)?",m:"Which?",ex:"¿Cuál es tu nombre? — What's your name?"},
-  {w:"¿Quién(es)?",m:"Who?",ex:"¿Quién llamó? — Who called?"},
-  {w:"¿Dónde?",m:"Where?",ex:"¿Dónde vives? — Where do you live?"},
-  {w:"¿Cuándo?",m:"When?",ex:"¿Cuándo llegas? — When do you arrive?"},
-  {w:"¿Cómo?",m:"How?",ex:"¿Cómo estás? — How are you?"},
-  {w:"¿Por qué?",m:"Why?",ex:"¿Por qué estudias español? — Why do you study Spanish?"},
-  {w:"¿Cuánto/a?",m:"How much/many?",ex:"¿Cuánto cuesta? — How much does it cost?"},
-];
-
-const quizItems=[
-  {question:"___ quieres comer? (What do you want to eat?)",answer:"Qué"},
-  {question:"___ es tu color favorito? (What is your favorite color?)",answer:"Cuál"},
-  {question:"___ vive aquí? (Who lives here?)",answer:"Quién"},
-  {question:"___ está el baño? (Where is the bathroom?)",answer:"Dónde"},
-  {question:"___ empieza la clase? (When does class start?)",answer:"Cuándo"},
-  {question:"___ se dice 'hello'? (How do you say 'hello'?)",answer:"Cómo"},
-  {question:"___ no viniste? (Why didn't you come?)",answer:"Por qué"},
-  {question:"___ cuesta esto? (How much does this cost?)",answer:"Cuánto"},
-];
+import { qWords, quizItems } from './data20';
 
 export function Guide20(){
   const [mode,setMode]=useState("learn");

@@ -3,9 +3,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { VerbTypeSelector, MiniTable, TriggerChips } from './_helpers';
 import type { VerbType } from './_helpers';
-
-const pretData={ar:{stem:"habl",endings:["é","aste","ó","amos","asteis","aron"]},er:{stem:"com",endings:["í","iste","ió","imos","isteis","ieron"]},ir:{stem:"viv",endings:["í","iste","ió","imos","isteis","ieron"]}};
-const impData={ar:{stem:"habl",endings:["aba","abas","aba","ábamos","abais","aban"]},er:{stem:"com",endings:["ía","ías","ía","íamos","íais","ían"]},ir:{stem:"viv",endings:["ía","ías","ía","íamos","íais","ían"]}};
+import { pretData, impData } from './data5';
 
 export function Guide5(){
   const [vt,setVt]=useState<VerbType>("ar");const pret=pretData[vt];const imp=impData[vt];

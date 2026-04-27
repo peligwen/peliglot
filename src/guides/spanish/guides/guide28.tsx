@@ -3,12 +3,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { VerbTypeSelector, ConjugationTable, TriggerChips } from './_helpers';
 import type { VerbType } from './_helpers';
-
-const subjData={
-  ar:{verb:"hablar",stem:"habl",endings:["e","es","e","emos","éis","en"],meaning:"to speak"},
-  er:{verb:"comer",stem:"com",endings:["a","as","a","amos","áis","an"],meaning:"to eat"},
-  ir:{verb:"vivir",stem:"viv",endings:["a","as","a","amos","áis","an"],meaning:"to live"},
-};
+import { subjData } from './data28';
 
 const triggers=[
   {cat:"Desire",color:"#C62828",words:["querer que","esperar que","pedir que","necesitar que","preferir que"]},

@@ -211,6 +211,13 @@ describe('Practice surface', () => {
     expect(screen.getByText(/due/)).toBeInTheDocument();
   });
 
+  it('header strip renders an "All collections" link pointing to "/"', async () => {
+    renderPractice(adapter, [mockCard]);
+    await waitFor(() => screen.getByRole('link', { name: /all collections/i }));
+    const homeLink = screen.getByRole('link', { name: /all collections/i });
+    expect(homeLink).toHaveAttribute('href', '/');
+  });
+
   // -------------------------------------------------------------------------
   // Multiple cards — advances to next card after rating
   //
@@ -256,7 +263,7 @@ describe('Practice surface', () => {
     expect(screen.getByRole('button', { name: /show answer without typing/i })).toBeInTheDocument();
   });
 
-  it('shows correct feedback when the typed answer is right', async () => {
+  it('shows correct feedback and only a Continue button (no rating buttons) in typed-correct path', async () => {
     renderPractice(adapter, [mockVerbCard]);
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
 
@@ -268,11 +275,120 @@ describe('Practice surface', () => {
       expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
     });
     expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
-    // Rating buttons appear after submission
-    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+    // Typed path: only Continue button — no rating buttons
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^good$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^hard$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^easy$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^again$/i })).not.toBeInTheDocument();
   });
 
-  it('shows close feedback when the typed answer is missing only a diacritic', async () => {
+  it('typed-correct → Continue → next card visible; persisted state has Good rating', async () => {
+    // Use two verb cards so we don't rely on shuffle order — both are typing-eligible
+    const mockVerbCard2: ReviewCard = {
+      cardId: 'test-verb-card-2',
+      guideId: 4,
+      guideSlug: 'spanish',
+      kind: 'verb-conjugation',
+      prompt: { kind: 'verb-conjugation', verb: 'comer', pronoun: 'tú', meaning: 'to eat' },
+      answer: 'comes',
+      speakText: 'comes',
+    };
+    renderPractice(adapter, [mockVerbCard, mockVerbCard2]);
+
+    // Wait for any verb prompt to appear
+    await waitFor(() =>
+      expect(
+        screen.getByRole('textbox', { name: /type your answer/i })
+      ).toBeInTheDocument()
+    );
+
+    // Determine which card is shown first, then type the correct answer
+    const isHablar = !!screen.queryByText(/hablar/i);
+    const correctAnswer = isHablar ? 'hablo' : 'comes';
+    const firstCardId = isHablar ? 'test-verb-card-1' : 'test-verb-card-2';
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: correctAnswer },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    });
+
+    // Verify the rating was persisted as Good (schedules well into the future)
+    await waitFor(() => {
+      const persisted = adapter.peek(firstCardId);
+      expect(persisted).toBeDefined();
+      expect(persisted?.due).toBeGreaterThan(Date.now() + 60_000);
+    });
+
+    // Click Continue — should advance to the second verb card
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    });
+
+    // The other verb card's input should now be visible
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument();
+    }, { timeout: 2000 });
+  });
+
+  it('typed-incorrect → Continue → next card visible; persisted state has Again rating', async () => {
+    // Use two verb cards to avoid shuffle dependency
+    const mockVerbCard2: ReviewCard = {
+      cardId: 'test-verb-card-2',
+      guideId: 4,
+      guideSlug: 'spanish',
+      kind: 'verb-conjugation',
+      prompt: { kind: 'verb-conjugation', verb: 'comer', pronoun: 'tú', meaning: 'to eat' },
+      answer: 'comes',
+      speakText: 'comes',
+    };
+    renderPractice(adapter, [mockVerbCard, mockVerbCard2]);
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument()
+    );
+
+    // Determine first card
+    const isHablar = !!screen.queryByText(/hablar/i);
+    const firstCardId = isHablar ? 'test-verb-card-1' : 'test-verb-card-2';
+
+    // Type a wrong answer
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: 'wronganswer' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct answer/i);
+    // Typed path: only Continue button — no rating buttons
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^again$/i })).not.toBeInTheDocument();
+
+    // Verify Again rating persisted (due should be very soon — within ~10 minutes)
+    await waitFor(() => {
+      const persisted = adapter.peek(firstCardId);
+      expect(persisted).toBeDefined();
+      expect(persisted?.due).toBeLessThan(Date.now() + 10 * 60_000 + 5000);
+    });
+
+    // Click Continue — should advance to the second card
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /continue/i }));
+    });
+
+    // The other verb card's input should now be visible
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument();
+    }, { timeout: 2000 });
+  });
+
+  it('shows close feedback and only a Continue button in typed-close path', async () => {
     // Use a card whose answer has a diacritic
     const accentCard: ReviewCard = {
       cardId: 'test-accent-card',
@@ -295,10 +411,12 @@ describe('Practice surface', () => {
       expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
     });
     expect(screen.getByTestId('answer-feedback').textContent).toMatch(/close/i);
-    expect(screen.getByRole('button', { name: /again/i })).toBeInTheDocument();
+    // Typed path: only Continue — no rating buttons
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^again$/i })).not.toBeInTheDocument();
   });
 
-  it('shows incorrect feedback when the typed answer is wrong', async () => {
+  it('shows incorrect feedback and only a Continue button in typed-incorrect path', async () => {
     renderPractice(adapter, [mockVerbCard]);
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
 
@@ -311,9 +429,10 @@ describe('Practice surface', () => {
       expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
     });
     expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct answer/i);
-    // All 4 rating buttons appear even for incorrect
-    expect(screen.getByRole('button', { name: /again/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+    // Typed path: only Continue — no 4-button rating UI
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^again$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^good$/i })).not.toBeInTheDocument();
   });
 
   it('accepts Enter key to submit the typed answer', async () => {
@@ -330,7 +449,7 @@ describe('Practice surface', () => {
     expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
   });
 
-  it('Show Answer escape hatch on verb card skips to canonical answer + ratings', async () => {
+  it('Show Answer escape hatch on verb card shows canonical answer + all 4 rating buttons with sub-labels', async () => {
     renderPractice(adapter, [mockVerbCard]);
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
 
@@ -343,8 +462,18 @@ describe('Practice surface', () => {
     });
     // Match feedback should NOT appear (no scoring on escape-hatch path)
     expect(screen.queryByTestId('answer-feedback')).not.toBeInTheDocument();
-    // Rating buttons appear
+    // All 4 rating buttons appear
+    expect(screen.getByRole('button', { name: /again/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /hard/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /easy/i })).toBeInTheDocument();
+    // Sub-labels appear
+    expect(screen.getByText(/forgot it/i)).toBeInTheDocument();
+    expect(screen.getByText(/barely got it/i)).toBeInTheDocument();
+    expect(screen.getByText(/^got it$/i)).toBeInTheDocument();
+    expect(screen.getByText(/trivial/i)).toBeInTheDocument();
+    // No Continue button on show-answer path
+    expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
   });
 
   // -------------------------------------------------------------------------
@@ -390,18 +519,16 @@ describe('Practice surface', () => {
     renderPractice(adapter, [mockVerbCard]);
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
 
-    // Submit a correct answer to earn XP
+    // Submit a correct answer — auto-rates as Good, which earns XP
     fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
       target: { value: 'hablo' },
     });
     fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
-    await waitFor(() => expect(screen.getByRole('button', { name: /good/i })).toBeInTheDocument());
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /good/i }));
-    });
+    // Wait for the Continue button to appear (rating was persisted on submit)
+    await waitFor(() => expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument());
 
-    // After rating, XP today should appear in header (value > 0)
+    // After the persist resolves, XP today should appear in header (value > 0)
     await waitFor(() => {
       expect(screen.getByLabelText(/xp today/i)).toBeInTheDocument();
     }, { timeout: 2000 });

@@ -3,9 +3,7 @@ import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
 import { pronouns6 } from './_helpers';
-
-const futEndings=["é","ás","á","emos","éis","án"];
-const condEndings=["ía","ías","ía","íamos","íais","ían"];
+import { futEndings, condEndings } from './data6';
 
 const futUses=[
   {ex:"Mañana lloverá.",en:"It will rain tomorrow.",use:"Predictions & future events"},

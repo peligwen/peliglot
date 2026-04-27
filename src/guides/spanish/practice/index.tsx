@@ -28,7 +28,7 @@ import type { MasteryStorageAdapter, CardState } from '../../../mastery';
 import type { CardKind, ReviewCard } from '../../../mastery/cards';
 import { getAllSpanishCards } from '../mastery/index';
 import { speakSpanish } from '../../../utils/speech';
-import { checkAnswer } from '../mastery/util';
+import { checkAnswer, normalizeAnswer } from '../mastery/util';
 import type { AnswerMatch } from '../mastery/util';
 import { PromptRenderer } from './renderers';
 
@@ -46,6 +46,8 @@ const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
   'letter-sound',
   'verb-conjugation',
   'verb-conjugation-stem-change',
+  'verb-conjugation-tensed',
+  'imperative-tu',
 ]);
 
 // Kinds that support typed-answer input as the primary interaction.
@@ -58,6 +60,26 @@ const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'noun-adj-agreement',
   'english-to-pronoun',
   'ser-vs-estar',
+  // Phase 2c additions — all 15 new kinds are typing-eligible
+  'verb-spelling-change',
+  'verb-conjugation-tensed',
+  'gustar-pattern',
+  'por-vs-para',
+  'verb-prep-pair',
+  'question-word',
+  'negation-translate',
+  'comparative-irregular',
+  'number-spell',
+  'tu-vs-usted',
+  'false-cognate',
+  'weather-expression',
+  'imperative-tu',
+  'reflexive-meaning-change',
+  'idiom-meaning',
+  // Phase 2c.5 additions (PR #21 cleanup)
+  'sentence-correction',
+  'reflexive-daily-routine',
+  'reciprocal-translate',
 ]);
 
 // How long (ms) to display the "Next review: …" message before advancing
@@ -225,6 +247,22 @@ function HeaderStrip({
       }}
     >
       <Link
+        to="/"
+        style={{
+          color: '#888',
+          textDecoration: 'none',
+          fontWeight: 600,
+          fontSize: 12,
+          letterSpacing: 0.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
+        <span aria-hidden="true">{'←'}</span> All collections
+      </Link>
+
+      <Link
         to="/guides/spanish"
         style={{
           color: '#888',
@@ -283,24 +321,20 @@ function HeaderStrip({
 }
 
 // ---------------------------------------------------------------------------
-// RatingButtons
+// RatingButtons — used in Show Answer (self-rate) flow only
 // ---------------------------------------------------------------------------
 
-const RATINGS: Array<{ rating: Rating; label: string; color: string; bg: string }> = [
-  { rating: Rating.Again, label: 'Again', color: '#fff', bg: '#B71C1C' },
-  { rating: Rating.Hard, label: 'Hard', color: '#fff', bg: '#E65100' },
-  { rating: Rating.Good, label: 'Good', color: '#fff', bg: '#2E7D32' },
-  { rating: Rating.Easy, label: 'Easy', color: '#fff', bg: '#1565C0' },
+const RATINGS: Array<{ rating: Rating; label: string; subLabel: string; color: string; bg: string }> = [
+  { rating: Rating.Again, label: 'Again', subLabel: 'Forgot it',      color: '#fff', bg: '#B71C1C' },
+  { rating: Rating.Hard,  label: 'Hard',  subLabel: 'Barely got it',  color: '#fff', bg: '#E65100' },
+  { rating: Rating.Good,  label: 'Good',  subLabel: 'Got it',         color: '#fff', bg: '#2E7D32' },
+  { rating: Rating.Easy,  label: 'Easy',  subLabel: 'Trivial',        color: '#fff', bg: '#1565C0' },
 ];
 
 function RatingButtons({
   onRate,
-  goodButtonRef,
-  hardButtonRef,
 }: {
   onRate: (rating: Rating) => void;
-  goodButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  hardButtonRef?: React.RefObject<HTMLButtonElement | null>;
 }): ReactElement {
   return (
     <div
@@ -312,40 +346,38 @@ function RatingButtons({
         marginTop: 20,
       }}
     >
-      {RATINGS.map(({ rating, label, color, bg }) => {
-        const ref =
-          label === 'Good' ? goodButtonRef :
-          label === 'Hard' ? hardButtonRef :
-          undefined;
-        return (
-          <button
-            key={label}
-            ref={ref as React.RefObject<HTMLButtonElement> | undefined}
-            onClick={() => onRate(rating)}
-            style={{
-              background: bg,
-              color,
-              border: 'none',
-              borderRadius: 10,
-              padding: '10px 22px',
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: "system-ui,'Segoe UI',sans-serif",
-              minWidth: 72,
-              transition: 'opacity 0.15s',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.opacity = '0.85';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.opacity = '1';
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
+      {RATINGS.map(({ rating, label, subLabel, color, bg }) => (
+        <button
+          key={label}
+          onClick={() => onRate(rating)}
+          style={{
+            background: bg,
+            color,
+            border: 'none',
+            borderRadius: 10,
+            padding: '10px 22px',
+            fontSize: 14,
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: "system-ui,'Segoe UI',sans-serif",
+            minWidth: 72,
+            transition: 'opacity 0.15s',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.opacity = '0.85';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.opacity = '1';
+          }}
+        >
+          <span>{label}</span>
+          <span style={{ fontSize: 10, fontWeight: 400, opacity: 0.85 }}>{subLabel}</span>
+        </button>
+      ))}
     </div>
   );
 }
@@ -516,6 +548,13 @@ interface CardReviewerProps {
   onAdvance: (cardId: string) => void;
 }
 
+/** Map a typed-answer match result to the appropriate FSRS rating. */
+function matchToRating(result: AnswerMatch): Rating {
+  if (result === 'correct') return Rating.Good;
+  if (result === 'close') return Rating.Hard;
+  return Rating.Again;
+}
+
 /**
  * Derive acceptable answers to pass to checkAnswer for kinds where the
  * canonical answer is compound (e.g. "el (masculine)"). We allow the
@@ -535,12 +574,26 @@ function deriveAcceptable(card: ReviewCard): string[] {
   return base;
 }
 
+/**
+ * Returns true if an empty typed answer is a valid correct response for this
+ * card. This happens when the canonical answer or any acceptable alternate
+ * normalises to ''. Used by guide 19's 'none' bucket cards, where the correct
+ * concept is "no preposition required" and acceptableAnswers includes ''.
+ */
+function cardAcceptsEmptyInput(card: ReviewCard): boolean {
+  const acceptable = deriveAcceptable(card);
+  return [card.answer, ...acceptable].some(a => normalizeAnswer(a) === '');
+}
+
 function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElement {
   // For typing-eligible kinds the state machine has an extra phase:
   //   'awaiting-input' → 'shown-answer' → 'rated'
   // For self-rate-only kinds it collapses to:
   //   'awaiting-input' (= not revealed) → 'shown-answer' → 'rated'
   const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind);
+  // True for cards where leaving the input blank is itself a valid correct answer
+  // (guide 19 'none' bucket: canonical '∅', acceptableAnswers includes '').
+  const acceptsEmpty = cardAcceptsEmptyInput(card);
 
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
@@ -550,8 +603,7 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
 
   // Refs for auto-focus management
   const inputRef = useRef<HTMLInputElement>(null);
-  const goodButtonRef = useRef<HTMLButtonElement>(null);
-  const hardButtonRef = useRef<HTMLButtonElement>(null);
+  const continueButtonRef = useRef<HTMLButtonElement>(null);
 
   // Auto-play speech on reveal for relevant kinds
   const autoPlayedRef = useRef(false);
@@ -591,15 +643,10 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     }
   }, [typingEnabled, reviewerState]);
 
-  // After a typed submit, focus the default rating button
+  // After a typed submit, focus the Continue button
   useEffect(() => {
     if (reviewerState === 'shown-answer' && matchResult !== null) {
-      if (matchResult === 'correct') {
-        goodButtonRef.current?.focus();
-      } else if (matchResult === 'close') {
-        hardButtonRef.current?.focus();
-      }
-      // incorrect: leave focus where it is (no default)
+      continueButtonRef.current?.focus();
     }
   }, [reviewerState, matchResult]);
 
@@ -612,17 +659,17 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
     autoPlayedRef.current = false;
   }, [card.cardId]);
 
-  const handleRate = useCallback(
-    async (r: Rating) => {
-      if (reviewerState === 'rated') return; // prevent double-tap
-      setReviewerState('rated');
+  // Shared persistence + optional auto-advance for both rating paths.
+  // Calls onRate, shows the next-due message, and (if autoAdvance) schedules
+  // the parent advance after NEXT_DUE_DISPLAY_MS. The Continue button can
+  // cancel the timer via advanceTimerRef.
+  const persistAndMaybeAdvance = useCallback(
+    async (rating: Rating, autoAdvance: boolean) => {
       try {
-        const newState = await onRate(r);
+        const newState = await onRate(rating);
         if (!mountedRef.current) return;
-        // Show the next-due message immediately after rating resolves.
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
-        // Wait the display duration, then tell the parent to advance.
-        // Store the timer ID so it can be cancelled on unmount.
+        if (!autoAdvance) return;
         await new Promise<void>(resolve => {
           advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
         });
@@ -633,16 +680,52 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
         // Swallow: parent already handles error propagation
       }
     },
-    [onRate, onAdvance, card.cardId, reviewerState],
+    [onRate, onAdvance, card.cardId],
   );
 
+  // Show Answer (self-rate) 4-button path. Always auto-advances after display.
+  const handleRate = useCallback(
+    async (r: Rating) => {
+      if (reviewerState === 'rated') return; // prevent double-tap
+      setReviewerState('rated');
+      await persistAndMaybeAdvance(r, true);
+    },
+    [reviewerState, persistAndMaybeAdvance],
+  );
+
+  // Whether a typed submit has already been persisted (prevents double-submit).
+  const typedRatedRef = useRef(false);
+
+  // Typed-answer path. Auto-rates based on match quality:
+  //   correct → Good, close → Hard, incorrect → Again
+  // UI stays in 'shown-answer' so the Continue button is visible. Correct/close
+  // auto-advance after 800ms (Continue can skip the wait); incorrect requires
+  // explicit Continue click so the user can absorb the right answer.
   const handleSubmitTyped = useCallback(() => {
-    if (!typedAnswer.trim()) return;
+    // Allow submit on empty input only if the card explicitly accepts empty
+    // (guide 19 'none' bucket). For all other cards, require non-empty input.
+    if (!typedAnswer.trim() && !acceptsEmpty) return;
+    if (typedRatedRef.current) return; // prevent double-submit
+    typedRatedRef.current = true;
+
     const acceptable = deriveAcceptable(card);
     const result = checkAnswer(typedAnswer, card.answer, acceptable);
     setMatchResult(result);
     setReviewerState('shown-answer');
-  }, [typedAnswer, card]);
+
+    void persistAndMaybeAdvance(matchToRating(result), result !== 'incorrect');
+  }, [typedAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
+
+  // Continue handler for the typed-answer path:
+  // - Cancels any pending auto-advance timer (correct/close: user skips 800ms wait).
+  // - Immediately tells the parent to advance (required path for incorrect).
+  const handleContinue = useCallback(() => {
+    if (advanceTimerRef.current !== null) {
+      clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+    onAdvance(card.cardId);
+  }, [onAdvance, card.cardId]);
 
   const handleShowAnswer = useCallback(() => {
     setMatchResult(null); // escape hatch — no typed scoring
@@ -673,7 +756,7 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
           boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
         }}
       >
-        <PromptRenderer prompt={card.prompt} />
+        <PromptRenderer prompt={card.prompt} revealed={reviewerState !== 'awaiting-input'} />
 
         {/* Speaker button on prompt for letter-sound kind */}
         {KINDS_WITH_PROMPT_SPEAK.has(card.kind) && promptLetter && (
@@ -710,16 +793,16 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
               />
               <button
                 onClick={handleSubmitTyped}
-                disabled={!typedAnswer.trim()}
+                disabled={!typedAnswer.trim() && !acceptsEmpty}
                 style={{
-                  background: typedAnswer.trim() ? SPANISH_RED : '#e0e0e0',
+                  background: (typedAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 12,
                   padding: '12px 20px',
                   fontSize: 15,
                   fontWeight: 700,
-                  cursor: typedAnswer.trim() ? 'pointer' : 'default',
+                  cursor: (typedAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                   flexShrink: 0,
                   transition: 'background 0.15s',
@@ -873,13 +956,33 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
             </div>
           )}
 
-          {/* Rating buttons — hidden after rating to prevent double-tap */}
-          {reviewerState !== 'rated' && (
-            <RatingButtons
-              onRate={handleRate}
-              goodButtonRef={goodButtonRef}
-              hardButtonRef={hardButtonRef}
-            />
+          {/* Typed-answer path: single Continue button (rating was auto-applied on Submit) */}
+          {matchResult !== null && reviewerState !== 'rated' && (
+            <div style={{ textAlign: 'center', marginTop: 20 }}>
+              <button
+                ref={continueButtonRef}
+                onClick={handleContinue}
+                style={{
+                  background: SPANISH_RED,
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 10,
+                  padding: '10px 36px',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  minWidth: 120,
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          )}
+
+          {/* Show-answer (self-rate) path: 4-button rating UI */}
+          {matchResult === null && reviewerState !== 'rated' && (
+            <RatingButtons onRate={handleRate} />
           )}
         </div>
       )}

@@ -23,7 +23,42 @@ export type CardKind =
   | 'noun-plural'
   | 'noun-adj-agreement'
   | 'english-to-pronoun'
-  | 'ser-vs-estar';
+  | 'ser-vs-estar'
+  // Phase 2c additions
+  | 'verb-spelling-change'
+  | 'verb-conjugation-tensed'
+  | 'gustar-pattern'
+  | 'por-vs-para'
+  | 'verb-prep-pair'
+  | 'question-word'
+  | 'negation-translate'
+  | 'comparative-irregular'
+  | 'number-spell'
+  | 'tu-vs-usted'
+  | 'false-cognate'
+  | 'weather-expression'
+  | 'imperative-tu'
+  | 'reflexive-meaning-change'
+  | 'idiom-meaning'
+  // Phase 2c.5 additions (PR #21 cleanup)
+  | 'sentence-correction'
+  | 'reflexive-daily-routine'
+  | 'reciprocal-translate';
+
+// ---------------------------------------------------------------------------
+// Phase 2c: Tense key union for verb-conjugation-tensed
+// ---------------------------------------------------------------------------
+
+export type TensedConjugationTense =
+  | 'preterite'
+  | 'imperfect'
+  | 'future'
+  | 'conditional'
+  | 'present-perfect'
+  | 'pluperfect'
+  | 'present-subjunctive'
+  | 'past-subjunctive'
+  | 'present-perfect-subjunctive';
 
 // ---------------------------------------------------------------------------
 // Prompt shapes — one per kind, discriminated on `kind`
@@ -38,7 +73,27 @@ export type PromptShape =
   | { kind: 'noun-plural'; singular: string; meaning?: string }
   | { kind: 'noun-adj-agreement'; noun: string; adjective: string; nounMeaning?: string; adjectiveMeaning?: string }
   | { kind: 'english-to-pronoun'; english: string }
-  | { kind: 'ser-vs-estar'; sentence: string; context?: string };
+  | { kind: 'ser-vs-estar'; sentence: string; context?: string }
+  // Phase 2c additions
+  | { kind: 'verb-spelling-change'; infinitive: string; target: string; meaning?: string }
+  | { kind: 'verb-conjugation-tensed'; verb: string; pronoun: string; tense: TensedConjugationTense; meaning?: string }
+  | { kind: 'gustar-pattern'; english: string; verb: string }
+  | { kind: 'por-vs-para'; sentence: string; reason?: string }
+  | { kind: 'verb-prep-pair'; verb: string; meaning: string }
+  | { kind: 'question-word'; sentence: string; englishMeaning: string }
+  | { kind: 'negation-translate'; english: string }
+  | { kind: 'comparative-irregular'; positive: string; meaning: string }
+  | { kind: 'number-spell'; numeric: string }
+  | { kind: 'tu-vs-usted'; situation: string; reason?: string }
+  | { kind: 'false-cognate'; spanish: string; falseFriend: string }
+  | { kind: 'weather-expression'; english: string; icon: string }
+  | { kind: 'imperative-tu'; verb: string; polarity: 'affirmative' | 'negative'; meaning?: string }
+  | { kind: 'reflexive-meaning-change'; reflexive: string; baseVerb: string; baseMeaning: string }
+  | { kind: 'idiom-meaning'; idiom: string; literal: string }
+  // Phase 2c.5 additions (PR #21 cleanup)
+  | { kind: 'sentence-correction'; wrong: string; explanation?: string }
+  | { kind: 'reflexive-daily-routine'; english: string }
+  | { kind: 'reciprocal-translate'; english: string };
 
 // ---------------------------------------------------------------------------
 // ReviewCard — combines content (prompt/answer) with identity fields

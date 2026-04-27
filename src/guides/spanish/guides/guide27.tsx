@@ -2,25 +2,10 @@ import { useState } from 'react';
 import { DarkBox } from '../../../components/DarkBox';
 import { Card } from '../../../components/Card';
 import { Insight } from '../../../components/Insight';
+import { weatherExpr } from './data27';
+import type { WeatherType } from './data27';
 
 export function Guide27(){
-  type WeatherType = "hace" | "esta" | "hay";
-  const weatherExpr: Array<{expr:string;eng:string;type:WeatherType;icon:string;ex:string;exE:string;options?:string[]}>=[
-    {expr:"Hace calor",    eng:"It's hot",           type:"hace", icon:"🌡️", ex:"Hoy hace mucho calor.",               exE:"Today it's very hot."},
-    {expr:"Hace frío",     eng:"It's cold",          type:"hace", icon:"🥶", ex:"En enero hace mucho frío.",            exE:"In January it's very cold."},
-    {expr:"Hace viento",   eng:"It's windy",         type:"hace", icon:"💨", ex:"Hace mucho viento hoy.",              exE:"It's very windy today."},
-    {expr:"Hace sol",      eng:"It's sunny",         type:"hace", icon:"☀️", ex:"Hace sol en verano.",                 exE:"It's sunny in summer."},
-    {expr:"Hace buen tiempo", eng:"The weather is nice", type:"hace", icon:"😊", ex:"Hoy hace buen tiempo.",          exE:"The weather is nice today."},
-    {expr:"Hace mal tiempo",  eng:"The weather is bad",  type:"hace", icon:"🌩️", ex:"Hace mal tiempo esta semana.",   exE:"The weather is bad this week."},
-    {expr:"Está lloviendo",   eng:"It's raining",    type:"esta", icon:"🌧️", ex:"Está lloviendo mucho.",             exE:"It's raining a lot."},
-    {expr:"Está nevando",     eng:"It's snowing",    type:"esta", icon:"❄️", ex:"Está nevando en las montañas.",      exE:"It's snowing in the mountains."},
-    {expr:"Está nublado",     eng:"It's cloudy",     type:"esta", icon:"☁️", ex:"Está muy nublado hoy.",             exE:"It's very cloudy today."},
-    {expr:"Está despejado",   eng:"It's clear",      type:"esta", icon:"🌤️", ex:"Está despejado esta mañana.",       exE:"It's clear this morning."},
-    {expr:"Hay niebla",       eng:"There's fog",     type:"hay",  icon:"🌫️", ex:"Hay mucha niebla en la costa.",     exE:"There's a lot of fog on the coast."},
-    {expr:"Hay tormenta",     eng:"There's a storm", type:"hay",  icon:"⛈️", ex:"Hay una tormenta esta noche.",      exE:"There's a storm tonight."},
-    {expr:"Hay granizo",      eng:"There's hail",    type:"hay",  icon:"🌨️", ex:"Hay granizo en el norte.",          exE:"There's hail in the north. (Forecast register; conversationally: Está granizando.)"},
-    {expr:"Hay lluvia",       eng:"There's rain",    type:"hay",  icon:"🌂", ex:"Hay lluvia toda la semana.",         exE:"There's rain all week. (Forecast register; conversationally: Está lloviendo.)"},
-  ];
   const seasons=[
     {name:"La Primavera",eng:"Spring",icon:"🌸",color:"#C2185B",months:"marzo – mayo",   desc:"templado / mild"},
     {name:"El Verano",  eng:"Summer",icon:"☀️",color:"#E65100",months:"junio – agosto",  desc:"caluroso / hot"},

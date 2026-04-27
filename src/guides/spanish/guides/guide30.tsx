@@ -2,17 +2,7 @@ import { useState } from 'react';
 import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
-
-const irregTu=[
-  {v:"decir",cmd:"di",neg:"no digas"},
-  {v:"hacer",cmd:"haz",neg:"no hagas"},
-  {v:"ir",cmd:"ve",neg:"no vayas"},
-  {v:"poner",cmd:"pon",neg:"no pongas"},
-  {v:"salir",cmd:"sal",neg:"no salgas"},
-  {v:"ser",cmd:"sé",neg:"no seas"},
-  {v:"tener",cmd:"ten",neg:"no tengas"},
-  {v:"venir",cmd:"ven",neg:"no vengas"},
-];
+import { irregTu } from './data30';
 
 const modes=[
   {id:"tu",label:"Tú (+)",desc:"Drop the -s from present tú form",ex:["hablas → ¡habla!","comes → ¡come!","escribes → ¡escribe!"],color:"#2E7D32"},
