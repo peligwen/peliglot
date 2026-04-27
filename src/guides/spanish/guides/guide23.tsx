@@ -3,15 +3,7 @@ import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { speakSpanish } from '../../../utils/speech';
-
-const numbers=[
-  {n:0,sp:"cero"},{n:1,sp:"uno"},{n:2,sp:"dos"},{n:3,sp:"tres"},{n:4,sp:"cuatro"},
-  {n:5,sp:"cinco"},{n:6,sp:"seis"},{n:7,sp:"siete"},{n:8,sp:"ocho"},{n:9,sp:"nueve"},
-  {n:10,sp:"diez"},{n:11,sp:"once"},{n:12,sp:"doce"},{n:13,sp:"trece"},{n:14,sp:"catorce"},
-  {n:15,sp:"quince"},{n:16,sp:"dieciséis"},{n:17,sp:"diecisiete"},{n:18,sp:"dieciocho"},{n:19,sp:"diecinueve"},{n:20,sp:"veinte"},{n:21,sp:"veintiuno"},
-  {n:30,sp:"treinta"},{n:40,sp:"cuarenta"},{n:50,sp:"cincuenta"},{n:100,sp:"cien"},
-  {n:1000,sp:"mil"},{n:1000000,sp:"un millón"},
-];
+import { numbers, ordinals } from './data23';
 
 const timeExamples=[
   {time:"1:00",sp:"Es la una."},
@@ -43,11 +35,10 @@ export function Guide23(){
       <div style={{background:"#fff",borderRadius:12,overflow:"hidden",border:"1px solid #eee",marginTop:8}}>
         <div style={{padding:"8px 14px",background:"#E3F2FD",borderBottom:"1px solid #BBDEFB",fontSize:12,fontWeight:700,color:"#0277BD"}}>Ordinal Numbers (1st–10th)</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:0}}>
-          {[["1º","primero/a"],["2º","segundo/a"],["3º","tercero/a"],["4º","cuarto/a"],["5º","quinto/a"],
-            ["6º","sexto/a"],["7º","séptimo/a"],["8º","octavo/a"],["9º","noveno/a"],["10º","décimo/a"]].map(([ord,sp],i)=>(
-            <div key={i} style={{padding:"8px 6px",textAlign:"center",borderBottom:i<5?"1px solid #f0eeeb":"none",borderRight:i%5<4?"1px solid #f0eeeb":"none"}}>
-              <div style={{fontSize:14,fontWeight:800,color:"#0277BD"}}>{ord}</div>
-              <div style={{fontSize:9,color:"#666",fontWeight:600}}>{sp}</div>
+          {ordinals.map((o,i)=>(
+            <div key={o.ord} style={{padding:"8px 6px",textAlign:"center",borderBottom:i<5?"1px solid #f0eeeb":"none",borderRight:i%5<4?"1px solid #f0eeeb":"none"}}>
+              <div style={{fontSize:14,fontWeight:800,color:"#0277BD"}}>{o.ord}</div>
+              <div style={{fontSize:9,color:"#666",fontWeight:600}}>{o.sp}</div>
             </div>
           ))}
         </div>
