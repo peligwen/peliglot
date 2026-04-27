@@ -3,15 +3,7 @@ import { Card } from '../../../components/Card';
 import { DarkBox } from '../../../components/DarkBox';
 import { Insight } from '../../../components/Insight';
 import { MiniTable } from './_helpers';
-
-const verbs=[
-  {v:"hablar",stem:"habla",meaning:"to speak"},
-  {v:"comer",stem:"comie",meaning:"to eat"},
-  {v:"tener",stem:"tuvie",meaning:"to have"},
-  {v:"poder",stem:"pudie",meaning:"to be able"},
-  {v:"ir/ser",stem:"fue",meaning:"to go / to be"},
-];
-const endings=["ra","ras","ra","ramos","rais","ran"];
+import { verbs, endings } from './data29';
 
 const siClauses=[
   {type:"Possible (present/future)",si:"Si + present indicative",result:"present or future",ex:"Si llueve, me quedo en casa. / Si llueve, me quedaré en casa.",color:"#2E7D32"},
