@@ -28,7 +28,7 @@ import type { MasteryStorageAdapter, CardState } from '../../../mastery';
 import type { CardKind, ReviewCard } from '../../../mastery/cards';
 import { getAllSpanishCards } from '../mastery/index';
 import { speakSpanish } from '../../../utils/speech';
-import { checkAnswer } from '../mastery/util';
+import { checkAnswer, normalizeAnswer } from '../mastery/util';
 import type { AnswerMatch } from '../mastery/util';
 import { PromptRenderer } from './renderers';
 
@@ -553,12 +553,26 @@ function deriveAcceptable(card: ReviewCard): string[] {
   return base;
 }
 
+/**
+ * Returns true if an empty typed answer is a valid correct response for this
+ * card. This happens when the canonical answer or any acceptable alternate
+ * normalises to ''. Used by guide 19's 'none' bucket cards, where the correct
+ * concept is "no preposition required" and acceptableAnswers includes ''.
+ */
+function cardAcceptsEmptyInput(card: ReviewCard): boolean {
+  const acceptable = deriveAcceptable(card);
+  return [card.answer, ...acceptable].some(a => normalizeAnswer(a) === '');
+}
+
 function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElement {
   // For typing-eligible kinds the state machine has an extra phase:
   //   'awaiting-input' → 'shown-answer' → 'rated'
   // For self-rate-only kinds it collapses to:
   //   'awaiting-input' (= not revealed) → 'shown-answer' → 'rated'
   const typingEnabled = TYPING_ENABLED_KINDS.has(card.kind);
+  // True for cards where leaving the input blank is itself a valid correct answer
+  // (guide 19 'none' bucket: canonical '∅', acceptableAnswers includes '').
+  const acceptsEmpty = cardAcceptsEmptyInput(card);
 
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
@@ -655,12 +669,14 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
   );
 
   const handleSubmitTyped = useCallback(() => {
-    if (!typedAnswer.trim()) return;
+    // Allow submit on empty input only if the card explicitly accepts empty
+    // (guide 19 'none' bucket). For all other cards, require non-empty input.
+    if (!typedAnswer.trim() && !acceptsEmpty) return;
     const acceptable = deriveAcceptable(card);
     const result = checkAnswer(typedAnswer, card.answer, acceptable);
     setMatchResult(result);
     setReviewerState('shown-answer');
-  }, [typedAnswer, card]);
+  }, [typedAnswer, card, acceptsEmpty]);
 
   const handleShowAnswer = useCallback(() => {
     setMatchResult(null); // escape hatch — no typed scoring
@@ -728,16 +744,16 @@ function CardReviewer({ card, onRate, onAdvance }: CardReviewerProps): ReactElem
               />
               <button
                 onClick={handleSubmitTyped}
-                disabled={!typedAnswer.trim()}
+                disabled={!typedAnswer.trim() && !acceptsEmpty}
                 style={{
-                  background: typedAnswer.trim() ? SPANISH_RED : '#e0e0e0',
+                  background: (typedAnswer.trim() || acceptsEmpty) ? SPANISH_RED : '#e0e0e0',
                   color: '#fff',
                   border: 'none',
                   borderRadius: 12,
                   padding: '12px 20px',
                   fontSize: 15,
                   fontWeight: 700,
-                  cursor: typedAnswer.trim() ? 'pointer' : 'default',
+                  cursor: (typedAnswer.trim() || acceptsEmpty) ? 'pointer' : 'default',
                   fontFamily: "system-ui,'Segoe UI',sans-serif",
                   flexShrink: 0,
                   transition: 'background 0.15s',
