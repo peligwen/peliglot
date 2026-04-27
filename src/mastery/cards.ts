@@ -39,7 +39,11 @@ export type CardKind =
   | 'weather-expression'
   | 'imperative-tu'
   | 'reflexive-meaning-change'
-  | 'idiom-meaning';
+  | 'idiom-meaning'
+  // Phase 2c.5 additions (PR #21 cleanup)
+  | 'sentence-correction'
+  | 'reflexive-daily-routine'
+  | 'reciprocal-translate';
 
 // ---------------------------------------------------------------------------
 // Phase 2c: Tense key union for verb-conjugation-tensed
@@ -85,7 +89,11 @@ export type PromptShape =
   | { kind: 'weather-expression'; english: string; icon: string }
   | { kind: 'imperative-tu'; verb: string; polarity: 'affirmative' | 'negative'; meaning?: string }
   | { kind: 'reflexive-meaning-change'; reflexive: string; baseVerb: string; baseMeaning: string }
-  | { kind: 'idiom-meaning'; idiom: string; literal: string };
+  | { kind: 'idiom-meaning'; idiom: string; literal: string }
+  // Phase 2c.5 additions (PR #21 cleanup)
+  | { kind: 'sentence-correction'; wrong: string; explanation?: string }
+  | { kind: 'reflexive-daily-routine'; english: string }
+  | { kind: 'reciprocal-translate'; english: string };
 
 // ---------------------------------------------------------------------------
 // ReviewCard — combines content (prompt/answer) with identity fields

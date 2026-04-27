@@ -1,8 +1,8 @@
 # Spanish Mastery Audit
 
-**Last updated:** Phase 2c.4 (2026-04-26)
+**Last updated:** Phase 2c.5 — PR #21 cleanup (2026-04-26)
 **Coverage:** 29 of 33 Spanish guides wired (88%). 4 guides carry explicit skip verdicts.
-**Total cards:** 662 (as of Phase 2c.4)
+**Total cards:** 678 (as of Phase 2c.5)
 
 ---
 
@@ -51,10 +51,10 @@
 | 21 | Negación | extract | `negation-translate` | 8 | 8 English → Spanish negative-pattern items |
 | 22 | Comparativos | extract | `comparative-irregular` | 4 | 4 irregular comparative forms (mejor/peor/mayor/menor) |
 | 24 | Tú vs Usted | extract | `tu-vs-usted` | 8 | 8 social-register scenarios |
-| 25 | Trampas | extract | `false-cognate` | 15 | 15 false cognate entries |
-| 31 | Reflexivos | extract | `reflexive-meaning-change` | 5 | 5 verb pairs with meaning-shift when reflexivized |
+| 25 | Trampas | extract | `false-cognate` + `sentence-correction` | 22 | 15 false cognate + 7 grammar trap sentence corrections |
+| 31 | Reflexivos | extract | `reflexive-meaning-change` + `reflexive-daily-routine` + `reciprocal-translate` | 14 | 5 meaning-change pairs + 6 daily-routine reflexives + 3 reciprocal examples |
 
-**Phase 2c.3 subtotal: 98 cards**
+**Phase 2c.3 subtotal (updated in Phase 2c.5): 121 cards (was 98)**
 
 ### Phase 2c.4 — Phrase-translation extractors (4 guides, 84 cards)
 
@@ -67,7 +67,7 @@
 
 **Phase 2c.4 subtotal: 84 cards**
 
-**Phase 2c total: 408 cards**
+**Phase 2c total: 424 cards (updated from 408 in Phase 2c.5)**
 
 ---
 
@@ -82,7 +82,7 @@
 
 ---
 
-## 4. CardKind inventory (24 total)
+## 4. CardKind inventory (27 total)
 
 ### Phase 2a (9 kinds)
 
@@ -128,6 +128,14 @@
 | `weather-expression` | Given an English weather phrase and icon, produce the Spanish expression |
 | `idiom-meaning` | Given a Spanish idiom and its literal translation, supply the English meaning |
 
+### Phase 2c.5 — PR #21 cleanup (3 kinds)
+
+| CardKind | Description |
+|----------|-------------|
+| `sentence-correction` | Given a grammatically wrong Spanish sentence, type the corrected version (explanation shown after reveal) |
+| `reflexive-daily-routine` | Given an English daily-routine action, supply the Spanish reflexive infinitive |
+| `reciprocal-translate` | Given an English "each other" sentence, produce the Spanish reciprocal-reflexive construction |
+
 ---
 
 ## 5. Architecture notes
@@ -137,6 +145,7 @@
   never duplicated.
 - The `SPANISH_CARD_COUNT` constant in `src/guides/spanish/mastery/index.ts`
   is maintained manually and must be bumped whenever extractors are added.
+  Current value: 678 (as of Phase 2c.5).
 - The `getAllSpanishCards()` function is imported only by the practice route
   chunk (`/guides/spanish/practice`). The landing page uses the plain
   `SPANISH_CARD_COUNT` constant to avoid pulling the entire extractor pool

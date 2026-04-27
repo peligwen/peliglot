@@ -669,6 +669,97 @@ export function IdiomMeaningRenderer({
 }
 
 // ---------------------------------------------------------------------------
+// sentence-correction
+// ---------------------------------------------------------------------------
+
+export function SentenceCorrectionRenderer({
+  prompt,
+  revealed = false,
+}: {
+  prompt: Extract<PromptShape, { kind: 'sentence-correction' }>;
+  revealed?: boolean;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Correct this sentence</div>
+      <div
+        style={{
+          fontSize: 22,
+          fontWeight: 700,
+          color: '#B71C1C',
+          textDecoration: 'line-through',
+          lineHeight: 1.4,
+          maxWidth: 360,
+          margin: '0 auto 8px',
+          fontFamily: 'Georgia, serif',
+        }}
+      >
+        {prompt.wrong}
+      </div>
+      <div style={{ fontSize: 14, color: '#888', marginBottom: 12 }}>↑ incorrect — type the corrected version</div>
+      {revealed && prompt.explanation && (
+        <div
+          style={{
+            background: '#fff3e0',
+            border: '1px solid #ffcc80',
+            borderRadius: 10,
+            padding: '10px 14px',
+            fontSize: 13,
+            color: '#E65100',
+            lineHeight: 1.5,
+            maxWidth: 360,
+            margin: '0 auto',
+            textAlign: 'left',
+          }}
+        >
+          {prompt.explanation}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// reflexive-daily-routine
+// ---------------------------------------------------------------------------
+
+export function ReflexiveDailyRoutineRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'reflexive-daily-routine' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Spanish reflexive verb?</div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.4, maxWidth: 340, margin: '0 auto 12px' }}>
+        {prompt.english}
+      </div>
+      <div style={CONTEXT_TEXT}>Give the Spanish reflexive infinitive</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// reciprocal-translate
+// ---------------------------------------------------------------------------
+
+export function ReciprocalTranslateRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'reciprocal-translate' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Translate (reciprocal)</div>
+      <div style={{ fontSize: 26, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.4, maxWidth: 340, margin: '0 auto 12px' }}>
+        {prompt.english}
+      </div>
+      <div style={CONTEXT_TEXT}>Use the reciprocal reflexive pronoun (nos/se)</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Dispatch — single entry-point for the practice page
 //
 // `revealed` is passed through to the two kinds whose display changes after
@@ -732,5 +823,12 @@ export function PromptRenderer({
       return <ReflexiveMeaningChangeRenderer prompt={prompt} />;
     case 'idiom-meaning':
       return <IdiomMeaningRenderer prompt={prompt} />;
+    // Phase 2c.5 additions (PR #21 cleanup)
+    case 'sentence-correction':
+      return <SentenceCorrectionRenderer prompt={prompt} revealed={revealed} />;
+    case 'reflexive-daily-routine':
+      return <ReflexiveDailyRoutineRenderer prompt={prompt} />;
+    case 'reciprocal-translate':
+      return <ReciprocalTranslateRenderer prompt={prompt} />;
   }
 }

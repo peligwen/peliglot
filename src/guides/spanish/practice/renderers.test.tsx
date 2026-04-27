@@ -31,6 +31,10 @@ const minimalPrompts: PromptShape[] = [
   { kind: 'imperative-tu', verb: 'hablar', polarity: 'affirmative' },
   { kind: 'reflexive-meaning-change', reflexive: 'irse', baseVerb: 'ir', baseMeaning: 'to go' },
   { kind: 'idiom-meaning', idiom: 'meter la pata', literal: 'to put the leg in' },
+  // Phase 2c.5 additions (PR #21 cleanup)
+  { kind: 'sentence-correction', wrong: 'Yo soy 25 años' },
+  { kind: 'reflexive-daily-routine', english: 'to wake up' },
+  { kind: 'reciprocal-translate', english: 'They greet each other.' },
 ];
 
 describe('Phase 2c PromptRenderer smoke tests', () => {
@@ -103,6 +107,27 @@ describe('Phase 2c PromptRenderer — optional fields', () => {
       />,
     );
     expect(getByText(/formal context/)).not.toBeNull();
+  });
+
+  it('renders sentence-correction with explanation hidden before reveal', () => {
+    const { container, queryByText } = render(
+      <PromptRenderer
+        prompt={{ kind: 'sentence-correction', wrong: 'Yo soy 25 años', explanation: 'Use tener for age.' }}
+        revealed={false}
+      />,
+    );
+    expect(container.firstChild).not.toBeNull();
+    expect(queryByText(/Use tener for age/)).toBeNull();
+  });
+
+  it('renders sentence-correction explanation after reveal', () => {
+    const { getByText } = render(
+      <PromptRenderer
+        prompt={{ kind: 'sentence-correction', wrong: 'Yo soy 25 años', explanation: 'Use tener for age.' }}
+        revealed={true}
+      />,
+    );
+    expect(getByText(/Use tener for age/)).not.toBeNull();
   });
 
   it('renders imperative-tu negative polarity with meaning', () => {

@@ -32,8 +32,12 @@
  *   guide27: 14 cards (weather-expression: 14 expressions)
  *   guide32: 22 cards (idiom-meaning: tener=10 + dar=6 + hacer=6)
  * Phase 2c.4 subtotal: ~84 new cards
+ * Phase 2c.5 (PR #21 cleanup — guide25 grammarTraps + guide31 daily + reciprocal): 16 new cards
+ *   guide25: +7 cards (sentence-correction: 7 grammarTrap entries)
+ *   guide31: +9 cards (reflexive-daily-routine: 6 daily verbs + reciprocal-translate: 3 reciprocal examples)
+ * Phase 2c.5 subtotal: 16 new cards
  *
- * Total: ~623 cards across 29 guides (88% coverage of 33 Spanish guides).
+ * Total: ~678 cards across 29 guides (88% coverage of 33 Spanish guides).
  *
  * SPANISH_CARD_COUNT: exported constant for the landing page lazy-load
  * optimisation — avoids eagerly importing this whole module. Update this
@@ -117,4 +121,4 @@ export function getAllSpanishCards(): ReviewCard[] {
  *   Phase 2a (~215) + Phase 2c.2 (~226) + Phase 2c.3 (~98) + Phase 2c.4 (~84) = ~623
  * Exact value confirmed by running `getAllSpanishCards().length` in vitest.
  */
-export const SPANISH_CARD_COUNT = 662;
+export const SPANISH_CARD_COUNT = 678;

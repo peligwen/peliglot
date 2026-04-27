@@ -76,6 +76,10 @@ const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'imperative-tu',
   'reflexive-meaning-change',
   'idiom-meaning',
+  // Phase 2c.5 additions (PR #21 cleanup)
+  'sentence-correction',
+  'reflexive-daily-routine',
+  'reciprocal-translate',
 ]);
 
 // How long (ms) to display the "Next review: …" message before advancing

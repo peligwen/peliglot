@@ -44,10 +44,13 @@ function questionSlug(q: string): string {
     .slice(0, 30);
 }
 
-// Hand-curated alternates derived from negWords examples in the guide
+// Hand-curated alternates derived from negWords examples in the guide.
+// Only alternates that are naturally idiomatic in the specific context
+// of each quiz sentence are included.
 const ALTERNATES: Record<number, string[]> = {
-  2: ['No como carne nunca.'],           // "I never eat meat."
-  5: ['No ha llegado todavía.'],         // "She hasn't arrived yet."
+  1: ['No llamó nadie.'],               // "Nobody called." — nadie can move post-verb with no
+  2: ['No como carne nunca.'],           // "I never eat meat." — nunca pre-verb or post-verb with no
+  5: ['No ha llegado todavía.'],         // "She hasn't arrived yet." — todavía no or no ... todavía
 };
 
 export function extract(): ReviewCard[] {

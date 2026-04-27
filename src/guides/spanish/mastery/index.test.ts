@@ -12,9 +12,10 @@ describe('getAllSpanishCards aggregator', () => {
   //   guide3: 17, guide18: 10, guide19: 23, guide20: 8, guide21: 8, guide22: 4, guide24: 8, guide25: 15, guide31: 5
   // Phase 2c.4 extractors (guides 16,23,27,32): ~84 cards
   //   guide16: 10, guide23: 38, guide27: 14, guide32: 22
-  // Expected total: ~623 cards. Tolerance band: >= 580 to allow minor future data changes.
-  it('returns at least 580 cards (Phase 2a + 2c.2 + 2c.3 + 2c.4)', () => {
-    expect(cards.length).toBeGreaterThanOrEqual(580);
+  // Phase 2c.5 (PR #21 cleanup): guide25 +7 (grammarTraps), guide31 +9 (daily+reciprocal) = 16 new cards
+  // Expected total: ~678 cards. Tolerance band: >= 660 to allow minor future data changes.
+  it('returns at least 660 cards (Phase 2a + 2c.2 + 2c.3 + 2c.4 + 2c.5)', () => {
+    expect(cards.length).toBeGreaterThanOrEqual(660);
   });
 
   it('SPANISH_CARD_COUNT constant matches getAllSpanishCards().length', () => {
@@ -62,7 +63,7 @@ describe('getAllSpanishCards aggregator', () => {
     }
   });
 
-  it('covers all 24 expected card kinds (Phase 2a + 2c.2 + 2c.3 + 2c.4)', () => {
+  it('covers all 27 expected card kinds (Phase 2a + 2c.2 + 2c.3 + 2c.4 + 2c.5)', () => {
     const kinds = new Set(cards.map(c => c.kind));
     const expectedKinds: CardKind[] = [
       // Phase 2a
@@ -93,6 +94,10 @@ describe('getAllSpanishCards aggregator', () => {
       'number-spell',
       'weather-expression',
       'idiom-meaning',
+      // Phase 2c.5 (PR #21 cleanup)
+      'sentence-correction',
+      'reflexive-daily-routine',
+      'reciprocal-translate',
     ];
     for (const kind of expectedKinds) {
       expect(kinds.has(kind)).toBe(true);

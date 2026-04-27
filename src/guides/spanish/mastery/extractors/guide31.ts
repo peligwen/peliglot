@@ -1,25 +1,27 @@
 /**
- * Extractor — Guide 31: Verbos Reflexivos — Meaning Changes (reflexive-meaning-change cards).
+ * Extractor — Guide 31: Verbos Reflexivos.
  *
- * 5 cards — one per entry in meaningChange.
- * daily-routine verbs and reciprocal section are deferred.
+ * reflexive-meaning-change: 5 cards — one per entry in meaningChange.
+ *   cardId: `spanish-31-${slugified-reflexive-form}`
+ *   prompt: { kind: 'reflexive-meaning-change', reflexive, baseVerb, baseMeaning }
+ *   answer: the reflexive meaning string
  *
- * cardId convention: `spanish-31-${slugified-reflexive-form}`
- *   e.g. `spanish-31-irse`, `spanish-31-ponerse`
+ * reflexive-daily-routine: 6 cards — one per entry in daily.
+ *   cardId: `spanish-31-daily-${slugified-reflexive-verb}`
+ *   prompt: { kind: 'reflexive-daily-routine', english }
+ *   answer: the Spanish reflexive infinitive (v)
  *
- * prompt: { kind: 'reflexive-meaning-change', reflexive, baseVerb, baseMeaning }
- * answer: the reflexive meaning string
+ * reciprocal-translate: 3 cards — one per entry in reciprocal.
+ *   cardId: `spanish-31-recip-${index}`
+ *   prompt: { kind: 'reciprocal-translate', english }
+ *   answer: the Spanish reciprocal sentence
  *
- * acceptableAnswers: when the reflexive meaning contains "/" separating
- * synonyms/alternates, include each part as an acceptable form.
- *
- *   "to leave/go away"       → alternates ["to leave", "to go away"]
- *   "to put on / become"     → alternates ["to put on", "to become"]
- *   "to take away / get along" → alternates ["to take away", "to get along"]
+ * acceptableAnswers for reflexive-meaning-change: slash-separated meanings
+ * split into individual alternates (e.g. "to leave/go away" → ["to leave", "to go away"]).
  */
 
 import type { ReviewCard } from '../../../../mastery';
-import { meaningChange } from '../../guides/data31';
+import { meaningChange, daily, reciprocal } from '../../guides/data31';
 import { slugifySpanish } from '../util';
 
 /**
@@ -43,7 +45,7 @@ function parseAlternates(m: string): string[] | undefined {
 }
 
 export function extract(): ReviewCard[] {
-  return meaningChange.map(mc => {
+  const meaningChangeCards: ReviewCard[] = meaningChange.map(mc => {
     const slug = slugifySpanish(mc.refl);
     const alternates = parseAlternates(mc.m2);
 
@@ -68,4 +70,35 @@ export function extract(): ReviewCard[] {
 
     return card;
   });
+
+  const dailyCards: ReviewCard[] = daily.map(d => {
+    const slug = slugifySpanish(d.v);
+    return {
+      cardId: `spanish-31-daily-${slug}`,
+      guideId: 31,
+      guideSlug: 'spanish',
+      kind: 'reflexive-daily-routine',
+      prompt: {
+        kind: 'reflexive-daily-routine',
+        english: d.m,
+      },
+      answer: d.v,
+      speakText: d.v,
+    };
+  });
+
+  const reciprocalCards: ReviewCard[] = reciprocal.map((r, i) => ({
+    cardId: `spanish-31-recip-${i}`,
+    guideId: 31,
+    guideSlug: 'spanish',
+    kind: 'reciprocal-translate',
+    prompt: {
+      kind: 'reciprocal-translate',
+      english: r.english,
+    },
+    answer: r.spanish,
+    speakText: r.spanish,
+  }));
+
+  return [...meaningChangeCards, ...dailyCards, ...reciprocalCards];
 }

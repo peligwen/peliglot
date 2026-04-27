@@ -1,10 +1,13 @@
 /**
  * Data for Guide 31: Verbos Reflexivos (Reflexive Verbs).
  *
- * `daily` = daily-routine verbs (deferred from mastery extraction in Phase 2c.3).
+ * `daily` = daily-routine verbs.
+ *   v = reflexive infinitive, m = English meaning, ex = example sentence
  * `meaningChange` = 5 pairs where adding 'se' radically changes the meaning.
  *   base = non-reflexive verb, m1 = base meaning,
  *   refl = reflexive form, m2 = reflexive meaning, ex = example sentence
+ * `reciprocal` = 3 reciprocal examples ("each other").
+ *   english = English sentence, spanish = Spanish sentence
  */
 
 export interface DailyVerb {
@@ -21,6 +24,11 @@ export interface MeaningChangePair {
   ex: string;
 }
 
+export interface ReciprocalExample {
+  english: string;
+  spanish: string;
+}
+
 export const daily: DailyVerb[] = [
   {v:"despertarse",m:"to wake up",ex:"Me despierto a las 7."},
   {v:"levantarse",m:"to get up",ex:"Se levanta temprano."},
@@ -28,6 +36,12 @@ export const daily: DailyVerb[] = [
   {v:"vestirse",m:"to get dressed",ex:"Me visto rápido."},
   {v:"acostarse",m:"to go to bed",ex:"Se acuestan tarde."},
   {v:"dormirse",m:"to fall asleep",ex:"Me duermo en 5 minutos."},
+];
+
+export const reciprocal: ReciprocalExample[] = [
+  { english: "They talk to each other every day.", spanish: "Se hablan todos los días." },
+  { english: "We write letters to each other.", spanish: "Nos escribimos cartas." },
+  { english: "They love each other a lot.", spanish: "Se quieren mucho." },
 ];
 
 export const meaningChange: MeaningChangePair[] = [

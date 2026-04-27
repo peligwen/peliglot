@@ -66,4 +66,10 @@ describe('guide21 extractor (negation-translate)', () => {
     const card = cards[7];
     expect(card?.answer).toBe('No hablo francés.');
   });
+
+  it('(l) spot-check: "Nobody called." → "Nadie llamó." with alternate "No llamó nadie."', () => {
+    const card = cards[1];
+    expect(card?.answer).toBe('Nadie llamó.');
+    expect(card?.acceptableAnswers).toContain('No llamó nadie.');
+  });
 });

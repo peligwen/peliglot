@@ -1,31 +1,26 @@
 /**
- * Extractor — Guide 25: Trampas — False Cognates (false-cognate cards).
+ * Extractor — Guide 25: Trampas — False Cognates + Grammar Traps.
  *
- * 15 cards — one per entry in falseCogs.
- * grammarTraps are deferred (Phase 2c.4 or later).
+ * false-cognate cards: 15 — one per entry in falseCogs.
+ * sentence-correction cards: 7 — one per entry in grammarTraps.
  *
- * cardId convention: `spanish-25-${slugified-spanish-word}`
- *   e.g. `spanish-25-embarazada`, `spanish-25-exito`
+ * cardId conventions:
+ *   false-cognate: `spanish-25-${slugified-spanish-word}`
+ *     e.g. `spanish-25-embarazada`, `spanish-25-exito`
+ *   sentence-correction: `spanish-25-trap-${slug}`
+ *     slug derived from the `wrong` sentence so IDs don't collide with false-cognate IDs
  *
- * prompt: { kind: 'false-cognate', spanish, falseFriend }
- *   where `spanish` = the Spanish word and `falseFriend` = what English
- *   speakers wrongly think it means
+ * false-cognate prompt: { kind: 'false-cognate', spanish, falseFriend }
+ *   answer: the actual Spanish meaning string from the `a` field
+ *   acceptableAnswers: slash-separated synonyms split into individual forms
  *
- * answer: the actual Spanish meaning string from the `a` field
- *
- * acceptableAnswers: when `a` contains "/" separating synonyms, each part
- * becomes an acceptable alternate.
- *
- * Examples:
- *   "to bother/annoy"       → answer "to bother/annoy", alternates ["to bother", "to annoy"]
- *   "to carry out / accomplish" → answer that, alternates ["to carry out", "to accomplish"]
- *   "to tolerate / bear"    → answer that, alternates ["to tolerate", "to bear"]
- *   "to insert / put in"    → answer that, alternates ["to insert", "to put in"]
- *   "worried / concerned"   → answer that, alternates ["worried", "concerned"]
+ * sentence-correction prompt: { kind: 'sentence-correction', wrong, explanation }
+ *   answer: the corrected sentence (`correct` field from GrammarTrap)
+ *   explanation is shown in the renderer after reveal
  */
 
 import type { ReviewCard } from '../../../../mastery';
-import { falseCogs } from '../../guides/data25';
+import { falseCogs, grammarTraps } from '../../guides/data25';
 import { slugifySpanish } from '../util';
 
 /**
@@ -52,8 +47,19 @@ function parseAlternates(a: string): string[] | undefined {
   return parts.length >= 2 ? parts : undefined;
 }
 
+/**
+ * Derive a slug from a sentence for use in a cardId. Takes the first 30 chars
+ * of the slugified text (spaces→hyphens, lowercase, drop punctuation).
+ */
+function sentenceSlug(s: string): string {
+  return slugifySpanish(s)
+    .replace(/[^a-z0-9-]/g, '')
+    .slice(0, 30)
+    .replace(/-+$/, '');
+}
+
 export function extract(): ReviewCard[] {
-  return falseCogs.map(cog => {
+  const falseCogCards: ReviewCard[] = falseCogs.map(cog => {
     const slug = slugifySpanish(cog.s, '');
     const alternates = parseAlternates(cog.a);
 
@@ -77,4 +83,24 @@ export function extract(): ReviewCard[] {
 
     return card;
   });
+
+  const grammarTrapCards: ReviewCard[] = grammarTraps.map(trap => {
+    const slug = sentenceSlug(trap.wrong);
+
+    return {
+      cardId: `spanish-25-trap-${slug}`,
+      guideId: 25,
+      guideSlug: 'spanish',
+      kind: 'sentence-correction',
+      prompt: {
+        kind: 'sentence-correction',
+        wrong: trap.wrong,
+        explanation: trap.note,
+      },
+      answer: trap.correct,
+      speakText: trap.correct,
+    };
+  });
+
+  return [...falseCogCards, ...grammarTrapCards];
 }
