@@ -85,12 +85,22 @@ describe('checkAnswer', () => {
     expect(checkAnswer('hable', 'hablé', ['habló'])).toBe('close');
   });
 
+  // Correct — empty input when candidates include empty string
+  it('returns correct for empty input when empty string is in acceptableAnswers (guide 19 none-bucket)', () => {
+    // Simulates guide 19's 'none' bucket: canonical '∅', acceptableAnswers include ''
+    expect(checkAnswer('', '∅', ['', '-', 'ninguna', 'none'])).toBe('correct');
+  });
+
+  it('returns correct for whitespace-only input when empty string is in acceptableAnswers', () => {
+    expect(checkAnswer('   ', '∅', ['', '-', 'ninguna'])).toBe('correct');
+  });
+
   // Incorrect
-  it('returns incorrect for empty input', () => {
+  it('returns incorrect for empty input when canonical is non-empty and no empty acceptable answer', () => {
     expect(checkAnswer('', 'hablo')).toBe('incorrect');
   });
 
-  it('returns incorrect for whitespace-only input', () => {
+  it('returns incorrect for whitespace-only input when no empty acceptable answer', () => {
     expect(checkAnswer('   ', 'hablo')).toBe('incorrect');
   });
 

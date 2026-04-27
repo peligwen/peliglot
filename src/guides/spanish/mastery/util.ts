@@ -48,7 +48,13 @@ export type AnswerMatch = 'correct' | 'close' | 'incorrect';
  * alternates. Returns:
  *   'correct'   — exact normalised match (case- and whitespace-insensitive)
  *   'close'     — only differs by diacritics from any candidate
- *   'incorrect' — anything else (including empty input)
+ *   'incorrect' — anything else
+ *
+ * Empty input is 'correct' IFF an empty string appears in the candidates
+ * list (i.e. the canonical or an acceptable answer IS empty). This supports
+ * guide 19's 'none' bucket cards where the conceptually correct answer is
+ * "no preposition" and acceptableAnswers includes ''. An empty input that
+ * does NOT match any candidate is 'incorrect'.
  */
 export function checkAnswer(
   typed: string,
@@ -56,9 +62,12 @@ export function checkAnswer(
   acceptable: readonly string[] = [],
 ): AnswerMatch {
   const typedN = normalizeAnswer(typed);
-  if (typedN === '') return 'incorrect';
-
   const candidates = [canonical, ...acceptable].map(normalizeAnswer);
+
+  if (typedN === '') {
+    return candidates.includes('') ? 'correct' : 'incorrect';
+  }
+
   if (candidates.some(c => c === typedN)) return 'correct';
 
   const typedStripped = stripDiacritics(typedN);
