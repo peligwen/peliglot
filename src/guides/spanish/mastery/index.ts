@@ -36,8 +36,12 @@
  *   guide25: +7 cards (sentence-correction: 7 grammarTrap entries)
  *   guide31: +9 cards (reflexive-daily-routine: 6 daily verbs + reciprocal-translate: 3 reciprocal examples)
  * Phase 2c.5 subtotal: 16 new cards
+ * Phase 3 (B.2) additions: 76 new cards
+ *   listening-recall: 64 cards (28 cardinals + 10 ordinals + 14 weather + 12 nouns)
+ *   accent-discrimination: 12 cards (6 minPairs × 2 directions)
+ * Phase 3 subtotal: 76 new cards
  *
- * Total: ~678 cards across 29 guides (88% coverage of 33 Spanish guides).
+ * Total: ~754 cards across 31 extractors (91% coverage of 33 Spanish guides).
  *
  * SPANISH_CARD_COUNT: exported constant for the landing page lazy-load
  * optimisation — avoids eagerly importing this whole module. Update this
@@ -45,6 +49,8 @@
  */
 
 import type { ReviewCard } from '../../../mastery/cards';
+import { extract as extractListeningRecall } from './extractors/listening-recall';
+import { extract as extractAccentDiscrimination } from './extractors/accent-discrimination';
 import { extract as extractGuide1 } from './extractors/guide1';
 import { extract as extractGuide2 } from './extractors/guide2';
 import { extract as extractGuide3 } from './extractors/guide3';
@@ -106,6 +112,9 @@ export function getAllSpanishCards(): ReviewCard[] {
     ...extractGuide30(),
     ...extractGuide31(),
     ...extractGuide32(),
+    // Phase 3 (B.2) additions
+    ...extractListeningRecall(),
+    ...extractAccentDiscrimination(),
   ];
 }
 
@@ -117,8 +126,9 @@ export function getAllSpanishCards(): ReviewCard[] {
  * NOTE: If you add a new extractor, bump this number to match
  * `getAllSpanishCards().length`. See docs/spanish-mastery-audit.md for context.
  *
- * Current tally (Phase 2c.4):
- *   Phase 2a (~215) + Phase 2c.2 (~226) + Phase 2c.3 (~98) + Phase 2c.4 (~84) = ~623
+ * Current tally (Phase 3 / B.2):
+ *   Phase 2a (~215) + Phase 2c.2 (~226) + Phase 2c.3 (~98) + Phase 2c.4 (~84)
+ *   + Phase 2c.5 (16) + Phase 3 (76) = 754
  * Exact value confirmed by running `getAllSpanishCards().length` in vitest.
  */
-export const SPANISH_CARD_COUNT = 678;
+export const SPANISH_CARD_COUNT = 754;

@@ -43,7 +43,10 @@ export type CardKind =
   // Phase 2c.5 additions (PR #21 cleanup)
   | 'sentence-correction'
   | 'reflexive-daily-routine'
-  | 'reciprocal-translate';
+  | 'reciprocal-translate'
+  // Phase 3 (B.2) additions
+  | 'listening-recall'
+  | 'accent-discrimination';
 
 // ---------------------------------------------------------------------------
 // Phase 2c: Tense key union for verb-conjugation-tensed
@@ -93,7 +96,10 @@ export type PromptShape =
   // Phase 2c.5 additions (PR #21 cleanup)
   | { kind: 'sentence-correction'; wrong: string; explanation?: string }
   | { kind: 'reflexive-daily-routine'; english: string }
-  | { kind: 'reciprocal-translate'; english: string };
+  | { kind: 'reciprocal-translate'; english: string }
+  // Phase 3 (B.2) additions
+  | { kind: 'listening-recall'; spokenForm: string; hint?: string }
+  | { kind: 'accent-discrimination'; word: string; questionEnglish: string; pairWord: string; pairMeaning: string };
 
 // ---------------------------------------------------------------------------
 // ReviewCard — combines content (prompt/answer) with identity fields

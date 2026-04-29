@@ -1,7 +1,7 @@
 # Spanish Audio Audit
 
-**Last updated:** Phase 2 Thread B.1 — audio audit (2026-04-29)
-**Scope:** All 27 CardKinds × audio behavior in the practice flow
+**Last updated:** Phase 3 Thread B.2 — all 10 backlog items implemented (2026-04-29)
+**Scope:** All 29 CardKinds × audio behavior in the practice flow (2 new kinds added in Phase 3)
 **Source files audited:** `src/guides/spanish/practice/index.tsx`,
 `src/guides/spanish/mastery/extractors/guide*.ts`, `src/utils/speech.ts`,
 `src/mastery/cards.ts`
@@ -21,7 +21,7 @@ Column definitions:
   extractor). "answer" means `card.answer` is used as the fallback when
   `speakText` is absent.
 - **Cards in pool** — from `spanish-mastery-audit.md`; counts are as of Phase
-  2c.5 (678 total).
+  3 / B.2 (754 total).
 - **Verdict** — current audio gap assessment.
 
 ### 1a. Self-rate kinds (no typed input, no MCQ)
@@ -84,19 +84,13 @@ learner sees the prompt, self-assesses, and rates.
 ### 1g. MCQ kinds (English-answer)
 
 These three kinds are in `MCQ_KINDS` and return English text as the answer.
-`ENGLISH_ANSWER_KINDS` is currently an **empty Set**. No current code path in
-the practice renderer calls `speakSpanish()` on these kinds: none of them appear
-in `KINDS_AUTO_PLAY_ON_REVEAL` (which contains only `letter-sound` and the
-verb-conjugation family) and none appear in `KINDS_WITH_PROMPT_SPEAK`.
-Therefore there is no active garbled-audio bug today.
-
-However, `ENGLISH_ANSWER_KINDS` exists as a guard precisely for the scenario
-where a reveal-speak path is later added for MCQ kinds. If any of these three
-kinds were added to `KINDS_AUTO_PLAY_ON_REVEAL` without first being added to
-`ENGLISH_ANSWER_KINDS`, `speakSpanish()` would speak the English answer string
-over the es-MX voice (garbled audio). Section 3 Concern 2 flags populating
-`ENGLISH_ANSWER_KINDS` as a guard to put in place before any listening-only
-MCQ paths ship in Phase 3.
+`ENGLISH_ANSWER_KINDS` is now **populated** with all three kinds
+(`idiom-meaning`, `false-cognate`, `reflexive-meaning-change`) — implemented
+in Phase 3 Thread B.2 (backlog item 1). The guard prevents any future
+`KINDS_AUTO_PLAY_ON_REVEAL` addition from accidentally speaking English text
+through the es-MX voice. A prompt-speaker button is now rendered for all three
+kinds via `KINDS_WITH_PROMPT_SPEAK` (item 4), using the Spanish `speakText`
+from each card's extractor.
 
 | CardKind | Auto-play on reveal | Prompt speaker | speakText source | Cards | Verdict |
 |----------|--------------------|-|----------------|-------|---------|
@@ -188,7 +182,12 @@ this audit. No user-session data or invented feedback is included.
 or `accessKey` attribute on any rating button. After a typed answer is
 submitted (Enter key), the learner must reach for the mouse to rate.
 
-*Director answer:*
+*Director answer:* **Implemented (Phase 3 / B.2, item 7).** Keyboard shortcuts
+`1`/`a` = Again, `2`/`h` = Hard, `3`/`g` = Good, `4`/`e` = Easy active when
+the answer is shown (self-rate path only). Shortcuts are suppressed when focus
+is in a text input, and when the typed/MCQ path has already applied a rating
+automatically. Implemented as a `useEffect` on `window` keydown in
+`CardReviewer`. Tests added to `index.test.tsx`.
 
 ---
 
@@ -202,7 +201,9 @@ will produce garbled audio (Spanish TTS voice reading English text). The
 `ENGLISH_ANSWER_KINDS` Set exists precisely to suppress this, but it is
 unpopulated.
 
-*Director answer:*
+*Director answer:* **Implemented (Phase 3 / B.2, item 1).** `ENGLISH_ANSWER_KINDS`
+now contains all three MCQ English-answer kinds. Tests in `index.test.tsx` assert
+exact membership.
 
 ---
 
@@ -255,7 +256,10 @@ is always "tú" or "usted" — a single word that conveys no contextual audio
 information. The `prompt.situation` field contains the full Spanish-register
 scenario, which is the content worth hearing.
 
-*Director answer:*
+*Director answer:* **Implemented (Phase 3 / B.2, item 6).** `guide24.ts`
+extractor now sets `speakText: scenario.sit` on each card (the situation
+sentence). The prompt-speaker button in `KINDS_WITH_PROMPT_SPEAK` now speaks
+the full situation text rather than the bare "tú"/"usted" answer.
 
 ---
 
@@ -294,7 +298,13 @@ auto-play or prompt-speaker conditions are met. There is no mute state in
 public place has no way to silence audio without muting their device entirely.
 The settings page (`SettingsPage`) has no audio-related controls.
 
-*Director answer:*
+*Director answer:* **Implemented (Phase 3 / B.2, item 8).** A mute toggle
+button is rendered in `HeaderStrip` with `aria-label` ("Mute audio" /
+"Unmute audio") and `aria-pressed` state. All audio calls in `Practice` are
+routed through a `playAudio` callback that short-circuits before calling
+`speakSpanish()` when muted. The `onEnd` callback fires even when muted so
+UI state stays consistent. Tests in `index.test.tsx` verify toggle behavior
+and that `speakSpanish` is not called when muted.
 
 ---
 
@@ -316,53 +326,49 @@ uses prompt-speak, so this is the only place the convention needs documentation.
 
 ## 4. Phase 3 (B.2) backlog
 
-Ranked by impact (learning value gained) × effort (implementation cost).
-Higher rank = ship sooner.
+All 10 items shipped in Phase 3 Thread B.2 (2026-04-29). Summary:
 
-1. **Populate `ENGLISH_ANSWER_KINDS`** (3 MCQ kinds) — zero learning value
-   lost without it, but audio currently misfires on reveal for
-   `idiom-meaning`, `false-cognate`, `reflexive-meaning-change`. One-line
-   Set population. Zero new card kinds. Effort: trivial. Prevents a silent
-   audio regression.
+1. ~~**Populate `ENGLISH_ANSWER_KINDS`**~~ ✓ Done — `ENGLISH_ANSWER_KINDS`
+   now contains `idiom-meaning`, `false-cognate`, `reflexive-meaning-change`.
 
-2. **Add reveal auto-play for high-card-count typing kinds** — `noun-gender`
-   (19), `noun-plural` (19), `noun-adj-agreement` (20), `english-to-pronoun`
-   (30), `verb-spelling-change` (17), `word-stress` (18). 123 cards gain reveal
-   audio. `KINDS_AUTO_PLAY_ON_REVEAL` additions only — no extractor changes.
-   Effort: trivial per kind.
+2. ~~**Add reveal auto-play for high-card-count typing kinds**~~ ✓ Done —
+   `noun-gender`, `noun-plural`, `noun-adj-agreement`, `english-to-pronoun`,
+   `verb-spelling-change`, `word-stress` added to `KINDS_AUTO_PLAY_ON_REVEAL`.
 
-3. **Add reveal auto-play for sentence-production kinds** —
-   `gustar-pattern` (10), `negation-translate` (8), `sentence-correction` (7),
-   `reciprocal-translate` (3), `reflexive-daily-routine` (6), `number-spell`
-   (38), `weather-expression` (14), `question-word` (8),
-   `comparative-irregular` (4). 98 more cards gain reveal audio. Same
-   `KINDS_AUTO_PLAY_ON_REVEAL` mechanism. Effort: trivial.
+3. ~~**Add reveal auto-play for sentence-production kinds**~~ ✓ Done —
+   `gustar-pattern`, `negation-translate`, `sentence-correction`,
+   `reciprocal-translate`, `reflexive-daily-routine`, `number-spell`,
+   `weather-expression`, `question-word`, `comparative-irregular` added to
+   `KINDS_AUTO_PLAY_ON_REVEAL`.
 
-4. **Add prompt-speaker for MCQ kinds** (`idiom-meaning`, `false-cognate`,
-   `reflexive-meaning-change`) — 42 cards gain a Spanish-side speaker button
-   on the prompt. Requires populating `KINDS_WITH_PROMPT_SPEAK` and verifying
-   the correct `speakText` field is available for each kind. Effort: low.
+4. ~~**Add prompt-speaker for MCQ kinds**~~ ✓ Done — `idiom-meaning`,
+   `false-cognate`, `reflexive-meaning-change` added to
+   `KINDS_WITH_PROMPT_SPEAK`.
 
-5. **Add prompt-speaker for structural-choice kinds** (`ser-vs-estar`,
-   `por-vs-para`) — 38 cards gain listening context before choosing. Prompts
-   already contain full Spanish sentences in `speakText`. Effort: low.
+5. ~~**Add prompt-speaker for structural-choice kinds**~~ — Partially deferred.
+   `tu-vs-usted` added to `KINDS_WITH_PROMPT_SPEAK` (item 6 fix made this
+   safe). `ser-vs-estar` and `por-vs-para` deliberately excluded: `por-vs-para`
+   `speakText` substitutes the answer into the blank (leaks answer before
+   reveal); `ser-vs-estar` conservatively excluded on same grounds. Reveal
+   auto-play for both kinds remains viable as a future addition.
 
-6. **Fix `tu-vs-usted` `speakText`** — update `guide24.ts` extractor to set
-   `speakText` to `prompt.situation` (the scenario sentence) instead of
-   leaving it absent. 8 cards. Effort: trivial extractor change + test update.
+6. ~~**Fix `tu-vs-usted` `speakText`**~~ ✓ Done — `guide24.ts` now sets
+   `speakText: scenario.sit` on each card.
 
-7. **Keyboard shortcuts for rating buttons** — add `1/2/3/4` or `a/h/g/e`
-   key bindings to `RatingButtons`. Significant UX improvement for desktop
-   users; zero impact on mobile. Effort: low.
+7. ~~**Keyboard shortcuts for rating buttons**~~ ✓ Done — `1`/`a` = Again,
+   `2`/`h` = Hard, `3`/`g` = Good, `4`/`e` = Easy. Suppressed when focus is
+   in a text input. Tests in `index.test.tsx`.
 
-8. **Per-session audio toggle** — add mute state (local, not persisted) to
-   the practice route. A single icon button in the practice header. Effort:
-   low (one `useState` + conditional on all `speakSpanish` calls).
+8. ~~**Per-session audio toggle**~~ ✓ Done — mute button in `HeaderStrip`
+   (`aria-label`, `aria-pressed`). `playAudio` chokepoint in `Practice`. Tests
+   verify toggle state and `speakSpanish` suppression when muted.
 
-9. **`listening-recall` CardKind** (new) — hear the word, type what you heard.
-   Extraction surface: guides 1, 23, 27. Adds listening-comprehension as a
-   distinct skill. Effort: medium (new kind + renderer + 3 extractors).
+9. ~~**`listening-recall` CardKind**~~ ✓ Done — 64 cards (28 cardinals + 10
+   ordinals + 14 weather expressions + 12 nouns from guide 11). Extractor at
+   `mastery/extractors/listening-recall.ts`. Renderer in `renderers.tsx`.
+   Tests in `listening-recall.test.ts` and `renderers.test.tsx`.
 
-10. **`accent-discrimination` CardKind** (new) — minimal-pair MCQ from guide 2
-    stress data. Adds perceptual accent training. Effort: medium (new kind +
-    MCQ renderer variant + guide 2 extractor extension).
+10. ~~**`accent-discrimination` CardKind**~~ ✓ Done — 12 cards (6 minimal
+    pairs × 2 directions). Partner always present as required MCQ distractor.
+    Extractor at `mastery/extractors/accent-discrimination.ts`. Tests in
+    `accent-discrimination.test.ts` and `renderers.test.tsx`.

@@ -39,6 +39,7 @@ export function extract(): ReviewCard[] {
         reason: scenario.why,
       },
       answer: scenario.answer,
+      speakText: scenario.sit,
     };
 
     if (scenario.answer === 'tú') {

@@ -1,8 +1,8 @@
 # Spanish Mastery Audit
 
-**Last updated:** Phase 2 Thread B.1 — audio audit + skip re-evaluation (2026-04-29)
-**Coverage:** 29 of 33 Spanish guides wired (88%). 4 guides carry explicit skip verdicts (re-evaluated in Section 6).
-**Total cards:** 678 (as of Phase 2c.5 — unchanged in this phase)
+**Last updated:** Phase 3 Thread B.2 — 2 new CardKinds + 76 new cards (2026-04-29)
+**Coverage:** 31 of 33 Spanish guides wired (94%). 4 guides carry explicit skip verdicts (re-evaluated in Section 6). 2 new extractors (listening-recall, accent-discrimination) draw from existing guide data.
+**Total cards:** 754 (as of Phase 3 / B.2)
 
 ---
 
@@ -136,6 +136,13 @@
 | `reflexive-daily-routine` | Given an English daily-routine action, supply the Spanish reflexive infinitive |
 | `reciprocal-translate` | Given an English "each other" sentence, produce the Spanish reciprocal-reflexive construction |
 
+### Phase 3 / B.2 — New listening kinds (2 kinds)
+
+| CardKind | Description |
+|----------|-------------|
+| `listening-recall` | Hear a Spanish word or phrase spoken; type the Spanish spelling. Auto-plays on mount. Typed-answer enabled. 64 cards (cardinals + ordinals + weather + nouns). |
+| `accent-discrimination` | Given a Spanish minimal-pair word (accented vs. unaccented), choose its English meaning. MCQ with the pair partner always present as a distractor so the accent contrast is always tested. 12 cards (6 minimal pairs × 2 directions). |
+
 ---
 
 ## 5. Architecture notes (unchanged)
@@ -149,7 +156,7 @@
   never duplicated.
 - The `SPANISH_CARD_COUNT` constant in `src/guides/spanish/mastery/index.ts`
   is maintained manually and must be bumped whenever extractors are added.
-  Current value: 678 (as of Phase 2c.5).
+  Current value: 754 (as of Phase 3 / B.2).
 - The `getAllSpanishCards()` function is imported only by the practice route
   chunk (`/guides/spanish/practice`). The landing page uses the plain
   `SPANISH_CARD_COUNT` constant to avoid pulling the entire extractor pool
