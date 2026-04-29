@@ -54,6 +54,14 @@ will be intrigued by jazz guitar, FreeCAD, AI prompting.
   the channel; SEO and shareable artifacts are the substrate.
 - Useful at every depth: ten-minute curiosity hit AND months-long mastery path.
 - Director's tool first. User Zero uses it daily.
+- **Spanish-first, parity-eventual.** Spanish is the live testbed because
+  User Zero is learning Spanish — every new capability proves out there
+  first. Other collections inherit each capability on a pace driven by the
+  work itself, not by the calendar. The *framework* is designed for parity
+  even when *sequencing* runs through one collection. The landing page may
+  visually differentiate collections that are further along (a richer panel
+  for the deepest one, plainer explainer cards for the rest) — that
+  asymmetry reflects current depth, not permanent design.
 
 ## Non-Goals
 
@@ -63,7 +71,8 @@ will be intrigued by jazz guitar, FreeCAD, AI prompting.
 - Not chasing scale at any cost.
 - Not abandoning the eclectic personal voice.
 - Not every collection needs a mastery layer — explainer-only is a valid
-  endpoint for some topics.
+  endpoint for some topics. Parity is a long-term direction, not a
+  uniformity mandate.
 
 ## Constraints
 
@@ -145,30 +154,41 @@ path — entirely client-side, no servers involved.
     `bulkExport` / `bulkImport` (see `src/mastery/ARCHITECTURE.md`).
 - Other 9 collections untouched.
 
-*Output: one collection takes a beginner to conversational; the pattern is
-proven for the next; zero servers, zero accounts, zero new attack surface.*
+*Output: Spanish takes a beginner to conversational; the pattern is proven
+and ready to flow into other collections; zero servers, zero accounts, zero
+new attack surface.*
 
 ### Phase 3 — Interactivity Expansion (Year 4–6)
+
+Capabilities ship in Spanish first (User Zero is the live testbed), then
+flow into other collections as the work earns it. Build everything with
+parity in mind from day one — no Spanish-shaped APIs that need un-shaping
+later.
 
 - **LLM-driven conversation practice via bring-your-own-key.** User pastes
   their Anthropic / OpenAI key; it lives in their browser; the browser calls
   the API directly. No backend, no proxy, no Peliglot-held secrets. The
-  cloud phase is not a prerequisite.
+  cloud phase is not a prerequisite. Spanish first; portable by design.
 - **Listening** (TTS prompt → typed answer) and **writing** practice with
   feedback. Both client-side; LLM grading via BYOK is optional polish.
-- **Authoring layer** — internal lesson DSL so new content is faster to write
-  than raw JSX. Designed *now* with real use cases in hand, not before.
-- Mastery layer ported to a second collection — likely English (for
-  non-natives) or jazz guitar.
-- Decision point: which collections benefit from mastery, which stay as
-  explainers.
+- **Authoring layer** — internal lesson DSL designed for cross-collection
+  reuse, with Spanish providing the first real use cases.
+- Mastery layer ports to a second collection once the system has stabilised
+  in Spanish — likely English (for non-natives) or jazz guitar.
+- Landing page begins to surface where each collection sits on the depth
+  gradient: the most-developed gets a richer panel (sections, progress,
+  deep entry points); collections still at explainer depth render as
+  cards. The asymmetry is honest about current state and is expected to
+  rebalance as parity advances.
 
-*Output: mastery is repeatable; LLM features land without infrastructure;
-the eclectic voice scales.*
+*Output: capabilities are proven and starting to propagate; the framework
+supports parity by design; the landing page tells the truth about where
+each collection is.*
 
 ### Phase 4 — Immersive Scenarios, 2D First (Year 6–8)
 
-Before 3D, do 2D scenes well.
+Before 3D, do 2D scenes well. Spanish gets the first content; the engine
+is reusable across collections from the start.
 
 - Illustrated rooms, NPC dialogue trees, transactional roleplay (ordering
   coffee, asking directions, classroom small talk).
@@ -176,15 +196,18 @@ Before 3D, do 2D scenes well.
   and **LLM-driven NPCs** (BYOK from Phase 3) for open practice.
 - DOM + CSS first for static rooms; PixiJS / Phaser / Canvas only if a
   future feature genuinely needs them.
-- Reusable scenario engine across languages.
+- Reusable scenario engine — Spanish content lands first, other collections
+  inherit the engine and add their own scenarios as the work makes sense.
 
-*Output: Peliglot starts to feel like next-gen Duolingo for hackers.*
+*Output: Peliglot starts to feel like next-gen Duolingo for hackers, with
+Spanish leading and the engine ready to spread.*
 
 ### Phase 5 — 3D and Voice (Year 8–10)
 
 WebGPU mature, browser 3D normal, voice synth/recognition excellent.
 
 - **One** beautifully crafted 3D scenario per language, not a full world.
+  Spanish first; others follow at a pace driven by the work.
 - Three.js or whatever is right by 2033.
 - Voice-driven NPC interaction. The hall-with-small-talk vision finally
   lives.
@@ -244,6 +267,12 @@ answer.
   the middle.
 - **One collection's growth never breaks another's chunk.** Lazy-loaded
   boundaries are sacred.
+- **Spanish-first, parity-eventual.** Capabilities ship in Spanish first
+  because that's where User Zero can test them. Build with parity in mind
+  from day one — frameworks should be collection-agnostic even when the
+  first content is Spanish. Other collections inherit dynamically as the
+  work earns it; uniformity is not a deadline-bound goal but a long-term
+  direction.
 - **Periodic re-grounding** every 12–18 months: sanity-check that Peliglot
   still feels like Peliglot — and revisit whether Phase C's trigger
   conditions have changed.
@@ -278,8 +307,19 @@ answer.
   can't be local, repeated user requests for sync — vs. signals that local
   + export/import is enough indefinitely. Re-evaluate at each periodic
   re-grounding.
-- Does Peliglot's eclectic voice survive mastery + 3D, or do mastery-mode
-  collections become a sub-brand?
+- **Which collection earns each capability next, and in what order?** Spanish
+  proves things out; the propagation order beyond that is driven by where
+  the work earns it (User Zero interest, content readiness, content fit).
+  Re-evaluate at each periodic re-grounding.
+- **Does Peliglot's eclectic voice survive mastery + 3D, or do mastery-mode
+  collections drift into a sub-brand?** The framework is built for parity,
+  but parity itself takes years — voice coherence during the asymmetric
+  middle is a real design problem.
+- **What does a depth-gradient landing page look like?** The deepest
+  collection needs to surface practice / mastery / scenarios without
+  shouting over the explainer cards, and the layout has to age gracefully
+  as more collections gain depth. Design problem, not a structural one —
+  solve it when Phase 3 ships, not before.
 - Should the scenario engine eventually be open-sourced (engine yes, content
   no), and if so when?
 - How do we measure "phase complete" without falling into perfectionism?
