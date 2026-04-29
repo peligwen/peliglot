@@ -12,6 +12,17 @@ export function getAllProviders(): Provider[] {
   return ['anthropic', 'openai', 'openai-compatible'];
 }
 
+/**
+ * Human-readable provider names for use in error messages and informational
+ * copy. These are sentence-friendly (e.g. "Anthropic is rate-limiting…").
+ * The conversation UI uses its own dropdown labels.
+ */
+export const PROVIDER_LABELS: Record<Provider, string> = {
+  anthropic: 'Anthropic',
+  openai: 'OpenAI',
+  'openai-compatible': 'your custom server',
+};
+
 /** Storage shape — what's persisted in localStorage per provider. */
 export type ProviderConfig =
   | { provider: 'anthropic'; apiKey: string }

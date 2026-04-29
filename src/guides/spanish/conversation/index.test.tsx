@@ -12,6 +12,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { Conversation } from './index';
 import { makeStubProvider, makeErrorStubProvider } from '../../../byok/providers/__test_stub';
 import { LlmProviderError } from '../../../byok/providers/types';
+import { resetAllCosts } from '../../../byok';
 import type { Provider } from '../../../byok';
 
 // ---------------------------------------------------------------------------
@@ -56,8 +57,9 @@ beforeEach(() => {
   vi.clearAllMocks();
   // Default: anthropic configured
   mockListConfigured.mockReturnValue(['anthropic']);
-  // Clear localStorage conversation provider preference
+  // Clear localStorage conversation provider preference and cost data
   try { localStorage.removeItem('peliglot-conversation-provider'); } catch { /* ok */ }
+  resetAllCosts();
 });
 
 afterEach(() => {
@@ -325,5 +327,130 @@ describe('error handling', () => {
 
     // Error stays; no additional calls happened
     expect(stub.calls).toHaveLength(1);
+  });
+
+  it('shows rate-limit copy with retry-after seconds when retryAfterMs is set', async () => {
+    const err = new LlmProviderError('Rate limited', 'rate-limited', 30_000);
+    const stub = makeErrorStubProvider(err);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/rate-limiting/i)).toBeInTheDocument();
+      expect(screen.getByText(/30 seconds/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows rate-limit fallback copy when retryAfterMs is undefined', async () => {
+    const err = new LlmProviderError('Rate limited', 'rate-limited');
+    const stub = makeErrorStubProvider(err);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/rate-limiting/i)).toBeInTheDocument();
+      expect(screen.getByText(/in a moment/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows network error copy with provider name', async () => {
+    const err = new LlmProviderError('Failed to fetch', 'network');
+    const stub = makeErrorStubProvider(err);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      // Provider is 'anthropic' (stub default), so "Anthropic" should appear
+      expect(screen.getByText(/couldn't reach/i)).toBeInTheDocument();
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Session cost chip
+// ---------------------------------------------------------------------------
+
+describe('session cost chip', () => {
+  it('does not show the chip before any messages', () => {
+    renderConversation(() => makeStubProvider([]));
+    expect(screen.queryByLabelText(/session cost/i)).toBeNull();
+  });
+
+  it('shows the chip with cost estimate after a successful message (known model)', async () => {
+    // Use a model that IS in the pricing table
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 100, output: 50 }, model: 'gpt-4o-mini' },
+    ]);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      const chip = screen.getByLabelText(/session cost/i);
+      expect(chip).toBeInTheDocument();
+      // Should show token counts
+      expect(chip.textContent).toMatch(/100/);
+      expect(chip.textContent).toMatch(/50/);
+      // Should show a cost estimate (≈$...)
+      expect(chip.textContent).toMatch(/≈/);
+    });
+  });
+
+  it('shows "no pricing data" copy after a successful message with an unknown model', async () => {
+    // 'stub' model is not in the pricing table
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 100, output: 50 }, model: 'my-local-llm' },
+    ]);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      const chip = screen.getByLabelText(/session cost/i);
+      expect(chip).toBeInTheDocument();
+      expect(chip.textContent).toContain('no pricing data');
+      expect(chip.textContent).toContain('my-local-llm');
+    });
+  });
+
+  it('shows "provider didn\'t report token usage" when usage is {0,0}', async () => {
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 0, output: 0 }, model: 'some-server' },
+    ]);
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      const chip = screen.getByLabelText(/session cost/i);
+      expect(chip.textContent).toMatch(/didn't report token usage/i);
+    });
   });
 });

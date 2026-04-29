@@ -19,7 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactElement, CSSProperties, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { listConfigured, getProvider } from '../../../byok';
+import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS } from '../../../byok';
 import type { LlmProvider, ChatMessage } from '../../../byok';
 import { LlmProviderError } from '../../../byok';
 import type { Provider } from '../../../byok';
@@ -39,7 +39,8 @@ const LEVEL_LABELS: Record<ConversationLevel, string> = {
   advanced: 'Advanced',
 };
 
-const PROVIDER_LABELS: Record<Provider, string> = {
+/** Labels for the provider dropdown selector. */
+const DROPDOWN_PROVIDER_LABELS: Record<Provider, string> = {
   anthropic: 'Anthropic (Claude)',
   openai: 'OpenAI (GPT)',
   'openai-compatible': 'Local / compatible',
@@ -57,6 +58,8 @@ interface Message {
   content: string;
   /** Only set for error messages — the original user content to retry. */
   retryContent?: string;
+  /** Optional inline link shown below error bubbles. */
+  link?: { to: string; label: string };
 }
 
 let msgIdCounter = 0;
@@ -265,7 +268,7 @@ function ProviderSelector({
       >
         {configured.map(p => (
           <option key={p} value={p}>
-            {PROVIDER_LABELS[p]}
+            {DROPDOWN_PROVIDER_LABELS[p]}
           </option>
         ))}
       </select>
@@ -326,6 +329,19 @@ function MessageBubble({
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start', maxWidth: '80%' }}>
         <div style={bubbleStyle}>
           {message.content}
+          {isError && message.link && (
+            <Link
+              to={message.link.to}
+              style={{
+                color: '#B71C1C',
+                fontWeight: 700,
+                marginLeft: 4,
+                textDecoration: 'underline',
+              }}
+            >
+              {message.link.label}
+            </Link>
+          )}
         </div>
         {isError && onRetry && message.retryContent && (
           <button
@@ -508,6 +524,72 @@ function NoProviderState(): ReactElement {
 }
 
 // ---------------------------------------------------------------------------
+// Session usage types — shared by SessionCostChip and Conversation
+// ---------------------------------------------------------------------------
+
+interface SessionUsage {
+  input: number;
+  output: number;
+  costUsd: number;
+  /** Model returned by the last successful call — used for "no pricing" copy. */
+  lastModel: string | null;
+  /** Number of successful API calls this session. */
+  callCount: number;
+}
+
+const ZERO_SESSION_USAGE: SessionUsage = {
+  input: 0,
+  output: 0,
+  costUsd: 0,
+  lastModel: null,
+  callCount: 0,
+};
+
+// ---------------------------------------------------------------------------
+// SessionCostChip — per-session token/cost footer
+// ---------------------------------------------------------------------------
+
+function SessionCostChip({ usage }: { usage: SessionUsage }): ReactElement {
+  const { input, output, costUsd, lastModel } = usage;
+
+  const inputFmt = input.toLocaleString();
+  const outputFmt = output.toLocaleString();
+
+  // Check if we have pricing data for the model used
+  const hasPricing = lastModel !== null && lookupPricing(lastModel) !== null;
+
+  let chipText: string;
+  if (input === 0 && output === 0) {
+    chipText = "Provider didn't report token usage.";
+  } else if (hasPricing) {
+    chipText = `This session: ${inputFmt} input + ${outputFmt} output tokens ≈ ${formatCostUsd(costUsd)}`;
+  } else {
+    const modelName = lastModel ?? 'unknown';
+    chipText = `This session: ${inputFmt} input + ${outputFmt} output tokens (no pricing data for \`${modelName}\`)`;
+  }
+
+  return (
+    <div
+      aria-label="Session cost"
+      style={{
+        marginTop: 8,
+        padding: '4px 10px',
+        background: '#f5f5f5',
+        border: '1px solid #e8e8e8',
+        borderRadius: 20,
+        fontSize: 11,
+        color: '#999',
+        textAlign: 'center',
+        fontFamily: "system-ui,'Segoe UI',sans-serif",
+        lineHeight: 1.4,
+      }}
+    >
+      {chipText}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Conversation — injectable internal component
 // ---------------------------------------------------------------------------
 
@@ -523,6 +605,7 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   const [loading, setLoading] = useState(false);
   const [configuredProviders, setConfiguredProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [sessionUsage, setSessionUsage] = useState<SessionUsage>({ ...ZERO_SESSION_USAGE });
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -587,36 +670,86 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
         const result = await provider.chat(apiMessages, { maxTokens: 512 });
         const assistantMsg: Message = { id: nextId(), role: 'assistant', content: result.text };
         setMessages(prev => [...prev, assistantMsg]);
+
+        // ---- Cost telemetry ----
+        const pricing = lookupPricing(result.model);
+        const callCostUsd = pricing
+          ? computeCostUsd(result.usage, pricing)
+          : 0;
+
+        // Persist to cumulative cost storage (only when we have pricing data)
+        if (pricing) {
+          addToCost(selectedProvider, {
+            input: result.usage.input,
+            output: result.usage.output,
+            costUsd: callCostUsd,
+          });
+        }
+
+        // Update per-session counters
+        setSessionUsage(prev => ({
+          input: prev.input + result.usage.input,
+          output: prev.output + result.usage.output,
+          costUsd: prev.costUsd + callCostUsd,
+          lastModel: result.model,
+          callCount: prev.callCount + 1,
+        }));
       } catch (err) {
-        let errorText = 'Something went wrong. Try again.';
+        const providerLabel = selectedProvider
+          ? PROVIDER_LABELS[selectedProvider]
+          : 'the provider';
+
+        let errorText = 'Something went wrong.';
+        let errorLink: Message['link'];
+
         if (err instanceof LlmProviderError) {
           switch (err.kind) {
             case 'unauthorized':
-              errorText = 'Your API key was rejected. Check your key in Settings.';
+              errorText = `Your ${providerLabel} key was rejected.`;
+              errorLink = { to: '/settings', label: 'Test it in Settings.' };
               break;
-            case 'rate-limited':
-              errorText = err.retryAfterMs
-                ? `Rate limit hit. Try again in ${Math.ceil(err.retryAfterMs / 1000)}s.`
-                : 'Rate limit hit. Try again in a moment.';
+            case 'rate-limited': {
+              const secs = err.retryAfterMs !== undefined
+                ? Math.ceil(err.retryAfterMs / 1000)
+                : null;
+              errorText = secs !== null
+                ? `${providerLabel} is rate-limiting requests. Try again in ${secs} seconds.`
+                : `${providerLabel} is rate-limiting requests. Try again in a moment.`;
               break;
+            }
             case 'mixed-content':
-              errorText = 'Mixed-content error: your local server needs HTTPS or localhost.';
+              errorText =
+                "Browsers block HTTPS pages from calling plain HTTP servers.";
+              errorLink = { to: '/settings', label: 'See settings for fixes.' };
               break;
             case 'cors-blocked':
-              errorText = "CORS error: your local server isn't allowing this origin.";
+              errorText =
+                `Your custom server didn't allow this page. Check its CORS settings — ` +
+                `add peliglot.com as an allowed origin in your server's config.`;
               break;
             case 'network':
-              errorText = "Can't reach the provider. Check your internet connection.";
+              errorText = `Couldn't reach ${providerLabel}. Check your connection.`;
+              break;
+            case 'http-error':
+              errorText = err.message
+                ? `${providerLabel} returned an error: ${err.message.slice(0, 200)}`
+                : `${providerLabel} returned an unexpected error.`;
               break;
             default:
-              errorText = err.message || errorText;
+              errorText = err.message
+                ? `Something went wrong: ${err.message.slice(0, 200)}`
+                : 'Something went wrong. Try again.';
           }
+        } else if (err instanceof Error) {
+          errorText = `Something went wrong: ${err.message.slice(0, 200)}`;
         }
+
         const errorMsg: Message = {
           id: nextId(),
           role: 'error',
           content: errorText,
           retryContent: userContent.trim(),
+          link: errorLink,
         };
         setMessages(prev => [...prev, errorMsg]);
       } finally {
@@ -813,6 +946,11 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
             >
               Shift+Enter for new line · messages are not saved
             </div>
+
+            {/* Session cost chip */}
+            {sessionUsage.callCount > 0 && (
+              <SessionCostChip usage={sessionUsage} />
+            )}
           </div>
         </>
       )}

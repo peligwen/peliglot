@@ -7,7 +7,7 @@
 
 // Types
 export type { Provider, ProviderConfig, ValidationResult } from './types';
-export { getAllProviders } from './types';
+export { getAllProviders, PROVIDER_LABELS } from './types';
 
 // Storage
 export {
@@ -32,6 +32,14 @@ export {
   DEFAULT_OPENAI_MODEL,
   getProvider,
 } from './providers';
+
+// Cost storage
+export type { ProviderCostState } from './cost-storage';
+export { readCost, addToCost, resetCost, resetAllCosts } from './cost-storage';
+
+// Pricing
+export type { ModelPricing } from './providers/pricing';
+export { lookupPricing, computeCostUsd, formatCostUsd } from './providers/pricing';
 
 // Validation — single dispatch entry point
 import type { ProviderConfig, ValidationResult } from './types';
