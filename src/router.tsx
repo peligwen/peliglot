@@ -84,6 +84,11 @@ export const router = createBrowserRouter([
     lazy: () => import('./guides/spanish/practice/index.tsx'),
     errorElement: <RouteError />,
   },
+  {
+    path: '/guides/spanish/conversation',
+    lazy: () => import('./guides/spanish/conversation/index.tsx'),
+    errorElement: <RouteError />,
+  },
   ...guideRoutes,
   // Redirect old .html URLs
   ...guideSlugs.map((slug): RouteObject => ({

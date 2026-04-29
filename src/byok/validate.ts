@@ -43,8 +43,10 @@ export function normalizeBaseUrl(baseUrl: string): string {
 /**
  * Returns true if this URL would be blocked as mixed content.
  * Applies only to non-localhost http:// URLs when the page is served over https:.
+ *
+ * Exported for reuse in provider implementations.
  */
-function isMixedContent(url: string): boolean {
+export function isMixedContent(url: string): boolean {
   if (typeof window === 'undefined') return false;
   if (window.location.protocol !== 'https:') return false;
   if (!url.startsWith('http://')) return false;

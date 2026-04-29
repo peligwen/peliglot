@@ -18,6 +18,21 @@ export {
   listConfigured,
 } from './storage';
 
+// Provider abstraction
+export type {
+  ChatMessage,
+  ChatOptions,
+  ChatResult,
+  LlmProvider,
+  TokenUsage,
+} from './providers';
+export {
+  LlmProviderError,
+  DEFAULT_ANTHROPIC_MODEL,
+  DEFAULT_OPENAI_MODEL,
+  getProvider,
+} from './providers';
+
 // Validation — single dispatch entry point
 import type { ProviderConfig, ValidationResult } from './types';
 import { validateAnthropic, validateOpenAI, validateOpenAICompatible } from './validate';
