@@ -68,6 +68,9 @@ export function LetterSoundRenderer({
     <div style={{ textAlign: 'center' }}>
       <div style={PROMPT_LABEL}>What sound does this letter make?</div>
       <div style={LARGE_GLYPH}>{prompt.letter}</div>
+      <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
+        Listen for the letter&apos;s name.
+      </div>
     </div>
   );
 }

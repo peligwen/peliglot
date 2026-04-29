@@ -170,6 +170,8 @@ renderer branch. Moderate — the MCQ infrastructure already exists.
 
 ## 3. Practice-flow tuning intake
 
+**Status (2026-04-29):** All 10 concerns triaged. 6 resolved in Phase 3 (concerns 1, 2, 5, 6, 8, 9). 3 addressed in Phase 3 follow-up cleanup (concerns 4, 7, 10). 1 deferred to a future content-pass phase (concern 3).
+
 The following observations are grounded in the source code at the time of
 this audit. No user-session data or invented feedback is included.
 
@@ -182,8 +184,9 @@ this audit. No user-session data or invented feedback is included.
 or `accessKey` attribute on any rating button. After a typed answer is
 submitted (Enter key), the learner must reach for the mouse to rate.
 
-*Director answer:* **Implemented (Phase 3 / B.2, item 7).** Keyboard shortcuts
-`1`/`a` = Again, `2`/`h` = Hard, `3`/`g` = Good, `4`/`e` = Easy active when
+*Director answer:* Resolved in Phase 3 backlog item 7. Director: trust implementer's lean (1/2/3/4 mapping, suppressed when typed-input is focused, no visual hint for now).
+
+*Implementation note:* Keyboard shortcuts `1`/`a` = Again, `2`/`h` = Hard, `3`/`g` = Good, `4`/`e` = Easy active when
 the answer is shown (self-rate path only). Shortcuts are suppressed when focus
 is in a text input, and when the typed/MCQ path has already applied a rating
 automatically. Implemented as a `useEffect` on `window` keydown in
@@ -201,9 +204,9 @@ will produce garbled audio (Spanish TTS voice reading English text). The
 `ENGLISH_ANSWER_KINDS` Set exists precisely to suppress this, but it is
 unpopulated.
 
-*Director answer:* **Implemented (Phase 3 / B.2, item 1).** `ENGLISH_ANSWER_KINDS`
-now contains all three MCQ English-answer kinds. Tests in `index.test.tsx` assert
-exact membership.
+*Director answer:* Resolved in Phase 3 backlog item 1. Director: trust implementer's lean.
+
+*Implementation note:* `ENGLISH_ANSWER_KINDS` now contains all three MCQ English-answer kinds. Tests in `index.test.tsx` assert exact membership.
 
 ---
 
@@ -217,7 +220,7 @@ answer (14 candidates). This is workable but means that after a learner has
 seen all 15 cards, every MCQ session reuses the same distractor set, making
 options predictable through repetition.
 
-*Director answer:*
+*Director answer:* Director: deferred. Investing in manual distractor sets per card is content authoring; defer to a future content-pass phase. Algorithmic distractor improvements are out of scope until then.
 
 ---
 
@@ -229,7 +232,7 @@ review count, and a single "Back to Spanish guides" `<Link>`. There is no
 (e.g. "Review all cards anyway"). A learner who completes their daily goal has
 no signal of when cards will next be due.
 
-*Director answer:*
+*Director answer:* Address: add a 'Next review in X' countdown to EmptyState (Phase 3 follow-up cleanup).
 
 ---
 
@@ -242,7 +245,7 @@ self-rates — without ever hearing the word spoken. The extractor sets
 `speakText` to the bare word (syllable dots stripped), so the audio value is
 already available.
 
-*Director answer:*
+*Director answer:* Resolved in Phase 3 backlog item 2 (word-stress added to KINDS_AUTO_PLAY_ON_REVEAL).
 
 ---
 
@@ -256,10 +259,9 @@ is always "tú" or "usted" — a single word that conveys no contextual audio
 information. The `prompt.situation` field contains the full Spanish-register
 scenario, which is the content worth hearing.
 
-*Director answer:* **Implemented (Phase 3 / B.2, item 6).** `guide24.ts`
-extractor now sets `speakText: scenario.sit` on each card (the situation
-sentence). The prompt-speaker button in `KINDS_WITH_PROMPT_SPEAK` now speaks
-the full situation text rather than the bare "tú"/"usted" answer.
+*Director answer:* Resolved in Phase 3 backlog item 6. Director: trust implementer's lean (also added to KINDS_WITH_PROMPT_SPEAK).
+
+*Implementation note:* `guide24.ts` extractor now sets `speakText: scenario.sit` on each card (the situation sentence). The prompt-speaker button in `KINDS_WITH_PROMPT_SPEAK` now speaks the full situation text rather than the bare "tú"/"usted" answer.
 
 ---
 
@@ -271,7 +273,7 @@ the rating buttons appear. For long production answers (e.g. `gustar-pattern`,
 `reciprocal-translate`), 800 ms may not give the learner enough time to read
 the canonical answer before the UI shifts to rating mode.
 
-*Director answer:*
+*Director answer:* Address: make it kind-dependent. Long-answer kinds (gustar-pattern, negation-translate, sentence-correction, reciprocal-translate, reflexive-daily-routine, weather-expression, question-word, ser-vs-estar, por-vs-para, idiom-meaning) get 1400ms; others stay at 800ms.
 
 ---
 
@@ -286,7 +288,7 @@ translation task is well-established in the SRS literature and is already
 implemented for the verb-conjugation family. The infrastructure to add these
 kinds to `KINDS_AUTO_PLAY_ON_REVEAL` is a one-line change per kind.
 
-*Director answer:*
+*Director answer:* Resolved in Phase 3 backlog item 3.
 
 ---
 
@@ -298,8 +300,9 @@ auto-play or prompt-speaker conditions are met. There is no mute state in
 public place has no way to silence audio without muting their device entirely.
 The settings page (`SettingsPage`) has no audio-related controls.
 
-*Director answer:* **Implemented (Phase 3 / B.2, item 8).** A mute toggle
-button is rendered in `HeaderStrip` with `aria-label` ("Mute audio" /
+*Director answer:* Resolved in Phase 3 backlog item 8. Director: trust implementer's lean (per-session, not persisted).
+
+*Implementation note:* A mute toggle button is rendered in `HeaderStrip` with `aria-label` ("Mute audio" /
 "Unmute audio") and `aria-pressed` state. All audio calls in `Practice` are
 routed through a `playAudio` callback that short-circuits before calling
 `speakSpanish()` when muted. The `onEnd` callback fires even when muted so
@@ -320,7 +323,7 @@ However, the prompt question reads "Letter: B" while the speaker plays "be" —
 a learner unfamiliar with the convention may find this confusing. No other kind
 uses prompt-speak, so this is the only place the convention needs documentation.
 
-*Director answer:*
+*Director answer:* Address: add a one-liner subscript under the glyph clarifying that the speaker plays the letter's name.
 
 ---
 

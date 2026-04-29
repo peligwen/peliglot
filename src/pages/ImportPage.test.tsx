@@ -62,6 +62,7 @@ function makeReturn(overrides: Partial<UseMasteryReturn> = {}): UseMasteryReturn
     xpAllTime: 0,
     exportSnapshot: vi.fn().mockResolvedValue({ schemaVersion: 1, cards: {} }),
     importSnapshot: vi.fn().mockResolvedValue({ accepted: 0, rejected: 0, unchanged: 0 }),
+    nextDueAt: null,
     ...overrides,
   };
 }

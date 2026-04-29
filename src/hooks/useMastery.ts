@@ -124,6 +124,14 @@ export interface UseMasteryReturn {
    */
   dueCards: Array<{ cardId: string; state: CardState }>;
 
+  /**
+   * Unix ms timestamp of the earliest future-due card across the full cache.
+   * `null` if there are no future-scheduled cards (empty cache, or all cards
+   * are already overdue). Used by EmptyState and any future "next review"
+   * affordance. Computed via useMemo — same cache dep as dueCards.
+   */
+  nextDueAt: number | null;
+
   /** Current streak state. Defaults to zeros / null before any reviews. */
   streak: StreakState;
 
@@ -270,6 +278,19 @@ export function useMastery(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cache]); // `now` is intentionally excluded: we don't want per-ms rerenders
 
+  const nextDueAt = useMemo<number | null>(() => {
+    const snapshotNow = Date.now();
+    let min: number | null = null;
+    for (const state of cache.values()) {
+      if (state.due > snapshotNow) {
+        if (min === null || state.due < min) {
+          min = state.due;
+        }
+      }
+    }
+    return min;
+  }, [cache]);
+
   const todaysReviewCount = useMemo<number>(() => {
     const today = toLocalDateString(new Date());
     let count = 0;
@@ -388,6 +409,7 @@ export function useMastery(
     getCardState,
     rateCard,
     dueCards,
+    nextDueAt,
     streak,
     todaysReviewCount,
     dailyGoal,

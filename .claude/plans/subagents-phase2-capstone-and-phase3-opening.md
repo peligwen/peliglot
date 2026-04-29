@@ -118,4 +118,33 @@ Parallelism opportunities:
 - 2026-04-29: Thread D target = **English-for-non-natives**. Director overrode
   planner's Jazz Guitar recommendation. Phases 7 and 8 update accordingly.
 - 2026-04-29: Director directive — drive Phase 1 to an open PR this session
-  without further check-ins. Subsequent sessions revisit pacing.
+  without further check-ins.
+- 2026-04-29 (revised): Director shifted to integration-branch model. All
+  session phases land on `integration/phase2-capstone-and-phase3-opening`.
+  PR #23 (Phase 1 → main) closed; single PR at session end covers the full
+  arc. Per-phase Opus reviewer subagents preserve quality gating without
+  GitHub-PR ceremony per phase.
+- 2026-04-29 (mid-session): Director confirmed implementer leans on Phase 3
+  judgment calls and Phase 4+ design questions:
+  - **A1 (BYOK UI placement):** section inside `/settings`, alongside Backup
+    and ShareLinkSection. Single Settings route.
+  - **A2 (BYOK disclosure copy tone):** "Your key never leaves this browser.
+    Peliglot has no backend; the browser calls Anthropic / OpenAI directly.
+    Clear site data and the key is gone." (Implementer to refine voice
+    during Phase 4 implementation.)
+  - **A3 (Default models):** Anthropic = `claude-sonnet-4-6`; OpenAI =
+    `gpt-4o-mini`. User can override per session.
+  - **A4 (Conversation NPC voice — Phase 5):** Native peer who corrects
+    gently; register scales with selected level (beginner / intermediate /
+    advanced). Avoid tutor-textbook tone.
+  - **A5 (Phase 7 English scope):** extractor-friendly subset, mirroring
+    Spanish's audit-then-extract approach. Not all 36 guides — just enough
+    to clear the 100-card target with pedagogically meaningful coverage.
+  - **B1 (Mute persistence):** stays per-session, not persisted.
+  - **B2 (Keyboard shortcut visual hint):** none for now; revisit if
+    discoverability becomes an issue.
+  - **B3 (ser-vs-estar / por-vs-para prompt-speaker):** stays excluded —
+    speakText leaks the answer. Future fix would require a redesigned
+    speakText shape (sentence with audible blank); not in this arc.
+  - **B4 (listening-recall extraction sources):** confirmed (cardinals +
+    ordinals + weather + nouns from gender data; 64 cards).

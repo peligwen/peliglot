@@ -11,8 +11,11 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom';
 import {
   Practice,
+  EmptyState,
   placeholderFor,
   getMcqOptions,
+  formatNextDue,
+  nextDueDisplayMsForCard,
   TYPING_ENABLED_KINDS,
   MCQ_KINDS,
   ENGLISH_ANSWER_KINDS,
@@ -179,7 +182,7 @@ describe('Practice surface', () => {
 
   it('renders empty state when there are no cards', async () => {
     renderPractice(adapter, []);
-    await waitFor(() => expect(screen.getByText(/all caught up/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('heading', { name: /all caught up/i })).toBeInTheDocument());
     expect(screen.getByText(/no cards are due/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /back to spanish/i })).toBeInTheDocument();
   });
@@ -1078,5 +1081,162 @@ describe('getMcqOptions', () => {
     const options = getMcqOptions(card, idiomPool, 4, [card.answer]);
     const occurrences = options.filter(o => o === card.answer).length;
     expect(occurrences).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// nextDueDisplayMsForCard
+// ---------------------------------------------------------------------------
+
+describe('nextDueDisplayMsForCard', () => {
+  const makeMinimalCard = (kind: ReviewCard['kind']): ReviewCard => ({
+    cardId: 'test',
+    guideId: 1,
+    guideSlug: 'spanish',
+    kind,
+    prompt: { kind: 'letter-sound', letter: 'A' } as ReviewCard['prompt'],
+    answer: 'answer',
+  });
+
+  it('returns 1400 for a long-answer kind (gustar-pattern)', () => {
+    expect(nextDueDisplayMsForCard(makeMinimalCard('gustar-pattern'))).toBe(1400);
+  });
+
+  it('returns 1400 for negation-translate', () => {
+    expect(nextDueDisplayMsForCard(makeMinimalCard('negation-translate'))).toBe(1400);
+  });
+
+  it('returns 1400 for idiom-meaning', () => {
+    expect(nextDueDisplayMsForCard(makeMinimalCard('idiom-meaning'))).toBe(1400);
+  });
+
+  it('returns 800 for a short-answer kind (letter-sound)', () => {
+    expect(nextDueDisplayMsForCard(makeMinimalCard('letter-sound'))).toBe(800);
+  });
+
+  it('returns 800 for verb-conjugation', () => {
+    expect(nextDueDisplayMsForCard(makeMinimalCard('verb-conjugation'))).toBe(800);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatNextDue
+// ---------------------------------------------------------------------------
+
+describe('formatNextDue', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns "All caught up" copy when nextDueAt is null', () => {
+    expect(formatNextDue(null)).toBe('All caught up. Add more cards by reviewing guides.');
+  });
+
+  it('returns "less than a minute" when diff < 60s', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + 30_000)).toBe('Next review in less than a minute.');
+  });
+
+  it('returns singular minute when diff is exactly 1 minute', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + 60_000)).toBe('Next review in 1 minute.');
+  });
+
+  it('returns plural minutes when diff is several minutes', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + 15 * 60_000)).toBe('Next review in 15 minutes.');
+  });
+
+  it('returns hours only when diff is exact hours (no leftover minutes)', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + 2 * 60 * 60_000)).toBe('Next review in 2 hours.');
+  });
+
+  it('returns singular hour', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + 60 * 60_000)).toBe('Next review in 1 hour.');
+  });
+
+  it('returns hours and minutes when there are remaining minutes', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + (2 * 60 + 30) * 60_000)).toBe('Next review in 2 hours 30 minutes.');
+  });
+
+  it('returns hour and singular minute', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    expect(formatNextDue(now + (1 * 60 + 1) * 60_000)).toBe('Next review in 1 hour 1 minute.');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// EmptyState rendering
+// ---------------------------------------------------------------------------
+
+describe('EmptyState', () => {
+  const renderEmptyState = (nextDueAt: number | null, streak = 0, reviewCount = 0) =>
+    render(
+      <MemoryRouter>
+        <EmptyState
+          todaysReviewCount={reviewCount}
+          dailyGoal={5}
+          streak={streak}
+          nextDueAt={nextDueAt}
+        />
+      </MemoryRouter>,
+    );
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('shows "All caught up" headline', () => {
+    renderEmptyState(null);
+    expect(screen.getByRole('heading', { name: /all caught up/i })).toBeTruthy();
+  });
+
+  it('shows null-nextDueAt copy when no cards are scheduled', () => {
+    renderEmptyState(null);
+    expect(screen.getByText(/add more cards by reviewing guides/i)).toBeTruthy();
+  });
+
+  it('shows minute countdown when next card is due in minutes', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    renderEmptyState(now + 15 * 60_000);
+    expect(screen.getByText(/next review in 15 minutes/i)).toBeTruthy();
+  });
+
+  it('shows hour+minute countdown for multi-hour due times', () => {
+    const now = Date.now();
+    vi.setSystemTime(now);
+    renderEmptyState(now + (3 * 60 + 20) * 60_000);
+    expect(screen.getByText(/next review in 3 hours 20 minutes/i)).toBeTruthy();
+  });
+
+  it('shows streak when streak is positive', () => {
+    renderEmptyState(null, 5);
+    // The streak text "🔥 5-day streak" contains both the count and label.
+    expect(screen.getByText(/day streak/i)).toBeTruthy();
+  });
+
+  it('renders "Back to Spanish guides" link', () => {
+    renderEmptyState(null);
+    const link = screen.getByRole('link', { name: /back to spanish guides/i });
+    expect(link).toBeTruthy();
   });
 });

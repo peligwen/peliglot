@@ -144,8 +144,24 @@ export function placeholderFor(kind: CardKind): string {
     : 'Type your answer in Spanish';
 }
 
-// How long (ms) to display the "Next review: …" message before advancing
-const NEXT_DUE_DISPLAY_MS = 800;
+// How long (ms) to display the "Next review: …" message before advancing.
+// Long-answer kinds give the learner more time to read the canonical answer.
+const LONG_ANSWER_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+  'gustar-pattern',
+  'negation-translate',
+  'sentence-correction',
+  'reciprocal-translate',
+  'reflexive-daily-routine',
+  'weather-expression',
+  'question-word',
+  'ser-vs-estar',
+  'por-vs-para',
+  'idiom-meaning',
+]);
+
+export function nextDueDisplayMsForCard(card: ReviewCard): number {
+  return LONG_ANSWER_KINDS.has(card.kind) ? 1400 : 800;
+}
 
 // ---------------------------------------------------------------------------
 // Seeded shuffle — Mulberry32, seeded by local YYYYMMDD date integer
@@ -212,6 +228,33 @@ export function formatRelative(dueMs: number): string {
   if (diffDays < 10) return `in ${Math.round(diffDays)} days`;
   const diffWeeks = diffDays / 7;
   return `in ${Math.round(diffWeeks)} weeks`;
+}
+
+// ---------------------------------------------------------------------------
+// formatNextDue — countdown copy for EmptyState
+// ---------------------------------------------------------------------------
+
+export function formatNextDue(nextDueAt: number | null): string {
+  if (nextDueAt === null) {
+    return 'All caught up. Add more cards by reviewing guides.';
+  }
+  const diffMs = nextDueAt - Date.now();
+  if (diffMs < 60_000) {
+    return 'Next review in less than a minute.';
+  }
+  const totalMinutes = Math.round(diffMs / 60_000);
+  if (diffMs < 60 * 60_000) {
+    return `Next review in ${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}.`;
+  }
+  if (diffMs < 24 * 60 * 60_000) {
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    const hourStr = `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    const minStr = mins > 0 ? ` ${mins} ${mins === 1 ? 'minute' : 'minutes'}` : '';
+    return `Next review in ${hourStr}${minStr}.`;
+  }
+  const due = new Date(nextDueAt);
+  return `Next review on ${due.toLocaleDateString()} at ${due.toLocaleTimeString()}.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -492,14 +535,16 @@ function RatingButtons({
 // EmptyState
 // ---------------------------------------------------------------------------
 
-function EmptyState({
+export function EmptyState({
   todaysReviewCount,
   dailyGoal,
   streak,
+  nextDueAt,
 }: {
   todaysReviewCount: number;
   dailyGoal: number;
   streak: number;
+  nextDueAt: number | null;
 }): ReactElement {
   const metGoal = todaysReviewCount >= dailyGoal;
   return (
@@ -539,7 +584,7 @@ function EmptyState({
       >
         No cards are due right now.
         <br />
-        Check back later or review tomorrow.
+        {formatNextDue(nextDueAt)}
       </div>
 
       <Link
@@ -858,7 +903,7 @@ function CardReviewer({
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
         if (!autoAdvance) return;
         await new Promise<void>(resolve => {
-          advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
+          advanceTimerRef.current = setTimeout(resolve, nextDueDisplayMsForCard(card));
         });
         if (mountedRef.current) {
           onAdvance(card.cardId);
@@ -867,7 +912,11 @@ function CardReviewer({
         // Swallow: parent already handles error propagation
       }
     },
-    [onRate, onAdvance, card.cardId],
+    // card.cardId and card.kind are the only card fields used; card object
+    // identity changes on every parent render but its fields don't — using
+    // the primitive fields avoids unnecessary callback recreations.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onRate, onAdvance, card.cardId, card.kind],
   );
 
   // Show Answer (self-rate) 4-button path. Always auto-advances after display.
@@ -1298,7 +1347,7 @@ export function Practice({
   adapter,
   getCards = getAllSpanishCards,
 }: PracticeProps): ReactElement {
-  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated, xpToday } =
+  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated, xpToday, nextDueAt } =
     useMastery(adapter);
 
   // Force a re-render every minute so newly-due cards surface without user action
@@ -1417,6 +1466,7 @@ export function Practice({
             todaysReviewCount={todaysReviewCount}
             dailyGoal={dailyGoal}
             streak={streak.current}
+            nextDueAt={nextDueAt}
           />
         ) : (
           <CardReviewer

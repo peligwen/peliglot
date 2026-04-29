@@ -859,3 +859,97 @@ describe('useMastery — importSnapshot', () => {
     expect(result.current.getCardState('post-import-card')).toEqual(newState);
   });
 });
+
+// ---------------------------------------------------------------------------
+// nextDueAt
+// ---------------------------------------------------------------------------
+
+describe('useMastery — nextDueAt', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns null when cache is empty', async () => {
+    vi.setSystemTime(localDate(2026, 4, 26));
+
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.nextDueAt).toBeNull();
+  });
+
+  it('returns null when all cards are overdue (due <= now)', async () => {
+    const now = localDate(2026, 4, 26).getTime();
+    vi.setSystemTime(now);
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('overdue-1', { ...makeCard('overdue-1', 1), due: now - 10_000 });
+    adapter.seed('overdue-2', { ...makeCard('overdue-2', 2), due: now - 1_000 });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.nextDueAt).toBeNull();
+  });
+
+  it('returns the minimum future due timestamp when future cards exist', async () => {
+    const now = localDate(2026, 4, 26).getTime();
+    vi.setSystemTime(now);
+
+    const future1 = now + 10 * 60_000; // 10 minutes from now
+    const future2 = now + 60 * 60_000; // 1 hour from now
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('future-far', { ...makeCard('future-far', 1), due: future2 });
+    adapter.seed('future-near', { ...makeCard('future-near', 2), due: future1 });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.nextDueAt).toBe(future1);
+  });
+
+  it('ignores overdue cards and returns only future minimum', async () => {
+    const now = localDate(2026, 4, 26).getTime();
+    vi.setSystemTime(now);
+
+    const future = now + 30 * 60_000;
+
+    const adapter = new StubRemoteAdapter();
+    adapter.seed('overdue', { ...makeCard('overdue', 1), due: now - 5_000 });
+    adapter.seed('future', { ...makeCard('future', 2), due: future });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.nextDueAt).toBe(future);
+  });
+
+  it('updates nextDueAt after rateCard reschedules a card into the future', async () => {
+    const now = localDate(2026, 4, 26).getTime();
+    vi.setSystemTime(now);
+
+    const adapter = new StubRemoteAdapter();
+    // Seed a single overdue card — nextDueAt should be null.
+    adapter.seed('card', { ...makeCard('card', 1), due: now - 1_000 });
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    expect(result.current.nextDueAt).toBeNull();
+
+    // Rating the card reschedules it into the future.
+    await act(async () => {
+      await result.current.rateCard('card', Rating.Easy);
+    });
+
+    // After rating Easy, FSRS will schedule the card well into the future.
+    expect(result.current.nextDueAt).not.toBeNull();
+    expect(result.current.nextDueAt!).toBeGreaterThan(now);
+  });
+});
