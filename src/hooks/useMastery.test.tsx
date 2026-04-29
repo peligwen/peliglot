@@ -740,3 +740,122 @@ describe('useMastery — persistence across instances', () => {
     expect(rB.current.streak.lastReviewDate).toBe('2026-04-26');
   });
 });
+
+// ---------------------------------------------------------------------------
+// exportSnapshot
+// ---------------------------------------------------------------------------
+
+describe('useMastery — exportSnapshot', () => {
+  it('returns a MasteryExport with current card state after rateCard', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    vi.setSystemTime(localDate(2026, 4, 26));
+
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    await act(async () => {
+      await result.current.rateCard('export-card', Rating.Good);
+    });
+
+    let snapshot: Awaited<ReturnType<typeof result.current.exportSnapshot>> | undefined;
+    await act(async () => {
+      snapshot = await result.current.exportSnapshot();
+    });
+
+    expect(snapshot).toBeDefined();
+    expect(snapshot!.schemaVersion).toBe(1);
+    expect(snapshot!.cards['export-card']).toBeDefined();
+    expect(snapshot!.cards['export-card'].cardId).toBe('export-card');
+
+    vi.useRealTimers();
+  });
+
+  it('returns near-empty snapshot when no cards have been reviewed', async () => {
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    let snapshot: Awaited<ReturnType<typeof result.current.exportSnapshot>> | undefined;
+    await act(async () => {
+      snapshot = await result.current.exportSnapshot();
+    });
+
+    expect(snapshot).toBeDefined();
+    expect(snapshot!.schemaVersion).toBe(1);
+    expect(Object.keys(snapshot!.cards)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// importSnapshot
+// ---------------------------------------------------------------------------
+
+describe('useMastery — importSnapshot', () => {
+  it('returns MergeReport with accepted:1 for a new card and reflects it in cache', async () => {
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    const incomingCard = makeCard('imported-card', Date.now());
+    const snapshot = { schemaVersion: 1 as const, cards: { 'imported-card': incomingCard } };
+
+    let report: Awaited<ReturnType<typeof result.current.importSnapshot>> | undefined;
+    await act(async () => {
+      report = await result.current.importSnapshot(snapshot);
+    });
+
+    expect(report).toBeDefined();
+    expect(report!.accepted).toBe(1);
+    expect(report!.rejected).toBe(0);
+    expect(report!.unchanged).toBe(0);
+
+    // Hook cache must reflect the imported card — no remount needed
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+    expect(result.current.getCardState('imported-card')).toBeDefined();
+    expect(result.current.getCardState('imported-card')!.cardId).toBe('imported-card');
+  });
+
+  it('idempotent re-import returns unchanged:N, accepted:0', async () => {
+    const adapter = new StubRemoteAdapter();
+    const ts = Date.now();
+    const card = makeCard('idempotent-card', ts);
+    adapter.seed('idempotent-card', card);
+
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    // Re-import the exact same snapshot
+    const snapshot = { schemaVersion: 1 as const, cards: { 'idempotent-card': card } };
+    let report: Awaited<ReturnType<typeof result.current.importSnapshot>> | undefined;
+    await act(async () => {
+      report = await result.current.importSnapshot(snapshot);
+    });
+
+    expect(report).toBeDefined();
+    expect(report!.accepted).toBe(0);
+    expect(report!.unchanged).toBe(1);
+  });
+
+  it('post-import rateCard works without stale hydration promise', async () => {
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    const card = makeCard('post-import-card', Date.now() - 1000);
+    const snapshot = { schemaVersion: 1 as const, cards: { 'post-import-card': card } };
+
+    await act(async () => {
+      await result.current.importSnapshot(snapshot);
+    });
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    // rateCard after import must not throw and must update cache
+    let newState: CardState | undefined;
+    await act(async () => {
+      newState = await result.current.rateCard('post-import-card', Rating.Good);
+    });
+    expect(newState).toBeDefined();
+    expect(result.current.getCardState('post-import-card')).toEqual(newState);
+  });
+});

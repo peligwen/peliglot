@@ -70,6 +70,16 @@ export const router = createBrowserRouter([
     errorElement: <RouteError />,
   },
   {
+    path: '/settings',
+    lazy: () => import('./pages/SettingsPage').then(m => ({ Component: m.SettingsPage })),
+    errorElement: <RouteError />,
+  },
+  {
+    path: '/import',
+    lazy: () => import('./pages/ImportPage').then(m => ({ Component: m.ImportPage })),
+    errorElement: <RouteError />,
+  },
+  {
     path: '/guides/spanish/practice',
     lazy: () => import('./guides/spanish/practice/index.tsx'),
     errorElement: <RouteError />,

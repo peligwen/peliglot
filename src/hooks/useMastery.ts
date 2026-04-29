@@ -22,7 +22,7 @@ import {
   defaultMasteryAdapter,
   computeXp,
 } from '../mastery';
-import type { MasteryStorageAdapter, CardState, StreakState, XpState } from '../mastery';
+import type { MasteryStorageAdapter, CardState, StreakState, XpState, MasteryExport, MergeReport } from '../mastery';
 
 export type { Rating };
 
@@ -150,6 +150,20 @@ export interface UseMasteryReturn {
    * Monotonic all-time XP total. Never decreases.
    */
   xpAllTime: number;
+
+  /**
+   * Export the full mastery snapshot from the adapter.
+   * Awaits hydration before reading so callers always get the latest state.
+   */
+  exportSnapshot: () => Promise<MasteryExport>;
+
+  /**
+   * Import a snapshot into the adapter using per-card LWW merge semantics.
+   * After import, the hook re-hydrates in-memory state (cache, streak, xp,
+   * dailyGoal) so the UI reflects the new state without a remount.
+   * Returns the MergeReport from the adapter.
+   */
+  importSnapshot: (snapshot: MasteryExport) => Promise<MergeReport>;
 }
 
 // ---------------------------------------------------------------------------
@@ -188,50 +202,56 @@ export function useMastery(
   // preventing races when a caller fires rateCard before mount resolves.
   const hydrationPromiseRef = useRef<Promise<void>>(Promise.resolve());
 
-  // Re-hydrate whenever the adapter reference changes (e.g. swapped in tests).
-  useEffect(() => {
+  // ---------------------------------------------------------------------------
+  // Private hydration helper — factored out so both the mount effect and
+  // importSnapshot can call the same logic.
+  // ---------------------------------------------------------------------------
+
+  const hydrate = useCallback(async (a: MasteryStorageAdapter): Promise<void> => {
     setIsHydrated(false);
     setCache(new Map());
     setStreak(DEFAULT_STREAK);
     setDailyGoalState(DEFAULT_DAILY_GOAL);
     setXp(DEFAULT_XP);
 
-    const hydrationPromise = (async () => {
-      const snapshot = await adapter.bulkExport();
+    const snapshot = await a.bulkExport();
 
-      const newCache = new Map<string, CardState>(
-        Object.entries(snapshot.cards),
-      );
+    const newCache = new Map<string, CardState>(
+      Object.entries(snapshot.cards),
+    );
 
-      setCache(newCache);
-      setStreak(snapshot.streak ?? DEFAULT_STREAK);
-      setDailyGoalState(snapshot.settings?.dailyGoal ?? DEFAULT_DAILY_GOAL);
+    setCache(newCache);
+    setStreak(snapshot.streak ?? DEFAULT_STREAK);
+    setDailyGoalState(snapshot.settings?.dailyGoal ?? DEFAULT_DAILY_GOAL);
 
-      // Restore XP with day-rollover detection.
-      // If the stored dayKey is from a previous day, reset xpToday to 0.
-      // This ensures that opening the app on a new day immediately reflects
-      // the correct today-count without requiring a rateCard call.
-      const storedXp = snapshot.xp ?? { ...DEFAULT_XP };
-      const todayKey = toLocalDateString(new Date());
-      let hydratedXp: XpState;
-      if (storedXp.dayKey !== null && storedXp.dayKey !== todayKey) {
-        // Day rolled over since last persisted XP — reset today count.
-        hydratedXp = { allTime: storedXp.allTime, today: 0, dayKey: todayKey };
-        // Persist the rollover so future hydrations start clean.
-        await adapter.writeMeta({ xp: hydratedXp });
-      } else {
-        hydratedXp = storedXp;
-      }
-      setXp(hydratedXp);
+    // Restore XP with day-rollover detection.
+    // If the stored dayKey is from a previous day, reset xpToday to 0.
+    // This ensures that opening the app on a new day immediately reflects
+    // the correct today-count without requiring a rateCard call.
+    const storedXp = snapshot.xp ?? { ...DEFAULT_XP };
+    const todayKey = toLocalDateString(new Date());
+    let hydratedXp: XpState;
+    if (storedXp.dayKey !== null && storedXp.dayKey !== todayKey) {
+      // Day rolled over since last persisted XP — reset today count.
+      hydratedXp = { allTime: storedXp.allTime, today: 0, dayKey: todayKey };
+      // Persist the rollover so future hydrations start clean.
+      await a.writeMeta({ xp: hydratedXp });
+    } else {
+      hydratedXp = storedXp;
+    }
+    setXp(hydratedXp);
 
-      setIsHydrated(true);
-    })();
+    setIsHydrated(true);
+  }, []); // state setters are stable references — empty deps is correct
 
+  // Re-hydrate whenever the adapter reference changes (e.g. swapped in tests).
+  useEffect(() => {
+    const hydrationPromise = hydrate(adapter);
     hydrationPromiseRef.current = hydrationPromise;
     // We don't return a cleanup that cancels the promise — React StrictMode
     // double-fires effects, but the state setters after an unmounted component
     // are no-ops in React 18.
-  }, [adapter]);
+  }, [adapter, hydrate]);
 
   // ---------------------------------------------------------------------------
   // Derived state
@@ -340,6 +360,30 @@ export function useMastery(
     [adapter],
   );
 
+  const exportSnapshot = useCallback(
+    async (): Promise<MasteryExport> => {
+      await hydrationPromiseRef.current;
+      return adapter.bulkExport();
+    },
+    [adapter],
+  );
+
+  const importSnapshot = useCallback(
+    async (snapshot: MasteryExport): Promise<MergeReport> => {
+      await hydrationPromiseRef.current;
+      const report = await adapter.bulkImport(snapshot);
+      // Re-hydrate in-memory state so the UI reflects the post-import state
+      // without requiring a remount. Assign the new promise so subsequent
+      // callers (e.g. rateCard) await the post-import hydration, not the
+      // stale mount-time promise.
+      const rehydratePromise = hydrate(adapter);
+      hydrationPromiseRef.current = rehydratePromise;
+      await rehydratePromise;
+      return report;
+    },
+    [adapter, hydrate],
+  );
+
   return {
     getCardState,
     rateCard,
@@ -351,5 +395,7 @@ export function useMastery(
     isHydrated,
     xpToday: xp.today,
     xpAllTime: xp.allTime,
+    exportSnapshot,
+    importSnapshot,
   };
 }
