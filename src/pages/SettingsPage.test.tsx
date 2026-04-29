@@ -34,6 +34,16 @@ vi.mock('../components/ShareLinkSection', () => ({
   ),
 }));
 
+// Mock ApiKeysSection so localStorage/fetch calls don't interfere with
+// the existing BackupSection and download/import tests.
+vi.mock('../components/ApiKeysSection', () => ({
+  ApiKeysSection: () => (
+    <section aria-labelledby="api-keys-heading">
+      <h2 id="api-keys-heading">AI keys</h2>
+    </section>
+  ),
+}));
+
 // Mock URL.createObjectURL + revokeObjectURL (jsdom doesn't implement them)
 const mockCreateObjectURL = vi.fn().mockReturnValue('blob:mock-url');
 const mockRevokeObjectURL = vi.fn();
@@ -134,6 +144,11 @@ describe('SettingsPage — render', () => {
   it('renders the Coming soon section', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /share links/i })).toBeInTheDocument();
+  });
+
+  it('renders the AI keys section (ApiKeysSection mounted between Backup and ShareLinks)', () => {
+    renderPage();
+    expect(screen.getByRole('heading', { name: /ai keys/i })).toBeInTheDocument();
   });
 });
 

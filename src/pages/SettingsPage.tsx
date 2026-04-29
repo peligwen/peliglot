@@ -14,6 +14,7 @@ import { migrate } from '../mastery/migrations';
 import { ImportPreview } from '../components/ImportPreview';
 import { MergeReportView } from '../components/MergeReportView';
 import { ShareLinkSection } from '../components/ShareLinkSection';
+import { ApiKeysSection } from '../components/ApiKeysSection';
 import type { MasteryExport, MergeReport } from '../mastery';
 import { colors, spacing, radii, typography } from '../styles/tokens';
 
@@ -365,6 +366,7 @@ export function SettingsPage(): ReactElement {
         }}
       >
         <BackupSection />
+        <ApiKeysSection />
         <ShareLinkSection />
       </main>
 

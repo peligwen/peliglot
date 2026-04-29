@@ -33,6 +33,9 @@ const KNOWN_DOMAINS = [
   'ko-fi.com',
   'static.cloudflareinsights.com',
   'cloudflareinsights.com',
+  // BYOK: contacted only when the user explicitly tests their own API key
+  'api.anthropic.com',
+  'api.openai.com',
 ];
 
 // Hostnames that may appear in code but are not actually contacted. Comments,
@@ -47,10 +50,14 @@ const NON_RUNTIME_HOSTS = [
   'opengraph.xyz',      // referenced in PR description, not fetched
   'cloudflare.com',     // human-facing dashboard link
   'github.com',         // links in the analytics page
-  'anthropic.com',      // commit metadata
+  'anthropic.com',      // commit metadata (non-api subdomain)
   'claude.com',         // commit metadata
   'w3.org',             // SVG XML namespace strings, not fetched
   'irs.gov',            // educational citation in math/guide29
+  // BYOK placeholder/example URLs — never fetched by production code
+  'ts.net',             // Tailscale example URLs in BYOK UI copy and tests
+  'my-home-server.local', // example hostname in test
+  'your-tunnel',        // placeholder URL fragment in UI copy
 ];
 
 const TRANSPARENCY_FILES = [ANALYTICS_MD, ANALYTICS_TSX];

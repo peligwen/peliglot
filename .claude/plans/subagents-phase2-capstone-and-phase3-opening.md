@@ -148,3 +148,12 @@ Parallelism opportunities:
     speakText shape (sentence with audible blank); not in this arc.
   - **B4 (listening-recall extraction sources):** confirmed (cardinals +
     ordinals + weather + nouns from gender data; 64 cards).
+- 2026-04-29 (Phase 4 expansion): Director added a third provider variant —
+  `openai-compatible` (custom endpoint). User supplies base URL + model
+  name + (optional) API key, pointing the conversation surface at a local
+  LLM (Ollama, llama.cpp, LM Studio, vLLM, etc.) or any OpenAI-shaped
+  endpoint. Doubles down on local-first: requests can stay entirely on
+  the user's home network. Director's call: ship in Phase 4, not later;
+  API key optional for the custom variant. Mixed-content / CORS friction
+  surfaced via friendly error copy (Tailscale / Cloudflare Tunnel /
+  localhost as documented workarounds).

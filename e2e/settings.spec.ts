@@ -39,7 +39,10 @@ test('navigates to /settings and shows expected sections', async ({ page }) => {
   await expect(page.getByRole('button', { name: /download my progress/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /import from file/i })).toBeVisible();
 
-  // Coming soon section
+  // AI keys section
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible();
+
+  // Share links section
   await expect(page.getByRole('heading', { name: /share links/i })).toBeVisible();
 });
 
@@ -297,4 +300,39 @@ test('visiting a valid share link twice applies idempotently (second visit: unch
   // Second apply should show unchanged: 1 (card already applied with same timestamp)
   const resultRegion = page.getByRole('region', { name: /import result/i });
   await expect(resultRegion.getByText('Cards unchanged')).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// API Keys section — custom endpoint
+// ---------------------------------------------------------------------------
+
+test('custom endpoint: filling form and clicking Test shows an error (no real server), nothing saved', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // AI keys section should be visible
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible({ timeout: 6000 });
+
+  // Expand the Custom endpoint card
+  await page.getByRole('button', { name: /custom endpoint/i }).click();
+
+  // Fill in the form
+  await page.getByLabel(/base url for custom endpoint/i).fill('http://localhost:11434/v1');
+  await page.getByLabel(/model name for custom endpoint/i).fill('llama3');
+
+  // Click Test — no real server so we expect a network error or cors-blocked message
+  await page.getByRole('button', { name: /^test$/i }).click();
+
+  // Wait for an error message to appear (either cors-blocked or network-error)
+  await expect(page.getByRole('alert')).toBeVisible({ timeout: 10000 });
+
+  // Nothing should have been saved to localStorage
+  const config = await page.evaluate(() => {
+    try {
+      return localStorage.getItem('peliglot-byok-openai-compatible');
+    } catch {
+      return null;
+    }
+  });
+  expect(config).toBeNull();
 });
