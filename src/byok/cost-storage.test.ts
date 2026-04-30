@@ -299,6 +299,39 @@ describe('getTodayCost', () => {
     // Cumulative still reflects both
     expect(state.totalInputTokens).toBe(300);
   });
+
+  it('pruning is DST-stable around US spring-forward boundary', () => {
+    // 2026-03-08 is the US DST transition (spring forward); use 2026-03-09 as today.
+    // With 30-day retention and the `> cutoff` semantic, cutoff = 2026-02-07,
+    // so 2026-02-07 is on the boundary and gets pruned, 2026-02-08 is kept.
+    // The point of this test is that the DST shortfall (a 23-hour day) doesn't
+    // perturb the symbolic local-date arithmetic.
+    localStorage.setItem(
+      'peliglot-byok-cost-anthropic',
+      JSON.stringify({
+        totalInputTokens: 0,
+        totalOutputTokens: 0,
+        totalCostUsd: 0,
+        lastUpdated: 0,
+        byDate: {
+          '2026-02-06': { input: 1, output: 1, costUsd: 0.01 }, // 31 days prior — prune
+          '2026-02-07': { input: 1, output: 1, costUsd: 0.01 }, // 30 days prior boundary — prune (`>`)
+          '2026-02-08': { input: 1, output: 1, costUsd: 0.01 }, // 29 days prior — keep
+          '2026-03-09': { input: 5, output: 5, costUsd: 0.05 }, // today — keep
+        },
+      }),
+    );
+
+    // Trigger a write to apply pruning. Use today = 2026-03-09 12:00 local.
+    const today = new Date(2026, 2, 9, 12, 0, 0);
+    addToCost('anthropic', { input: 0, output: 0, costUsd: 0 }, today);
+
+    const state = readCost('anthropic');
+    expect(state.byDate['2026-02-06']).toBeUndefined();
+    expect(state.byDate['2026-02-07']).toBeUndefined();
+    expect(state.byDate['2026-02-08']).toBeDefined();
+    expect(state.byDate['2026-03-09']).toBeDefined();
+  });
 });
 
 // ---------------------------------------------------------------------------

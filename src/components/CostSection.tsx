@@ -193,6 +193,7 @@ function DailyLimitRow({
           aria-valuenow={Math.round(fillPct)}
           aria-valuemin={0}
           aria-valuemax={100}
+          aria-valuetext={`${formatCostUsd(today.costUsd)} of ${formatCostUsd(cap)}`}
           style={{
             height: 6,
             background: colors.border.subtle,
@@ -418,8 +419,9 @@ export function CostSection(): ReactElement {
               lineHeight: typography.lineHeight.relaxed,
             }}
           >
-            Set a per-provider daily USD cap. When today's spend reaches the cap, new
-            requests are blocked until tomorrow (local time). Leave blank for no limit.
+            Set a per-provider daily USD cap. When today's spend reaches the cap, the next
+            request is blocked until tomorrow (local time). The cap may be overshot by one
+            request — the call that crosses the limit still completes. Leave blank for no limit.
           </p>
           <div>
             {configured.map(provider => (
