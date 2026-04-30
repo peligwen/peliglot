@@ -12,7 +12,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { Conversation } from './index';
 import { makeStubProvider, makeErrorStubProvider } from '../../../byok/providers/__test_stub';
 import { LlmProviderError } from '../../../byok/providers/types';
-import { resetAllCosts } from '../../../byok';
+import { resetAllCosts, getUnpricedModelIds } from '../../../byok';
 import type { Provider } from '../../../byok';
 
 // ---------------------------------------------------------------------------
@@ -631,5 +631,109 @@ describe('sliding context window', () => {
       m => m.role === 'user' || m.role === 'assistant',
     );
     expect(userOrAssistant[0]!.role).toBe('user');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Unpriced-model tracking
+// ---------------------------------------------------------------------------
+
+describe('unpriced-model tracking', () => {
+  beforeEach(() => {
+    // Stub the cost-storage unpriced key so each test sees a clean slate.
+    try {
+      localStorage.removeItem('peliglot-byok-unpriced-anthropic');
+    } catch { /* ok */ }
+  });
+
+  it('records the model ID when pricing is missing', async () => {
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 100, output: 50 }, model: 'mystery-model-x' },
+    ]);
+    // Silence the expected console.warn so the test output stays clean.
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderConversation(() => stub);
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      expect(getUnpricedModelIds('anthropic')).toContain('mystery-model-x');
+    });
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
+  it('does not record when pricing is available', async () => {
+    // claude-sonnet-4-6 is in pricing.ts
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 100, output: 50 }, model: 'claude-sonnet-4-6' },
+    ]);
+    renderConversation(() => stub);
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    // Wait for the assistant message to land before asserting the negative.
+    await waitFor(() => {
+      expect(stub.calls.length).toBe(1);
+    });
+    expect(getUnpricedModelIds('anthropic')).toEqual([]);
+  });
+
+  it('shows an inline warning above the input after an unpriced call lands', async () => {
+    const stub = makeStubProvider([
+      { text: '¡Hola!', usage: { input: 100, output: 50 }, model: 'mystery-model-x' },
+    ]);
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    renderConversation(() => stub);
+
+    // Pre-condition: no warning before any call
+    expect(screen.queryByText(/daily limit doesn't apply/i)).toBeNull();
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/daily limit doesn't apply/i)).toBeInTheDocument();
+    });
+    expect(screen.getByRole('link', { name: /details in settings/i })).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Cap-exceeded error handling
+// ---------------------------------------------------------------------------
+
+describe('cap-exceeded error', () => {
+  it('shows a friendly error and link to Settings on cap-exceeded', async () => {
+    const stub = makeErrorStubProvider(
+      new LlmProviderError(
+        'Daily cap of $1.00 reached for Anthropic (spent $1.20 today). Adjust the limit in Settings or wait until tomorrow.',
+        'cap-exceeded',
+      ),
+    );
+    renderConversation(() => stub);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    await waitFor(() => {
+      // The error bubble surfaces the underlying message verbatim
+      expect(screen.getByText(/daily cap of \$1\.00 reached/i)).toBeInTheDocument();
+      // Link to Settings is rendered
+      expect(screen.getByRole('link', { name: /adjust your daily limit/i })).toBeInTheDocument();
+    });
   });
 });

@@ -35,8 +35,19 @@ export {
 } from './providers';
 
 // Cost storage
-export type { ProviderCostState } from './cost-storage';
-export { readCost, addToCost, resetCost, resetAllCosts } from './cost-storage';
+export type { ProviderCostState, DailyBucket } from './cost-storage';
+export {
+  readCost,
+  addToCost,
+  resetCost,
+  resetAllCosts,
+  getTodayCost,
+  getDailyCap,
+  setDailyCap,
+  markUnpricedCall,
+  getUnpricedModelIds,
+  MAX_DAILY_CAP_USD,
+} from './cost-storage';
 
 // Pricing
 export type { ModelPricing } from './providers/pricing';

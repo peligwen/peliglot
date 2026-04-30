@@ -19,7 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactElement, CSSProperties, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS, CONVERSATION_PROVIDER_KEY } from '../../../byok';
+import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS, CONVERSATION_PROVIDER_KEY, markUnpricedCall, getUnpricedModelIds } from '../../../byok';
 import type { LlmProvider, ChatMessage } from '../../../byok';
 import { LlmProviderError } from '../../../byok';
 import type { Provider } from '../../../byok';
@@ -619,6 +619,10 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   // dropping oldest turns from the model's context. Surfaced in UI as a
   // small notice; older messages remain visible in the thread.
   const [historyTruncated, setHistoryTruncated] = useState(false);
+  // True when the active provider has called any model without pricing data.
+  // Surfaced as an inline warning so the user knows the daily cap can't engage
+  // for those models — Settings is too far away when this is the active risk.
+  const [hasUnpricedCalls, setHasUnpricedCalls] = useState(false);
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -644,6 +648,17 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
     const initial = persisted && configured.includes(persisted) ? persisted : configured[0]!;
     setSelectedProvider(initial);
   }, []);
+
+  // Re-check unpriced state whenever the selected provider changes — getUnpricedModelIds
+  // self-heals against current pricing, so a returning user who already had
+  // unpriced calls will see the warning until those models gain pricing entries.
+  useEffect(() => {
+    if (selectedProvider) {
+      setHasUnpricedCalls(getUnpricedModelIds(selectedProvider).length > 0);
+    } else {
+      setHasUnpricedCalls(false);
+    }
+  }, [selectedProvider]);
 
   // Cleanup: abort any in-flight request and mark unmounted.
   // Re-init mountedRef.current = true on every effect run so StrictMode's
@@ -740,13 +755,21 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
           ? computeCostUsd(result.usage, pricing)
           : 0;
 
-        // Persist to cumulative cost storage (only when we have pricing data)
+        // Persist to cumulative cost storage (only when we have pricing data).
+        // Without pricing we can't compute cost, which means the daily cap can't
+        // engage for this model — record it so the UI can warn the user.
         if (pricing) {
           addToCost(selectedProvider, {
             input: result.usage.input,
             output: result.usage.output,
             costUsd: callCostUsd,
           });
+        } else {
+          markUnpricedCall(selectedProvider, result.model);
+          setHasUnpricedCalls(true);
+          console.warn(
+            `[peliglot] No pricing data for ${selectedProvider} model "${result.model}" — daily cap is not enforcing this model.`,
+          );
         }
 
         // Update per-session counters
@@ -790,6 +813,10 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
               errorText =
                 "Browsers block HTTPS pages from calling plain HTTP servers.";
               errorLink = { to: '/settings', label: 'See settings for fixes.' };
+              break;
+            case 'cap-exceeded':
+              errorText = err.message;
+              errorLink = { to: '/settings', label: 'Adjust your daily limit in Settings.' };
               break;
             case 'cors-blocked':
               errorText =
@@ -933,6 +960,32 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
               boxSizing: 'border-box',
             }}
           >
+            {/* Unpriced-model warning — the daily cap can only enforce against
+                models with pricing data. If the active provider has called an
+                unpriced model, the cap silently doesn't apply for that model.
+                Surface it where the user is doing the spending, not just in Settings. */}
+            {hasUnpricedCalls && (
+              <div
+                role="alert"
+                style={{
+                  marginBottom: 8,
+                  padding: '6px 10px',
+                  background: '#FFF8E7',
+                  border: '1px solid #F0E4C4',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  color: '#8B6914',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  lineHeight: 1.4,
+                }}
+              >
+                ⚠ Your daily limit doesn't apply to this model — Peliglot has no pricing data for it.{' '}
+                <Link to="/settings" style={{ color: '#8B6914', fontWeight: 700 }}>
+                  Details in Settings
+                </Link>
+              </div>
+            )}
+
             {/* Truncation notice — shown once history has exceeded MAX_HISTORY_MESSAGES.
                 Older messages remain visible in the thread but no longer go to the model. */}
             {historyTruncated && (

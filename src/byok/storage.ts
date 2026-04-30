@@ -6,7 +6,7 @@
  */
 
 import type { Provider, ProviderConfig } from './types';
-import { resetAllCosts } from './cost-storage';
+import { resetAllCosts, clearAllCaps, clearAllUnpriced } from './cost-storage';
 
 // ---------------------------------------------------------------------------
 // Storage keys
@@ -115,6 +115,8 @@ export function clearAll(): void {
     safeRemoveItem(storageKey(provider));
   }
   resetAllCosts();
+  clearAllCaps();
+  clearAllUnpriced();
   safeRemoveItem(CONVERSATION_PROVIDER_KEY);
 }
 

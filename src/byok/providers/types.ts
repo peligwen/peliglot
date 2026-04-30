@@ -53,6 +53,7 @@ export class LlmProviderError extends Error {
       | 'cors-blocked'
       | 'network'
       | 'http-error'
+      | 'cap-exceeded'
       | 'unknown',
     public readonly retryAfterMs?: number, // populated for rate-limited
     public readonly httpStatus?: number,

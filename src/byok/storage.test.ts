@@ -127,6 +127,28 @@ describe('clearAll', () => {
     expect(localStorage.getItem('peliglot-conversation-provider')).toBeNull();
   });
 
+  it('also clears daily caps', () => {
+    writeConfig({ provider: 'anthropic', apiKey: 'key-a' });
+    localStorage.setItem('peliglot-byok-cap-anthropic', '1.5');
+    localStorage.setItem('peliglot-byok-cap-openai', '0.5');
+
+    clearAll();
+
+    expect(localStorage.getItem('peliglot-byok-cap-anthropic')).toBeNull();
+    expect(localStorage.getItem('peliglot-byok-cap-openai')).toBeNull();
+  });
+
+  it('also clears unpriced-model records', () => {
+    writeConfig({ provider: 'anthropic', apiKey: 'key-a' });
+    localStorage.setItem('peliglot-byok-unpriced-anthropic', JSON.stringify(['x']));
+    localStorage.setItem('peliglot-byok-unpriced-openai', JSON.stringify(['y']));
+
+    clearAll();
+
+    expect(localStorage.getItem('peliglot-byok-unpriced-anthropic')).toBeNull();
+    expect(localStorage.getItem('peliglot-byok-unpriced-openai')).toBeNull();
+  });
+
   it('is a no-op when nothing is stored', () => {
     expect(() => clearAll()).not.toThrow();
   });
