@@ -633,7 +633,11 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   }, []);
 
   // Cleanup: abort any in-flight request and mark unmounted.
+  // Re-init mountedRef.current = true on every effect run so StrictMode's
+  // dev-mode double-invoke (mount → cleanup → remount) doesn't leave the ref
+  // permanently false and silently swallow subsequent errors.
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       abortRef.current?.abort();
