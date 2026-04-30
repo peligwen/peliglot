@@ -6,6 +6,7 @@
  */
 
 import type { Provider, ProviderConfig } from './types';
+import { resetAllCosts } from './cost-storage';
 
 // ---------------------------------------------------------------------------
 // Storage keys
@@ -16,6 +17,14 @@ const STORAGE_KEYS: Record<Provider, string> = {
   openai: 'peliglot-byok-openai',
   'openai-compatible': 'peliglot-byok-openai-compatible',
 };
+
+/**
+ * Cross-collection by design: BYOK is per-user, not per-collection.
+ * If/when other collections add conversation surfaces, they share this key
+ * so the user picks a provider once. Exported so the conversation route and
+ * clearAll() agree on the canonical key.
+ */
+export const CONVERSATION_PROVIDER_KEY = 'peliglot-conversation-provider';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -96,11 +105,17 @@ export function clearConfig(provider: Provider): void {
   safeRemoveItem(storageKey(provider));
 }
 
-/** Clear all BYOK configs. */
+/**
+ * Clear all BYOK state — provider configs, cumulative cost data, and the
+ * cached conversation-provider preference. After this returns, no BYOK-related
+ * traces remain in localStorage. Matches the "Forget all keys" disclosure.
+ */
 export function clearAll(): void {
   for (const provider of Object.keys(STORAGE_KEYS) as Provider[]) {
     safeRemoveItem(storageKey(provider));
   }
+  resetAllCosts();
+  safeRemoveItem(CONVERSATION_PROVIDER_KEY);
 }
 
 /**

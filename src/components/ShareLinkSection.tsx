@@ -74,7 +74,6 @@ function QrDisplay({ svgMarkup }: { svgMarkup: string }): ReactElement {
   // We can't avoid innerHTML here — the qrcode lib returns an SVG string.
   // Content source: qrcode-generator's createSvgTag(), called with a URL
   // we built from the user's own data. Not user-supplied HTML.
-  // biome-ignore lint/security/noDangerouslySetInnerHtml: QR SVG is machine-generated from our own URL
   return <div ref={ref} data-testid="qr-svg-container" style={{ width: '100%', lineHeight: 0 }} dangerouslySetInnerHTML={{ __html: svgMarkup }} />;
 }
 
@@ -250,7 +249,7 @@ export function ShareLinkSection(): ReactElement {
 
       {/* No-compression fallback */}
       {copyPhase === 'no-compression' && (
-        <div style={{
+        <div role="status" aria-live="polite" style={{
           background: '#FFF8E7',
           border: '1px solid #F0E4C4',
           borderRadius: radii.base,
@@ -266,7 +265,7 @@ export function ShareLinkSection(): ReactElement {
 
       {/* Clipboard error */}
       {copyPhase === 'error' && copyError && (
-        <div style={{
+        <div role="alert" style={{
           background: '#FFEBEE',
           border: '1px solid #FFCDD2',
           borderRadius: radii.base,
@@ -326,7 +325,7 @@ export function ShareLinkSection(): ReactElement {
           }}
         >
           {qrError && (
-            <div style={{
+            <div role="alert" style={{
               fontSize: typography.fontSize.base,
               color: '#C62828',
               lineHeight: typography.lineHeight.relaxed,
@@ -345,14 +344,22 @@ export function ShareLinkSection(): ReactElement {
         </div>
       )}
 
-      {/* Size note */}
-      <p style={{
-        margin: 0,
-        fontSize: typography.fontSize.sm,
-        color: colors.text.tertiary,
-        lineHeight: typography.lineHeight.relaxed,
-      }}>
-        Best for paste. Long links may break in SMS/Twitter. Roughly 20–35 KB for a saturated user.
+      {/* Size note — shows the *actual* link size once a URL has been generated */}
+      <p
+        aria-live="polite"
+        style={{
+          margin: 0,
+          fontSize: typography.fontSize.sm,
+          color: currentUrl && currentUrl.length > 4096 ? '#BF360C' : colors.text.tertiary,
+          lineHeight: typography.lineHeight.relaxed,
+        }}
+      >
+        {currentUrl
+          ? `Your link: ~${Math.round(currentUrl.length / 1024)} KB. ` +
+            (currentUrl.length > 4096
+              ? 'Long enough that SMS/Twitter may truncate it — paste into a notes/email app.'
+              : 'Best for paste; long links may break in SMS/Twitter.')
+          : 'Best for paste. Long links may break in SMS/Twitter. Roughly 20–35 KB for a saturated user.'}
       </p>
     </section>
   );

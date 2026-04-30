@@ -40,9 +40,18 @@ interface MergeReportViewProps {
 export function MergeReportView({ report, accentColor = '#33691E' }: MergeReportViewProps): ReactElement {
   return (
     <div style={{ borderRadius: radii.base }}>
+      <p style={{
+        margin: `0 0 ${spacing.sm}px`,
+        fontSize: typography.fontSize.sm,
+        color: accentColor,
+        opacity: 0.8,
+        lineHeight: typography.lineHeight.relaxed,
+      }}>
+        Local-only cards (not in this file) were untouched.
+      </p>
       <PreviewRow label="Cards updated" value={report.accepted} accent={accentColor} />
       <PreviewRow label="Cards unchanged" value={report.unchanged} accent={accentColor} />
-      <PreviewRow label="Cards skipped (local was newer)" value={report.rejected} accent={accentColor} />
+      <PreviewRow label="Cards kept (local was newer)" value={report.rejected} accent={accentColor} />
     </div>
   );
 }

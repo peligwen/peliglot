@@ -16,6 +16,7 @@ export {
   clearConfig,
   clearAll,
   listConfigured,
+  CONVERSATION_PROVIDER_KEY,
 } from './storage';
 
 // Provider abstraction

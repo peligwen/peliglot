@@ -13,7 +13,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { useRouteMeta } from '../hooks/useRouteMeta';
 import { useMastery } from '../hooks/useMastery';
-import { decodeSnapshot, SnapshotDecodeError } from '../utils/snapshot';
+import { decodeSnapshotWithStatus, SnapshotDecodeError } from '../utils/snapshot';
 import { ImportPreview } from '../components/ImportPreview';
 import { MergeReportView } from '../components/MergeReportView';
 import type { MasteryExport, MergeReport } from '../mastery';
@@ -99,6 +99,8 @@ function PageFooter(): ReactElement {
 type PagePhase =
   | { kind: 'loading' }
   | { kind: 'missing' }
+  | { kind: 'unsupported' }
+  | { kind: 'future-version'; foundVersion: number }
   | { kind: 'error'; message: string }
   | { kind: 'preview'; snapshot: MasteryExport }
   | { kind: 'done'; report: MergeReport };
@@ -131,9 +133,26 @@ export function ImportPage(): ReactElement {
       return;
     }
 
-    decodeSnapshot(encoded)
-      .then(snapshot => {
-        setPhase({ kind: 'preview', snapshot });
+    // Browser-support guard: DecompressionStream is required to decode share
+    // links. Pre-16.4 Safari and very old Chrome/Firefox lack it. Surface a
+    // dedicated message rather than the generic "decompress failed" one.
+    if (typeof DecompressionStream === 'undefined') {
+      setPhase({ kind: 'unsupported' });
+      return;
+    }
+
+    decodeSnapshotWithStatus(encoded)
+      .then(result => {
+        if (result.status === 'future-version') {
+          setPhase({ kind: 'future-version', foundVersion: result.foundVersion });
+        } else if (result.status === 'malformed') {
+          setPhase({
+            kind: 'error',
+            message: "We couldn't read this share link's contents. It may be corrupted or from a different app.",
+          });
+        } else {
+          setPhase({ kind: 'preview', snapshot: result.snapshot });
+        }
       })
       .catch(err => {
         if (err instanceof SnapshotDecodeError) {
@@ -219,6 +238,90 @@ export function ImportPage(): ReactElement {
               }}
             >
               Go to Settings →
+            </Link>
+          </div>
+        )}
+
+        {phase.kind === 'unsupported' && (
+          <div
+            role="region"
+            aria-label="Browser unsupported"
+            style={{
+              background: '#FFF3E0',
+              border: '1px solid #FFE0B2',
+              borderRadius: radii.lg,
+              padding: `${spacing.xl}px ${spacing.xxl}px`,
+            }}
+          >
+            <h2 style={{
+              margin: `0 0 ${spacing.md}px`,
+              fontSize: typography.fontSize['3xl'],
+              fontWeight: typography.fontWeight.semibold,
+              color: '#E65100',
+            }}>
+              Your browser is too old
+            </h2>
+            <p style={{
+              margin: `0 0 ${spacing.lg}px`,
+              fontSize: typography.fontSize.base,
+              color: '#BF360C',
+              lineHeight: typography.lineHeight.relaxed,
+            }}>
+              Decoding share links needs the DecompressionStream API
+              (Chrome 80+, Firefox 113+, Safari 16.4+). Update your browser, or
+              ask the sender for a JSON file you can import on the Settings page.
+            </p>
+            <Link
+              to="/settings"
+              style={{
+                color: '#E65100',
+                fontWeight: typography.fontWeight.semibold,
+                fontSize: typography.fontSize.base,
+              }}
+            >
+              Go to Settings →
+            </Link>
+          </div>
+        )}
+
+        {phase.kind === 'future-version' && (
+          <div
+            role="region"
+            aria-label="Newer-version snapshot"
+            style={{
+              background: '#FFF3E0',
+              border: '1px solid #FFE0B2',
+              borderRadius: radii.lg,
+              padding: `${spacing.xl}px ${spacing.xxl}px`,
+            }}
+          >
+            <h2 style={{
+              margin: `0 0 ${spacing.md}px`,
+              fontSize: typography.fontSize['3xl'],
+              fontWeight: typography.fontWeight.semibold,
+              color: '#E65100',
+            }}>
+              This link is from a newer Peliglot
+            </h2>
+            <p style={{
+              margin: `0 0 ${spacing.lg}px`,
+              fontSize: typography.fontSize.base,
+              color: '#BF360C',
+              lineHeight: typography.lineHeight.relaxed,
+            }}>
+              The share link is at schema v{phase.foundVersion}, but this build only knows
+              v1. Update Peliglot (refresh the page; the latest version loads automatically)
+              and try the link again.
+            </p>
+            <Link
+              to="/settings"
+              style={{
+                color: '#E65100',
+                fontWeight: typography.fontWeight.semibold,
+                fontSize: typography.fontSize.base,
+              }}
+            >
+              ← Back to Settings
             </Link>
           </div>
         )}

@@ -12,7 +12,7 @@
 
 import { useEffect } from 'react';
 import type { ReactElement, CSSProperties } from 'react';
-import type { PromptShape, TensedConjugationTense } from '../../../mastery/cards';
+import type { PromptShape, TensedConjugationTense } from '../../../mastery';
 import { speakSpanish } from '../../../utils/speech';
 
 // ---------------------------------------------------------------------------

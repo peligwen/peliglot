@@ -35,3 +35,5 @@ export type { ReviewCard, CardKind, PromptShape, TensedConjugationTense } from '
 export { computeXp } from './xp';
 export { getRecommendation } from './recommendation';
 export type { Recommendation, RecommendationInput, RecommendationKind } from './recommendation';
+export { migrate, migrateWithStatus, emptyExport, CURRENT_SCHEMA_VERSION } from './migrations';
+export type { MigrationStatus } from './migrations';

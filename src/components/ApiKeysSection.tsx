@@ -241,9 +241,11 @@ function CloudProviderCard({
   const [testResult, setTestResult] = useState<ValidationResult | null | 'testing'>(null);
   const [isConfigured, setIsConfigured] = useState(() => readConfig(provider) !== null);
 
-  // Reset test result on input change
+  // Reset test result on input change. Strip CR/LF/tab so a key pasted with
+  // surrounding whitespace doesn't construct an invalid Authorization header
+  // (which would surface as a confusing "couldn't reach" error).
   function handleKeyChange(v: string): void {
-    setApiKey(v);
+    setApiKey(v.replace(/[\r\n\t]/g, ''));
     setTestResult(null);
   }
 
@@ -423,18 +425,27 @@ function CloudProviderCard({
 // ---------------------------------------------------------------------------
 
 function CustomEndpointCard(): ReactElement {
+  // Hydrate non-secret fields from saved config so the user can edit an
+  // existing custom endpoint without having to "Forget" first. The API key is
+  // intentionally NOT hydrated — re-paste required to test/save.
+  const savedAtMount = readConfig('openai-compatible');
+  const initial = savedAtMount?.provider === 'openai-compatible' ? savedAtMount : null;
+
   const [isOpen, setIsOpen] = useState(false);
-  const [label, setLabel] = useState('');
-  const [baseUrl, setBaseUrl] = useState('');
-  const [model, setModel] = useState('');
+  const [label, setLabel] = useState(initial?.label ?? '');
+  const [baseUrl, setBaseUrl] = useState(initial?.baseUrl ?? '');
+  const [model, setModel] = useState(initial?.model ?? '');
   const [apiKey, setApiKey] = useState('');
   const [testResult, setTestResult] = useState<ValidationResult | null | 'testing'>(null);
-  const [isConfigured, setIsConfigured] = useState(
-    () => readConfig('openai-compatible') !== null,
-  );
+  const [isConfigured, setIsConfigured] = useState(initial !== null);
 
   function resetTestResult(): void {
     setTestResult(null);
+  }
+
+  function handleApiKeyChange(v: string): void {
+    setApiKey(v.replace(/[\r\n\t]/g, ''));
+    resetTestResult();
   }
 
   async function handleTest(): Promise<void> {
@@ -648,8 +659,8 @@ function CustomEndpointCard(): ReactElement {
               id="custom-api-key"
               type="password"
               value={apiKey}
-              onChange={(v) => { setApiKey(v); resetTestResult(); }}
-              placeholder="Leave blank if your server doesn't require auth"
+              onChange={handleApiKeyChange}
+              placeholder={isConfigured ? 'Re-paste to test (saved key is hidden)' : "Leave blank if your server doesn't require auth"}
               aria-label="API key for custom endpoint (optional)"
             />
           </div>

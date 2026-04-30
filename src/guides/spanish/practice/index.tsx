@@ -24,8 +24,7 @@ import type { ReactElement, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useMastery } from '../../../hooks/useMastery';
 import { Rating } from '../../../mastery';
-import type { MasteryStorageAdapter, CardState } from '../../../mastery';
-import type { CardKind, ReviewCard } from '../../../mastery/cards';
+import type { MasteryStorageAdapter, CardState, CardKind, ReviewCard } from '../../../mastery';
 import { getAllSpanishCards } from '../mastery/index';
 import { speakSpanish } from '../../../utils/speech';
 import { checkAnswer, normalizeAnswer } from '../mastery/util';
@@ -452,6 +451,7 @@ function HeaderStrip({
         onClick={onToggleMute}
         aria-label={muted ? 'Unmute audio' : 'Mute audio'}
         aria-pressed={muted}
+        title={muted ? 'Unmute audio' : 'Mute audio'}
         style={{
           background: 'none',
           border: '1px solid #ddd',

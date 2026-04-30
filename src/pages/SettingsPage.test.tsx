@@ -141,7 +141,7 @@ describe('SettingsPage — render', () => {
     expect(screen.getByRole('button', { name: /import from file/i })).toBeInTheDocument();
   });
 
-  it('renders the Coming soon section', () => {
+  it('renders the Share links & QR codes section', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /share links/i })).toBeInTheDocument();
   });

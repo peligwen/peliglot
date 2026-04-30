@@ -277,6 +277,51 @@ describe('Ask in English button', () => {
 // Error path
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Lifecycle: unmount during in-flight request
+// ---------------------------------------------------------------------------
+
+describe('lifecycle — unmount during in-flight request', () => {
+  it('passes a signal in chat options and aborts it on unmount', async () => {
+    let resolveChat: ((result: { text: string; usage: { input: number; output: number }; model: string }) => void) | null = null;
+    const slowStub = {
+      id: 'anthropic' as const,
+      defaultModel: 'stub-model',
+      calls: [] as Array<{ messages: unknown; options: { signal?: AbortSignal } }>,
+      chat: (messages: unknown, options: { signal?: AbortSignal }) => {
+        slowStub.calls.push({ messages, options });
+        return new Promise((resolve) => { resolveChat = resolve; });
+      },
+    };
+
+    const { unmount } = renderConversation(() => slowStub as unknown as ReturnType<typeof makeStubProvider>);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    // Send fired; the stub is suspended — verify it received an AbortSignal
+    expect(slowStub.calls).toHaveLength(1);
+    const signal = slowStub.calls[0]!.options.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+    expect(signal!.aborted).toBe(false);
+
+    // Unmount mid-flight — the AbortController inside the component should fire
+    unmount();
+
+    expect(signal!.aborted).toBe(true);
+
+    // Resolve the still-pending promise. The component is gone; nothing should
+    // throw and no late state writes should happen. (If it does, React will
+    // log a "state update on unmounted component" warning and the test runner
+    // surfaces it.)
+    resolveChat!({ text: 'late reply', usage: { input: 1, output: 1 }, model: 'stub' });
+    await new Promise((r) => setTimeout(r, 10));
+  });
+});
+
 describe('error handling', () => {
   it('shows inline error message on LlmProviderError(unauthorized)', async () => {
     const err = new LlmProviderError('Unauthorized', 'unauthorized');

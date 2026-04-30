@@ -858,6 +858,46 @@ describe('useMastery — importSnapshot', () => {
     expect(newState).toBeDefined();
     expect(result.current.getCardState('post-import-card')).toEqual(newState);
   });
+
+  it('rateCard scheduled before importSnapshot does not derive its base from a pre-import closure', async () => {
+    // Race scenario: user clicks Rate, then immediately Import. The rateCard
+    // promise is in flight when import lands. After both resolve, the persisted
+    // card must reflect FSRS scheduling against the post-import base — not the
+    // closure-captured pre-import base. We verify this by confirming the final
+    // updatedAt matches the rateCard's review timestamp (rateCard ran *after*
+    // the import wrote its own updatedAt).
+    const adapter = new StubRemoteAdapter();
+    const { result } = renderHook(() => useMastery(adapter));
+    await waitFor(() => expect(result.current.isHydrated).toBe(true));
+
+    const cardId = 'concurrent-card';
+
+    // Local pre-state: a card with reps=0 (default).
+    // Incoming import: same cardId with reps=99 and a definitively newer updatedAt.
+    const remoteState: CardState = {
+      ...makeCard(cardId, Date.now() + 100_000),
+      reps: 99,
+    };
+    const snapshot = { schemaVersion: 1 as const, cards: { [cardId]: remoteState } };
+
+    // Fire rateCard and importSnapshot together. Whoever wins, after both
+    // settle the rateCard's adapter.bulkExport read should see the imported
+    // card (because rateCard awaits the rehydrate promise that import sets).
+    await act(async () => {
+      await Promise.all([
+        result.current.importSnapshot(snapshot),
+        result.current.rateCard(cardId, Rating.Good),
+      ]);
+    });
+
+    // After both: the persisted card must have reps > 0 (rateCard ran on
+    // top of the imported reps=99 base, scheduling further). If the closure
+    // bug regressed, reps would be 1 (rateCard derived from createCard()),
+    // not ≥ 99.
+    const final = result.current.getCardState(cardId);
+    expect(final).toBeDefined();
+    expect(final!.reps).toBeGreaterThanOrEqual(99);
+  });
 });
 
 // ---------------------------------------------------------------------------

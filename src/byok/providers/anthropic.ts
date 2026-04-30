@@ -7,52 +7,9 @@
 
 import type { ChatMessage, ChatOptions, ChatResult, LlmProvider } from './types';
 import { LlmProviderError } from './types';
+import { extractErrorMessage } from '../_scrub';
 
 export const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-6';
-
-// ---------------------------------------------------------------------------
-// Error message extraction (never echoes the key)
-// ---------------------------------------------------------------------------
-
-async function extractErrorMessage(
-  response: Response,
-  secrets: ReadonlyArray<string | undefined> = [],
-): Promise<string> {
-  let raw: string | null = null;
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === 'object' && body !== null) {
-      const obj = body as Record<string, unknown>;
-      // Anthropic: { error: { message: "..." } } or top-level { message: "..." }
-      if (
-        typeof obj.error === 'object' &&
-        obj.error !== null &&
-        typeof (obj.error as Record<string, unknown>).message === 'string'
-      ) {
-        raw = (obj.error as Record<string, unknown>).message as string;
-      } else if (typeof obj.message === 'string') {
-        raw = obj.message;
-      }
-    }
-  } catch {
-    // body wasn't JSON — fall through
-  }
-  const message = raw ?? `HTTP ${response.status}`;
-  return scrubSecrets(message, secrets);
-}
-
-function scrubSecrets(
-  text: string,
-  secrets: ReadonlyArray<string | undefined>,
-): string {
-  let out = text;
-  for (const s of secrets) {
-    if (s && s.length >= 4) {
-      out = out.split(s).join('[redacted]');
-    }
-  }
-  return out;
-}
 
 // ---------------------------------------------------------------------------
 // Factory
@@ -68,14 +25,20 @@ export function makeAnthropicProvider(apiKey: string): LlmProvider {
       const maxTokens = options.maxTokens ?? 1024;
       const temperature = options.temperature;
 
-      // Anthropic takes system prompt as a separate top-level field.
-      // Strip the leading system message from the messages array.
-      let systemPrompt: string | undefined;
-      let userMessages = messages;
-      if (messages.length > 0 && messages[0]?.role === 'system') {
-        systemPrompt = messages[0].content;
-        userMessages = messages.slice(1);
+      // Anthropic takes system prompt as a separate top-level field, never in
+      // the messages array. Concatenate any role:'system' messages (regardless
+      // of position) into one top-level system field; pass everything else
+      // through. Robust to future callers that send system mid-stream.
+      const systemParts: string[] = [];
+      const userMessages: ChatMessage[] = [];
+      for (const m of messages) {
+        if (m.role === 'system') {
+          systemParts.push(m.content);
+        } else {
+          userMessages.push(m);
+        }
       }
+      const systemPrompt = systemParts.length > 0 ? systemParts.join('\n\n') : undefined;
 
       const body: Record<string, unknown> = {
         model,

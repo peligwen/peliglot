@@ -23,35 +23,9 @@ import {
   computeXp,
 } from '../mastery';
 import type { MasteryStorageAdapter, CardState, StreakState, XpState, MasteryExport, MergeReport } from '../mastery';
+import { toLocalDateString, addDays } from '../utils/localDate';
 
 export type { Rating };
-
-// ---------------------------------------------------------------------------
-// Local-date helpers (DST-safe)
-// ---------------------------------------------------------------------------
-
-/**
- * Format a Date as a local-time YYYY-MM-DD string.
- * Using string operations avoids DST pitfalls that arise when doing epoch-ms
- * arithmetic across DST boundaries (a "day" can be 23h or 25h).
- */
-function toLocalDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-/**
- * Add `n` calendar days to a YYYY-MM-DD string using symbolic (DST-safe)
- * date arithmetic. Returns the resulting YYYY-MM-DD string.
- */
-function addDays(dateStr: string, n: number): string {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const date = new Date(y, (m as number) - 1, d as number);
-  date.setDate(date.getDate() + n);
-  return toLocalDateString(date);
-}
 
 // ---------------------------------------------------------------------------
 // Streak update logic (pure function — easy to unit-test in isolation)
@@ -265,9 +239,8 @@ export function useMastery(
   // Derived state
   // ---------------------------------------------------------------------------
 
-  const now = Date.now();
-
   const dueCards = useMemo<Array<{ cardId: string; state: CardState }>>(() => {
+    const now = Date.now();
     const result: Array<{ cardId: string; state: CardState }> = [];
     for (const [cardId, state] of cache) {
       if (state.due <= now) {
@@ -275,8 +248,7 @@ export function useMastery(
       }
     }
     return result;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cache]); // `now` is intentionally excluded: we don't want per-ms rerenders
+  }, [cache]); // recomputes when the cache changes; per-minute timer ticks aren't tracked
 
   const nextDueAt = useMemo<number | null>(() => {
     const snapshotNow = Date.now();
@@ -321,8 +293,15 @@ export function useMastery(
       const reviewTime = Date.now();
       const today = toLocalDateString(new Date(reviewTime));
 
-      // Fetch or create the current scheduler state.
-      const existing = cache.get(cardId);
+      // Read latest state from the adapter rather than the closure cache.
+      // If importSnapshot ran concurrently, the closure captures pre-import
+      // state — using it would write back a "newer" CardState derived from
+      // older inputs, defeating LWW. One bulkExport is cheap and gives us a
+      // consistent card + streak + xp triple.
+      const fresh = await adapter.bulkExport();
+      const existing = fresh.cards[cardId] ?? null;
+      const freshStreak = fresh.streak ?? DEFAULT_STREAK;
+      const freshXp = fresh.xp ?? DEFAULT_XP;
       const baseCard = existing ?? createCard();
 
       // Capture difficulty BEFORE the scheduler updates the card.
@@ -341,15 +320,15 @@ export function useMastery(
       await adapter.write(cardId, newState);
 
       // Update streak.
-      const newStreak = computeNewStreak(streak, today);
+      const newStreak = computeNewStreak(freshStreak, today);
 
       // Compute XP with day-rollover detection (in-session midnight crossing).
       // If the session has crossed midnight since the last review, reset today.
       const xpEarned = computeXp(rating, difficultyAtReview);
-      const rolledOver = xp.dayKey !== null && xp.dayKey !== today;
+      const rolledOver = freshXp.dayKey !== null && freshXp.dayKey !== today;
       const newXp: XpState = {
-        allTime: xp.allTime + xpEarned,
-        today: rolledOver ? xpEarned : xp.today + xpEarned,
+        allTime: freshXp.allTime + xpEarned,
+        today: rolledOver ? xpEarned : freshXp.today + xpEarned,
         dayKey: today,
       };
 
@@ -367,8 +346,7 @@ export function useMastery(
 
       return newState;
     },
-    // streak and xp must be in deps so computeNewStreak and XP accumulation see latest values.
-    [adapter, cache, streak, xp],
+    [adapter],
   );
 
   const setDailyGoal = useCallback(

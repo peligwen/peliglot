@@ -11,49 +11,7 @@
 import type { ChatMessage, ChatOptions, ChatResult, LlmProvider } from './types';
 import { LlmProviderError } from './types';
 import { normalizeBaseUrl, isMixedContent } from '../validate';
-
-// ---------------------------------------------------------------------------
-// Error message extraction
-// ---------------------------------------------------------------------------
-
-async function extractErrorMessage(
-  response: Response,
-  secrets: ReadonlyArray<string | undefined> = [],
-): Promise<string> {
-  let raw: string | null = null;
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === 'object' && body !== null) {
-      const obj = body as Record<string, unknown>;
-      if (
-        typeof obj.error === 'object' &&
-        obj.error !== null &&
-        typeof (obj.error as Record<string, unknown>).message === 'string'
-      ) {
-        raw = (obj.error as Record<string, unknown>).message as string;
-      } else if (typeof obj.message === 'string') {
-        raw = obj.message;
-      }
-    }
-  } catch {
-    // body wasn't JSON — fall through
-  }
-  const message = raw ?? `HTTP ${response.status}`;
-  return scrubSecrets(message, secrets);
-}
-
-function scrubSecrets(
-  text: string,
-  secrets: ReadonlyArray<string | undefined>,
-): string {
-  let out = text;
-  for (const s of secrets) {
-    if (s && s.length >= 4) {
-      out = out.split(s).join('[redacted]');
-    }
-  }
-  return out;
-}
+import { extractErrorMessage } from '../_scrub';
 
 // ---------------------------------------------------------------------------
 // Factory

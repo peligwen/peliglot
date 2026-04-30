@@ -15,8 +15,8 @@
  * a graceful degradation message if the API is absent.
  */
 
-import type { MasteryExport } from '../mastery/types';
-import { migrate } from '../mastery/migrations';
+import type { MasteryExport, MigrationStatus } from '../mastery';
+import { migrate, migrateWithStatus } from '../mastery';
 
 // ---------------------------------------------------------------------------
 // Typed error
@@ -174,4 +174,27 @@ export async function decodeSnapshot(encoded: string): Promise<MasteryExport> {
   // migrate() handles malformed/unknown-version snapshots defensively,
   // returning emptyExport() rather than throwing. This propagates as-is.
   return migrate(parsed);
+}
+
+/**
+ * Like decodeSnapshot but returns the migration status alongside the snapshot,
+ * so callers can show "your browser is too old" copy when the input came from a
+ * newer schema version.
+ */
+export async function decodeSnapshotWithStatus(encoded: string): Promise<MigrationStatus> {
+  const compressed = base64urlToBytes(encoded);
+  const decompressed = await gunzip(compressed);
+  const json = new TextDecoder().decode(decompressed);
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch (e) {
+    throw new SnapshotDecodeError(
+      'Invalid share link — the data could not be parsed.',
+      e,
+    );
+  }
+
+  return migrateWithStatus(parsed);
 }

@@ -111,6 +111,22 @@ describe('clearAll', () => {
     expect(readConfig('openai-compatible')).toBeNull();
   });
 
+  it('also clears cumulative cost data and the conversation-provider preference', () => {
+    writeConfig({ provider: 'anthropic', apiKey: 'key-a' });
+    // Seed cost + provider preference manually so we don't depend on the
+    // cost-storage barrel API for this assertion.
+    localStorage.setItem(
+      'peliglot-byok-cost-anthropic',
+      JSON.stringify({ totalInputTokens: 100, totalOutputTokens: 50, totalCostUsd: 0.01, lastUpdated: Date.now() }),
+    );
+    localStorage.setItem('peliglot-conversation-provider', 'anthropic');
+
+    clearAll();
+
+    expect(localStorage.getItem('peliglot-byok-cost-anthropic')).toBeNull();
+    expect(localStorage.getItem('peliglot-conversation-provider')).toBeNull();
+  });
+
   it('is a no-op when nothing is stored', () => {
     expect(() => clearAll()).not.toThrow();
   });

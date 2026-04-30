@@ -167,6 +167,32 @@ describe('decodeSnapshot — error cases', () => {
     );
   });
 
+  it('a 1000-card snapshot encodes to a URL-safe length under the SMS-truncation cliff (~50KB)', async () => {
+    // Regression guard: if compression ratio degrades or we accidentally start
+    // including expensive metadata, this test catches it before users with
+    // saturated states discover broken share links.
+    const cards: Record<string, import('../mastery').CardState> = {};
+    for (let i = 0; i < 1000; i++) {
+      cards[`spanish-${i}-card`] = {
+        cardId: `spanish-${i}-card`,
+        updatedAt: 1700000000000 + i * 1000,
+        due: 1700000000000 + i * 1000 + 86400_000,
+        stability: 1 + (i % 7),
+        difficulty: 1 + (i % 9),
+        reps: i % 20,
+        lapses: i % 4,
+        lastReview: 1700000000000 + i * 500,
+        learningSteps: 0,
+        fsrsState: 0,
+      };
+    }
+    const snapshot: import('../mastery').MasteryExport = { schemaVersion: 1, cards };
+    const encoded = await encodeSnapshot(snapshot);
+    // 50 KB is a comfortable ceiling: well below typical URL/clipboard limits
+    // and a meaningful regression signal (current values are ~25–35 KB).
+    expect(encoded.length).toBeLessThan(50_000);
+  });
+
   it('handles bad JSON gracefully (throws SnapshotDecodeError)', async () => {
     // Manually gzip + base64url encode non-JSON text
     const notJson = new TextEncoder().encode('this is not json at all {{{{');

@@ -76,9 +76,18 @@ function PreviewTable({ preview, accentColor }: { preview: PreviewCounts; accent
   const total = preview.accepted + preview.rejected + preview.unchanged;
   return (
     <div>
+      <p style={{
+        margin: `0 0 ${spacing.sm}px`,
+        fontSize: typography.fontSize.sm,
+        color: accentColor,
+        opacity: 0.85,
+        lineHeight: typography.lineHeight.relaxed,
+      }}>
+        Local-only cards are untouched. Only cards in this file may change.
+      </p>
       <PreviewRow label="Cards that would be updated" value={preview.accepted} accent={accentColor} />
       <PreviewRow label="Cards already up to date" value={preview.unchanged} accent={accentColor} />
-      <PreviewRow label="Cards newer locally (kept)" value={preview.rejected} accent={accentColor} />
+      <PreviewRow label="Cards kept (local was newer)" value={preview.rejected} accent={accentColor} />
       <PreviewRow label="Total cards in file" value={total} accent={accentColor} />
     </div>
   );

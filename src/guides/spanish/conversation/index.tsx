@@ -19,7 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactElement, CSSProperties, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS } from '../../../byok';
+import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS, CONVERSATION_PROVIDER_KEY } from '../../../byok';
 import type { LlmProvider, ChatMessage } from '../../../byok';
 import { LlmProviderError } from '../../../byok';
 import type { Provider } from '../../../byok';
@@ -31,7 +31,6 @@ import type { ConversationLevel } from './systemPrompt';
 // ---------------------------------------------------------------------------
 
 const SPANISH_RED = '#C62828';
-const STORAGE_KEY_PROVIDER = 'peliglot-conversation-provider';
 
 const LEVEL_LABELS: Record<ConversationLevel, string> = {
   beginner: 'Beginner',
@@ -73,7 +72,7 @@ function nextId(): string {
 
 function loadPersistedProvider(): Provider | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_PROVIDER);
+    const raw = localStorage.getItem(CONVERSATION_PROVIDER_KEY);
     if (raw === 'anthropic' || raw === 'openai' || raw === 'openai-compatible') return raw;
     return null;
   } catch {
@@ -83,7 +82,7 @@ function loadPersistedProvider(): Provider | null {
 
 function savePersistedProvider(id: Provider): void {
   try {
-    localStorage.setItem(STORAGE_KEY_PROVIDER, id);
+    localStorage.setItem(CONVERSATION_PROVIDER_KEY, id);
   } catch {
     // Private mode / full storage — silently skip
   }
@@ -578,7 +577,8 @@ function SessionCostChip({ usage }: { usage: SessionUsage }): ReactElement {
         border: '1px solid #e8e8e8',
         borderRadius: 20,
         fontSize: 11,
-        color: '#999',
+        // Bumped from #999 to #555 — #999/#f5f5f5 fails WCAG AA at this size
+        color: '#555',
         textAlign: 'center',
         fontFamily: "system-ui,'Segoe UI',sans-serif",
         lineHeight: 1.4,
@@ -609,6 +609,16 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Track mount status so an in-flight request that resolves after unmount
+  // doesn't write to state or charge the cost meter for work the user threw away.
+  const mountedRef = useRef(true);
+  // AbortController for the active request — aborted on unmount so the network
+  // call is actually cancelled, not just ignored.
+  const abortRef = useRef<AbortController | null>(null);
+  // Mirror of `messages` so sendMessage can read latest history without
+  // taking it as a dep (which churns callback identity every render).
+  const messagesRef = useRef<Message[]>(messages);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   // Load configured providers and persisted selection on mount
   useEffect(() => {
@@ -620,6 +630,14 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
     const persisted = loadPersistedProvider();
     const initial = persisted && configured.includes(persisted) ? persisted : configured[0]!;
     setSelectedProvider(initial);
+  }, []);
+
+  // Cleanup: abort any in-flight request and mark unmounted.
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      abortRef.current?.abort();
+    };
   }, []);
 
   // Scroll to bottom when messages change or loading starts
@@ -655,8 +673,9 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
 
       // Build the messages array for the API call.
       // System prompt is first. Then conversation history (user + assistant only),
-      // then the new user message.
-      const historyMessages: ChatMessage[] = messages
+      // then the new user message. Read history from the ref so this callback
+      // doesn't depend on `messages` (which churns every send/receive).
+      const historyMessages: ChatMessage[] = messagesRef.current
         .filter(m => m.role === 'user' || m.role === 'assistant')
         .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
 
@@ -666,8 +685,19 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
         { role: 'user', content: userContent.trim() },
       ];
 
+      // Fresh AbortController per request. On unmount or new request, abort
+      // the previous one so we don't bill the user for work they walked away from.
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
       try {
-        const result = await provider.chat(apiMessages, { maxTokens: 512 });
+        const result = await provider.chat(apiMessages, { maxTokens: 512, signal: controller.signal });
+
+        // If unmounted (or aborted) while the call was in flight, drop the
+        // result silently — no UI write, no cost meter charge.
+        if (!mountedRef.current || controller.signal.aborted) return;
+
         const assistantMsg: Message = { id: nextId(), role: 'assistant', content: result.text };
         setMessages(prev => [...prev, assistantMsg]);
 
@@ -695,6 +725,12 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
           callCount: prev.callCount + 1,
         }));
       } catch (err) {
+        // Aborted requests bubble up as DOMException name='AbortError' or as
+        // an LlmProviderError wrapping the underlying. Silently drop both —
+        // we already did the right thing by aborting.
+        if (!mountedRef.current || controller.signal.aborted) return;
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+
         const providerLabel = selectedProvider
           ? PROVIDER_LABELS[selectedProvider]
           : 'the provider';
@@ -753,10 +789,10 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
         };
         setMessages(prev => [...prev, errorMsg]);
       } finally {
-        setLoading(false);
+        if (mountedRef.current) setLoading(false);
       }
     },
-    [loading, selectedProvider, messages, level, getProviderFn],
+    [loading, selectedProvider, level, getProviderFn],
   );
 
   const handleSend = useCallback(() => {
@@ -768,6 +804,9 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         void sendMessage(input);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setInput('');
       }
     },
     [input, sendMessage],
@@ -824,6 +863,9 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
           {/* Thread */}
           <div
             ref={threadRef}
+            aria-live="polite"
+            aria-atomic="false"
+            aria-label="Conversation"
             style={{
               flex: 1,
               overflowY: 'auto',

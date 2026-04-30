@@ -10,7 +10,8 @@ import { Link } from 'react-router-dom';
 import { useRouteMeta } from '../hooks/useRouteMeta';
 import { useMastery } from '../hooks/useMastery';
 import { downloadJsonFile } from '../utils/download';
-import { migrate } from '../mastery/migrations';
+import { migrateWithStatus } from '../mastery';
+import { toLocalDateString } from '../utils/localDate';
 import { ImportPreview } from '../components/ImportPreview';
 import { MergeReportView } from '../components/MergeReportView';
 import { ShareLinkSection } from '../components/ShareLinkSection';
@@ -18,18 +19,6 @@ import { ApiKeysSection } from '../components/ApiKeysSection';
 import { CostSection } from '../components/CostSection';
 import type { MasteryExport, MergeReport } from '../mastery';
 import { colors, spacing, radii, typography } from '../styles/tokens';
-
-// ---------------------------------------------------------------------------
-// Local date helper (DST-safe, same logic as useMastery — inlined to avoid
-// making this private helper a shared util for just two callers)
-// ---------------------------------------------------------------------------
-
-function toLocalDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -93,19 +82,22 @@ function BackupSection(): ReactElement {
   const { exportSnapshot, importSnapshot, isHydrated } = useMastery();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [phase, setPhase] = useState<ImportPhase>({ kind: 'idle' });
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadPhase, setDownloadPhase] = useState<'idle' | 'preparing' | 'done'>('idle');
 
   // -- Download ---------------------------------------------------------------
 
   async function handleDownload(): Promise<void> {
     if (!isHydrated) return;
-    setIsDownloading(true);
+    setDownloadPhase('preparing');
     try {
       const snapshot = await exportSnapshot();
       const dateStr = toLocalDateString(new Date());
       downloadJsonFile(`peliglot-progress-${dateStr}.json`, snapshot);
-    } finally {
-      setIsDownloading(false);
+      setDownloadPhase('done');
+      // Reset after the user has a chance to see the confirmation
+      setTimeout(() => setDownloadPhase('idle'), 2000);
+    } catch {
+      setDownloadPhase('idle');
     }
   }
 
@@ -137,12 +129,29 @@ function BackupSection(): ReactElement {
         return;
       }
 
-      // Run through migration pipeline even though v1 is identity.
-      // Future schema bumps are handled here automatically.
-      const migrated = migrate(parsed);
+      // Run through migration pipeline. Future schema bumps are handled here
+      // automatically; future-version files are surfaced explicitly so the
+      // user can update rather than silently importing nothing.
+      const result = migrateWithStatus(parsed);
+      if (result.status === 'future-version') {
+        setPhase({
+          kind: 'error',
+          message:
+            `This file is at schema v${result.foundVersion}, but this build only knows v1. ` +
+            `Update Peliglot (refresh the page) and try again.`,
+        });
+        return;
+      }
+      if (result.status === 'malformed') {
+        setPhase({
+          kind: 'error',
+          message: "We couldn't read the file's contents. Is this really a Peliglot progress file?",
+        });
+        return;
+      }
       // Hand the parsed+migrated snapshot to ImportPreview; it owns the preview
       // computation and Apply flow from here.
-      setPhase({ kind: 'preview', snapshot: migrated });
+      setPhase({ kind: 'preview', snapshot: result.snapshot });
     };
     reader.onerror = () => {
       setPhase({ kind: 'error', message: 'Failed to read file.' });
@@ -203,9 +212,13 @@ function BackupSection(): ReactElement {
       <div style={{ marginBottom: spacing.xl }}>
         <ActionButton
           onClick={() => { void handleDownload(); }}
-          disabled={!isHydrated || isDownloading}
+          disabled={!isHydrated || downloadPhase === 'preparing'}
         >
-          {isDownloading ? 'Preparing…' : 'Download my progress'}
+          {downloadPhase === 'preparing'
+            ? 'Preparing…'
+            : downloadPhase === 'done'
+              ? 'Downloaded ✓'
+              : 'Download my progress'}
         </ActionButton>
       </div>
 

@@ -393,6 +393,26 @@ describe('ApiKeysSection — Custom endpoint card', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it('hydrates non-secret fields from saved config on mount (but leaves API key blank)', () => {
+    writeConfig({
+      provider: 'openai-compatible',
+      baseUrl: 'http://192.168.1.50:8080/v1',
+      model: 'qwen-2.5-7b',
+      label: 'Living-room box',
+      apiKey: 'should-not-leak-back-into-field',
+    });
+
+    render(<ApiKeysSection />);
+    fireEvent.click(screen.getByRole('button', { name: /custom endpoint/i }));
+
+    // Expect the visible fields to show the saved values without re-pasting.
+    expect((screen.getByLabelText(/friendly name/i) as HTMLInputElement).value).toBe('Living-room box');
+    expect((screen.getByLabelText(/base url for custom endpoint/i) as HTMLInputElement).value).toBe('http://192.168.1.50:8080/v1');
+    expect((screen.getByLabelText(/model name for custom endpoint/i) as HTMLInputElement).value).toBe('qwen-2.5-7b');
+    // API key intentionally NOT pre-populated.
+    expect((screen.getByLabelText(/api key for custom endpoint/i) as HTMLInputElement).value).toBe('');
+  });
+
   it('saves config to localStorage on successful test', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
