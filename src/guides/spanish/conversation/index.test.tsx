@@ -714,6 +714,57 @@ describe('unpriced-model tracking', () => {
 // ---------------------------------------------------------------------------
 
 describe('cap-exceeded error', () => {
+  it('Retry button is disabled while another request is in flight', async () => {
+    // Build a stub that never resolves on the first call (retry remains
+    // pending) and would fail on the second. We never let the second fire —
+    // the test only verifies the Retry button is gated.
+    let firstResolve: (() => void) | null = null;
+    type ChatArgs = Parameters<ReturnType<typeof makeStubProvider>['chat']>;
+    type Recorded = { messages: ChatArgs[0]; options?: ChatArgs[1] };
+    const calls: Recorded[] = [];
+    const composite = {
+      id: 'anthropic' as const,
+      defaultModel: 'stub',
+      calls,
+      async chat(messages: ChatArgs[0], options?: ChatArgs[1]) {
+        calls.push({ messages, options });
+        if (calls.length === 1) {
+          // First call: error immediately so Retry button appears
+          throw new LlmProviderError('temporary 500', 'http-error');
+        }
+        // Second call: hang
+        return new Promise<never>((_, reject) => {
+          firstResolve = () => reject(new LlmProviderError('still bad', 'http-error'));
+        });
+      },
+    };
+    renderConversation(() => composite);
+
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: 'Hola' } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+
+    // First request errored — Retry button should be present and enabled
+    const retryBtn = await screen.findByRole('button', { name: /retry sending/i });
+    expect(retryBtn).not.toBeDisabled();
+
+    // Click Retry — second request hangs (loading=true)
+    await act(async () => {
+      fireEvent.click(retryBtn);
+    });
+
+    // Retry should now be disabled until the in-flight request resolves
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /retry sending/i })).toBeDisabled();
+    });
+
+    // Cleanup: resolve the hung promise so the test exits cleanly
+    const resolver = firstResolve as (() => void) | null;
+    if (resolver) resolver();
+  });
+
   it('shows a friendly error and link to Settings on cap-exceeded', async () => {
     const stub = makeErrorStubProvider(
       new LlmProviderError(

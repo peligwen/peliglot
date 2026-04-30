@@ -15,6 +15,7 @@ import {
   clearConfig,
   clearAll,
   validate,
+  isTrustedHost,
 } from '../byok';
 import type { ProviderConfig, ValidationResult } from '../byok';
 import { colors, spacing, radii, typography } from '../styles/tokens';
@@ -448,8 +449,37 @@ function CustomEndpointCard(): ReactElement {
     resetTestResult();
   }
 
+  /**
+   * Confirm with the user before sending the API key to a non-trusted host.
+   * The custom-endpoint field is the precise key-phishing vector identified
+   * in the BYOK security review: an attacker-supplied URL combined with a
+   * real provider key would deliver the key on the first Test click. This
+   * one-time confirm breaks that flow without inconveniencing legitimate
+   * Tailscale / localhost / Cloudflare-tunnel setups.
+   *
+   * Returns true if the host is trusted OR the user confirmed; false to abort.
+   * If no API key was entered (truly anonymous local LLM), no confirm is needed.
+   */
+  function confirmDestination(): boolean {
+    const url = baseUrl.trim();
+    if (apiKey.trim() === '') return true;
+    if (isTrustedHost(url)) return true;
+    let host = url;
+    try {
+      host = new URL(/^[a-z][a-z0-9+\-.]*:\/\//i.test(url) ? url : `http://${url}`).host || url;
+    } catch {
+      // fall through with the raw string
+    }
+    return window.confirm(
+      `Peliglot is about to send your API key to ${host}.\n\n` +
+      `Only continue if you control this server. If someone else gave you ` +
+      `this URL, your key may be stolen.`,
+    );
+  }
+
   async function handleTest(): Promise<void> {
     if (!baseUrl.trim() || !model.trim()) return;
+    if (!confirmDestination()) return;
     setTestResult('testing');
     const config: ProviderConfig = {
       provider: 'openai-compatible',
@@ -464,6 +494,9 @@ function CustomEndpointCard(): ReactElement {
 
   function handleSave(): void {
     if (testResult === null || testResult === 'testing' || testResult.outcome !== 'ok') return;
+    // Re-confirm on Save in case the user changed the URL (or only typed it
+    // after the Test). Test already gated, so this is a belt-and-braces path.
+    if (!confirmDestination()) return;
     const config: ProviderConfig = {
       provider: 'openai-compatible',
       baseUrl: baseUrl.trim(),

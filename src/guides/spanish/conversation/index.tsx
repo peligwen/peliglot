@@ -291,9 +291,13 @@ function ProviderSelector({
 function MessageBubble({
   message,
   onRetry,
+  retryDisabled = false,
 }: {
   message: Message;
   onRetry?: (content: string) => void;
+  /** When true, the Retry button is disabled (typically while another
+   *  request is in flight) so users can't spam-click during a flapping 5xx. */
+  retryDisabled?: boolean;
 }): ReactElement {
   const isUser = message.role === 'user';
   const isError = message.role === 'error';
@@ -354,6 +358,8 @@ function MessageBubble({
         {isError && onRetry && message.retryContent && (
           <button
             onClick={() => onRetry(message.retryContent!)}
+            disabled={retryDisabled}
+            aria-label="Retry sending this message"
             style={{
               marginTop: 6,
               background: 'none',
@@ -361,8 +367,9 @@ function MessageBubble({
               borderRadius: 8,
               padding: '4px 12px',
               fontSize: 12,
-              color: '#B71C1C',
-              cursor: 'pointer',
+              color: retryDisabled ? '#ccc' : '#B71C1C',
+              borderColor: retryDisabled ? '#eee' : '#ef9a9a',
+              cursor: retryDisabled ? 'default' : 'pointer',
               fontFamily: "system-ui,'Segoe UI',sans-serif",
             }}
           >
@@ -941,7 +948,12 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
             ) : (
               <>
                 {messages.map(m => (
-                  <MessageBubble key={m.id} message={m} onRetry={handleRetry} />
+                  <MessageBubble
+                    key={m.id}
+                    message={m}
+                    onRetry={handleRetry}
+                    retryDisabled={loading}
+                  />
                 ))}
                 {loading && <TypingIndicator />}
               </>

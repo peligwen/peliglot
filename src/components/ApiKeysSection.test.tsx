@@ -446,6 +446,112 @@ describe('ApiKeysSection — Custom endpoint card', () => {
       expect(config.label).toBe('Home server');
     }
   });
+
+  // -------------------------------------------------------------------------
+  // Custom endpoint — destination-confirm dialog (key-phishing defense)
+  // -------------------------------------------------------------------------
+
+  it('Test: prompts confirm before sending key to a non-trusted host', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ choices: [] }),
+    } as unknown as Response);
+
+    openCustom();
+    fireEvent.change(screen.getByLabelText(/base url for custom endpoint/i), {
+      target: { value: 'https://attacker.example.com/v1' },
+    });
+    fireEvent.change(screen.getByLabelText(/model name for custom endpoint/i), {
+      target: { value: 'gpt-4o' },
+    });
+    fireEvent.change(screen.getByLabelText(/api key for custom endpoint/i), {
+      target: { value: 'sk-real-openai-key' },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /^test$/i }));
+    });
+
+    expect(confirmSpy).toHaveBeenCalled();
+    const promptText = String(confirmSpy.mock.calls[0]![0]);
+    expect(promptText).toMatch(/attacker\.example\.com/);
+    expect(promptText).toMatch(/api key|stolen|control this server/i);
+    expect(fetchSpy).toHaveBeenCalled(); // user confirmed → request fired
+  });
+
+  it('Test: aborts the request if the user dismisses the confirm', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+
+    openCustom();
+    fireEvent.change(screen.getByLabelText(/base url for custom endpoint/i), {
+      target: { value: 'https://attacker.example.com/v1' },
+    });
+    fireEvent.change(screen.getByLabelText(/model name for custom endpoint/i), {
+      target: { value: 'gpt-4o' },
+    });
+    fireEvent.change(screen.getByLabelText(/api key for custom endpoint/i), {
+      target: { value: 'sk-real-openai-key' },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /^test$/i }));
+    });
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('Test: does not prompt confirm for trusted hosts (localhost)', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm');
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ choices: [] }),
+    } as unknown as Response);
+
+    openCustom();
+    fireEvent.change(screen.getByLabelText(/base url for custom endpoint/i), {
+      target: { value: 'http://localhost:11434/v1' },
+    });
+    fireEvent.change(screen.getByLabelText(/model name for custom endpoint/i), {
+      target: { value: 'llama3' },
+    });
+    fireEvent.change(screen.getByLabelText(/api key for custom endpoint/i), {
+      target: { value: 'whatever' },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /^test$/i }));
+    });
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
+
+  it('Test: does not prompt confirm when no API key is entered (anonymous local LLM)', async () => {
+    const confirmSpy = vi.spyOn(window, 'confirm');
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ choices: [] }),
+    } as unknown as Response);
+
+    openCustom();
+    fireEvent.change(screen.getByLabelText(/base url for custom endpoint/i), {
+      target: { value: 'https://random.example.com/v1' },
+    });
+    fireEvent.change(screen.getByLabelText(/model name for custom endpoint/i), {
+      target: { value: 'llama3' },
+    });
+    // No apiKey entered — anonymous server, no key to steal
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /^test$/i }));
+    });
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+  });
 });
 
 // ---------------------------------------------------------------------------

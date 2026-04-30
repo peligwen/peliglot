@@ -56,8 +56,10 @@ const NON_RUNTIME_HOSTS = [
   'irs.gov',            // educational citation in math/guide29
   // BYOK placeholder/example URLs — never fetched by production code
   'ts.net',             // Tailscale example URLs in BYOK UI copy and tests
+  'trycloudflare.com',  // Cloudflare quick tunnels — trusted-host suffix in BYOK
   'my-home-server.local', // example hostname in test
   'your-tunnel',        // placeholder URL fragment in UI copy
+  'corp.internal',      // example "untrusted" host in trustedHosts tests
 ];
 
 const TRANSPARENCY_FILES = [ANALYTICS_MD, ANALYTICS_TSX];

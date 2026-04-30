@@ -34,6 +34,9 @@ export {
   getProvider,
 } from './providers';
 
+// Trusted hosts (custom endpoint key-phishing defense)
+export { isTrustedHost } from './trustedHosts';
+
 // Cost storage
 export type { ProviderCostState, DailyBucket } from './cost-storage';
 export {
