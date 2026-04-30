@@ -84,3 +84,90 @@ test('landing page has a Conversation link that goes to /guides/spanish/conversa
   await page.waitForLoadState('networkidle');
   await expect(page).toHaveURL(/\/guides\/spanish\/conversation/);
 });
+
+// ---------------------------------------------------------------------------
+// Cap-exceeded inline error
+// ---------------------------------------------------------------------------
+
+test('cap-exceeded: blocks the request locally and shows a Settings deep-link', async ({
+  page,
+}) => {
+  // Seed a configured Anthropic provider whose today's spend is above the
+  // configured cap. The cap preflight should reject before any fetch fires —
+  // verifying both the wrapper and the conversation route's error handling.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem('peliglot-byok-cap-anthropic', '1.00');
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      localStorage.setItem(
+        'peliglot-byok-cost-anthropic',
+        JSON.stringify({
+          totalInputTokens: 5000,
+          totalOutputTokens: 2000,
+          totalCostUsd: 1.5,
+          lastUpdated: Date.now(),
+          byDate: { [dateStr]: { input: 5000, output: 2000, costUsd: 1.5 } },
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  // Block any network call to the Anthropic API — if the cap preflight is
+  // working, this route handler should never fire. If it does, the test
+  // fails (we're not whitelisting it).
+  let anthropicCalled = false;
+  await page.route('**/api.anthropic.com/**', async route => {
+    anthropicCalled = true;
+    await route.abort();
+  });
+
+  await page.goto('/guides/spanish/conversation');
+  await page.waitForLoadState('networkidle');
+
+  const textarea = page.getByRole('textbox', { name: /message input/i });
+  await expect(textarea).toBeVisible({ timeout: 8000 });
+  await textarea.fill('Hola, ¿cómo estás?');
+
+  await page.getByRole('button', { name: /send message/i }).click();
+
+  // Cap-exceeded error bubble appears
+  await expect(page.getByText(/daily cap.*reached/i)).toBeVisible({ timeout: 6000 });
+  // Settings deep-link
+  await expect(page.getByRole('link', { name: /adjust your daily limit/i })).toBeVisible();
+  // Confirm preflight short-circuited the network
+  expect(anthropicCalled).toBe(false);
+});
+
+test('unpriced model warning: surfaces inline above the input on hydration', async ({ page }) => {
+  // Seed a configured Anthropic provider plus an unpriced-call record. The
+  // conversation route should render the warning on mount without requiring
+  // a fresh chat call.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem(
+        'peliglot-byok-unpriced-anthropic',
+        JSON.stringify(['claude-future-mystery']),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/guides/spanish/conversation');
+  await page.waitForLoadState('networkidle');
+
+  // Inline warning above the input
+  await expect(page.getByText(/daily limit doesn't apply/i)).toBeVisible({ timeout: 6000 });
+  await expect(page.getByRole('link', { name: /details in settings/i })).toBeVisible();
+});

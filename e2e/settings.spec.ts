@@ -336,3 +336,113 @@ test('custom endpoint: filling form and clicking Test shows an error (no real se
   });
   expect(config).toBeNull();
 });
+
+test('custom endpoint: untrusted host with API key triggers destination confirm', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible({ timeout: 6000 });
+  await page.getByRole('button', { name: /custom endpoint/i }).click();
+
+  // Fill an untrusted host plus a real-looking API key — the precise
+  // key-phishing pattern the confirm is designed to catch.
+  await page.getByLabel(/base url for custom endpoint/i).fill('https://attacker.example.com/v1');
+  await page.getByLabel(/model name for custom endpoint/i).fill('gpt-4o');
+  await page.getByLabel(/api key for custom endpoint/i).fill('sk-real-openai-key');
+
+  // Auto-dismiss the confirm; record the prompt text for assertion.
+  let promptSeen: string | null = null;
+  page.on('dialog', dialog => {
+    promptSeen = dialog.message();
+    void dialog.dismiss();
+  });
+
+  await page.getByRole('button', { name: /^test$/i }).click();
+  // Give the dialog a moment to fire
+  await page.waitForTimeout(300);
+
+  expect(promptSeen).not.toBeNull();
+  expect(promptSeen!).toMatch(/attacker\.example\.com/);
+  expect(promptSeen!).toMatch(/api key|stolen|control this server/i);
+
+  // Dismissed → nothing saved
+  const config = await page.evaluate(() =>
+    localStorage.getItem('peliglot-byok-openai-compatible'),
+  );
+  expect(config).toBeNull();
+});
+
+// ---------------------------------------------------------------------------
+// CostSection — Daily limits
+// ---------------------------------------------------------------------------
+
+test('daily limits section is hidden when no provider is configured', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading', { name: /usage costs/i })).toBeVisible({ timeout: 6000 });
+  // No configured providers → no Daily limits heading
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toHaveCount(0);
+});
+
+test('daily limits section appears once a provider is configured and persists a cap', async ({ page }) => {
+  // Seed an Anthropic config
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toBeVisible({ timeout: 6000 });
+
+  const capInput = page.locator('#cap-anthropic');
+  await expect(capInput).toBeVisible();
+  await capInput.fill('1.50');
+  await page.getByRole('button', { name: /^save$/i }).click();
+
+  // Verify persistence
+  const stored = await page.evaluate(() => localStorage.getItem('peliglot-byok-cap-anthropic'));
+  expect(stored).toBe('1.5');
+});
+
+test('over-cap state shows a progress bar that fills past the cap', async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem('peliglot-byok-cap-anthropic', '1.00');
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      localStorage.setItem(
+        'peliglot-byok-cost-anthropic',
+        JSON.stringify({
+          totalInputTokens: 5000,
+          totalOutputTokens: 2000,
+          totalCostUsd: 1.5,
+          lastUpdated: Date.now(),
+          byDate: { [dateStr]: { input: 5000, output: 2000, costUsd: 1.5 } },
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Today's spend label shows the over-cap value
+  await expect(page.getByText(/today:\s*\$1\.50\s*\/\s*\$1\.00/i)).toBeVisible({ timeout: 6000 });
+  // Progressbar exists and aria-valuenow is at the cap (clamped to 100)
+  const progress = page.getByRole('progressbar');
+  await expect(progress).toBeVisible();
+  await expect(progress).toHaveAttribute('aria-valuenow', '100');
+});
