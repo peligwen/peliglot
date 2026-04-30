@@ -499,3 +499,137 @@ describe('session cost chip', () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sliding context window
+// ---------------------------------------------------------------------------
+
+describe('sliding context window', () => {
+  async function sendOne(stub: ReturnType<typeof makeStubProvider>, content: string) {
+    const textarea = screen.getByRole('textbox', { name: /message input/i });
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: content } });
+      fireEvent.click(screen.getByRole('button', { name: /send message/i }));
+    });
+    // Wait for the assistant message to land (loading state to clear)
+    await waitFor(() => {
+      expect(stub.calls.length).toBeGreaterThan(0);
+    });
+  }
+
+  it('sends full history when under the cap', async () => {
+    const responses = Array.from({ length: 5 }, (_, i) => ({
+      text: `Respuesta ${i + 1}`,
+      usage: { input: 10, output: 20 },
+      model: 'stub',
+    }));
+    const stub = makeStubProvider(responses);
+    renderConversation(() => stub);
+
+    for (let i = 1; i <= 5; i++) {
+      await sendOne(stub, `Mensaje ${i}`);
+    }
+
+    // 5th call should include 4 prior pairs (8 messages) + new user (1) + system (1) = 10 messages
+    const lastCall = stub.calls[stub.calls.length - 1]!;
+    const userOrAssistant = lastCall.messages.filter(
+      m => m.role === 'user' || m.role === 'assistant',
+    );
+    expect(userOrAssistant.length).toBe(9); // 4 prior pairs (8) + new user (1)
+
+    // Truncation notice should NOT be visible
+    expect(screen.queryByText(/older messages dropped/i)).toBeNull();
+  });
+
+  it('truncates history to last 40 messages when conversation exceeds the window', async () => {
+    // 21 round-trips → 42 user/assistant messages after the 21st send.
+    // The 22nd send sees 42 prior messages — exceeds cap of 40, so we trim.
+    const responses = Array.from({ length: 22 }, (_, i) => ({
+      text: `Respuesta ${i + 1}`,
+      usage: { input: 10, output: 20 },
+      model: 'stub',
+    }));
+    const stub = makeStubProvider(responses);
+    renderConversation(() => stub);
+
+    for (let i = 1; i <= 22; i++) {
+      await sendOne(stub, `Mensaje ${i}`);
+    }
+
+    // Final call should send: system (1) + last 40 history + new user (1) = 42 total
+    const lastCall = stub.calls[stub.calls.length - 1]!;
+    expect(lastCall.messages.length).toBe(42);
+
+    const userOrAssistant = lastCall.messages.filter(
+      m => m.role === 'user' || m.role === 'assistant',
+    );
+    expect(userOrAssistant.length).toBe(41); // 40 trimmed history + 1 new user
+
+    // The earliest message in the trimmed history should NOT be "Mensaje 1"
+    const earliestKept = userOrAssistant[0]!.content;
+    expect(earliestKept).not.toBe('Mensaje 1');
+
+    // Truncation notice should be visible
+    await waitFor(() => {
+      expect(screen.getByText(/older messages dropped/i)).toBeInTheDocument();
+    });
+  });
+
+  it('keeps older messages visible in the UI even when dropped from context', async () => {
+    const responses = Array.from({ length: 22 }, (_, i) => ({
+      text: `Respuesta ${i + 1}`,
+      usage: { input: 10, output: 20 },
+      model: 'stub',
+    }));
+    const stub = makeStubProvider(responses);
+    renderConversation(() => stub);
+
+    for (let i = 1; i <= 22; i++) {
+      await sendOne(stub, `Mensaje ${i}`);
+    }
+
+    // The first user message should still be visible in the thread (just not in context)
+    expect(screen.getByText('Mensaje 1')).toBeInTheDocument();
+  });
+
+  it('after a mid-conversation error the trimmed slice still starts with a user message', async () => {
+    // Setup: one mid-conversation failure, then many successes. Errors are
+    // filtered out of the model-context history, so the user/assistant
+    // sequence is odd-length ending in `user` after the error. When the
+    // window cap kicks in, slice(-40) might start with `assistant` —
+    // Anthropic rejects that. The route must drop a leading `assistant`.
+    let callCount = 0;
+    type ChatArgs = Parameters<ReturnType<typeof makeStubProvider>['chat']>;
+    type Recorded = { messages: ChatArgs[0]; options?: ChatArgs[1] };
+    const calls: Recorded[] = [];
+    const composite = {
+      id: 'anthropic' as const,
+      defaultModel: 'stub',
+      calls,
+      async chat(messages: ChatArgs[0], options?: ChatArgs[1]) {
+        calls.push({ messages, options });
+        callCount++;
+        if (callCount === 1) {
+          throw new LlmProviderError('temporary 500', 'http-error');
+        }
+        return { text: `Respuesta ${callCount}`, usage: { input: 10, output: 20 }, model: 'stub' };
+      },
+    };
+    renderConversation(() => composite);
+
+    // Turn 1: errors. Turn 2..23: succeed. After turn 23 the post-filter
+    // sequence has 1 + 22*2 = 45 user/assistant messages, exceeding the 40 cap.
+    await sendOne(composite, 'Mensaje 1');
+    for (let i = 2; i <= 23; i++) {
+      await sendOne(composite, `Mensaje ${i}`);
+    }
+
+    // Inspect the most recent call's payload — the first surviving
+    // user/assistant message must be a user message.
+    const lastCall = calls[calls.length - 1]!;
+    const userOrAssistant = lastCall.messages.filter(
+      m => m.role === 'user' || m.role === 'assistant',
+    );
+    expect(userOrAssistant[0]!.role).toBe('user');
+  });
+});

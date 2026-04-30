@@ -32,6 +32,15 @@ import type { ConversationLevel } from './systemPrompt';
 
 const SPANISH_RED = '#C62828';
 
+/**
+ * Sliding-context-window cap. We send at most this many user/assistant
+ * messages (plus the system prompt) per request. With 20 user + 20 assistant
+ * messages the typical input bill is bounded at ~5–8K tokens regardless of
+ * how long the conversation has been running. Older history is dropped from
+ * context (and a notice is shown to the user) but stays visible in the UI.
+ */
+const MAX_HISTORY_MESSAGES = 40;
+
 const LEVEL_LABELS: Record<ConversationLevel, string> = {
   beginner: 'Beginner',
   intermediate: 'Intermediate',
@@ -606,6 +615,10 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   const [configuredProviders, setConfiguredProviders] = useState<Provider[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const [sessionUsage, setSessionUsage] = useState<SessionUsage>({ ...ZERO_SESSION_USAGE });
+  // True once the conversation grows past MAX_HISTORY_MESSAGES and we start
+  // dropping oldest turns from the model's context. Surfaced in UI as a
+  // small notice; older messages remain visible in the thread.
+  const [historyTruncated, setHistoryTruncated] = useState(false);
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -679,9 +692,25 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
       // System prompt is first. Then conversation history (user + assistant only),
       // then the new user message. Read history from the ref so this callback
       // doesn't depend on `messages` (which churns every send/receive).
-      const historyMessages: ChatMessage[] = messagesRef.current
+      //
+      // Sliding window: if history exceeds MAX_HISTORY_MESSAGES, send only the
+      // most recent slice. This caps input-token cost at O(window) per turn
+      // instead of O(turns), preventing N² billing on long conversations.
+      // Older messages remain visible in the UI but don't go to the model.
+      //
+      // Alternation guard: errors are filtered out (they're not part of the
+      // model's context), so after a failed turn the surviving sequence can
+      // be odd-length ending in `user`. A subsequent slice may then begin with
+      // `assistant`, which Anthropic rejects (messages must start with `user`
+      // after the system prompt). Drop a leading `assistant` to keep the
+      // payload alternation-safe across providers.
+      const fullHistory: ChatMessage[] = messagesRef.current
         .filter(m => m.role === 'user' || m.role === 'assistant')
         .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
+      const trimmed = fullHistory.length > MAX_HISTORY_MESSAGES;
+      let historyMessages = trimmed ? fullHistory.slice(-MAX_HISTORY_MESSAGES) : fullHistory;
+      if (historyMessages[0]?.role === 'assistant') historyMessages = historyMessages.slice(1);
+      if (trimmed) setHistoryTruncated(true);
 
       const apiMessages: ChatMessage[] = [
         { role: 'system', content: systemPromptFor(level) },
@@ -904,6 +933,29 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
               boxSizing: 'border-box',
             }}
           >
+            {/* Truncation notice — shown once history has exceeded MAX_HISTORY_MESSAGES.
+                Older messages remain visible in the thread but no longer go to the model. */}
+            {historyTruncated && (
+              <div
+                role="status"
+                aria-live="polite"
+                style={{
+                  marginBottom: 8,
+                  padding: '4px 10px',
+                  background: '#fffaf0',
+                  border: '1px solid #f0e4c4',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  color: '#8B6914',
+                  textAlign: 'center',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  lineHeight: 1.4,
+                }}
+              >
+                Older messages dropped from context to keep this affordable.
+              </div>
+            )}
+
             {/* Ask in English button */}
             {messages.length > 0 && (
               <div style={{ marginBottom: 8, textAlign: 'right' }}>
