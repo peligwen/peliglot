@@ -15,8 +15,13 @@
  * - This keeps order stable within a session: rating card A does not reshuffle B–Z.
  *
  * Advance logic:
- * - After rating, shows "Next review: …" message for 800ms, then advances.
- * - Prevents spoiler-flash of the next card's answer.
+ * - Self-rate (letter-sound, word-stress): briefly shows "Next review: …",
+ *   then auto-advances. The user has already self-rated so there's no
+ *   right/wrong feedback to absorb.
+ * - Typed / MCQ: shows match feedback + "Continue" button. The button is
+ *   auto-focused, so pressing Enter advances; a global Enter handler also
+ *   advances if focus has drifted off the button. No auto-advance — the
+ *   user always controls when feedback disappears.
  */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -956,9 +961,10 @@ function CardReviewer({
 
   // Typed-answer path. Auto-rates based on match quality:
   //   correct → Good, close → Hard, incorrect → Again
-  // UI stays in 'shown-answer' so the Continue button is visible. Correct/close
-  // auto-advance after 800ms (Continue can skip the wait); incorrect requires
-  // explicit Continue click so the user can absorb the right answer.
+  // UI stays in 'shown-answer' until the user advances via Continue (button
+  // click or Enter). Never auto-advances — the previous 800ms flash on
+  // correct answers was reading as "no feedback" because users miss it
+  // while looking at the keyboard.
   const handleSubmitTyped = useCallback(() => {
     // Allow submit on empty input only if the card explicitly accepts empty
     // (guide 19 'none' bucket). For all other cards, require non-empty input.
@@ -971,11 +977,11 @@ function CardReviewer({
     setMatchResult(result);
     setReviewerState('shown-answer');
 
-    void persistAndMaybeAdvance(matchToRating(result), result !== 'incorrect');
+    void persistAndMaybeAdvance(matchToRating(result), false);
   }, [userAnswer, card, acceptsEmpty, persistAndMaybeAdvance]);
 
-  // MCQ option click handler. Same auto-advance rules as typed input:
-  // correct → Good + auto-advance; incorrect → Again + wait for Continue.
+  // MCQ option click handler. Auto-rates: correct → Good, incorrect → Again.
+  // Never auto-advances — user always advances via Continue (or Enter).
   const handleMcqSelect = useCallback(
     (option: string) => {
       if (submittedRef.current) return;
@@ -990,19 +996,15 @@ function CardReviewer({
       setMatchResult(result);
       setReviewerState('shown-answer');
 
-      void persistAndMaybeAdvance(isCorrect ? Rating.Good : Rating.Again, isCorrect);
+      void persistAndMaybeAdvance(isCorrect ? Rating.Good : Rating.Again, false);
     },
     [card, persistAndMaybeAdvance],
   );
 
-  // Continue handler for the typed-answer path:
-  // - Cancels any pending auto-advance timer (correct/close: user skips 800ms wait).
-  // - Immediately tells the parent to advance (required path for incorrect).
+  // Continue handler for the typed-answer / MCQ path: tell the parent to
+  // advance to the next card. (Self-rate cards still auto-advance from
+  // RatingButtons via persistAndMaybeAdvance.)
   const handleContinue = useCallback(() => {
-    if (advanceTimerRef.current !== null) {
-      clearTimeout(advanceTimerRef.current);
-      advanceTimerRef.current = null;
-    }
     onAdvance(card.cardId);
   }, [onAdvance, card.cardId]);
 
@@ -1010,6 +1012,24 @@ function CardReviewer({
     setMatchResult(null); // escape hatch — no typed scoring
     setReviewerState('shown-answer');
   }, []);
+
+  // Enter advances on the typed/MCQ Continue path. The Continue button is
+  // auto-focused so Enter naturally fires its onClick; this fallback handles
+  // cases where focus drifted (user clicked the speaker, the prompt, etc.).
+  // Skipped when focus is on a button/input/textarea so we don't double-fire
+  // with the focused element's own handler.
+  useEffect(() => {
+    if (reviewerState !== 'shown-answer' || matchResult === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter') return;
+      const tag = (document.activeElement as HTMLElement | null)?.tagName;
+      if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA') return;
+      e.preventDefault();
+      handleContinue();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [reviewerState, matchResult, handleContinue]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

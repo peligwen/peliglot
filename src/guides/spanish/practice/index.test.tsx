@@ -520,6 +520,86 @@ describe('Practice surface', () => {
     expect(screen.getByTestId('answer-feedback').textContent).toMatch(/correct/i);
   });
 
+  it('typed-correct does NOT auto-advance — feedback stays until Continue', async () => {
+    const mockVerbCard2: ReviewCard = {
+      cardId: 'test-verb-card-2',
+      guideId: 4,
+      guideSlug: 'spanish',
+      kind: 'verb-conjugation',
+      prompt: { kind: 'verb-conjugation', verb: 'comer', pronoun: 'tú', meaning: 'to eat' },
+      answer: 'comes',
+      speakText: 'comes',
+    };
+    renderPractice(adapter, [mockVerbCard, mockVerbCard2]);
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument()
+    );
+
+    const isHablar = !!screen.queryByText(/hablar/i);
+    const correctAnswer = isHablar ? 'hablo' : 'comes';
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: correctAnswer },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    });
+
+    // Wait well past the old 800ms auto-advance window — feedback must persist.
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    expect(screen.getByTestId('answer-feedback')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+  });
+
+  it('global Enter advances after typed answer when focus is off the Continue button', async () => {
+    const mockVerbCard2: ReviewCard = {
+      cardId: 'test-verb-card-2',
+      guideId: 4,
+      guideSlug: 'spanish',
+      kind: 'verb-conjugation',
+      prompt: { kind: 'verb-conjugation', verb: 'comer', pronoun: 'tú', meaning: 'to eat' },
+      answer: 'comes',
+      speakText: 'comes',
+    };
+    renderPractice(adapter, [mockVerbCard, mockVerbCard2]);
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: /type your answer/i })).toBeInTheDocument()
+    );
+
+    const isHablar = !!screen.queryByText(/hablar/i);
+    const correctAnswer = isHablar ? 'hablo' : 'comes';
+    const firstCardId = isHablar ? 'test-verb-card-1' : 'test-verb-card-2';
+
+    fireEvent.change(screen.getByRole('textbox', { name: /type your answer/i }), {
+      target: { value: correctAnswer },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /submit answer/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    });
+
+    // Move focus off the auto-focused Continue button so the global handler is what advances us.
+    (document.activeElement as HTMLElement | null)?.blur();
+
+    await act(async () => {
+      fireEvent.keyDown(window, { key: 'Enter' });
+    });
+
+    // Next card prompt is visible; previous card's feedback is gone.
+    await waitFor(() => {
+      const persistedFirst = adapter.peek(firstCardId);
+      expect(persistedFirst).toBeDefined();
+    });
+    await waitFor(() => {
+      expect(screen.queryByTestId('answer-feedback')).not.toBeInTheDocument();
+    }, { timeout: 2000 });
+  });
+
   it('Show Answer escape hatch on verb card shows canonical answer + all 4 rating buttons with sub-labels', async () => {
     renderPractice(adapter, [mockVerbCard]);
     await waitFor(() => expect(screen.getByText(/hablar/i)).toBeInTheDocument());
