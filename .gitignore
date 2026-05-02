@@ -31,3 +31,6 @@ test-results/
 # Generated OG card images (regenerated at build time via prebuild script)
 # `git clone && npm ci && npm run build` produces all cards hermetically.
 /public/og/
+
+# Claude Code runtime state (not the tracked plans/ or settings.json)
+.claude/*.lock
