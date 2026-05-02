@@ -57,6 +57,22 @@ iframe loads on Peliglot itself; the link is a plain `<a target="_blank">` and
 no request is made until you click it. From the moment you click, you're on
 Ko-fi's site and Ko-fi's privacy policy applies.
 
+## AI keys (BYOK)
+
+If you configure an API key in the AI Keys section of Settings, Peliglot's
+"Test" button will contact the provider directly from your browser:
+
+- **Anthropic** (`api.anthropic.com`) — only when you click Test with an
+  Anthropic key configured.
+- **OpenAI** (`api.openai.com`) — only when you click Test with an OpenAI key
+  configured.
+- **Custom endpoint** — only when you click Test with a custom URL configured.
+  The request goes to whatever URL you supply; Peliglot does not see it.
+
+These requests carry **your API key** in the request header. Peliglot has no
+server — the browser sends the request directly. No key is ever transmitted to
+Peliglot. Clear site data and the key is gone.
+
 ## Why
 
 We want to know which collections are actually used so we can invest time in the

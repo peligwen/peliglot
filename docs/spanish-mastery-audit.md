@@ -1,8 +1,8 @@
 # Spanish Mastery Audit
 
-**Last updated:** Phase 2c.5 — PR #21 cleanup (2026-04-26)
-**Coverage:** 29 of 33 Spanish guides wired (88%). 4 guides carry explicit skip verdicts.
-**Total cards:** 678 (as of Phase 2c.5)
+**Last updated:** Phase 3 Thread B.2 — 2 new CardKinds + 76 new cards (2026-04-29)
+**Coverage:** 31 of 33 Spanish guides wired (94%). 4 guides carry explicit skip verdicts (re-evaluated in Section 6). 2 new extractors (listening-recall, accent-discrimination) draw from existing guide data.
+**Total cards:** 754 (as of Phase 3 / B.2)
 
 ---
 
@@ -136,16 +136,27 @@
 | `reflexive-daily-routine` | Given an English daily-routine action, supply the Spanish reflexive infinitive |
 | `reciprocal-translate` | Given an English "each other" sentence, produce the Spanish reciprocal-reflexive construction |
 
+### Phase 3 / B.2 — New listening kinds (2 kinds)
+
+| CardKind | Description |
+|----------|-------------|
+| `listening-recall` | Hear a Spanish word or phrase spoken; type the Spanish spelling. Auto-plays on mount. Typed-answer enabled. 64 cards (cardinals + ordinals + weather + nouns). |
+| `accent-discrimination` | Given a Spanish minimal-pair word (accented vs. unaccented), choose its English meaning. MCQ with the pair partner always present as a distractor so the accent contrast is always tested. 12 cards (6 minimal pairs × 2 directions). |
+
 ---
 
-## 5. Architecture notes
+## 5. Architecture notes (unchanged)
+
+> Notes in this section are unchanged from Phase 2c.5. They are not
+> superseded by the audio audit; see `docs/spanish-audio-audit.md` for
+> audio-coverage findings.
 
 - All extractors import data from `src/guides/spanish/guides/dataN.ts` files.
   Guide JSX files (`guideN.tsx`) import from the same data files so data is
   never duplicated.
 - The `SPANISH_CARD_COUNT` constant in `src/guides/spanish/mastery/index.ts`
   is maintained manually and must be bumped whenever extractors are added.
-  Current value: 678 (as of Phase 2c.5).
+  Current value: 754 (as of Phase 3 / B.2).
 - The `getAllSpanishCards()` function is imported only by the practice route
   chunk (`/guides/spanish/practice`). The landing page uses the plain
   `SPANISH_CARD_COUNT` constant to avoid pulling the entire extractor pool
@@ -153,3 +164,143 @@
 - Architecture invariant: extractors import from `'../../../../mastery'`
   (the barrel) only — never from mastery sub-files directly. See
   `src/mastery/ARCHITECTURE.md` for the full contract.
+
+---
+
+## 6. Skip re-evaluation log (Phase 2 Thread B.1)
+
+Re-evaluated against the now-27-kind `CardKind` inventory in `src/mastery/cards.ts`.
+Source files read: `src/guides/spanish/guides/guide7.tsx`, `guide15.tsx`,
+`guide26.tsx`, `guide33.tsx`.
+
+### Guide 7 — Progresivo
+
+**Prior verdict:** skip — single structural rule (estar + gerund), redundant
+with present-perfect and weather-expression extractors.
+
+**Re-evaluation:**
+The guide teaches the present progressive (estar + gerund) and
+past progressive (estaba/estuvo + gerund) constructions. Two data sets are
+present inline in the JSX: `progUseYes` (3 examples of correct progressive use,
+each incidentally featuring a gerund: *comiendo*, *lloviendo*, *bailando*) and
+`progUseNo` (3 examples of contexts where Spanish uses the simple present
+instead). There is no dedicated gerund-formation data set; the gerunds appear
+incidentally within full-sentence examples. The `verb-conjugation-tensed` kind's
+`TensedConjugationTense` union does **not** include `'present-progressive'` or
+`'past-progressive'`; adding these would require a type extension in
+`src/mastery/cards.ts`.
+
+The guide's substantive content is:
+1. Whether a verb takes the progressive (yes/no rule) — binary fact, not a
+   conjugation production task.
+2. Gerund formation (hablar → hablando, tener → teniendo) — a morphological
+   transform. The `verb-spelling-change` kind's `target` field is the nearest
+   fit, but `verb-spelling-change` is defined for spelling-change patterns in
+   conjugation, not gerund formation — stretching it would require accepting
+   the kind as a "gerund-form" card, which misrepresents the kind's semantics.
+
+No existing kind cleanly maps to either content type without semantic overloading.
+Adding `'present-progressive'` to `TensedConjugationTense` and extracting "estar
++ gerund" cards for a small set of verbs is feasible but would yield roughly
+12–18 cards (3 verb × 6 pronouns × present-only, or 2 tenses × 3 verbs × 3
+pronouns). The guide itself provides only 3 sample verbs.
+
+**Revised verdict: conditional skip.** If `TensedConjugationTense` is extended
+for a future tense expansion (e.g. Phase 2d adds progressive aspect), Guide 7
+becomes extractable at low marginal cost. Until then, the content surface is too
+small and the kind fit too approximate to warrant a standalone extractor. Skip
+maintained.
+
+---
+
+### Guide 15 — Posición de Objetos
+
+**Prior verdict:** skip — object-placement rules require sentence-level
+grammatical judgment; no single-answer card type captures it without
+oversimplifying.
+
+**Re-evaluation:**
+The guide teaches direct/indirect object pronoun placement across 6 tab-based
+contexts: (1) before conjugated verbs, (2) attached to infinitives,
+(3) attached to gerunds, (4) affirmative imperatives, (5) negative imperatives,
+(6) double-object pronoun ordering. Each tab shows a rule statement plus one
+primary example (with an optional alternate form on tabs 2 and 3 where both
+placements are valid).
+
+Review of `guide15.tsx` confirms the data is structured as short rule+example
+pairs, not as a set of transformations from a given English input to a single
+correct Spanish output. The placement rule depends on: which verb construction
+is in scope, whether the pronoun is DO or IO, and whether the sentence is
+affirmative or negative — three simultaneous discriminators with no clean
+single-axis card framing.
+
+A plausible new kind `pronoun-placement` could be defined as "given a Spanish
+sentence with the pronoun in the wrong position, supply the correct form" (similar
+to `sentence-correction`). However, the guide does not provide a corpus of
+incorrect sentences; generating them would be content authoring work, not
+extraction from existing data.
+
+**Revised verdict: skip maintained.** No extractable card shape exists in the
+current data. If a `pronoun-placement` or `sentence-reorder` kind is introduced
+in a future phase with fresh content authoring, Guide 15 becomes relevant.
+
+---
+
+### Guide 26 — Calor
+
+**Prior verdict:** skip — one-concept guide (estar caliente vs. tener calor);
+too narrow for a standalone extractor.
+
+**Re-evaluation:**
+The guide is a single-concept guide covering exactly one distinction:
+*tener calor* (person feels hot) vs. *estar caliente* (object is physically
+hot). Source data in `guide26.tsx`:
+
+- `tenerUses` — 6 English description strings explaining when to use *tener
+  calor*: "Person / animal feels warm", "Subjective sensation of heat",
+  "Living beings only", "Uses tener + calor (calor is a noun)", and two example
+  sentences (*Tengo calor*, *Ella tiene calor*). These are explanatory strings,
+  not a vocabulary list.
+- `estarUses` — 6 English description strings explaining when to use *estar
+  caliente*: object temperature, things/places/food/drinks, two example
+  sentences (*La sopa está caliente*, *El motor está caliente*), and a
+  colloquial-register warning. Again explanatory strings, not a vocabulary list.
+- `examples` — 6 bilingual contrast sentence pairs (*Tengo calor.* / *I feel
+  hot.* and similar).
+
+Neither `tenerUses` nor `estarUses` constitutes an extractable vocabulary or
+ser/estar discrimination corpus. The strings are prose descriptions of the
+rule, not data items that map to card prompts.
+
+**Revised verdict: skip maintained.** The guide is a one-concept explainer.
+The actual content — rule descriptions and six bilingual examples — does not
+yield a meaningful card set under any current kind. The prior skip rationale
+holds from the data as it actually exists.
+
+---
+
+### Guide 33 — Español Regional
+
+**Prior verdict:** skip — dialect survey guide with no right/wrong answers;
+presenting regional variation as a quiz creates incorrect "correct" answers.
+
+**Re-evaluation:**
+The guide has 4 tabs: Voseo (Argentina/Uruguay pronoun system), Vocabulary
+(regional word variants by country), Pronunciation (phonemic variation: seseo,
+voseo stress, yeísmo), and Grammar (vos conjugation paradigm).
+
+Each tab is purely descriptive. The Vocabulary tab lists 6 regional
+equivalents across 6 feature rows (car, computer, cell phone, bus, apartment,
+juice), e.g. the bus row is "🇪🇸 autobús · 🇲🇽 camión · 🇦🇷 colectivo · 🇨🇺 guagua" —
+precisely the case where marking any single answer correct while calling the
+others wrong would misinform the learner. The voseo conjugation paradigm
+(present: -ás/-és/-ís; imperative: -á/-é/-í) is technically extractable as
+`verb-conjugation` variants, but wiring it without a "voseo context" flag on
+the card would silently mix voseo and tuteo conjugations in the same practice
+pool, creating confusion.
+
+**Revised verdict: skip maintained.** Regional variation is not a suitable
+single-answer card target. A future `dialect-variant` MCQ kind (asking "which
+countries use X form?") could work, but this would require both a new kind
+definition and fresh content authoring — not extraction from the current guide
+data.

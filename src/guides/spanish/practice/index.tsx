@@ -24,8 +24,7 @@ import type { ReactElement, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useMastery } from '../../../hooks/useMastery';
 import { Rating } from '../../../mastery';
-import type { MasteryStorageAdapter, CardState } from '../../../mastery';
-import type { CardKind, ReviewCard } from '../../../mastery/cards';
+import type { MasteryStorageAdapter, CardState, CardKind, ReviewCard } from '../../../mastery';
 import { getAllSpanishCards } from '../mastery/index';
 import { speakSpanish } from '../../../utils/speech';
 import { checkAnswer, normalizeAnswer } from '../mastery/util';
@@ -39,15 +38,48 @@ import { PromptRenderer } from './renderers';
 const SPANISH_RED = '#C62828';
 const ACCENT_LIGHT = '#ffebee';
 
-// Kinds that have a speaker button on the prompt itself (before reveal)
-const KINDS_WITH_PROMPT_SPEAK = new Set<string>(['letter-sound']);
-// Kinds that auto-play speech on reveal
-const KINDS_AUTO_PLAY_ON_REVEAL = new Set<string>([
+// Kinds that have a speaker button on the prompt itself (before reveal).
+// Only include kinds where speaking the prompt does NOT leak the answer —
+// specifically: the speakText is the Spanish item being tested, not the answer.
+// ser-vs-estar and por-vs-para are intentionally omitted: their speakText
+// either contains the answer verb (guide17) or substitutes the blank with
+// the answer (guide18).
+export const KINDS_WITH_PROMPT_SPEAK: ReadonlySet<CardKind> = new Set<CardKind>([
+  'letter-sound',
+  'idiom-meaning',
+  'false-cognate',
+  'reflexive-meaning-change',
+  'tu-vs-usted',
+]);
+// Kinds that auto-play speech on reveal (post-reveal, so no answer-leak risk).
+// Phase 3 additions: noun-gender, noun-plural, noun-adj-agreement,
+// english-to-pronoun, verb-spelling-change, word-stress + gustar-pattern,
+// negation-translate, sentence-correction, reciprocal-translate,
+// reflexive-daily-routine, number-spell, weather-expression, question-word,
+// comparative-irregular.
+export const KINDS_AUTO_PLAY_ON_REVEAL: ReadonlySet<CardKind> = new Set<CardKind>([
   'letter-sound',
   'verb-conjugation',
   'verb-conjugation-stem-change',
   'verb-conjugation-tensed',
   'imperative-tu',
+  // Phase 3 additions
+  'noun-gender',
+  'noun-plural',
+  'noun-adj-agreement',
+  'english-to-pronoun',
+  'verb-spelling-change',
+  'word-stress',
+  'gustar-pattern',
+  'negation-translate',
+  'sentence-correction',
+  'reciprocal-translate',
+  'reflexive-daily-routine',
+  'number-spell',
+  'weather-expression',
+  'question-word',
+  'comparative-irregular',
+  'accent-discrimination',
 ]);
 
 // Kinds that support typed-answer input as the primary interaction.
@@ -77,6 +109,8 @@ export const TYPING_ENABLED_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'sentence-correction',
   'reflexive-daily-routine',
   'reciprocal-translate',
+  // Phase 3 (B.2) additions
+  'listening-recall',
 ]);
 
 // Kinds that present 4-option multiple-choice instead of typed input.
@@ -87,15 +121,21 @@ export const MCQ_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
   'idiom-meaning',
   'false-cognate',
   'reflexive-meaning-change',
+  // Phase 3 (B.2) additions
+  'accent-discrimination',
 ]);
 
 const MCQ_OPTION_COUNT = 4;
 
 // Kinds whose canonical answer is an English meaning (rather than a Spanish
-// form). Currently all such kinds happen to be MCQ — kept as a separate set
+// form). All three are currently also in MCQ_KINDS — kept as a separate set
 // for the placeholderFor helper, in case a future English-answer kind is
 // added that uses typed input instead.
-export const ENGLISH_ANSWER_KINDS: ReadonlySet<CardKind> = new Set<CardKind>();
+export const ENGLISH_ANSWER_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+  'idiom-meaning',
+  'false-cognate',
+  'reflexive-meaning-change',
+]);
 
 export function placeholderFor(kind: CardKind): string {
   return ENGLISH_ANSWER_KINDS.has(kind)
@@ -103,8 +143,24 @@ export function placeholderFor(kind: CardKind): string {
     : 'Type your answer in Spanish';
 }
 
-// How long (ms) to display the "Next review: …" message before advancing
-const NEXT_DUE_DISPLAY_MS = 800;
+// How long (ms) to display the "Next review: …" message before advancing.
+// Long-answer kinds give the learner more time to read the canonical answer.
+const LONG_ANSWER_KINDS: ReadonlySet<CardKind> = new Set<CardKind>([
+  'gustar-pattern',
+  'negation-translate',
+  'sentence-correction',
+  'reciprocal-translate',
+  'reflexive-daily-routine',
+  'weather-expression',
+  'question-word',
+  'ser-vs-estar',
+  'por-vs-para',
+  'idiom-meaning',
+]);
+
+export function nextDueDisplayMsForCard(card: ReviewCard): number {
+  return LONG_ANSWER_KINDS.has(card.kind) ? 1400 : 800;
+}
 
 // ---------------------------------------------------------------------------
 // Seeded shuffle — Mulberry32, seeded by local YYYYMMDD date integer
@@ -174,6 +230,33 @@ export function formatRelative(dueMs: number): string {
 }
 
 // ---------------------------------------------------------------------------
+// formatNextDue — countdown copy for EmptyState
+// ---------------------------------------------------------------------------
+
+export function formatNextDue(nextDueAt: number | null): string {
+  if (nextDueAt === null) {
+    return 'All caught up. Add more cards by reviewing guides.';
+  }
+  const diffMs = nextDueAt - Date.now();
+  if (diffMs < 60_000) {
+    return 'Next review in less than a minute.';
+  }
+  const totalMinutes = Math.round(diffMs / 60_000);
+  if (diffMs < 60 * 60_000) {
+    return `Next review in ${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}.`;
+  }
+  if (diffMs < 24 * 60 * 60_000) {
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    const hourStr = `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    const minStr = mins > 0 ? ` ${mins} ${mins === 1 ? 'minute' : 'minutes'}` : '';
+    return `Next review in ${hourStr}${minStr}.`;
+  }
+  const due = new Date(nextDueAt);
+  return `Next review on ${due.toLocaleDateString()} at ${due.toLocaleTimeString()}.`;
+}
+
+// ---------------------------------------------------------------------------
 // ProgressBar — inline small bar
 // ---------------------------------------------------------------------------
 
@@ -220,14 +303,25 @@ function ProgressBar({
 // SpeakerButton — small audio affordance
 // ---------------------------------------------------------------------------
 
-function SpeakerButton({ text, label = 'Speak' }: { text: string; label?: string }): ReactElement {
+function SpeakerButton({
+  text,
+  label = 'Speak',
+  playAudio,
+}: {
+  text: string;
+  label?: string;
+  /** Override the default speakSpanish call. Enables mute gating from the
+   *  parent. If omitted, falls back to speakSpanish directly. */
+  playAudio?: (text: string, onEnd?: () => void) => void;
+}): ReactElement {
   const [speaking, setSpeaking] = useState(false);
   return (
     <button
       aria-label={label}
       onClick={() => {
         setSpeaking(true);
-        speakSpanish(text, () => setSpeaking(false));
+        const speak = playAudio ?? speakSpanish;
+        speak(text, () => setSpeaking(false));
       }}
       style={{
         background: 'none',
@@ -257,12 +351,16 @@ function HeaderStrip({
   dailyGoal,
   dueCount,
   xpToday,
+  muted,
+  onToggleMute,
 }: {
   streak: number;
   todaysReviewCount: number;
   dailyGoal: number;
   dueCount: number;
   xpToday: number;
+  muted: boolean;
+  onToggleMute: () => void;
 }): ReactElement {
   return (
     <div
@@ -348,6 +446,25 @@ function HeaderStrip({
           {xpToday} XP
         </div>
       )}
+
+      <button
+        onClick={onToggleMute}
+        aria-label={muted ? 'Unmute audio' : 'Mute audio'}
+        aria-pressed={muted}
+        title={muted ? 'Unmute audio' : 'Mute audio'}
+        style={{
+          background: 'none',
+          border: '1px solid #ddd',
+          borderRadius: 6,
+          padding: '3px 8px',
+          cursor: 'pointer',
+          fontSize: 14,
+          color: muted ? '#bbb' : '#555',
+          fontFamily: "system-ui,'Segoe UI',sans-serif",
+        }}
+      >
+        <span aria-hidden="true">{muted ? '🔇' : '🔔'}</span>
+      </button>
     </div>
   );
 }
@@ -418,14 +535,16 @@ function RatingButtons({
 // EmptyState
 // ---------------------------------------------------------------------------
 
-function EmptyState({
+export function EmptyState({
   todaysReviewCount,
   dailyGoal,
   streak,
+  nextDueAt,
 }: {
   todaysReviewCount: number;
   dailyGoal: number;
   streak: number;
+  nextDueAt: number | null;
 }): ReactElement {
   const metGoal = todaysReviewCount >= dailyGoal;
   return (
@@ -465,7 +584,7 @@ function EmptyState({
       >
         No cards are due right now.
         <br />
-        Check back later or review tomorrow.
+        {formatNextDue(nextDueAt)}
       </div>
 
       <Link
@@ -584,6 +703,12 @@ interface CardReviewerProps {
    * pool degrade to a single-option ("correct only") card.
    */
   cardPool?: ReadonlyArray<ReviewCard>;
+  /**
+   * Audio playback callback. Replaces direct speakSpanish calls so the mute
+   * toggle in the parent can gate all audio through a single chokepoint.
+   * If omitted, falls back to speakSpanish.
+   */
+  playAudio?: (text: string, onEnd?: () => void) => void;
 }
 
 /** Map a typed-answer match result to the appropriate FSRS rating. */
@@ -630,6 +755,10 @@ function cardAcceptsEmptyInput(card: ReviewCard): boolean {
  * user looks at the card but vary across cards. Distractors are deduped by
  * canonical answer text and exclude the current card's answer.
  *
+ * `requiredDistractors` are always included before pool-based picks. This is
+ * used for accent-discrimination cards where the minimal-pair partner must
+ * always appear as a distractor — regardless of pool size.
+ *
  * If the pool is too small to provide `optionCount - 1` unique distractors,
  * returns whatever options it can. No placeholder padding.
  */
@@ -637,8 +766,17 @@ export function getMcqOptions(
   card: ReviewCard,
   pool: ReadonlyArray<ReviewCard>,
   optionCount: number,
+  requiredDistractors: string[] = [],
 ): string[] {
   const seen = new Set<string>([card.answer]);
+  // Required distractors always included — deduplicated against the answer.
+  const forced: string[] = [];
+  for (const rd of requiredDistractors) {
+    if (!seen.has(rd)) {
+      seen.add(rd);
+      forced.push(rd);
+    }
+  }
   const distractors: string[] = [];
   for (const other of pool) {
     if (other.kind !== card.kind) continue;
@@ -648,11 +786,12 @@ export function getMcqOptions(
     distractors.push(other.answer);
   }
   const seed = stringHash(card.cardId);
-  const picked = seededShuffle(distractors, seed).slice(0, optionCount - 1);
+  const remainingSlots = optionCount - 1 - forced.length;
+  const picked = seededShuffle(distractors, seed).slice(0, Math.max(0, remainingSlots));
   // Use a different seed (any deterministic offset distinct from `seed`) so
   // the final option order isn't just "correct first, then distractors in
   // their picked order" — the second shuffle interleaves them.
-  return seededShuffle([card.answer, ...picked], seed + 1);
+  return seededShuffle([card.answer, ...forced, ...picked], seed + 1);
 }
 
 function CardReviewer({
@@ -660,6 +799,7 @@ function CardReviewer({
   onRate,
   onAdvance,
   cardPool = [],
+  playAudio,
 }: CardReviewerProps): ReactElement {
   // For typing-eligible kinds the state machine has an extra phase:
   //   'awaiting-input' → 'shown-answer' → 'rated'
@@ -672,10 +812,14 @@ function CardReviewer({
   const acceptsEmpty = cardAcceptsEmptyInput(card);
 
   // MCQ options — recomputed only when the card changes.
-  const mcqOptions = useMemo(
-    () => (mcqEnabled ? getMcqOptions(card, cardPool, MCQ_OPTION_COUNT) : []),
-    [mcqEnabled, card, cardPool],
-  );
+  // For accent-discrimination, the minimal-pair partner meaning is always
+  // injected as a required distractor so the core contrast is never absent.
+  const mcqOptions = useMemo(() => {
+    if (!mcqEnabled) return [];
+    const required: string[] =
+      card.prompt.kind === 'accent-discrimination' ? [card.prompt.pairMeaning] : [];
+    return getMcqOptions(card, cardPool, MCQ_OPTION_COUNT, required);
+  }, [mcqEnabled, card, cardPool]);
 
   type ReviewerState = 'awaiting-input' | 'shown-answer' | 'rated';
   const [reviewerState, setReviewerState] = useState<ReviewerState>('awaiting-input');
@@ -715,9 +859,10 @@ function CardReviewer({
     if (reviewerState !== 'shown-answer') return;
     if (!autoPlayedRef.current && KINDS_AUTO_PLAY_ON_REVEAL.has(card.kind)) {
       autoPlayedRef.current = true;
-      speakSpanish(card.speakText ?? card.answer);
+      const speak = playAudio ?? speakSpanish;
+      speak(card.speakText ?? card.answer);
     }
-  }, [reviewerState, card.kind, card.speakText, card.answer]);
+  }, [reviewerState, card.kind, card.speakText, card.answer, playAudio]);
 
   // Auto-focus the text input when a typing-eligible card first appears
   useEffect(() => {
@@ -758,7 +903,7 @@ function CardReviewer({
         setNextDue(`Next review: ${formatRelative(newState.due)}`);
         if (!autoAdvance) return;
         await new Promise<void>(resolve => {
-          advanceTimerRef.current = setTimeout(resolve, NEXT_DUE_DISPLAY_MS);
+          advanceTimerRef.current = setTimeout(resolve, nextDueDisplayMsForCard(card));
         });
         if (mountedRef.current) {
           onAdvance(card.cardId);
@@ -767,7 +912,11 @@ function CardReviewer({
         // Swallow: parent already handles error propagation
       }
     },
-    [onRate, onAdvance, card.cardId],
+    // card.cardId and card.kind are the only card fields used; card object
+    // identity changes on every parent render but its fields don't — using
+    // the primitive fields avoids unnecessary callback recreations.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onRate, onAdvance, card.cardId, card.kind],
   );
 
   // Show Answer (self-rate) 4-button path. Always auto-advances after display.
@@ -779,6 +928,27 @@ function CardReviewer({
     },
     [reviewerState, persistAndMaybeAdvance],
   );
+
+  // Keyboard shortcuts for rating buttons (self-rate path only).
+  // 1/a = Again, 2/h = Hard, 3/g = Good, 4/e = Easy.
+  // Only active when the answer is shown and no match result (typed path
+  // already applied a rating automatically). Skipped when focus is in a
+  // text input to avoid intercepting user typing.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (reviewerState !== 'shown-answer') return;
+      if (matchResult !== null) return;
+      const tag = (document.activeElement as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      const k = e.key;
+      if (k === '1' || k === 'a') void handleRate(Rating.Again);
+      else if (k === '2' || k === 'h') void handleRate(Rating.Hard);
+      else if (k === '3' || k === 'g') void handleRate(Rating.Good);
+      else if (k === '4' || k === 'e') void handleRate(Rating.Easy);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [reviewerState, matchResult, handleRate]);
 
   // Whether a typed submit or MCQ option click has already been persisted —
   // prevents double-submit on either input path.
@@ -848,8 +1018,8 @@ function CardReviewer({
     [handleSubmitTyped],
   );
 
-  const promptLetter =
-    card.prompt.kind === 'letter-sound' ? card.prompt.letter : null;
+  // speakText for the post-reveal speaker — always falls back to the answer
+  // so every card has audio on reveal.
   const speakText = card.speakText ?? card.answer;
 
   return (
@@ -865,12 +1035,22 @@ function CardReviewer({
           boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
         }}
       >
-        <PromptRenderer prompt={card.prompt} revealed={reviewerState !== 'awaiting-input'} />
+        <PromptRenderer
+          prompt={card.prompt}
+          revealed={reviewerState !== 'awaiting-input'}
+          playAudio={playAudio}
+        />
 
-        {/* Speaker button on prompt for letter-sound kind */}
-        {KINDS_WITH_PROMPT_SPEAK.has(card.kind) && promptLetter && (
+        {/* Speaker button on prompt — only for kinds where speaking the prompt
+            does not leak the answer, and only when speakText is set.
+            Absence of speakText is a config bug for any kind in the set. */}
+        {KINDS_WITH_PROMPT_SPEAK.has(card.kind) && card.speakText && (
           <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <SpeakerButton text={promptLetter} label="Speak this letter" />
+            <SpeakerButton
+              text={card.speakText}
+              label="Speak this prompt"
+              playAudio={playAudio}
+            />
           </div>
         )}
       </div>
@@ -1092,7 +1272,7 @@ function CardReviewer({
                 </div>
               )}
               <div style={{ marginTop: 12 }}>
-                <SpeakerButton text={speakText} label="Speak answer" />
+                <SpeakerButton text={speakText} label="Speak answer" playAudio={playAudio} />
               </div>
             </div>
           )}
@@ -1100,7 +1280,7 @@ function CardReviewer({
           {/* Speaker for typed-answer path */}
           {matchResult !== null && (
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <SpeakerButton text={speakText} label="Speak answer" />
+              <SpeakerButton text={speakText} label="Speak answer" playAudio={playAudio} />
             </div>
           )}
 
@@ -1167,7 +1347,7 @@ export function Practice({
   adapter,
   getCards = getAllSpanishCards,
 }: PracticeProps): ReactElement {
-  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated, xpToday } =
+  const { getCardState, rateCard, streak, todaysReviewCount, dailyGoal, isHydrated, xpToday, nextDueAt } =
     useMastery(adapter);
 
   // Force a re-render every minute so newly-due cards surface without user action
@@ -1225,6 +1405,22 @@ export function Practice({
     [],
   );
 
+  // Per-session mute toggle — resets to unmuted when the page is reloaded.
+  // All audio calls in CardReviewer are routed through this callback so a
+  // single state variable controls the entire audio pipeline.
+  const [muted, setMuted] = useState(false);
+  const handleToggleMute = useCallback(() => setMuted(m => !m), []);
+  const playAudio = useCallback(
+    (text: string, onEnd?: () => void) => {
+      if (muted) {
+        onEnd?.();
+        return;
+      }
+      speakSpanish(text, onEnd);
+    },
+    [muted],
+  );
+
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
@@ -1260,6 +1456,8 @@ export function Practice({
         dailyGoal={dailyGoal}
         dueCount={dueCount}
         xpToday={xpToday}
+        muted={muted}
+        onToggleMute={handleToggleMute}
       />
 
       <main style={{ padding: '32px 16px 64px', maxWidth: 600, margin: '0 auto' }}>
@@ -1268,6 +1466,7 @@ export function Practice({
             todaysReviewCount={todaysReviewCount}
             dailyGoal={dailyGoal}
             streak={streak.current}
+            nextDueAt={nextDueAt}
           />
         ) : (
           <CardReviewer
@@ -1276,6 +1475,7 @@ export function Practice({
             onRate={handleRate}
             onAdvance={handleAdvance}
             cardPool={allCards}
+            playAudio={playAudio}
           />
         )}
       </main>

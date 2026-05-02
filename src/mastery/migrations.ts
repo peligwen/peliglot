@@ -62,8 +62,32 @@ const migrations: Record<number, (s: unknown) => unknown> = {
  * - If a migration step throws, catches and returns `emptyExport()`.
  */
 export function migrate(snapshot: unknown): MasteryExport {
-  if (!isObject(snapshot)) return emptyExport();
-  if (!hasSchemaVersion(snapshot)) return emptyExport();
+  return migrateWithStatus(snapshot).snapshot;
+}
+
+/**
+ * Distinguishes "old or current version, migrated successfully" from
+ * "version newer than this build knows about." Useful for surfacing UX
+ * copy that tells the user to update their browser/app rather than
+ * silently producing an empty import.
+ */
+export type MigrationStatus =
+  | { status: 'ok'; snapshot: MasteryExport }
+  | { status: 'malformed'; snapshot: MasteryExport }
+  | { status: 'future-version'; snapshot: MasteryExport; foundVersion: number };
+
+export function migrateWithStatus(snapshot: unknown): MigrationStatus {
+  if (!isObject(snapshot)) return { status: 'malformed', snapshot: emptyExport() };
+  if (!hasSchemaVersion(snapshot)) return { status: 'malformed', snapshot: emptyExport() };
+
+  // Fast path: caller is from the future. Don't try to migrate downward.
+  if (snapshot.schemaVersion > CURRENT_SCHEMA_VERSION) {
+    return {
+      status: 'future-version',
+      snapshot: emptyExport(),
+      foundVersion: snapshot.schemaVersion,
+    };
+  }
 
   let current: unknown = snapshot;
   let version = snapshot.schemaVersion;
@@ -71,13 +95,13 @@ export function migrate(snapshot: unknown): MasteryExport {
   while (version < CURRENT_SCHEMA_VERSION) {
     const migrationFn = migrations[version];
     if (!migrationFn) {
-      // Unknown version — cannot safely migrate; reset.
-      return emptyExport();
+      // Unknown intermediate version — cannot safely migrate; reset.
+      return { status: 'malformed', snapshot: emptyExport() };
     }
     try {
       current = migrationFn(current);
     } catch {
-      return emptyExport();
+      return { status: 'malformed', snapshot: emptyExport() };
     }
     version += 1;
     // Update schemaVersion in the working copy so the next iteration is correct.
@@ -87,11 +111,11 @@ export function migrate(snapshot: unknown): MasteryExport {
   }
 
   // Validate that the result looks like a MasteryExport.
-  if (!isObject(current)) return emptyExport();
-  if (!hasSchemaVersion(current)) return emptyExport();
-  if (current['schemaVersion'] !== CURRENT_SCHEMA_VERSION) return emptyExport();
-  if (!isObject(current['cards'])) return emptyExport();
+  if (!isObject(current)) return { status: 'malformed', snapshot: emptyExport() };
+  if (!hasSchemaVersion(current)) return { status: 'malformed', snapshot: emptyExport() };
+  if (current['schemaVersion'] !== CURRENT_SCHEMA_VERSION) return { status: 'malformed', snapshot: emptyExport() };
+  if (!isObject(current['cards'])) return { status: 'malformed', snapshot: emptyExport() };
 
   // Cast is justified: we've checked all required top-level fields above.
-  return current as unknown as MasteryExport;
+  return { status: 'ok', snapshot: current as unknown as MasteryExport };
 }

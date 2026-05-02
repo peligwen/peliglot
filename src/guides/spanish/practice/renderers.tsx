@@ -10,8 +10,10 @@
  * for the practice page.
  */
 
+import { useEffect } from 'react';
 import type { ReactElement, CSSProperties } from 'react';
-import type { PromptShape, TensedConjugationTense } from '../../../mastery/cards';
+import type { PromptShape, TensedConjugationTense } from '../../../mastery';
+import { speakSpanish } from '../../../utils/speech';
 
 // ---------------------------------------------------------------------------
 // Shared style constants
@@ -66,6 +68,9 @@ export function LetterSoundRenderer({
     <div style={{ textAlign: 'center' }}>
       <div style={PROMPT_LABEL}>What sound does this letter make?</div>
       <div style={LARGE_GLYPH}>{prompt.letter}</div>
+      <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
+        Listen for the letter&apos;s name.
+      </div>
     </div>
   );
 }
@@ -760,18 +765,131 @@ export function ReciprocalTranslateRenderer({
 }
 
 // ---------------------------------------------------------------------------
+// listening-recall
+// ---------------------------------------------------------------------------
+
+/**
+ * ListeningRecallRenderer auto-plays the spoken form on mount so the learner
+ * hears the word when the card appears (audio-first UX).
+ *
+ * `playAudio` is injected by the practice surface so the mute toggle is
+ * respected. Falls back to speakSpanish if not provided.
+ */
+export function ListeningRecallRenderer({
+  prompt,
+  playAudio,
+}: {
+  prompt: Extract<PromptShape, { kind: 'listening-recall' }>;
+  playAudio?: (text: string, onEnd?: () => void) => void;
+}): ReactElement {
+  useEffect(() => {
+    const speak = playAudio ?? speakSpanish;
+    speak(prompt.spokenForm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prompt.spokenForm]); // playAudio intentionally excluded — see note below
+  // NOTE: `playAudio` is excluded from deps because it changes on every render
+  // (it's created inside Practice's render). Including it would re-fire on each
+  // re-render rather than only when the spoken form changes. The mute state is
+  // captured in the closure of `playAudio` at call time, so muting mid-card
+  // still takes effect correctly on the next mount.
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>Spell what you hear</div>
+      <div
+        style={{
+          fontSize: 64,
+          margin: '8px 0 12px',
+          cursor: 'pointer',
+          userSelect: 'none',
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Play audio again"
+        onClick={() => {
+          const speak = playAudio ?? speakSpanish;
+          speak(prompt.spokenForm);
+        }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            const speak = playAudio ?? speakSpanish;
+            speak(prompt.spokenForm);
+          }
+        }}
+      >
+        {'🔊'}
+      </div>
+      {prompt.hint && (
+        <div style={{ fontSize: 13, color: '#888', fontStyle: 'italic', marginBottom: 8 }}>
+          {prompt.hint}
+        </div>
+      )}
+      <div style={{ ...CONTEXT_TEXT, fontSize: 12 }}>Type the Spanish spelling</div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// accent-discrimination
+// ---------------------------------------------------------------------------
+
+/**
+ * AccentDiscriminationRenderer shows the Spanish word and asks for its meaning.
+ * The minimal pair partner is always present as a distractor — this renderer
+ * is self-contained and does NOT rely on getMcqOptions for the core contrast.
+ *
+ * MCQ option order and additional distractors are handled by the practice
+ * surface's getMcqOptions (which uses the pool). The pairMeaning from the
+ * PromptShape ensures the pedagogically important contrast is always tested.
+ */
+export function AccentDiscriminationRenderer({
+  prompt,
+}: {
+  prompt: Extract<PromptShape, { kind: 'accent-discrimination' }>;
+}): ReactElement {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <div style={PROMPT_LABEL}>What does this mean?</div>
+      <div
+        style={{
+          fontSize: 72,
+          fontWeight: 800,
+          color: '#1a1a1a',
+          fontFamily: 'Georgia, serif',
+          lineHeight: 1.1,
+          margin: '0 0 8px',
+        }}
+      >
+        {prompt.word}
+      </div>
+      <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>
+        {prompt.questionEnglish}
+      </div>
+      <div style={{ ...CONTEXT_TEXT, fontSize: 12 }}>
+        Watch for the accent mark — it changes the meaning
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Dispatch — single entry-point for the practice page
 //
 // `revealed` is passed through to the two kinds whose display changes after
 // the answer is shown (por-vs-para reason, tu-vs-usted reason).
+// `playAudio` is forwarded to ListeningRecallRenderer for auto-play-on-mount
+// so the mute toggle is respected.
 // ---------------------------------------------------------------------------
 
 export function PromptRenderer({
   prompt,
   revealed = false,
+  playAudio,
 }: {
   prompt: PromptShape;
   revealed?: boolean;
+  /** Audio callback — injected from the practice surface for mute support. */
+  playAudio?: (text: string, onEnd?: () => void) => void;
 }): ReactElement {
   switch (prompt.kind) {
     case 'letter-sound':
@@ -830,5 +948,10 @@ export function PromptRenderer({
       return <ReflexiveDailyRoutineRenderer prompt={prompt} />;
     case 'reciprocal-translate':
       return <ReciprocalTranslateRenderer prompt={prompt} />;
+    // Phase 3 (B.2) additions
+    case 'listening-recall':
+      return <ListeningRecallRenderer prompt={prompt} playAudio={playAudio} />;
+    case 'accent-discrimination':
+      return <AccentDiscriminationRenderer prompt={prompt} />;
   }
 }

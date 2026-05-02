@@ -470,7 +470,27 @@ export function LandingPage(): ReactElement {
                     </div>
                   </Link>
                   {g.slug === 'spanish' && (
-                    <div style={{ padding: '0 0 4px 0', display: 'flex', justifyContent: 'flex-end' }}>
+                    <div style={{ padding: '0 0 4px 0', display: 'flex', justifyContent: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
+                      <Link
+                        to="/guides/spanish/conversation"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: '#1565C0',
+                          textDecoration: 'none',
+                          background: '#e3f0ff',
+                          border: '1px solid #b0cfe8',
+                          borderRadius: 20,
+                          padding: '4px 12px',
+                          letterSpacing: 0.3,
+                        }}
+                        aria-label="Conversation practice in Spanish"
+                      >
+                        <span aria-hidden="true">{'💬'}</span> Conversation
+                      </Link>
                       <SpanishRecommendationCTA />
                     </div>
                   )}
@@ -489,6 +509,8 @@ export function LandingPage(): ReactElement {
           <Link to="/support" style={{ color: '#999', textDecoration: 'none' }}>Support Peliglot</Link>
           <span style={{ margin: '0 8px', color: '#ccc' }}>·</span>
           <Link to="/analytics" style={{ color: '#999', textDecoration: 'none' }}>Privacy-respecting analytics</Link>
+          <span style={{ margin: '0 8px', color: '#ccc' }}>·</span>
+          <Link to="/settings" style={{ color: '#999', textDecoration: 'none' }}>Settings</Link>
         </p>
       </footer>
 

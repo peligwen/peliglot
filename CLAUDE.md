@@ -371,6 +371,24 @@ Every extractor in `src/guides/spanish/mastery/extractors/` has a matching
 `guide{N}.test.ts` that verifies ID uniqueness, `kind` consistency, and
 non-empty answers.
 
+## BYOK Layer
+
+Bring-Your-Own-Key LLM access. Powers the Spanish conversation surface
+(`/guides/spanish/conversation`); future conversation surfaces should reuse
+the same `getProvider` entry point so they inherit the safety wrappers.
+
+Full architecture, safety levers (daily cap, sliding window, unpriced-model
+warning, custom-host confirm), and the "adding a new provider" recipe live
+in `docs/byok.md`. Read that before touching `src/byok/`,
+`src/components/ApiKeysSection.tsx`, `src/components/CostSection.tsx`, or
+the conversation route.
+
+**Hard rule: components never call `makeAnthropicProvider` /
+`makeOpenAIProvider` / `makeOpenAICompatibleProvider` directly.** Always
+go through `getProvider(id)` from the byok barrel — that's the only call
+site that wraps the provider with `withDailyCap`. Bypassing it skips the
+USD cap.
+
 ## Verifying Changes
 
 Run `npm run check` before considering any change complete. This catches:

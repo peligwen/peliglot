@@ -1,21 +1,31 @@
 /**
- * Smoke tests for Phase 2c new prompt renderers.
+ * Smoke tests for Phase 2c + Phase 3 new prompt renderers.
  *
  * Each test asserts that PromptRenderer produces a non-null DOM node when
- * given a minimal valid PromptShape for each of the 15 new CardKinds.
+ * given a minimal valid PromptShape for each of the new CardKinds.
  * This catches missing switch cases and renderers that throw on mount.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { PromptRenderer } from './renderers';
 import type { PromptShape } from '../../../mastery/cards';
+
+// speakSpanish is called by ListeningRecallRenderer on mount — stub it so
+// tests don't attempt Web Speech API calls in jsdom.
+vi.mock('../../../utils/speech', () => ({
+  speakSpanish: vi.fn(),
+}));
 
 // ---------------------------------------------------------------------------
 // Minimal valid prompts — one per new Phase 2c kind
 // ---------------------------------------------------------------------------
 
 const minimalPrompts: PromptShape[] = [
+  // Phase 3 (B.2) additions
+  { kind: 'listening-recall', spokenForm: 'cero' },
+  { kind: 'accent-discrimination', word: 'papa', questionEnglish: 'What does "papa" mean?', pairWord: 'papá', pairMeaning: 'dad' },
+  // Phase 2c kinds
   { kind: 'verb-spelling-change', infinitive: 'buscar', target: 'preterite yo' },
   { kind: 'verb-conjugation-tensed', verb: 'hablar', pronoun: 'yo', tense: 'preterite' },
   { kind: 'gustar-pattern', english: 'I like tacos.', verb: 'gustar' },
@@ -37,10 +47,40 @@ const minimalPrompts: PromptShape[] = [
   { kind: 'reciprocal-translate', english: 'They greet each other.' },
 ];
 
-describe('Phase 2c PromptRenderer smoke tests', () => {
+describe('Phase 2c + Phase 3 PromptRenderer smoke tests', () => {
   it.each(minimalPrompts)('renders $kind without throwing', (prompt) => {
     const { container } = render(<PromptRenderer prompt={prompt} />);
     expect(container.firstChild).not.toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 3 renderer-specific tests
+// ---------------------------------------------------------------------------
+
+describe('Phase 3 PromptRenderer', () => {
+  it('listening-recall shows "Spell what you hear" label', () => {
+    const { getByText } = render(
+      <PromptRenderer prompt={{ kind: 'listening-recall', spokenForm: 'cero', hint: 'Number: 0' }} />,
+    );
+    expect(getByText(/spell what you hear/i)).not.toBeNull();
+  });
+
+  it('listening-recall shows the hint when provided', () => {
+    const { getByText } = render(
+      <PromptRenderer prompt={{ kind: 'listening-recall', spokenForm: 'veinte', hint: 'Number: 20' }} />,
+    );
+    expect(getByText('Number: 20')).not.toBeNull();
+  });
+
+  it('accent-discrimination shows the word and question', () => {
+    const { getByText } = render(
+      <PromptRenderer
+        prompt={{ kind: 'accent-discrimination', word: 'tú', questionEnglish: 'What does "tú" mean?', pairWord: 'tu', pairMeaning: 'your' }}
+      />,
+    );
+    expect(getByText('tú')).not.toBeNull();
+    expect(getByText(/what does "tú" mean/i)).not.toBeNull();
   });
 });
 

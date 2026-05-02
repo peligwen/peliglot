@@ -1,0 +1,517 @@
+import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { encodeSnapshot } from '../src/utils/snapshot';
+
+/**
+ * E2E tests for the Settings page at /settings.
+ *
+ * Coverage:
+ * 1. Page renders with expected sections.
+ * 2. Download triggers a file download and the file contains valid MasteryExport JSON.
+ * 3. Re-upload of the downloaded file shows an all-zero delta preview (LWW idempotence).
+ * 4. Apply on the re-upload succeeds with the Import complete screen.
+ * 5. Uploading a file with one newer card shows accepted: 1 after Apply.
+ */
+
+test.beforeEach(async ({ page }) => {
+  // Clean localStorage so each test starts with predictable state
+  await page.addInitScript(() => {
+    try {
+      localStorage.removeItem('peliglot-mastery-v1');
+    } catch {
+      // ignore
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Navigation and render
+// ---------------------------------------------------------------------------
+
+test('navigates to /settings and shows expected sections', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Page heading
+  await expect(page.getByRole('heading', { name: /settings/i, level: 1 })).toBeVisible({ timeout: 6000 });
+
+  // Backup section
+  await expect(page.getByRole('button', { name: /download my progress/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /import from file/i })).toBeVisible();
+
+  // AI keys section
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible();
+
+  // Share links section
+  await expect(page.getByRole('heading', { name: /share links/i })).toBeVisible();
+});
+
+test('landing page footer has a Settings link that goes to /settings', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  const settingsLink = page.getByRole('link', { name: /settings/i });
+  await expect(settingsLink).toBeVisible({ timeout: 5000 });
+
+  await settingsLink.click();
+  await page.waitForLoadState('networkidle');
+  await expect(page).toHaveURL(/\/settings/);
+  await expect(page.getByRole('heading', { name: /settings/i, level: 1 })).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// Download
+// ---------------------------------------------------------------------------
+
+test('download produces valid MasteryExport JSON', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Register download listener BEFORE clicking
+  const downloadPromise = page.waitForEvent('download');
+
+  // Wait for button to be enabled (hydration complete)
+  const downloadBtn = page.getByRole('button', { name: /download my progress/i });
+  await expect(downloadBtn).toBeEnabled({ timeout: 6000 });
+  await downloadBtn.click();
+
+  const download = await downloadPromise;
+
+  // Filename should be peliglot-progress-YYYY-MM-DD.json
+  expect(download.suggestedFilename()).toMatch(/^peliglot-progress-\d{4}-\d{2}-\d{2}\.json$/);
+
+  // File content must be valid MasteryExport
+  const filePath = await download.path();
+  expect(filePath).toBeTruthy();
+
+  const content = readFileSync(filePath!, 'utf-8');
+  const parsed = JSON.parse(content) as Record<string, unknown>;
+
+  expect(parsed).toHaveProperty('schemaVersion', 1);
+  expect(parsed).toHaveProperty('cards');
+  expect(typeof parsed.cards).toBe('object');
+});
+
+// ---------------------------------------------------------------------------
+// Download + re-upload roundtrip (idempotence)
+// ---------------------------------------------------------------------------
+
+test('re-uploading the downloaded file shows Apply succeeds with Import complete', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Step 1: Download the snapshot
+  const downloadPromise = page.waitForEvent('download');
+  const downloadBtn = page.getByRole('button', { name: /download my progress/i });
+  await expect(downloadBtn).toBeEnabled({ timeout: 6000 });
+  await downloadBtn.click();
+  const download = await downloadPromise;
+
+  const filePath = await download.path();
+  expect(filePath).toBeTruthy();
+
+  // Step 2: Re-upload the same file via the file input
+  const fileInput = page.locator('input[type="file"][accept="application/json"]');
+  await fileInput.setInputFiles(filePath!);
+
+  // Step 3: Preview screen should appear
+  await expect(page.getByRole('region', { name: /import preview/i })).toBeVisible({ timeout: 5000 });
+
+  // Apply button must be present
+  const applyBtn = page.getByRole('button', { name: /apply/i });
+  await expect(applyBtn).toBeVisible();
+
+  // Step 4: Apply
+  await applyBtn.click();
+
+  // Step 5: Result screen shows success
+  await expect(page.getByRole('region', { name: /import result/i })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Import complete')).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// Upload with one newer card shows accepted: 1 after Apply
+// ---------------------------------------------------------------------------
+
+test('uploading a file with one newer card shows Import complete after Apply', async ({ page }) => {
+  // Seed localStorage with a known card at a low updatedAt
+  await page.addInitScript(() => {
+    const baseCard = {
+      cardId: 'e2e-test-card',
+      updatedAt: 1000,
+      due: Date.now() + 86400000,
+      stability: 1,
+      difficulty: 5,
+      reps: 1,
+      lapses: 0,
+      lastReview: null,
+      learningSteps: 0,
+      fsrsState: 0,
+    };
+    const snapshot = {
+      schemaVersion: 1,
+      cards: { 'e2e-test-card': baseCard },
+    };
+    try {
+      localStorage.setItem('peliglot-mastery-v1', JSON.stringify(snapshot));
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Create a snapshot with the same card but a NEWER updatedAt
+  const newerCard = {
+    cardId: 'e2e-test-card',
+    updatedAt: 9_999_999_999_999, // far future — definitely newer
+    due: Date.now() + 86400000,
+    stability: 2,
+    difficulty: 4,
+    reps: 2,
+    lapses: 0,
+    lastReview: Date.now() - 1000,
+    learningSteps: 0,
+    fsrsState: 2,
+  };
+  const newerSnapshot = {
+    schemaVersion: 1,
+    cards: { 'e2e-test-card': newerCard },
+  };
+  const newerJson = JSON.stringify(newerSnapshot);
+
+  const fileInput = page.locator('input[type="file"][accept="application/json"]');
+  await fileInput.setInputFiles({
+    name: 'peliglot-newer.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(newerJson, 'utf-8'),
+  });
+
+  // Preview should appear
+  await expect(page.getByRole('region', { name: /import preview/i })).toBeVisible({ timeout: 5000 });
+
+  // Apply
+  await page.getByRole('button', { name: /apply/i }).click();
+
+  // Result screen
+  await expect(page.getByRole('region', { name: /import result/i })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Import complete')).toBeVisible();
+
+  // Cards updated row should show 1
+  const resultRegion = page.getByRole('region', { name: /import result/i });
+  await expect(resultRegion.getByText('Cards updated')).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// Share link + /import page
+// ---------------------------------------------------------------------------
+
+test('navigating to /import with a valid encoded snapshot shows preview and Apply succeeds', async ({ page }) => {
+  // Build a small known snapshot
+  const ts = Date.now();
+  const knownCard = {
+    cardId: 'e2e-share-card',
+    updatedAt: ts,
+    due: ts + 86_400_000,
+    stability: 1,
+    difficulty: 5,
+    reps: 1,
+    lapses: 0,
+    lastReview: null,
+    learningSteps: 0,
+    fsrsState: 0,
+  };
+  const snapshot = { schemaVersion: 1, cards: { 'e2e-share-card': knownCard } };
+
+  // Encode the snapshot in Node (same function used by ShareLinkSection)
+  const encoded = await encodeSnapshot(snapshot as Parameters<typeof encodeSnapshot>[0]);
+  const importUrl = `/import#snapshot=${encoded}`;
+
+  await page.goto(importUrl);
+  await page.waitForLoadState('networkidle');
+
+  // Preview should be visible — requires explicit Apply click
+  await expect(page.getByRole('region', { name: /import preview/i })).toBeVisible({ timeout: 6000 });
+
+  // Apply
+  const applyBtn = page.getByRole('button', { name: /apply/i });
+  await expect(applyBtn).toBeVisible();
+  await applyBtn.click();
+
+  // Result screen
+  await expect(page.getByRole('region', { name: /import result/i })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByText('Import complete')).toBeVisible();
+});
+
+test('/import with no hash shows empty state with link to settings', async ({ page }) => {
+  await page.goto('/import');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /no share link found/i })).toBeVisible({ timeout: 6000 });
+  await expect(page.getByText(/settings page/i)).toBeVisible();
+});
+
+test('/import with invalid hash shows error state', async ({ page }) => {
+  await page.goto('/import#snapshot=this-is-not-valid@@@@');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /invalid share link/i })).toBeVisible({ timeout: 6000 });
+  // There are two "Back to Settings" links (error region + footer); check just the error region
+  const errorRegion = page.getByRole('region', { name: /decode error/i });
+  await expect(errorRegion.getByRole('link', { name: /back to settings/i })).toBeVisible();
+});
+
+test('visiting a valid share link twice applies idempotently (second visit: unchanged=1)', async ({ page }) => {
+  const ts = 1_700_000_000_000; // fixed timestamp for determinism
+  const card = {
+    cardId: 'idempotent-share-card',
+    updatedAt: ts,
+    due: ts + 86_400_000,
+    stability: 1,
+    difficulty: 5,
+    reps: 1,
+    lapses: 0,
+    lastReview: null,
+    learningSteps: 0,
+    fsrsState: 0,
+  };
+  const snapshot = { schemaVersion: 1, cards: { 'idempotent-share-card': card } };
+  const encoded = await encodeSnapshot(snapshot as Parameters<typeof encodeSnapshot>[0]);
+  const importUrl = `/import#snapshot=${encoded}`;
+
+  // First visit — apply
+  await page.goto(importUrl);
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('region', { name: /import preview/i })).toBeVisible({ timeout: 6000 });
+  await page.getByRole('button', { name: /apply/i }).click();
+  await expect(page.getByRole('region', { name: /import result/i })).toBeVisible({ timeout: 5000 });
+
+  // Second visit — navigate away first to force a fresh component mount,
+  // then back to the same import URL.
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await page.goto(importUrl);
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('region', { name: /import preview/i })).toBeVisible({ timeout: 10000 });
+  await page.getByRole('button', { name: /apply/i }).click();
+  await expect(page.getByRole('region', { name: /import result/i })).toBeVisible({ timeout: 8000 });
+
+  // Second apply should show unchanged: 1 (card already applied with same timestamp)
+  const resultRegion = page.getByRole('region', { name: /import result/i });
+  await expect(resultRegion.getByText('Cards unchanged')).toBeVisible();
+});
+
+// ---------------------------------------------------------------------------
+// API Keys section — custom endpoint
+// ---------------------------------------------------------------------------
+
+test('custom endpoint: filling form and clicking Test shows an error (no real server), nothing saved', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // AI keys section should be visible
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible({ timeout: 6000 });
+
+  // Expand the Custom endpoint card
+  await page.getByRole('button', { name: /custom endpoint/i }).click();
+
+  // Fill in the form
+  await page.getByLabel(/base url for custom endpoint/i).fill('http://localhost:11434/v1');
+  await page.getByLabel(/model name for custom endpoint/i).fill('llama3');
+
+  // Click Test — no real server so we expect a network error or cors-blocked message
+  await page.getByRole('button', { name: /^test$/i }).click();
+
+  // Wait for an error message to appear (either cors-blocked or network-error)
+  await expect(page.getByRole('alert')).toBeVisible({ timeout: 10000 });
+
+  // Nothing should have been saved to localStorage
+  const config = await page.evaluate(() => {
+    try {
+      return localStorage.getItem('peliglot-byok-openai-compatible');
+    } catch {
+      return null;
+    }
+  });
+  expect(config).toBeNull();
+});
+
+test('custom endpoint: untrusted host with API key triggers destination confirm', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading', { name: /ai keys/i })).toBeVisible({ timeout: 6000 });
+  await page.getByRole('button', { name: /custom endpoint/i }).click();
+
+  // Fill an untrusted host plus a real-looking API key — the precise
+  // key-phishing pattern the confirm is designed to catch.
+  await page.getByLabel(/base url for custom endpoint/i).fill('https://attacker.example.com/v1');
+  await page.getByLabel(/model name for custom endpoint/i).fill('gpt-4o');
+  await page.getByLabel(/api key for custom endpoint/i).fill('sk-real-openai-key');
+
+  // Auto-dismiss the confirm; record the prompt text for assertion.
+  let promptSeen: string | null = null;
+  page.on('dialog', dialog => {
+    promptSeen = dialog.message();
+    void dialog.dismiss();
+  });
+
+  await page.getByRole('button', { name: /^test$/i }).click();
+  // Give the dialog a moment to fire
+  await page.waitForTimeout(300);
+
+  expect(promptSeen).not.toBeNull();
+  expect(promptSeen!).toMatch(/attacker\.example\.com/);
+  expect(promptSeen!).toMatch(/api key|stolen|control this server/i);
+
+  // Dismissed → nothing saved
+  const config = await page.evaluate(() =>
+    localStorage.getItem('peliglot-byok-openai-compatible'),
+  );
+  expect(config).toBeNull();
+});
+
+// ---------------------------------------------------------------------------
+// CostSection — Daily limits
+// ---------------------------------------------------------------------------
+
+test('daily limits section is hidden when no provider is configured', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+  await expect(page.getByRole('heading', { name: /usage costs/i })).toBeVisible({ timeout: 6000 });
+  // No configured providers → no Daily limits heading
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toHaveCount(0);
+});
+
+test('daily limits section appears once a provider is configured and persists a cap', async ({ page }) => {
+  // Seed an Anthropic config
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toBeVisible({ timeout: 6000 });
+
+  const capInput = page.locator('#cap-anthropic');
+  await expect(capInput).toBeVisible();
+  await capInput.fill('1.50');
+  await page.getByRole('button', { name: /^save$/i }).click();
+
+  // Verify persistence
+  const stored = await page.evaluate(() => localStorage.getItem('peliglot-byok-cap-anthropic'));
+  expect(stored).toBe('1.5');
+});
+
+test('AI keys section shows the Experimental pill', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Heading is "AI keys" with an inline Experimental badge
+  const heading = page.getByRole('heading', { name: /ai keys/i });
+  await expect(heading).toBeVisible({ timeout: 6000 });
+  // The pill is a sibling span inside the heading; visible Experimental text
+  await expect(heading.getByText(/experimental/i)).toBeVisible();
+});
+
+test('configured cloud provider shows the experimental default cap', async ({ page }) => {
+  // No cap explicitly set — the read-side default ($0.50) should be enforced
+  // and shown to the user.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toBeVisible({ timeout: 6000 });
+  // Today's spend label includes "/ $0.50" — the default cap is on the row.
+  // The intro paragraph also mentions "$0.50", so use a more specific matcher.
+  await expect(page.getByText(/today:\s*\$0\.0000\s*\/\s*\$0\.50/i)).toBeVisible();
+});
+
+test('silent-usage warning surfaces in Settings and clears on Clear & re-enable', async ({ page }) => {
+  // Seed both a configured provider AND a silent-usage record so the row
+  // renders the inline warning on first paint.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem(
+        'peliglot-byok-silent-anthropic',
+        JSON.stringify(['claude-future-silent']),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Warning is visible
+  await expect(page.getByText(/silent token usage detected/i)).toBeVisible({ timeout: 6000 });
+  await expect(page.getByText(/claude-future-silent/)).toBeVisible();
+
+  // Click the clear button — record should disappear from the page and storage
+  await page.getByRole('button', { name: /clear & re-enable/i }).click();
+
+  await expect(page.getByText(/silent token usage detected/i)).toHaveCount(0);
+  const stored = await page.evaluate(() =>
+    localStorage.getItem('peliglot-byok-silent-anthropic'),
+  );
+  expect(stored).toBeNull();
+});
+
+test('over-cap state shows a progress bar that fills past the cap', async ({ page }) => {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem('peliglot-byok-cap-anthropic', '1.00');
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      localStorage.setItem(
+        'peliglot-byok-cost-anthropic',
+        JSON.stringify({
+          totalInputTokens: 5000,
+          totalOutputTokens: 2000,
+          totalCostUsd: 1.5,
+          lastUpdated: Date.now(),
+          byDate: { [dateStr]: { input: 5000, output: 2000, costUsd: 1.5 } },
+        }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Today's spend label shows the over-cap value
+  await expect(page.getByText(/today:\s*\$1\.50\s*\/\s*\$1\.00/i)).toBeVisible({ timeout: 6000 });
+  // Progressbar exists and aria-valuenow is at the cap (clamped to 100)
+  const progress = page.getByRole('progressbar');
+  await expect(progress).toBeVisible();
+  await expect(progress).toHaveAttribute('aria-valuenow', '100');
+});
