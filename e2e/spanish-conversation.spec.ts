@@ -145,6 +145,61 @@ test('cap-exceeded: blocks the request locally and shows a Settings deep-link', 
   expect(anthropicCalled).toBe(false);
 });
 
+test('experimental pill is visible in the conversation header', async ({ page }) => {
+  await page.goto('/guides/spanish/conversation');
+  await page.waitForLoadState('networkidle');
+
+  // Pill is rendered as a span with an aria-label; visible text is
+  // ALL-CAPS via CSS but DOM text is "Experimental"
+  await expect(
+    page.getByLabel('Experimental feature').first(),
+  ).toBeVisible({ timeout: 8000 });
+});
+
+test('silent-usage: blocks subsequent sends and surfaces an inline warning', async ({ page }) => {
+  // Seed a silent-usage record so the wrapper short-circuits on every chat call.
+  // This proves the sticky-block contract: even with a configured key and below
+  // the cap, no network I/O happens — the user sees the inline warning instead.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem(
+        'peliglot-byok-silent-anthropic',
+        JSON.stringify(['claude-future-silent']),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  // Block any anthropic API call — the silent-usage guard should preflight-reject
+  // before fetch fires. If it does fire, this test fails.
+  let anthropicCalled = false;
+  await page.route('**/api.anthropic.com/**', async route => {
+    anthropicCalled = true;
+    await route.abort();
+  });
+
+  await page.goto('/guides/spanish/conversation');
+  await page.waitForLoadState('networkidle');
+
+  // Inline warning is visible from hydration (record was seeded before mount)
+  await expect(page.getByText(/chat paused/i)).toBeVisible({ timeout: 8000 });
+  await expect(page.getByRole('link', { name: /resolve in settings/i })).toBeVisible();
+
+  // Send a message anyway — wrapper should reject locally; no fetch fires
+  const textarea = page.getByRole('textbox', { name: /message input/i });
+  await textarea.fill('Hola');
+  await page.getByRole('button', { name: /send message/i }).click();
+
+  // Error bubble shows the silent-usage error, with a Settings deep-link
+  await expect(page.getByText(/without reporting token usage/i)).toBeVisible({ timeout: 6000 });
+  expect(anthropicCalled).toBe(false);
+});
+
 test('unpriced model warning: surfaces inline above the input on hydration', async ({ page }) => {
   // Seed a configured Anthropic provider plus an unpriced-call record. The
   // conversation route should render the warning on mount without requiring

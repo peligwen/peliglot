@@ -39,23 +39,38 @@ Practical consequences:
 
 Every code path that talks to an LLM goes through `getProvider()`. There is no `makeAnthropicProvider()` call site outside of the providers barrel. If you find yourself bypassing this, stop and add the wrapping there instead.
 
+## Experimental status
+
+The feature is currently labelled **Experimental** in the UI (Settings → AI keys, conversation page header). This isn't decoration: it backs three concrete safety choices that we'd unwind once the feature has soaked.
+
+- A low default daily cap is enforced for cloud providers — see lever 1.
+- Silent token usage on cloud providers is treated as a hard halt — see lever 7.
+- The "Clear" action on cloud providers cannot truly disable the cap; it resets to the default.
+
 ## Safety levers (and why each exists)
 
 The BYOK feature has had two formal security/cost reviews. The mitigations below map directly to findings from those reviews. If you remove or weaken any of them, please consult the review history first.
 
-### 1. Daily USD cap
+### 1. Daily USD cap (with experimental default)
 
 **File**: `src/byok/cost-storage.ts`, `src/byok/providers/index.ts`.
 
 Per-provider USD cap, set in Settings → Daily limits. Enforced as a preflight inside `withDailyCap`: read today's bucketed cost from `cost-storage`; if it's `>=` cap, throw `LlmProviderError(_, 'cap-exceeded')` before any network I/O.
+
+While the feature is experimental, **`getDailyCap` returns `DEFAULT_DAILY_CAP_USD = 0.50` for cloud providers (anthropic, openai) when no entry is stored.** This is a read-side default — the underlying storage entry can still be removed (Forget all keys, Reset to default), but the safety net is always present. openai-compatible is exempt because self-hosted endpoints are typically free and a default cap there would block local development.
+
+Consequences worth keeping in mind when editing this lever:
+- A cloud provider's "Clear" button is renamed **Reset to default** in CostSection — there's no truly-cleared state to expose.
+- Pre-existing user data is covered automatically: any user who hadn't set a cap before this lever shipped now has one, retroactively.
+- Tests must use `DEFAULT_DAILY_CAP_USD` rather than `null` when asserting the post-clear state for cloud providers.
 
 Caveats baked into the design:
 - **Overshoot up to one request.** The call that *crosses* the threshold completes; the next one is blocked. UI explicitly discloses this in CostSection.
 - **Cross-tab race.** Two tabs preflighting at the same instant can both pass; documented in `withDailyCap` JSDoc, no `BroadcastChannel` overhead.
 - **DST-safe day boundary.** Buckets keyed by `toLocalDateString` (same helper as the mastery streak). Pruning uses symbolic local-date arithmetic, not epoch math.
 - **30-day rolling retention.** `pruneOldBuckets` runs on every write.
-- **Cap is missing → no enforcement.** The user can opt out. Sane default.
 - **Pricing is missing → cap can't enforce.** See "Unpriced model warning" below.
+- **Provider reports zero tokens → meter can't move.** See "Silent-usage guard" below.
 
 ### 2. Sliding context window
 
@@ -103,6 +118,23 @@ Each chat call uses a fresh `AbortController` whose `signal` is forwarded to `fe
 **File**: `src/guides/spanish/conversation/index.tsx` (`MessageBubble`).
 
 Disabled while another request is in flight, so a user spam-clicking Retry against a flapping 5xx doesn't fire multiple full-history calls in parallel.
+
+### 7. Silent-usage guard
+
+**File**: `src/byok/providers/index.ts` (`withSilentUsageGuard`), `src/byok/cost-storage.ts` (`markSilentUsage`, `getSilentUsageModelIds`, `clearSilentUsage`), surfaced in CostSection and inline in the conversation route.
+
+The post-call check that addresses the precise risk the director called out: *"error if the user is spending tokens but our usage isn't going up."*
+
+Two mechanisms:
+
+1. **Post-flight detection.** After every successful chat call on a cloud provider (anthropic, openai), if `usage.input === 0 && usage.output === 0`, the wrapper records the model id via `markSilentUsage`. The vendor returned a 200 (so the user was likely billed) but Peliglot's meter cannot move — the cap is now provably useless for that model.
+2. **Pre-flight sticky block.** Before every chat call, the wrapper reads `getSilentUsageModelIds`. If non-empty, it throws `LlmProviderError(_, 'silent-usage')` immediately — no network I/O, no further billing — until the user clears the record from Settings.
+
+openai-compatible is exempt because most self-hosted servers (Ollama, llama.cpp, LM Studio) omit the usage field by default and that's not a billing risk. `markSilentUsage` is a no-op for `openai-compatible`.
+
+Wrapping order matters. `getProvider` returns `withSilentUsageGuard(withDailyCap(raw))` — the outer guard runs first. We want the silent-usage check ahead of the cap check because "we can't track at all" is more fundamental than "we've spent the budget."
+
+Compared to the unpriced-model warning (lever 3): unpriced is *we don't have pricing data, so the meter sits at 0*; silent-usage is *the provider claims it spent 0, but it almost certainly didn't*. The first is a Peliglot data gap; the second is a vendor anomaly we have no way to reconcile.
 
 ## Adding a new provider
 

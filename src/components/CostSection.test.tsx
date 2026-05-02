@@ -13,6 +13,9 @@ import {
   getDailyCap,
   setDailyCap,
   markUnpricedCall,
+  markSilentUsage,
+  getSilentUsageModelIds,
+  DEFAULT_DAILY_CAP_USD,
 } from '../byok';
 
 // ---------------------------------------------------------------------------
@@ -43,8 +46,14 @@ const UNPRICED_KEYS = [
   'peliglot-byok-unpriced-openai-compatible',
 ];
 
+const SILENT_USAGE_KEYS = [
+  'peliglot-byok-silent-anthropic',
+  'peliglot-byok-silent-openai',
+  'peliglot-byok-silent-openai-compatible',
+];
+
 beforeEach(() => {
-  for (const key of [...COST_KEYS, ...CONFIG_KEYS, ...CAP_KEYS, ...UNPRICED_KEYS]) {
+  for (const key of [...COST_KEYS, ...CONFIG_KEYS, ...CAP_KEYS, ...UNPRICED_KEYS, ...SILENT_USAGE_KEYS]) {
     localStorage.removeItem(key);
   }
   vi.spyOn(window, 'confirm').mockReturnValue(true);
@@ -219,13 +228,24 @@ describe('CostSection — daily limits visibility', () => {
     expect(screen.getByText(/today:\s*\$0\.42/i)).toBeInTheDocument();
   });
 
-  it('renders progress bar only when a cap is set', () => {
+  it('always renders progress bar for cloud providers (default cap kicks in)', () => {
+    // The experimental default means cloud providers can never be in a "no cap"
+    // state — the progress bar reflects the default cap from the first render.
     writeConfig({ provider: 'anthropic', apiKey: 'sk-ant-test' });
+    render(<CostSection />);
+    expect(screen.getAllByRole('progressbar').length).toBeGreaterThan(0);
+  });
+
+  it('does not render progress bar for openai-compatible until a cap is set', () => {
+    writeConfig({
+      provider: 'openai-compatible',
+      baseUrl: 'http://localhost:11434/v1',
+      model: 'llama3',
+    });
     render(<CostSection />);
     expect(screen.queryByRole('progressbar')).toBeNull();
 
-    setDailyCap('anthropic', 1.0);
-    // Re-render
+    setDailyCap('openai-compatible', 1.0);
     render(<CostSection />);
     expect(screen.getAllByRole('progressbar').length).toBeGreaterThan(0);
   });
@@ -258,24 +278,25 @@ describe('CostSection — daily limits input', () => {
     expect(getDailyCap('anthropic')).toBeCloseTo(0.25, 6);
   });
 
-  it('rejects zero with an inline error', () => {
+  it('rejects zero with an inline error and falls back to default for cloud', () => {
     render(<CostSection />);
     const input = screen.getByLabelText(/daily limit \(usd\)/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByRole('alert')).toHaveTextContent(/positive number/i);
-    expect(getDailyCap('anthropic')).toBeNull();
+    // Storage rejected; effective cap is the experimental default.
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('rejects negative with an inline error', () => {
+  it('rejects negative with an inline error and falls back to default for cloud', () => {
     render(<CostSection />);
     const input = screen.getByLabelText(/daily limit \(usd\)/i) as HTMLInputElement;
     fireEvent.change(input, { target: { value: '-5' } });
     fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
   it('rejects values above maximum', () => {
@@ -285,10 +306,10 @@ describe('CostSection — daily limits input', () => {
     fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
     expect(screen.getByRole('alert')).toHaveTextContent(/maximum/i);
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('saving an empty value clears the cap', () => {
+  it('saving an empty value resets cloud cap to default', () => {
     setDailyCap('anthropic', 1.0);
     render(<CostSection />);
 
@@ -296,25 +317,24 @@ describe('CostSection — daily limits input', () => {
     fireEvent.change(input, { target: { value: '' } });
     fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
 
-    expect(getDailyCap('anthropic')).toBeNull();
+    // No truly-cleared state for cloud — falls back to the experimental default.
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('Clear button appears only when a cap is set', () => {
+  it('Reset-to-default button appears for cloud providers (cap is always set)', () => {
     render(<CostSection />);
-    expect(screen.queryByRole('button', { name: /^clear$/i })).toBeNull();
-
-    setDailyCap('anthropic', 1.0);
-    render(<CostSection />);
-    expect(screen.getByRole('button', { name: /^clear$/i })).toBeInTheDocument();
+    // Cloud providers always have an effective cap — the button should show
+    // even at "default" state.
+    expect(screen.getByRole('button', { name: /reset to default/i })).toBeInTheDocument();
   });
 
-  it('Clear button removes the persisted cap', () => {
+  it('Reset-to-default removes the user-set cap (and falls back to default)', () => {
     setDailyCap('anthropic', 1.0);
     const { rerender } = render(<CostSection />);
-    fireEvent.click(screen.getByRole('button', { name: /^clear$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /reset to default/i }));
     rerender(<CostSection />);
 
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 });
 
@@ -357,6 +377,47 @@ describe('CostSection — unpriced model warning', () => {
     // The warning should appear once (for openai) but not for anthropic
     expect(screen.getByText(/mystery-model/)).toBeInTheDocument();
     const allWarnings = screen.queryAllByText(/no pricing data/i);
+    expect(allWarnings.length).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Daily limits — silent-usage warning + clear
+// ---------------------------------------------------------------------------
+
+describe('CostSection — silent-usage warning', () => {
+  beforeEach(() => {
+    writeConfig({ provider: 'anthropic', apiKey: 'sk-ant-test' });
+  });
+
+  it('does not show the silent-usage warning when no record exists', () => {
+    render(<CostSection />);
+    expect(screen.queryByText(/silent token usage detected/i)).toBeNull();
+  });
+
+  it('shows the silent-usage warning when a record exists', () => {
+    markSilentUsage('anthropic', 'claude-sonnet-4-6');
+    render(<CostSection />);
+    expect(screen.getByText(/silent token usage detected/i)).toBeInTheDocument();
+    expect(screen.getByText(/claude-sonnet-4-6/)).toBeInTheDocument();
+  });
+
+  it('Clear & re-enable button removes the silent-usage record', () => {
+    markSilentUsage('anthropic', 'claude-sonnet-4-6');
+    render(<CostSection />);
+
+    fireEvent.click(screen.getByRole('button', { name: /clear & re-enable/i }));
+
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
+  });
+
+  it('warning is scoped to the affected provider', () => {
+    writeConfig({ provider: 'openai', apiKey: 'sk-openai-test' });
+    markSilentUsage('openai', 'gpt-4o');
+    render(<CostSection />);
+
+    expect(screen.getByText(/gpt-4o/)).toBeInTheDocument();
+    const allWarnings = screen.queryAllByText(/silent token usage detected/i);
     expect(allWarnings.length).toBe(1);
   });
 });

@@ -20,8 +20,11 @@ import {
   getDailyCap,
   setDailyCap,
   MAX_DAILY_CAP_USD,
+  DEFAULT_DAILY_CAP_USD,
   listConfigured,
   getUnpricedModelIds,
+  getSilentUsageModelIds,
+  clearSilentUsage,
 } from '../byok';
 import type { Provider, ProviderCostState, DailyBucket } from '../byok';
 import { formatCostUsd } from '../byok';
@@ -104,22 +107,32 @@ function DailyLimitRow({
   today,
   initialCap,
   unpricedModelIds,
+  silentUsageModelIds,
   onCapChange,
 }: {
   provider: Provider;
   today: DailyBucket;
   initialCap: number | null;
   unpricedModelIds: string[];
+  silentUsageModelIds: string[];
   onCapChange: () => void;
 }): ReactElement {
   const [draft, setDraft] = useState<string>(initialCap === null ? '' : String(initialCap));
   const [error, setError] = useState<string | null>(null);
   const cap = initialCap;
+  // Cloud providers always have an enforced cap (default fills in when the
+  // user hasn't set one). The Clear action becomes "Reset to default" — it
+  // can't truly be cleared while the feature is experimental.
+  const isCloudProvider = provider === 'anthropic' || provider === 'openai';
 
   function handleSave(): void {
     const trimmed = draft.trim();
     if (trimmed === '') {
+      // Empty save: reset to default for cloud, true clear for openai-compatible
       setDailyCap(provider, null);
+      if (isCloudProvider) {
+        setDraft(String(DEFAULT_DAILY_CAP_USD));
+      }
       setError(null);
       onCapChange();
       return;
@@ -139,9 +152,18 @@ function DailyLimitRow({
   }
 
   function handleClear(): void {
-    setDraft('');
     setDailyCap(provider, null);
+    if (isCloudProvider) {
+      setDraft(String(DEFAULT_DAILY_CAP_USD));
+    } else {
+      setDraft('');
+    }
     setError(null);
+    onCapChange();
+  }
+
+  function handleClearSilentUsage(): void {
+    clearSilentUsage(provider);
     onCapChange();
   }
 
@@ -257,7 +279,7 @@ function DailyLimitRow({
         </SmallButton>
         {cap !== null && (
           <SmallButton onClick={handleClear} variant="secondary">
-            Clear
+            {isCloudProvider ? 'Reset to default' : 'Clear'}
           </SmallButton>
         )}
       </div>
@@ -299,6 +321,42 @@ function DailyLimitRow({
           ))}{' '}
           with no pricing data. Daily limit is not enforced for unpriced models — calls still
           go to your provider and will appear on your bill.
+        </div>
+      )}
+
+      {silentUsageModelIds.length > 0 && (
+        <div
+          role="alert"
+          aria-label={`${displayLabel(provider)} silent token usage detected`}
+          style={{
+            marginTop: spacing.sm,
+            padding: `${spacing.sm}px ${spacing.md}px`,
+            background: '#FFEBEE',
+            border: '1px solid #EF9A9A',
+            borderRadius: radii.base,
+            fontSize: typography.fontSize.base,
+            color: '#B71C1C',
+            lineHeight: typography.lineHeight.relaxed,
+          }}
+        >
+          <p style={{ margin: `0 0 ${spacing.xs}px`, fontWeight: typography.fontWeight.semibold }}>
+            ⚠ Silent token usage detected
+          </p>
+          <p style={{ margin: `0 0 ${spacing.sm}px` }}>
+            This provider returned model{silentUsageModelIds.length > 1 ? 's' : ''}{' '}
+            {silentUsageModelIds.map((id, i) => (
+              <span key={id}>
+                {i > 0 ? ', ' : ''}
+                <code style={{ fontFamily: 'ui-monospace, SFMono-Regular, monospace' }}>{id}</code>
+              </span>
+            ))}{' '}
+            with zero token counts. The vendor likely still billed for the request, but
+            Peliglot's cost meter and daily cap can't track it. Chat is paused for this
+            provider until you investigate.
+          </p>
+          <SmallButton onClick={handleClearSilentUsage} variant="danger">
+            Clear &amp; re-enable
+          </SmallButton>
         </div>
       )}
     </div>
@@ -419,9 +477,11 @@ export function CostSection(): ReactElement {
               lineHeight: typography.lineHeight.relaxed,
             }}
           >
-            Set a per-provider daily USD cap. When today's spend reaches the cap, the next
+            Per-provider daily USD cap. When today's spend reaches the cap, the next
             request is blocked until tomorrow (local time). The cap may be overshot by one
-            request — the call that crosses the limit still completes. Leave blank for no limit.
+            request — the call that crosses the limit still completes. Cloud providers
+            (Anthropic, OpenAI) ship with a {formatCostUsd(DEFAULT_DAILY_CAP_USD)} default
+            while the feature is experimental; raise it as needed.
           </p>
           <div>
             {configured.map(provider => (
@@ -431,6 +491,7 @@ export function CostSection(): ReactElement {
                 today={getTodayCost(provider)}
                 initialCap={getDailyCap(provider)}
                 unpricedModelIds={getUnpricedModelIds(provider)}
+                silentUsageModelIds={getSilentUsageModelIds(provider)}
                 onCapChange={bump}
               />
             ))}

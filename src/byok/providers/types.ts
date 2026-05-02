@@ -54,6 +54,7 @@ export class LlmProviderError extends Error {
       | 'network'
       | 'http-error'
       | 'cap-exceeded'
+      | 'silent-usage'
       | 'unknown',
     public readonly retryAfterMs?: number, // populated for rate-limited
     public readonly httpStatus?: number,

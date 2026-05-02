@@ -20,7 +20,12 @@ import { PROVIDER_LABELS } from '../types';
 import type { ChatMessage, ChatOptions, ChatResult, LlmProvider } from './types';
 import { LlmProviderError } from './types';
 import { readConfig } from '../storage';
-import { getDailyCap, getTodayCost } from '../cost-storage';
+import {
+  getDailyCap,
+  getTodayCost,
+  getSilentUsageModelIds,
+  markSilentUsage,
+} from '../cost-storage';
 import { formatCostUsd } from './pricing';
 import { makeAnthropicProvider } from './anthropic';
 import { makeOpenAIProvider } from './openai';
@@ -56,10 +61,52 @@ function withDailyCap(inner: LlmProvider): LlmProvider {
 }
 
 /**
+ * Wrap a provider with a silent-usage guard.
+ *
+ * Two checks:
+ *  1. Pre-flight: if a previous chat call recorded silent usage for this
+ *     provider (cloud only), block subsequent calls until the user clears
+ *     the record in Settings. The vendor is silently billing without
+ *     reporting tokens, so neither our meter nor the cap can engage —
+ *     better to halt than to keep spending blind.
+ *  2. Post-flight: if the call returns successfully but `usage.input` and
+ *     `usage.output` are both zero, mark the model as silent-usage so the
+ *     next call is blocked. We still return this call's result — the user
+ *     hasn't been told yet, no point dropping the response they're looking at.
+ *
+ * Wrapped outside of `withDailyCap` so the silent-usage block runs first;
+ * a "we can't track at all" condition is more fundamental than a cap.
+ */
+function withSilentUsageGuard(inner: LlmProvider): LlmProvider {
+  return {
+    id: inner.id,
+    defaultModel: inner.defaultModel,
+    async chat(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResult> {
+      if (getSilentUsageModelIds(inner.id).length > 0) {
+        const label = PROVIDER_LABELS[inner.id];
+        throw new LlmProviderError(
+          `${label} returned a successful response without reporting token usage on a previous call. ` +
+            `The provider may be billing without Peliglot being able to track it. ` +
+            `Investigate, then clear the warning in Settings to re-enable chat.`,
+          'silent-usage',
+        );
+      }
+      const result = await inner.chat(messages, options);
+      if (result.usage.input === 0 && result.usage.output === 0) {
+        markSilentUsage(inner.id, result.model);
+      }
+      return result;
+    },
+  };
+}
+
+/**
  * Factory: read the config from byok storage and build the right provider.
  * Returns null if no config is set for the given id.
  *
- * Returned provider is wrapped with a daily-cap preflight check.
+ * Returned provider is wrapped with the silent-usage guard (outermost) and
+ * the daily-cap preflight (inner). Order: silent-usage runs first because
+ * "we can't track at all" is a more fundamental halt than a USD threshold.
  */
 export function getProvider(id: Provider): LlmProvider | null {
   const config = readConfig(id);
@@ -81,5 +128,5 @@ export function getProvider(id: Provider): LlmProvider | null {
       });
       break;
   }
-  return withDailyCap(raw);
+  return withSilentUsageGuard(withDailyCap(raw));
 }

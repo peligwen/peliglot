@@ -20,6 +20,9 @@ beforeEach(() => {
   localStorage.removeItem('peliglot-byok-anthropic');
   localStorage.removeItem('peliglot-byok-openai');
   localStorage.removeItem('peliglot-byok-openai-compatible');
+  localStorage.removeItem('peliglot-byok-silent-anthropic');
+  localStorage.removeItem('peliglot-byok-silent-openai');
+  localStorage.removeItem('peliglot-byok-silent-openai-compatible');
 });
 
 // ---------------------------------------------------------------------------
@@ -147,6 +150,17 @@ describe('clearAll', () => {
 
     expect(localStorage.getItem('peliglot-byok-unpriced-anthropic')).toBeNull();
     expect(localStorage.getItem('peliglot-byok-unpriced-openai')).toBeNull();
+  });
+
+  it('also clears silent-usage records', () => {
+    writeConfig({ provider: 'anthropic', apiKey: 'key-a' });
+    localStorage.setItem('peliglot-byok-silent-anthropic', JSON.stringify(['x']));
+    localStorage.setItem('peliglot-byok-silent-openai', JSON.stringify(['y']));
+
+    clearAll();
+
+    expect(localStorage.getItem('peliglot-byok-silent-anthropic')).toBeNull();
+    expect(localStorage.getItem('peliglot-byok-silent-openai')).toBeNull();
   });
 
   it('is a no-op when nothing is stored', () => {

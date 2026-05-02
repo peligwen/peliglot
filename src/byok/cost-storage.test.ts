@@ -15,7 +15,12 @@ import {
   markUnpricedCall,
   getUnpricedModelIds,
   clearAllUnpriced,
+  markSilentUsage,
+  getSilentUsageModelIds,
+  clearSilentUsage,
+  clearAllSilentUsage,
   MAX_DAILY_CAP_USD,
+  DEFAULT_DAILY_CAP_USD,
 } from './cost-storage';
 
 // ---------------------------------------------------------------------------
@@ -40,8 +45,14 @@ const UNPRICED_KEYS = [
   'peliglot-byok-unpriced-openai-compatible',
 ];
 
+const SILENT_USAGE_KEYS = [
+  'peliglot-byok-silent-anthropic',
+  'peliglot-byok-silent-openai',
+  'peliglot-byok-silent-openai-compatible',
+];
+
 beforeEach(() => {
-  for (const key of [...COST_KEYS, ...CAP_KEYS, ...UNPRICED_KEYS]) {
+  for (const key of [...COST_KEYS, ...CAP_KEYS, ...UNPRICED_KEYS, ...SILENT_USAGE_KEYS]) {
     localStorage.removeItem(key);
   }
 });
@@ -339,9 +350,14 @@ describe('getTodayCost', () => {
 // ---------------------------------------------------------------------------
 
 describe('daily cap', () => {
-  it('returns null when no cap is set', () => {
-    expect(getDailyCap('anthropic')).toBeNull();
-    expect(getDailyCap('openai')).toBeNull();
+  it('returns the experimental default for cloud providers when no cap is set', () => {
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
+    expect(getDailyCap('openai')).toBe(DEFAULT_DAILY_CAP_USD);
+  });
+
+  it('returns null for openai-compatible when no cap is set', () => {
+    // Self-hosted servers are typically free; we don't gate them by default.
+    expect(getDailyCap('openai-compatible')).toBeNull();
   });
 
   it('persists a positive cap', () => {
@@ -349,28 +365,36 @@ describe('daily cap', () => {
     expect(getDailyCap('anthropic')).toBeCloseTo(1.5, 6);
   });
 
-  it('clears cap when set to null', () => {
+  it('falls back to default for cloud when set to null (no truly-cleared state)', () => {
     setDailyCap('anthropic', 2);
     expect(getDailyCap('anthropic')).toBe(2);
     expect(setDailyCap('anthropic', null)).toBe(true);
-    expect(getDailyCap('anthropic')).toBeNull();
+    // Cloud cannot be truly cleared while experimental — falls back to default.
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('rejects zero and negative caps', () => {
+  it('truly clears the cap when set to null on openai-compatible', () => {
+    setDailyCap('openai-compatible', 2);
+    expect(getDailyCap('openai-compatible')).toBe(2);
+    expect(setDailyCap('openai-compatible', null)).toBe(true);
+    expect(getDailyCap('openai-compatible')).toBeNull();
+  });
+
+  it('rejects zero and negative caps and falls back to default for cloud', () => {
     expect(setDailyCap('anthropic', 0)).toBe(false);
     expect(setDailyCap('anthropic', -1)).toBe(false);
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('rejects non-finite caps', () => {
+  it('rejects non-finite caps and falls back to default for cloud', () => {
     expect(setDailyCap('anthropic', Number.NaN)).toBe(false);
     expect(setDailyCap('anthropic', Number.POSITIVE_INFINITY)).toBe(false);
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('rejects caps above MAX_DAILY_CAP_USD', () => {
+  it('rejects caps above MAX_DAILY_CAP_USD and falls back to default for cloud', () => {
     expect(setDailyCap('anthropic', MAX_DAILY_CAP_USD + 1)).toBe(false);
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
   it('accepts cap exactly equal to MAX_DAILY_CAP_USD', () => {
@@ -378,14 +402,14 @@ describe('daily cap', () => {
     expect(getDailyCap('anthropic')).toBe(MAX_DAILY_CAP_USD);
   });
 
-  it('treats malformed stored value as no-cap', () => {
+  it('falls back to default for cloud when stored value is malformed', () => {
     localStorage.setItem('peliglot-byok-cap-anthropic', 'not-a-number');
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
-  it('treats stored value above MAX as no-cap (defensive read)', () => {
+  it('falls back to default for cloud when stored value exceeds MAX (defensive read)', () => {
     localStorage.setItem('peliglot-byok-cap-anthropic', String(MAX_DAILY_CAP_USD + 100));
-    expect(getDailyCap('anthropic')).toBeNull();
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
   });
 
   it('keeps caps independent per provider', () => {
@@ -402,15 +426,18 @@ describe('daily cap', () => {
 // ---------------------------------------------------------------------------
 
 describe('clearAllCaps', () => {
-  it('removes all stored caps', () => {
+  it('removes all stored caps; cloud falls back to default, openai-compatible to null', () => {
     setDailyCap('anthropic', 1);
     setDailyCap('openai', 2);
     setDailyCap('openai-compatible', 3);
 
     clearAllCaps();
 
-    expect(getDailyCap('anthropic')).toBeNull();
-    expect(getDailyCap('openai')).toBeNull();
+    // Cloud providers always have an enforced cap — the underlying entry is
+    // removed but the read-side default takes over.
+    expect(getDailyCap('anthropic')).toBe(DEFAULT_DAILY_CAP_USD);
+    expect(getDailyCap('openai')).toBe(DEFAULT_DAILY_CAP_USD);
+    // openai-compatible has no default, so a true clear leaves null.
     expect(getDailyCap('openai-compatible')).toBeNull();
   });
 
@@ -503,5 +530,84 @@ describe('unpriced-model tracking', () => {
     expect(getUnpricedModelIds('anthropic')).toEqual([]);
     expect(getUnpricedModelIds('openai')).toEqual([]);
     expect(getUnpricedModelIds('openai-compatible')).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Silent-usage tracking
+// ---------------------------------------------------------------------------
+
+describe('silent-usage tracking', () => {
+  it('returns empty list when nothing recorded', () => {
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
+    expect(getSilentUsageModelIds('openai')).toEqual([]);
+    expect(getSilentUsageModelIds('openai-compatible')).toEqual([]);
+  });
+
+  it('records a silent-usage call on cloud providers', () => {
+    markSilentUsage('anthropic', 'claude-sonnet-4-6');
+    expect(getSilentUsageModelIds('anthropic')).toEqual(['claude-sonnet-4-6']);
+  });
+
+  it('is a no-op for openai-compatible (self-hosted servers commonly omit usage)', () => {
+    markSilentUsage('openai-compatible', 'llama3');
+    expect(getSilentUsageModelIds('openai-compatible')).toEqual([]);
+  });
+
+  it('deduplicates repeat marks of the same model', () => {
+    markSilentUsage('anthropic', 'foo');
+    markSilentUsage('anthropic', 'foo');
+    markSilentUsage('anthropic', 'foo');
+    expect(getSilentUsageModelIds('anthropic')).toEqual(['foo']);
+  });
+
+  it('appends distinct model IDs in encounter order', () => {
+    markSilentUsage('openai', 'gpt-4o-mini');
+    markSilentUsage('openai', 'gpt-4o');
+    expect(getSilentUsageModelIds('openai')).toEqual(['gpt-4o-mini', 'gpt-4o']);
+  });
+
+  it('keeps providers separate', () => {
+    markSilentUsage('anthropic', 'a');
+    markSilentUsage('openai', 'b');
+    expect(getSilentUsageModelIds('anthropic')).toEqual(['a']);
+    expect(getSilentUsageModelIds('openai')).toEqual(['b']);
+  });
+
+  it('caps the list size to bound storage', () => {
+    for (let i = 0; i < 20; i++) {
+      markSilentUsage('openai', `model-${i}`);
+    }
+    const ids = getSilentUsageModelIds('openai');
+    expect(ids.length).toBeLessThanOrEqual(8);
+    // Most recent should be retained
+    expect(ids).toContain('model-19');
+  });
+
+  it('ignores empty / whitespace model IDs', () => {
+    markSilentUsage('anthropic', '');
+    markSilentUsage('anthropic', '   ');
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
+  });
+
+  it('clearSilentUsage wipes records for one provider only', () => {
+    markSilentUsage('anthropic', 'a');
+    markSilentUsage('openai', 'b');
+    clearSilentUsage('anthropic');
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
+    expect(getSilentUsageModelIds('openai')).toEqual(['b']);
+  });
+
+  it('clearAllSilentUsage wipes records for every provider', () => {
+    markSilentUsage('anthropic', 'a');
+    markSilentUsage('openai', 'b');
+    clearAllSilentUsage();
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
+    expect(getSilentUsageModelIds('openai')).toEqual([]);
+  });
+
+  it('returns empty when stored value is malformed', () => {
+    localStorage.setItem('peliglot-byok-silent-anthropic', 'not-an-array');
+    expect(getSilentUsageModelIds('anthropic')).toEqual([]);
   });
 });

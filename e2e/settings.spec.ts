@@ -411,6 +411,75 @@ test('daily limits section appears once a provider is configured and persists a 
   expect(stored).toBe('1.5');
 });
 
+test('AI keys section shows the Experimental pill', async ({ page }) => {
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Heading is "AI keys" with an inline Experimental badge
+  const heading = page.getByRole('heading', { name: /ai keys/i });
+  await expect(heading).toBeVisible({ timeout: 6000 });
+  // The pill is a sibling span inside the heading; visible Experimental text
+  await expect(heading.getByText(/experimental/i)).toBeVisible();
+});
+
+test('configured cloud provider shows the experimental default cap', async ({ page }) => {
+  // No cap explicitly set — the read-side default ($0.50) should be enforced
+  // and shown to the user.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByRole('heading', { name: /daily limits/i })).toBeVisible({ timeout: 6000 });
+  // Today's spend label includes "/ $0.50" — the default cap is on the row.
+  // The intro paragraph also mentions "$0.50", so use a more specific matcher.
+  await expect(page.getByText(/today:\s*\$0\.0000\s*\/\s*\$0\.50/i)).toBeVisible();
+});
+
+test('silent-usage warning surfaces in Settings and clears on Clear & re-enable', async ({ page }) => {
+  // Seed both a configured provider AND a silent-usage record so the row
+  // renders the inline warning on first paint.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem(
+        'peliglot-byok-anthropic',
+        JSON.stringify({ provider: 'anthropic', apiKey: 'sk-ant-test' }),
+      );
+      localStorage.setItem(
+        'peliglot-byok-silent-anthropic',
+        JSON.stringify(['claude-future-silent']),
+      );
+    } catch {
+      // ignore
+    }
+  });
+
+  await page.goto('/settings');
+  await page.waitForLoadState('networkidle');
+
+  // Warning is visible
+  await expect(page.getByText(/silent token usage detected/i)).toBeVisible({ timeout: 6000 });
+  await expect(page.getByText(/claude-future-silent/)).toBeVisible();
+
+  // Click the clear button — record should disappear from the page and storage
+  await page.getByRole('button', { name: /clear & re-enable/i }).click();
+
+  await expect(page.getByText(/silent token usage detected/i)).toHaveCount(0);
+  const stored = await page.evaluate(() =>
+    localStorage.getItem('peliglot-byok-silent-anthropic'),
+  );
+  expect(stored).toBeNull();
+});
+
 test('over-cap state shows a progress bar that fills past the cap', async ({ page }) => {
   await page.addInitScript(() => {
     try {

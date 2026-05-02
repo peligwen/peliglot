@@ -63,14 +63,43 @@ const UNPRICED_KEYS: Record<Provider, string> = {
   'openai-compatible': 'peliglot-byok-unpriced-openai-compatible',
 };
 
+/**
+ * Per-provider list of model IDs that returned a successful response with
+ * `usage.input === 0 && usage.output === 0`. For cloud providers this is a
+ * silent-billing footgun: the request was billed by the vendor but Peliglot's
+ * meter can't move, so the daily cap can't engage. Tracked + sticky-blocked
+ * until the user clears the record in Settings.
+ */
+const SILENT_USAGE_KEYS: Record<Provider, string> = {
+  anthropic: 'peliglot-byok-silent-anthropic',
+  openai: 'peliglot-byok-silent-openai',
+  'openai-compatible': 'peliglot-byok-silent-openai-compatible',
+};
+
 /** Cap on how many distinct unpriced model IDs we remember per provider. */
 const MAX_UNPRICED_MODELS = 8;
+
+/** Cap on how many distinct silent-usage model IDs we remember per provider. */
+const MAX_SILENT_USAGE_MODELS = 8;
 
 /** Keep this many days of bucket history (rolling window). */
 const DAILY_BUCKET_RETENTION_DAYS = 30;
 
 /** Defensive cap on user-supplied daily limit to prevent typos like 100000. */
 export const MAX_DAILY_CAP_USD = 1000;
+
+/**
+ * Default daily USD cap applied to cloud providers (anthropic, openai) when
+ * the user has not set one. The feature is currently labelled experimental;
+ * the default is intentionally low so a runaway loop or misconfiguration can
+ * burn at most a few dollars before the cap engages. The user can raise it
+ * up to MAX_DAILY_CAP_USD in Settings.
+ *
+ * openai-compatible is exempt: those endpoints are typically self-hosted and
+ * free, and a default cap there would either confuse users or block local
+ * development. The user can still set one explicitly.
+ */
+export const DEFAULT_DAILY_CAP_USD = 0.5;
 
 const ZERO_BUCKET: DailyBucket = { input: 0, output: 0, costUsd: 0 };
 
@@ -250,15 +279,27 @@ export function resetAllCosts(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Read the daily USD cap for a provider. Returns null when no cap is set.
- * Invalid stored values (non-finite, negative, above MAX_DAILY_CAP_USD) are
- * treated as no-cap to fail open rather than block the user with bad data.
+ * Read the daily USD cap for a provider.
+ *
+ * For cloud providers (anthropic, openai), returns DEFAULT_DAILY_CAP_USD when
+ * no entry is stored — the experimental safety net. Invalid stored values
+ * (non-finite, negative, above MAX_DAILY_CAP_USD) also fall back to the default
+ * for cloud, fail-closed. The user can override with any value in (0, MAX].
+ *
+ * For openai-compatible (typically self-hosted, free), returns null when no
+ * entry is stored — local development isn't gated by a cap.
+ *
+ * "Cleared" is not a representable state for cloud providers under this
+ * read-side default. The Settings UI exposes a "Reset to default" action
+ * that writes the default explicitly; the underlying storage is identical
+ * to "no entry."
  */
 export function getDailyCap(provider: Provider): number | null {
   const raw = safeGetItem(CAP_KEYS[provider]);
-  if (raw === null) return null;
+  const cloudDefault = provider === 'openai-compatible' ? null : DEFAULT_DAILY_CAP_USD;
+  if (raw === null) return cloudDefault;
   const parsed = parseFloat(raw);
-  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > MAX_DAILY_CAP_USD) return null;
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > MAX_DAILY_CAP_USD) return cloudDefault;
   return parsed;
 }
 
@@ -333,5 +374,77 @@ export function getUnpricedModelIds(provider: Provider): string[] {
 export function clearAllUnpriced(): void {
   for (const provider of Object.keys(UNPRICED_KEYS) as Provider[]) {
     safeRemoveItem(UNPRICED_KEYS[provider]);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Public API — silent-usage tracking
+//
+// "Silent usage" is when a provider returns a successful chat response but
+// reports `usage.input === 0 && usage.output === 0`. For cloud providers
+// (anthropic, openai), the request was billed by the vendor but our meter
+// can't move — the daily cap can't engage and the user has no idea what
+// they're spending. This is the precise failure mode the user asked us to
+// guard against ("error if the user is spending tokens but our usage isn't
+// going up"). We record the model id and sticky-block subsequent calls until
+// the user clears the record in Settings.
+//
+// openai-compatible is exempt: most self-hosted servers (Ollama, llama.cpp,
+// LM Studio) omit the usage field by default and that's not a billing risk
+// — the user owns the hardware. Flagging there would be noise.
+// ---------------------------------------------------------------------------
+
+function parseSilentUsageList(raw: string | null): string[] {
+  if (raw === null) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed) && parsed.every(s => typeof s === 'string')) {
+      return parsed as string[];
+    }
+  } catch {
+    // fall through
+  }
+  return [];
+}
+
+/**
+ * Record that a successful chat call to `provider` returned `modelId` with
+ * zero token usage. Once present, subsequent chat calls for this provider
+ * are blocked by the silent-usage guard until the user calls
+ * `clearSilentUsage(provider)` from Settings.
+ *
+ * No-op for the openai-compatible provider — silent usage is expected there.
+ */
+export function markSilentUsage(provider: Provider, modelId: string): void {
+  if (provider === 'openai-compatible') return;
+  if (typeof modelId !== 'string' || modelId.trim() === '') return;
+  const key = SILENT_USAGE_KEYS[provider];
+  const current = parseSilentUsageList(safeGetItem(key));
+  if (current.includes(modelId)) return;
+  const next = [...current, modelId].slice(-MAX_SILENT_USAGE_MODELS);
+  safeSetItem(key, JSON.stringify(next));
+}
+
+/**
+ * Read the recorded silent-usage model IDs for a provider. Always returns
+ * an empty array for openai-compatible (the helper never records there).
+ */
+export function getSilentUsageModelIds(provider: Provider): string[] {
+  if (provider === 'openai-compatible') return [];
+  return parseSilentUsageList(safeGetItem(SILENT_USAGE_KEYS[provider]));
+}
+
+/**
+ * Clear silent-usage records for one provider. Called from the Settings UI
+ * when the user has investigated the issue and wants to re-enable chat.
+ */
+export function clearSilentUsage(provider: Provider): void {
+  safeRemoveItem(SILENT_USAGE_KEYS[provider]);
+}
+
+/** Clear silent-usage records for all providers. */
+export function clearAllSilentUsage(): void {
+  for (const provider of Object.keys(SILENT_USAGE_KEYS) as Provider[]) {
+    safeRemoveItem(SILENT_USAGE_KEYS[provider]);
   }
 }

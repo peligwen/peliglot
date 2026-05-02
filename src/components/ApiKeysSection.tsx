@@ -36,10 +36,41 @@ function SectionHeading({ id, children }: { id: string; children: ReactNode }): 
         letterSpacing: '-0.01em',
         paddingBottom: spacing.sm,
         borderBottom: `2px solid ${colors.border.default}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: spacing.sm,
       }}
     >
       {children}
     </h2>
+  );
+}
+
+/**
+ * Experimental pill — visible badge that signals the BYOK feature is not yet
+ * production-grade. Shown in the Settings AI-keys heading and the conversation
+ * page header so the user sees it before and during spending.
+ */
+function ExperimentalPill(): ReactElement {
+  return (
+    <span
+      aria-label="Experimental feature"
+      style={{
+        display: 'inline-block',
+        padding: `1px ${spacing.sm}px`,
+        borderRadius: radii.pill,
+        fontSize: typography.fontSize.sm,
+        fontWeight: typography.fontWeight.bold,
+        background: '#FFF3CD',
+        color: '#7B5E00',
+        border: '1px solid #F0E4A8',
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
+        verticalAlign: 'middle',
+      }}
+    >
+      Experimental
+    </span>
   );
 }
 
@@ -747,7 +778,10 @@ export function ApiKeysSection(): ReactElement {
       aria-labelledby="api-keys-heading"
       style={{ marginBottom: spacing.xxxl * 2 }}
     >
-      <SectionHeading id="api-keys-heading">AI keys</SectionHeading>
+      <SectionHeading id="api-keys-heading">
+        <span>AI keys</span>
+        <ExperimentalPill />
+      </SectionHeading>
 
       {/* Disclosure panel */}
       <div
@@ -762,6 +796,16 @@ export function ApiKeysSection(): ReactElement {
           lineHeight: typography.lineHeight.relaxed,
         }}
       >
+        <p style={{ margin: `0 0 ${spacing.sm}px`, fontWeight: typography.fontWeight.semibold }}>
+          This feature is experimental.
+        </p>
+        <p style={{ margin: `0 0 ${spacing.sm}px` }}>
+          Cloud providers ship with a low default daily spend limit as a safety net.
+          You can raise it in the Daily limits section below. Two narrow gaps trigger
+          warnings rather than enforcement: missing pricing data for a model, and a
+          provider returning a successful response with zero token counts. Both surface
+          inline; chat is paused on the second until you investigate.
+        </p>
         <p style={{ margin: `0 0 ${spacing.sm}px`, fontWeight: typography.fontWeight.semibold }}>
           Your key never leaves this browser.
         </p>

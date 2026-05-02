@@ -19,7 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { ReactElement, CSSProperties, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS, CONVERSATION_PROVIDER_KEY, markUnpricedCall, getUnpricedModelIds } from '../../../byok';
+import { listConfigured, getProvider, addToCost, lookupPricing, computeCostUsd, formatCostUsd, PROVIDER_LABELS, CONVERSATION_PROVIDER_KEY, markUnpricedCall, getUnpricedModelIds, getSilentUsageModelIds } from '../../../byok';
 import type { LlmProvider, ChatMessage } from '../../../byok';
 import { LlmProviderError } from '../../../byok';
 import type { Provider } from '../../../byok';
@@ -166,6 +166,25 @@ function HeaderStrip({
       >
         Conversation practice
       </div>
+
+      <span
+        aria-label="Experimental feature"
+        title="Experimental: low default spend cap, may have edge-case gaps."
+        style={{
+          display: 'inline-block',
+          padding: '1px 8px',
+          borderRadius: 999,
+          fontSize: 10,
+          fontWeight: 800,
+          background: '#FFF3CD',
+          color: '#7B5E00',
+          border: '1px solid #F0E4A8',
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}
+      >
+        Experimental
+      </span>
 
       <div style={{ flex: 1 }} />
 
@@ -630,6 +649,12 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   // Surfaced as an inline warning so the user knows the daily cap can't engage
   // for those models — Settings is too far away when this is the active risk.
   const [hasUnpricedCalls, setHasUnpricedCalls] = useState(false);
+  // True when the active provider has had a silent-usage event (zero token
+  // counts on a successful response). Once flagged, the silent-usage guard
+  // in withSilentUsageGuard hard-blocks subsequent chat() calls — so chat is
+  // already paused at the wrapper level. The inline warning explains why
+  // and points at Settings.
+  const [hasSilentUsage, setHasSilentUsage] = useState(false);
 
   const threadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -662,8 +687,10 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
   useEffect(() => {
     if (selectedProvider) {
       setHasUnpricedCalls(getUnpricedModelIds(selectedProvider).length > 0);
+      setHasSilentUsage(getSilentUsageModelIds(selectedProvider).length > 0);
     } else {
       setHasUnpricedCalls(false);
+      setHasSilentUsage(false);
     }
   }, [selectedProvider]);
 
@@ -757,6 +784,14 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
         setMessages(prev => [...prev, assistantMsg]);
 
         // ---- Cost telemetry ----
+        // If the wrapper just observed silent usage (zero in + zero out on
+        // a successful response), the silent-usage guard has already recorded
+        // it. Mirror to local state so the inline warning appears now — the
+        // next call will be hard-blocked by the wrapper.
+        if (result.usage.input === 0 && result.usage.output === 0 && selectedProvider !== 'openai-compatible') {
+          setHasSilentUsage(true);
+        }
+
         const pricing = lookupPricing(result.model);
         const callCostUsd = pricing
           ? computeCostUsd(result.usage, pricing)
@@ -824,6 +859,13 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
             case 'cap-exceeded':
               errorText = err.message;
               errorLink = { to: '/settings', label: 'Adjust your daily limit in Settings.' };
+              break;
+            case 'silent-usage':
+              errorText = err.message;
+              errorLink = { to: '/settings', label: 'Resolve in Settings.' };
+              // The wrapper just rejected; mirror that into the inline warning
+              // so the user sees it persistently above the input until cleared.
+              setHasSilentUsage(true);
               break;
             case 'cors-blocked':
               errorText =
@@ -972,6 +1014,34 @@ export function Conversation({ getProviderFn = getProvider }: ConversationProps)
               boxSizing: 'border-box',
             }}
           >
+            {/* Silent-usage warning — the wrapper has detected a successful
+                response with zero token counts, which means the vendor likely
+                billed for the call but our meter can't track it. Chat is
+                hard-blocked at the wrapper level until cleared in Settings;
+                this banner explains why and points there. */}
+            {hasSilentUsage && (
+              <div
+                role="alert"
+                style={{
+                  marginBottom: 8,
+                  padding: '8px 12px',
+                  background: '#FFEBEE',
+                  border: '1px solid #EF9A9A',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  color: '#B71C1C',
+                  fontFamily: "system-ui,'Segoe UI',sans-serif",
+                  lineHeight: 1.4,
+                }}
+              >
+                <strong>Chat paused.</strong> Your provider returned a successful response
+                without reporting tokens — Peliglot can't track spending here.{' '}
+                <Link to="/settings" style={{ color: '#B71C1C', fontWeight: 700 }}>
+                  Resolve in Settings.
+                </Link>
+              </div>
+            )}
+
             {/* Unpriced-model warning — the daily cap can only enforce against
                 models with pricing data. If the active provider has called an
                 unpriced model, the cap silently doesn't apply for that model.

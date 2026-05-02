@@ -49,7 +49,11 @@ export {
   setDailyCap,
   markUnpricedCall,
   getUnpricedModelIds,
+  markSilentUsage,
+  getSilentUsageModelIds,
+  clearSilentUsage,
   MAX_DAILY_CAP_USD,
+  DEFAULT_DAILY_CAP_USD,
 } from './cost-storage';
 
 // Pricing
