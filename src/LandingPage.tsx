@@ -15,6 +15,7 @@ import { guidesMeta as jazzGuitarMeta } from './guides/jazz-guitar/meta';
 import { guidesMeta as mathMeta } from './guides/math/meta';
 import { guidesMeta as aiMeta } from './guides/ai-interaction/meta';
 import { guidesMeta as freecadMeta } from './guides/freecad/meta';
+import { guidesMeta as part107Meta } from './guides/part-107/meta';
 import { SPANISH_CARD_COUNT } from './guides/spanish/mastery/index';
 import { getRecommendation } from './mastery/recommendation';
 import './styles/landing.css';
@@ -47,6 +48,7 @@ const allGuideIndex: CollectionEntry[] = [
   { slug: 'math', label: 'Math', icon: '\u{1F9EE}', meta: mathMeta },
   { slug: 'ai-interaction', label: 'AI Interaction', icon: '\u{1F916}', meta: aiMeta },
   { slug: 'freecad', label: 'FreeCAD', icon: '\u{1F4D0}', meta: freecadMeta },
+  { slug: 'part-107', label: 'FAA Part 107', icon: '\u{1F6F8}', meta: part107Meta },
 ];
 
 interface SearchResult extends GuideMeta {
@@ -110,6 +112,7 @@ const guides: GuideSection[] = [
     { slug: 'math', accent: 'linear-gradient(180deg, #1565C0, #2E7D32)', icon: '\u{1F9EE}', title: 'Math', sub: collectionOneLiners.math, count: '32 guides', total: 32 },
     { slug: 'ai-interaction', accent: 'linear-gradient(180deg, #1565C0, #6A1B9A)', icon: '\u{1F916}', title: 'AI Interaction', sub: collectionOneLiners['ai-interaction'], count: '28 guides', total: 28 },
     { slug: 'freecad', accent: 'linear-gradient(180deg, #0d1b2a, #e67e22)', icon: '\u{1F4D0}', title: 'FreeCAD', sub: collectionOneLiners.freecad, count: '30 guides', total: 30 },
+    { slug: 'part-107', accent: 'linear-gradient(180deg, #0D47A1, #37474F)', icon: '\u{1F6F8}', title: 'FAA Part 107', sub: collectionOneLiners['part-107'], count: '34 guides', total: 34 },
     { slug: 'music2', accent: 'linear-gradient(180deg, #7B1FA2, #1565C0)', icon: '\u{1F3BC}', title: 'Music Theory II', sub: 'Extended harmony, modulation, counterpoint, form analysis, orchestration, and 20th-century techniques — with playable audio.', count: 'Coming soon', soon: true },
   ]},
 ];

@@ -104,6 +104,7 @@ var COLLECTION_THEME = {
   math:             { label: 'MTH', accent: '#1565C0', section: 'Beyond Language' },
   'ai-interaction': { label: 'AI',  accent: '#6A1B9A', section: 'Beyond Language' },
   freecad:          { label: 'CAD', accent: '#0d1b2a', section: 'Beyond Language' },
+  'part-107':       { label: '107', accent: '#0D47A1', section: 'Beyond Language' },
 };
 
 // Collection display titles.
@@ -124,6 +125,7 @@ var COLLECTION_TITLE = {
   math:             'Math',
   'ai-interaction': 'AI Interaction',
   freecad:          'FreeCAD',
+  'part-107':       'FAA Part 107',
 };
 
 // ---------------------------------------------------------------------------
@@ -171,7 +173,7 @@ function parseOneLiners() {
   var result = {};
   var slugs = [
     'spanish', 'arabic', 'english', 'german', 'hawaiian',
-    'music', 'jazz-guitar', 'math', 'ai-interaction', 'freecad',
+    'music', 'jazz-guitar', 'math', 'ai-interaction', 'freecad', 'part-107',
   ];
   for (var i = 0; i < slugs.length; i++) {
     var slug = slugs[i];

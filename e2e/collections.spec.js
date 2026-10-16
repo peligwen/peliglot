@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Parameterized smoke tests for all 10 guide collections.
+ * Parameterized smoke tests for all 11 guide collections.
  *
  * Each test:
  *  1. Navigates to /guides/{slug}
@@ -25,6 +25,7 @@ const collections = [
   { slug: 'math',          sidebarTitle: 'Math' },
   { slug: 'ai-interaction', sidebarTitle: 'AI Interaction' },
   { slug: 'freecad',       sidebarTitle: 'FreeCAD' },
+  { slug: 'part-107',      sidebarTitle: 'FAA Part 107' },
 ];
 
 for (const { slug, sidebarTitle } of collections) {
