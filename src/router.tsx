@@ -8,7 +8,7 @@ import { NotFoundPage } from './NotFoundPage';
 
 const guideSlugs: string[] = [
   'spanish', 'arabic', 'english', 'german', 'hawaiian',
-  'music', 'jazz-guitar', 'math', 'ai-interaction', 'freecad',
+  'music', 'jazz-guitar', 'math', 'ai-interaction', 'freecad', 'part-107',
 ];
 
 /** Renders the actual route error in dev, a clean message in prod. */
@@ -32,7 +32,7 @@ function RouteError(): ReactElement {
 }
 
 // Explicit lazy imports so Vite can generate per-collection chunks.
-// All 10 collections are .tsx (Phase 4 complete).
+// All 11 collections are .tsx (Phase 4 complete).
 type LazyImport = () => Promise<{ Component: () => ReactElement }>;
 const guideImports: Record<string, LazyImport> = {
   spanish:            () => import('./guides/spanish/index.tsx'),
@@ -45,6 +45,7 @@ const guideImports: Record<string, LazyImport> = {
   math:               () => import('./guides/math/index.tsx'),
   'ai-interaction':   () => import('./guides/ai-interaction/index.tsx'),
   freecad:            () => import('./guides/freecad/index.tsx'),
+  'part-107':         () => import('./guides/part-107/index.tsx'),
 };
 
 const guideRoutes: RouteObject[] = guideSlugs.map(slug => ({

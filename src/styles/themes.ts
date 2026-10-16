@@ -92,6 +92,11 @@ export const jazzTheme: Theme = {
   scrollbarThumb: '#3a3025',
 };
 
+export const part107Theme: Theme = {
+  ...lightTheme,
+  focusColor: '#0D47A1',
+};
+
 export const freecadTheme: Theme = {
   ...darkTheme,
   bg: '#0d1b2a',

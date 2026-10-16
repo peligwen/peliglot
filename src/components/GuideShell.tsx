@@ -25,6 +25,8 @@ const relatedCollections: Record<string, { slug: string; title: string; icon: st
   'jazz-guitar': { slug: 'music', title: 'Music Theory', icon: '\u{1F3B9}' },
   math: { slug: 'ai-interaction', title: 'AI Interaction', icon: '\u{1F916}' },
   'ai-interaction': { slug: 'math', title: 'Math', icon: '\u{1F9EE}' },
+  freecad: { slug: 'part-107', title: 'FAA Part 107', icon: '\u{1F6F8}' },
+  'part-107': { slug: 'freecad', title: 'FreeCAD', icon: '\u{1F4D0}' },
 };
 
 export interface GuideShellProps {

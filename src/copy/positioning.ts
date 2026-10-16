@@ -18,7 +18,8 @@ export type CollectionSlug =
   | 'jazz-guitar'
   | 'math'
   | 'ai-interaction'
-  | 'freecad';
+  | 'freecad'
+  | 'part-107';
 
 /** ≤80 chars. Goes in <meta name="description"> and OG site card. */
 export const siteTagline =
@@ -29,7 +30,7 @@ export const siteTagline =
  * Used as the lead on the landing page.
  */
 export const siteHeroPitch =
-  'Ten subjects. Over 300 interactive guides.';
+  'Eleven subjects. Over 300 interactive guides.';
 
 /**
  * Who this is for.
@@ -57,7 +58,7 @@ export const sectionIntros: { Languages: string; BeyondLanguage: string } = {
   Languages:
     'Five languages, each with its own dialect notes, cultural context, and audio.',
   BeyondLanguage:
-    'Music theory, jazz guitar, math, AI, and FreeCAD — same interactive style, different subjects.',
+    'Music theory, jazz guitar, math, AI, FreeCAD, and the FAA drone test — same interactive style, different subjects.',
 };
 
 /**
@@ -95,6 +96,9 @@ export const collectionOneLiners: Record<CollectionSlug, string> = {
 
   freecad:
     'Sketches, constraints, Part Design, and 3D-print workflow — a cheat sheet for daily use.',
+
+  'part-107':
+    'The FAA drone pilot test: regulations, airspace, sectionals, weather, and a 60-question practice exam.',
 };
 
 /**
